@@ -10,7 +10,7 @@ import nodemailer from "nodemailer";
  */
 
 const FROM = '"Judo Marketing" <info@judomarketing.net>';
-const SITE = "https://judo-marketing.vercel.app";
+const SITE = "https://www.judomarketing.net";
 
 export function isEmailConfigured(): boolean {
   return Boolean(process.env.SMTP_USER && process.env.SMTP_PASS);

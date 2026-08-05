@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
         "Te avisaremos por este mismo correo apenas tu cuenta sea aprobada.",
       ],
       ctaLabel: "Ir a mi portal",
-      ctaUrl: "https://judo-marketing.vercel.app/es/portal",
+      ctaUrl: "https://www.judomarketing.net/es/portal",
     });
     await sendBrandedEmail(email, "Recibimos tu aplicación, Judo Marketing", html);
     return NextResponse.json({ sent: true });
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
         "Tu acuerdo de comisión está visible dentro de tu portal. ¡Vamos a crecer juntos!",
       ],
       ctaLabel: "Entrar a mi portal",
-      ctaUrl: "https://judo-marketing.vercel.app/es/portal",
+      ctaUrl: "https://www.judomarketing.net/es/portal",
     });
     await sendBrandedEmail(email, "¡Bienvenido al equipo!, Judo Marketing", html);
     return NextResponse.json({ sent: true });
