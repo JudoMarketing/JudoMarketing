@@ -56,7 +56,7 @@ export default function BookingWidget() {
 
     const params = new URLSearchParams({
       action: "TEMPLATE",
-      text: "Cita Zoom — Judo Marketing",
+      text: "Cita Zoom con Judo Marketing",
       dates: `${start}/${end}`,
       ctz: "America/New_York",
       details:

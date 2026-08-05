@@ -5,7 +5,7 @@
  */
 
 export const ADMIN_SIGNER_NAME = "Junior Osorio";
-export const ADMIN_SIGNER_TITLE = "Judo Marketing — Administración";
+export const ADMIN_SIGNER_TITLE = "Judo Marketing, Administración";
 
 export const contractSections: { title: string; body: string[] }[] = [
   {

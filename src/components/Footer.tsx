@@ -13,7 +13,7 @@ export default function Footer() {
         <p>{t("address")}</p>
         <p>
           <a href="tel:+13059349981" className="hover:text-judo-lilac">
-            305-934-9981
+            +1 305 934 9981
           </a>
           {" · "}
           <a

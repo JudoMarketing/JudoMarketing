@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Judo Marketing — Websites, Apps & AI-Powered Marketing",
+    "title": "Judo Marketing, Websites, Apps & AI-Powered Marketing",
     "description": "We build all kinds of scalable websites fully controlled by the owner. Modern, secure solutions designed to grow your business."
   },
   "nav": {
@@ -28,7 +28,7 @@
       },
       {
         "title": "Protected subscription",
-        "description": "You pay your subscription — refundable if we don't finish your project in under a month."
+        "description": "You pay your subscription, refundable if we don't finish your project in under a month."
       },
       {
         "title": "Your portal, your way",
@@ -185,7 +185,7 @@
   "about": {
     "title": "About Us",
     "subtitle": "The judo strategy applied to marketing.",
-    "intro": "In judo, the biggest fighter doesn't win — the one who uses momentum in their favor does. Judo Marketing was born from that philosophy: helping small and medium businesses compete against giants using technology, artificial intelligence, and strategy as leverage.",
+    "intro": "In judo, the biggest fighter doesn't win, the one who uses momentum in their favor does. Judo Marketing was born from that philosophy: helping small and medium businesses compete against giants using technology, artificial intelligence, and strategy as leverage.",
     "sections": [
       {
         "title": "Use the market's momentum",
@@ -215,7 +215,7 @@
     "whatsapp": "WhatsApp",
     "whatsappDesc": "Fast response",
     "call": "Call us",
-    "callDesc": "305-934-9981",
+    "callDesc": "+1 305 934 9981",
     "emailTitle": "Email",
     "emailDesc": "admin@judomarketing.net",
     "addressTitle": "Visit us",
@@ -259,7 +259,7 @@
     "registerTitle": "Seller Registration",
     "registerSubtitle": "Join the Judo Marketing team. Your account stays pending until Administration approves it.",
     "fullName": "Full name (required)",
-    "referralCode": "Referral code (optional — the name of who invited you)",
+    "referralCode": "Referral code (optional, the name of who invited you)",
     "acceptTermsPre": "I accept the",
     "acceptTermsPolicy": "Service Policy & Terms",
     "acceptTermsAnd": "and the",
@@ -268,13 +268,25 @@
     "checkEmail": "Done! Check your inbox and confirm your email to log in.",
     "haveAccount": "Already have an account?",
     "loginLink": "Log in",
-    "error": "Something went wrong. Check your info and try again."
+    "error": "Something went wrong. Check your info and try again.",
+    "forgotLink": "Forgot your password?",
+    "forgotTitle": "Recover password",
+    "forgotSubtitle": "Enter your email and we'll send you a link to create a new password.",
+    "forgotSend": "Send me the link",
+    "forgotSent": "Done. Check your inbox and open the link to create your new password.",
+    "resetTitle": "Create your new password",
+    "newPassword": "New password",
+    "confirmPassword": "Repeat password",
+    "resetSave": "Save password",
+    "resetDone": "Password updated. You can use your portal now.",
+    "resetMismatch": "Passwords do not match.",
+    "resetWaiting": "Opening your secure link…"
   },
   "portal": {
     "welcome": "Hi",
     "logout": "Log out",
     "pendingTitle": "Your account is under review",
-    "pendingDesc": "Administration is reviewing your registration. To approve you we need your profile photo — upload it below. We will email you once you are approved.",
+    "pendingDesc": "Administration is reviewing your registration. To approve you we need your profile photo, upload it below. We will email you once you are approved.",
     "uploadPhoto": "Upload profile photo",
     "photoUploaded": "Photo received ✓",
     "photoRequired": "A profile photo is required for approval.",
@@ -286,7 +298,7 @@
     "companyName": "Company name (optional)",
     "visitDate": "Visit date",
     "saveVisit": "Save visit",
-    "savedOffline": "Saved on your phone — it will upload when you have signal",
+    "savedOffline": "Saved on your phone, it will upload when you have signal",
     "synced": "Synced ✓",
     "pendingSync": "pending upload",
     "visitsListTitle": "Your visits",
@@ -294,9 +306,16 @@
     "docsTitle": "Your documents",
     "docContract": "Client contract (to sign with your client)",
     "docSeller": "Your Seller Program Agreement",
-    "offlineBadge": "Offline — your visits are being saved on your phone",
+    "offlineBadge": "Offline, your visits are being saved on your phone",
     "visitTime": "Time (optional)",
-    "signContract": "Sign a contract with a client"
+    "signContract": "Sign a contract with a client",
+    "contractsTitle": "Contracts",
+    "newContract": "New contract",
+    "contractsEmpty": "You haven't signed any contracts yet. When you close your first sale, it will appear here.",
+    "pickVisit": "Choose who to send the contract to",
+    "manualEntry": "Another client, type the details",
+    "uploadNow": "Upload now",
+    "viewPdf": "View PDF"
   },
   "zelle": {
     "chooseTitle": "How would you like to pay?",
@@ -310,12 +329,12 @@
     "amountLabel": "Plan amount",
     "thenUpload": "Once you make the transfer, upload your screenshot with your name:",
     "payerName": "Your full name",
-    "refCode": "Referral code (optional — your seller's name)",
+    "refCode": "Referral code (optional, your seller's name)",
     "source": "Where did you hear about us? (optional)",
     "sourceGoogle": "Google",
     "sourceFriend": "A friend",
     "sourceSocial": "Social media",
-    "sourceNone": "— Choose —",
+    "sourceNone": ", Choose, ",
     "upload": "Payment screenshot (image)",
     "submit": "Send receipt",
     "success": "Receipt received! We'll verify your payment and contact you today to start your project. 💜",

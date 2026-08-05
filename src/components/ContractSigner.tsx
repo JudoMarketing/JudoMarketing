@@ -21,7 +21,17 @@ import {
   contractSections,
 } from "@/content/client-contract";
 
-type Step = "form" | "client-sign" | "seller-sign" | "done";
+type Step = "pick" | "form" | "client-sign" | "seller-sign" | "done";
+
+export type VisitOption = { id: string; name: string; company: string };
+export type NewSignedContract = {
+  id: string;
+  code: string;
+  client_name: string;
+  business_name: string | null;
+  pdf_path: string;
+  created_at: string;
+};
 
 const PLANS: Record<string, { name: string; price: number }> = {
   essential: { name: "Website Esencial", price: 50 },
@@ -40,14 +50,18 @@ function makeCode(): string {
 export default function ContractSigner({
   sellerId,
   sellerName,
+  visits,
   onClose,
+  onSigned,
 }: {
   sellerId: string;
   sellerName: string;
+  visits: VisitOption[];
   onClose: () => void;
+  onSigned?: (contract: NewSignedContract) => void;
 }) {
   const supabase = getSupabase();
-  const [step, setStep] = useState<Step>("form");
+  const [step, setStep] = useState<Step>(visits.length > 0 ? "pick" : "form");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -193,18 +207,23 @@ export default function ContractSigner({
         .from("contracts")
         .upload(path, new Blob([pdfBytes as BlobPart], { type: "application/pdf" }));
       if (upErr) throw upErr;
-      const { error: insErr } = await supabase.from("signed_contracts").insert({
-        code,
-        seller_id: sellerId,
-        client_name: clientName.trim(),
-        business_name: businessName.trim() || null,
-        client_email: clientEmail.trim(),
-        plan,
-        monthly_price: Number(price),
-        domain: domain.trim() || null,
-        pdf_path: path,
-      });
+      const { data: inserted, error: insErr } = await supabase
+        .from("signed_contracts")
+        .insert({
+          code,
+          seller_id: sellerId,
+          client_name: clientName.trim(),
+          business_name: businessName.trim() || null,
+          client_email: clientEmail.trim(),
+          plan,
+          monthly_price: Number(price),
+          domain: domain.trim() || null,
+          pdf_path: path,
+        })
+        .select("id, code, client_name, business_name, pdf_path, created_at")
+        .single();
       if (insErr) throw insErr;
+      if (inserted && onSigned) onSigned(inserted as NewSignedContract);
       const { data: signed } = await supabase.storage
         .from("contracts")
         .createSignedUrl(path, 60 * 60 * 24 * 365);
@@ -218,7 +237,7 @@ export default function ContractSigner({
   };
 
   const mailtoLink = () => {
-    const subject = encodeURIComponent(`Tu contrato con Judo Marketing — ${code}`);
+    const subject = encodeURIComponent(`Tu contrato con Judo Marketing, código ${code}`);
     const body = encodeURIComponent(
       `Hola ${clientName},\n\n¡Bienvenido a Judo Marketing! 💜\n\nTu Acuerdo de Servicio quedó firmado por ti, por tu vendedor ${sellerName} y por ${ADMIN_SIGNER_NAME} (Administración).\n\nCódigo de verificación: ${code}\nDescarga tu contrato firmado aquí:\n${pdfUrl}\n\nCualquier duda, tu canal directo es tu vendedor, o escríbenos en www.judomarketing.net/es/contacto\n\nJudo Marketing\n66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130`
     );
@@ -235,6 +254,47 @@ export default function ContractSigner({
           <h2 className="text-lg font-bold">📝 Firmar contrato</h2>
           <button onClick={onClose} className="text-judo-fog/50 hover:text-judo-lilac">✕</button>
         </div>
+
+        {/* PASO 0: elegir a quién (desde las visitas del vendedor) */}
+        {step === "pick" && (
+          <div className="mt-4">
+            <p className="text-sm text-judo-fog/70">
+              📍 Elige a quién le vas a enviar el contrato:
+            </p>
+            <ul className="mt-3 max-h-56 divide-y divide-judo-lilac/10 overflow-y-auto rounded-xl border border-judo-lilac/20">
+              {visits.map((visit) => (
+                <li key={visit.id}>
+                  <button
+                    onClick={() => {
+                      setClientName(visit.name);
+                      setBusinessName(visit.company);
+                      setStep("form");
+                    }}
+                    className="flex w-full items-center justify-between px-4 py-3 text-left text-sm transition hover:bg-judo-purple/10"
+                  >
+                    <span>
+                      <span className="font-medium">{visit.name}</span>
+                      {visit.company && (
+                        <span className="text-judo-fog/50"> · {visit.company}</span>
+                      )}
+                    </span>
+                    <span className="text-judo-lilac">→</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={() => {
+                setClientName("");
+                setBusinessName("");
+                setStep("form");
+              }}
+              className="btn-secondary mt-3 w-full py-2 text-sm"
+            >
+              ✏️ Otro cliente, escribir los datos
+            </button>
+          </div>
+        )}
 
         {/* PASO 1: datos */}
         {step === "form" && (
@@ -258,7 +318,12 @@ export default function ContractSigner({
               <input required type="number" min="1" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Precio $/mes" className={inputClass} />
             </div>
             <input value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="Dominio deseado (opcional)" className={inputClass} />
-            <button type="submit" className="btn-primary">Continuar → firma del cliente</button>
+            <button type="submit" className="btn-primary">Continuar: firma del cliente →</button>
+            {visits.length > 0 && (
+              <button type="button" onClick={() => setStep("pick")} className="text-xs text-judo-fog/50 hover:text-judo-lilac">
+                ← Elegir otra persona
+              </button>
+            )}
           </form>
         )}
 
@@ -269,7 +334,7 @@ export default function ContractSigner({
               📱 Entrégale el teléfono a <b>{clientName}</b> para que lea y firme.
             </p>
             <div className="mt-3 max-h-56 overflow-y-auto rounded-xl border border-judo-lilac/20 bg-judo-black/50 p-4 text-xs leading-relaxed text-judo-fog/80">
-              <p className="font-bold text-judo-fog">ACUERDO DE SERVICIO — JUDO MARKETING</p>
+              <p className="font-bold text-judo-fog">ACUERDO DE SERVICIO DE JUDO MARKETING</p>
               <p className="mt-1 text-judo-lilac">Código: {code} · {clientName} · ${price}/mes · 12 meses</p>
               {contractSections.map((s) => (
                 <div key={s.title} className="mt-3">

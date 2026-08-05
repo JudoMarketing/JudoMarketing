@@ -138,6 +138,32 @@ export default function AdminPortal() {
       .eq("id", id);
     if (error) return flash(`Error: ${error.message}`);
     flash("Vendedor actualizado ✓");
+
+    // Email bonito de "fuiste aprobado" (si SMTP está configurado)
+    if (status === "aprobado") {
+      try {
+        const [{ data: sess }, { data: prof }] = await Promise.all([
+          supabase.auth.getSession(),
+          supabase.from("profiles").select("email, full_name").eq("id", id).single(),
+        ]);
+        if (sess.session && prof?.email) {
+          void fetch("/api/notify", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sess.session.access_token}`,
+            },
+            body: JSON.stringify({
+              type: "approved",
+              email: prof.email,
+              name: prof.full_name,
+            }),
+          }).catch(() => {});
+        }
+      } catch {
+        // sin columna email todavía (migración 0005 pendiente): se omite
+      }
+    }
     void loadAll();
   };
 
@@ -380,7 +406,7 @@ export default function AdminPortal() {
                   )}
                 </p>
                 <p className="text-xs text-judo-fog/50">
-                  {site.clients?.full_name ?? "—"} · ${site.monthly_price}/mes ·{" "}
+                  {site.clients?.full_name ?? "Sin cliente"} · ${site.monthly_price}/mes ·{" "}
                   {site.months_paid}/12 pagos ·{" "}
                   {site.next_payment_due ? `próximo: ${site.next_payment_due}` : "sin fecha"} ·{" "}
                   <b className={site.status === "activo" ? "text-emerald-300" : site.status === "deshabilitado" ? "text-red-300" : "text-amber-300"}>

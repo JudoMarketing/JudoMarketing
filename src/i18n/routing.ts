@@ -10,6 +10,8 @@ export const routing = defineRouting({
     "/contact": { es: "/contacto", en: "/contact" },
     "/legal": "/legal",
     "/login": "/login",
+    "/forgot": { es: "/recuperar", en: "/forgot" },
+    "/reset": "/reset",
     "/register": { es: "/registro", en: "/register" },
     "/portal": "/portal",
     "/admin": "/admin",

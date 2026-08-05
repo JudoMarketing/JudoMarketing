@@ -24,7 +24,7 @@ export const policyContent: Record<
       {
         title: "2. Services and Plans",
         body: [
-          "Services are provided as monthly subscriptions (such as Essential Websites, Complex Websites, and Mobile Apps), one-time projects, or custom proposals. The exact scope, price, and inclusions of each plan are stated on www.judomarketing.net, the applicable proposal, or the signed service agreement. Anything not expressly included is outside scope and may require an additional quote. Minor updates included in subscription plans cover small text edits, image replacements, link changes, basic form updates, and small layout adjustments — not new pages, redesigns, new branding, or new integrations.",
+          "Services are provided as monthly subscriptions (such as Essential Websites, Complex Websites, and Mobile Apps), one-time projects, or custom proposals. The exact scope, price, and inclusions of each plan are stated on www.judomarketing.net, the applicable proposal, or the signed service agreement. Anything not expressly included is outside scope and may require an additional quote. Minor updates included in subscription plans cover small text edits, image replacements, link changes, basic form updates, and small layout adjustments, not new pages, redesigns, new branding, or new integrations.",
         ],
       },
       {
@@ -48,7 +48,7 @@ export const policyContent: Record<
       {
         title: "6. Refunds and the 30-Day Delivery Guarantee",
         body: [
-          "Because services are customized digital work, payments are non-refundable once work has started or a subscription period has begun — with one exception: the 30-Day Delivery Guarantee. If Judo Marketing fails to deliver the client's initial website or agreed project within thirty (30) days after receiving all required client materials, information, access, and approvals, the client may request a full refund of the first subscription payment. This guarantee does not apply to delays caused by the client, incomplete materials, third-party platforms, or scope changes requested after the project started. Refunds are not provided because a campaign or website did not produce a specific business result (see Section 9). Third-party fees are non-refundable.",
+          "Because services are customized digital work, payments are non-refundable once work has started or a subscription period has begun, with one exception: the 30-Day Delivery Guarantee. If Judo Marketing fails to deliver the client's initial website or agreed project within thirty (30) days after receiving all required client materials, information, access, and approvals, the client may request a full refund of the first subscription payment. This guarantee does not apply to delays caused by the client, incomplete materials, third-party platforms, or scope changes requested after the project started. Refunds are not provided because a campaign or website did not produce a specific business result (see Section 9). Third-party fees are non-refundable.",
         ],
       },
       {
@@ -65,13 +65,13 @@ export const policyContent: Record<
       {
         title: "8. Suspension for Non-Payment",
         body: [
-          "If an account becomes past due, Judo Marketing may temporarily disable the client's website and display a neutral suspension page stating that the site is temporarily disabled, identified with Judo Marketing branding and a link to www.judomarketing.net, with no advertising. The client expressly authorizes this suspension page. Service is restored promptly once the account is current — with no late fees, penalties, or reactivation charges for a first occurrence. Judo Marketing may also suspend or terminate services for illegal requests, abusive conduct, security risks, or violations of Section 10.",
+          "If an account becomes past due, Judo Marketing may temporarily disable the client's website and display a neutral suspension page stating that the site is temporarily disabled, identified with Judo Marketing branding and a link to www.judomarketing.net, with no advertising. The client expressly authorizes this suspension page. Service is restored promptly once the account is current, with no late fees, penalties, or reactivation charges for a first occurrence. Judo Marketing may also suspend or terminate services for illegal requests, abusive conduct, security risks, or violations of Section 10.",
         ],
       },
       {
         title: "9. No Guarantee of Results",
         body: [
-          "Judo Marketing uses professional efforts to improve presentation, visibility, lead capture, and client experience, but does not guarantee sales, leads, revenue, appointments, search rankings, platform approvals, audience growth, or any specific business outcome. Results depend on market conditions, competition, budget, offer quality, platform algorithms, and other factors outside Judo Marketing's control. Any promotional guarantee (for example, a traffic-growth guarantee) is defined exclusively by its written remedy — such as continued work at no additional cost until the target is met — and never as a promise of a specific business outcome.",
+          "Judo Marketing uses professional efforts to improve presentation, visibility, lead capture, and client experience, but does not guarantee sales, leads, revenue, appointments, search rankings, platform approvals, audience growth, or any specific business outcome. Results depend on market conditions, competition, budget, offer quality, platform algorithms, and other factors outside Judo Marketing's control. Any promotional guarantee (for example, a traffic-growth guarantee) is defined exclusively by its written remedy, such as continued work at no additional cost until the target is met, and never as a promise of a specific business outcome.",
         ],
       },
       {
@@ -143,7 +143,7 @@ export const policyContent: Record<
       {
         title: "2. Servicios y planes",
         body: [
-          "Los servicios se ofrecen como suscripciones mensuales (Websites Esenciales, Websites Complejos y Apps Móviles), proyectos únicos o propuestas personalizadas. El alcance, precio e inclusiones exactas de cada plan se indican en www.judomarketing.net, la propuesta aplicable o el acuerdo firmado. Lo que no esté expresamente incluido está fuera de alcance y puede requerir cotización adicional. Las actualizaciones menores incluidas cubren pequeños cambios de texto, reemplazo de imágenes, cambios de enlaces, ajustes básicos de formularios y pequeños ajustes de diseño — no páginas nuevas, rediseños, nueva marca ni nuevas integraciones.",
+          "Los servicios se ofrecen como suscripciones mensuales (Websites Esenciales, Websites Complejos y Apps Móviles), proyectos únicos o propuestas personalizadas. El alcance, precio e inclusiones exactas de cada plan se indican en www.judomarketing.net, la propuesta aplicable o el acuerdo firmado. Lo que no esté expresamente incluido está fuera de alcance y puede requerir cotización adicional. Las actualizaciones menores incluidas cubren pequeños cambios de texto, reemplazo de imágenes, cambios de enlaces, ajustes básicos de formularios y pequeños ajustes de diseño, no páginas nuevas, rediseños, nueva marca ni nuevas integraciones.",
         ],
       },
       {
@@ -167,7 +167,7 @@ export const policyContent: Record<
       {
         title: "6. Reembolsos y la Garantía de Entrega de 30 Días",
         body: [
-          "Como los servicios son trabajo digital personalizado, los pagos no son reembolsables una vez iniciado el trabajo o el período de suscripción — con una excepción: la Garantía de Entrega de 30 Días. Si Judo Marketing no entrega el website inicial o proyecto acordado dentro de treinta (30) días después de recibir todos los materiales, información, accesos y aprobaciones del cliente, el cliente puede solicitar el reembolso completo de su primer pago de suscripción. Esta garantía no aplica a demoras causadas por el cliente, materiales incompletos, plataformas de terceros o cambios de alcance pedidos después de iniciado el proyecto. No se dan reembolsos porque una campaña o website no produjo un resultado de negocio específico (ver Sección 9). Las tarifas de terceros no son reembolsables.",
+          "Como los servicios son trabajo digital personalizado, los pagos no son reembolsables una vez iniciado el trabajo o el período de suscripción, con una excepción: la Garantía de Entrega de 30 Días. Si Judo Marketing no entrega el website inicial o proyecto acordado dentro de treinta (30) días después de recibir todos los materiales, información, accesos y aprobaciones del cliente, el cliente puede solicitar el reembolso completo de su primer pago de suscripción. Esta garantía no aplica a demoras causadas por el cliente, materiales incompletos, plataformas de terceros o cambios de alcance pedidos después de iniciado el proyecto. No se dan reembolsos porque una campaña o website no produjo un resultado de negocio específico (ver Sección 9). Las tarifas de terceros no son reembolsables.",
         ],
       },
       {
@@ -184,13 +184,13 @@ export const policyContent: Record<
       {
         title: "8. Suspensión por falta de pago",
         body: [
-          "Si una cuenta entra en mora, Judo Marketing puede deshabilitar temporalmente el website del cliente y mostrar una página neutral de suspensión que indica que el sitio está temporalmente deshabilitado, identificada con la marca de Judo Marketing y un enlace a www.judomarketing.net, sin publicidad. El cliente autoriza expresamente esta página. El servicio se restablece de inmediato al ponerse al día — sin recargos, penalidades ni cargos de reactivación en una primera ocurrencia. Judo Marketing también puede suspender o terminar servicios por solicitudes ilegales, conducta abusiva, riesgos de seguridad o violaciones de la Sección 10.",
+          "Si una cuenta entra en mora, Judo Marketing puede deshabilitar temporalmente el website del cliente y mostrar una página neutral de suspensión que indica que el sitio está temporalmente deshabilitado, identificada con la marca de Judo Marketing y un enlace a www.judomarketing.net, sin publicidad. El cliente autoriza expresamente esta página. El servicio se restablece de inmediato al ponerse al día, sin recargos, penalidades ni cargos de reactivación en una primera ocurrencia. Judo Marketing también puede suspender o terminar servicios por solicitudes ilegales, conducta abusiva, riesgos de seguridad o violaciones de la Sección 10.",
         ],
       },
       {
         title: "9. Sin garantía de resultados",
         body: [
-          "Judo Marketing aplica esfuerzos profesionales para mejorar presentación, visibilidad, captación de clientes y experiencia, pero no garantiza ventas, leads, ingresos, citas, posiciones en buscadores, aprobaciones de plataformas, crecimiento de audiencia ni ningún resultado de negocio específico. Los resultados dependen del mercado, la competencia, el presupuesto, la calidad de la oferta, los algoritmos de las plataformas y otros factores fuera del control de Judo Marketing. Cualquier garantía promocional (por ejemplo, una garantía de crecimiento de tráfico) se define exclusivamente por su remedio escrito — como trabajo continuo sin costo adicional hasta lograr la meta — y nunca como promesa de un resultado específico.",
+          "Judo Marketing aplica esfuerzos profesionales para mejorar presentación, visibilidad, captación de clientes y experiencia, pero no garantiza ventas, leads, ingresos, citas, posiciones en buscadores, aprobaciones de plataformas, crecimiento de audiencia ni ningún resultado de negocio específico. Los resultados dependen del mercado, la competencia, el presupuesto, la calidad de la oferta, los algoritmos de las plataformas y otros factores fuera del control de Judo Marketing. Cualquier garantía promocional (por ejemplo, una garantía de crecimiento de tráfico) se define exclusivamente por su remedio escrito, como trabajo continuo sin costo adicional hasta lograr la meta, y nunca como promesa de un resultado específico.",
         ],
       },
       {

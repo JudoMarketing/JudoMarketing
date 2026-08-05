@@ -58,6 +58,11 @@ export function LoginForm() {
       <button type="submit" disabled={loading} className="btn-3d py-3 disabled:opacity-60">
         {loading ? "…" : t("submitLogin")}
       </button>
+      <p className="text-center text-sm">
+        <Link href="/forgot" className="text-judo-lilac hover:underline">
+          {t("forgotLink")}
+        </Link>
+      </p>
       <p className="text-center text-sm text-judo-fog/60">
         {t("noAccount")}{" "}
         <Link href="/register" className="font-semibold text-judo-lilac hover:underline">
@@ -103,6 +108,12 @@ export function RegisterForm() {
       setError(err.message);
       return;
     }
+    // Confirmación de aplicación recibida (si el correo está configurado)
+    void fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "applied", email, name: fullName.trim() }),
+    }).catch(() => {});
     setDone(true);
   };
 

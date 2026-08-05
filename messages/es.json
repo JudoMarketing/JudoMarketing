@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Judo Marketing — Websites, Apps y Marketing con IA",
+    "title": "Judo Marketing, Websites, Apps y Marketing con IA",
     "description": "Hacemos todo tipo de websites escalables y controlados por el mismo usuario. Soluciones modernas, seguras y diseñadas para hacer crecer tu negocio."
   },
   "nav": {
@@ -185,7 +185,7 @@
   "about": {
     "title": "Nosotros",
     "subtitle": "La estrategia judo aplicada al marketing.",
-    "intro": "En el judo no gana el más grande: gana quien usa el impulso a su favor. Judo Marketing nació con esa filosofía — ayudar a negocios pequeños y medianos a competir contra gigantes usando la tecnología, la inteligencia artificial y la estrategia como palanca.",
+    "intro": "En el judo no gana el más grande: gana quien usa el impulso a su favor. Judo Marketing nació con esa filosofía, ayudar a negocios pequeños y medianos a competir contra gigantes usando la tecnología, la inteligencia artificial y la estrategia como palanca.",
     "sections": [
       {
         "title": "Usa el impulso del mercado",
@@ -215,7 +215,7 @@
     "whatsapp": "WhatsApp",
     "whatsappDesc": "Respuesta rápida",
     "call": "Llámanos",
-    "callDesc": "305-934-9981",
+    "callDesc": "+1 305 934 9981",
     "emailTitle": "Email",
     "emailDesc": "admin@judomarketing.net",
     "addressTitle": "Visítanos",
@@ -237,7 +237,7 @@
     "officialNote": "La versión oficial y legalmente vigente de esta política es la versión en inglés. Esta traducción al español es informativa.",
     "downloads": "Documentos descargables",
     "policyPdf": "Política de Servicio y Términos (PDF)",
-    "clientPdf": "Acuerdo de Servicio — Cliente (PDF)",
+    "clientPdf": "Acuerdo de Servicio, Cliente (PDF)",
     "sellerPdf": "Acuerdo del Programa de Vendedores (PDF)"
   },
   "footerLegal": {
@@ -259,7 +259,7 @@
     "registerTitle": "Registro de Vendedores",
     "registerSubtitle": "Únete al equipo de Judo Marketing. Tu cuenta queda pendiente hasta que Administración la apruebe.",
     "fullName": "Nombre y apellido (obligatorio)",
-    "referralCode": "Código de referido (opcional — el nombre de quien te invitó)",
+    "referralCode": "Código de referido (opcional, el nombre de quien te invitó)",
     "acceptTermsPre": "Acepto la",
     "acceptTermsPolicy": "Política de Servicio y Términos",
     "acceptTermsAnd": "y el",
@@ -268,13 +268,25 @@
     "checkEmail": "¡Listo! Revisa tu correo y confirma tu email para poder entrar.",
     "haveAccount": "¿Ya tienes cuenta?",
     "loginLink": "Inicia sesión",
-    "error": "Algo salió mal. Revisa tus datos e intenta de nuevo."
+    "error": "Algo salió mal. Revisa tus datos e intenta de nuevo.",
+    "forgotLink": "¿Olvidaste tu clave?",
+    "forgotTitle": "Recuperar clave",
+    "forgotSubtitle": "Escribe tu email y te enviamos un enlace para crear una clave nueva.",
+    "forgotSend": "Enviarme el enlace",
+    "forgotSent": "Listo. Revisa tu correo y abre el enlace para crear tu clave nueva.",
+    "resetTitle": "Crea tu nueva clave",
+    "newPassword": "Nueva clave",
+    "confirmPassword": "Repite la clave",
+    "resetSave": "Guardar clave",
+    "resetDone": "Clave actualizada. Ya puedes usar tu portal.",
+    "resetMismatch": "Las claves no coinciden.",
+    "resetWaiting": "Abriendo tu enlace seguro…"
   },
   "portal": {
     "welcome": "Hola",
     "logout": "Cerrar sesión",
     "pendingTitle": "Tu cuenta está en revisión",
-    "pendingDesc": "Administración está revisando tu registro. Para aprobarte necesitamos tu foto de perfil — súbela aquí abajo. Te avisaremos por email cuando estés aprobado.",
+    "pendingDesc": "Administración está revisando tu registro. Para aprobarte necesitamos tu foto de perfil, súbela aquí abajo. Te avisaremos por email cuando estés aprobado.",
     "uploadPhoto": "Subir foto de perfil",
     "photoUploaded": "Foto recibida ✓",
     "photoRequired": "La foto de perfil es obligatoria para aprobarte.",
@@ -286,7 +298,7 @@
     "companyName": "Nombre de la empresa (opcional)",
     "visitDate": "Fecha de la visita",
     "saveVisit": "Guardar visita",
-    "savedOffline": "Guardada en tu teléfono — se subirá cuando tengas conexión",
+    "savedOffline": "Guardada en tu teléfono, se subirá cuando tengas conexión",
     "synced": "Sincronizada ✓",
     "pendingSync": "pendiente de subir",
     "visitsListTitle": "Tus visitas",
@@ -294,9 +306,16 @@
     "docsTitle": "Tus documentos",
     "docContract": "Contrato de cliente (para firmar con tu cliente)",
     "docSeller": "Tu Acuerdo del Programa de Vendedores",
-    "offlineBadge": "Sin conexión — tus visitas se guardan en el teléfono",
+    "offlineBadge": "Sin conexión, tus visitas se guardan en el teléfono",
     "visitTime": "Hora (opcional)",
-    "signContract": "Firmar contrato con un cliente"
+    "signContract": "Firmar contrato con un cliente",
+    "contractsTitle": "Contratos",
+    "newContract": "Nuevo contrato",
+    "contractsEmpty": "Aún no has firmado contratos. Cuando cierres tu primera venta, aparecerá aquí.",
+    "pickVisit": "Elige a quién enviarle el contrato",
+    "manualEntry": "Otro cliente, escribir los datos",
+    "uploadNow": "Subir ahora",
+    "viewPdf": "Ver PDF"
   },
   "zelle": {
     "chooseTitle": "¿Cómo prefieres pagar?",
@@ -310,12 +329,12 @@
     "amountLabel": "Monto del plan",
     "thenUpload": "Cuando hagas la transferencia, sube aquí tu captura con tu nombre:",
     "payerName": "Tu nombre completo",
-    "refCode": "Código de referido (opcional — nombre de tu vendedor)",
+    "refCode": "Código de referido (opcional, nombre de tu vendedor)",
     "source": "¿Dónde supiste de nosotros? (opcional)",
     "sourceGoogle": "Google",
     "sourceFriend": "Un amigo",
     "sourceSocial": "Redes sociales",
-    "sourceNone": "— Elegir —",
+    "sourceNone": ", Elegir, ",
     "upload": "Captura del pago (imagen)",
     "submit": "Enviar comprobante",
     "success": "¡Comprobante recibido! Verificaremos tu pago y te contactaremos hoy mismo para arrancar tu proyecto. 💜",

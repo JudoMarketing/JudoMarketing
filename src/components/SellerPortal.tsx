@@ -16,6 +16,14 @@ import ContractSigner from "./ContractSigner";
 
 type Profile = { full_name: string; photo_url: string | null };
 type Seller = { status: string; referral_code: string | null };
+type SignedContract = {
+  id: string;
+  code: string;
+  client_name: string;
+  business_name: string | null;
+  pdf_path: string;
+  created_at: string;
+};
 type LocalVisit = {
   client_generated_id: string;
   prospect_name: string;
@@ -58,6 +66,7 @@ export default function SellerPortal() {
   const [visitTime, setVisitTime] = useState("");
   const [justSaved, setJustSaved] = useState(false);
   const [showSigner, setShowSigner] = useState(false);
+  const [contracts, setContracts] = useState<SignedContract[]>([]);
 
   // ── Sesión y datos ────────────────────────────────────────────────
   useEffect(() => {
@@ -70,12 +79,17 @@ export default function SellerPortal() {
       }
       setUserId(session.user.id);
       const uid = session.user.id;
-      const [{ data: prof }, { data: sel }] = await Promise.all([
+      const [{ data: prof }, { data: sel }, contractsRes] = await Promise.all([
         supabase.from("profiles").select("full_name, photo_url").eq("id", uid).single(),
         supabase.from("sellers").select("status, referral_code").eq("id", uid).single(),
+        supabase
+          .from("signed_contracts")
+          .select("id, code, client_name, business_name, pdf_path, created_at")
+          .order("created_at", { ascending: false }),
       ]);
       setProfile(prof as Profile | null);
       setSeller(sel as Seller | null);
+      setContracts((contractsRes.data as SignedContract[]) ?? []);
       setChecking(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -100,31 +114,48 @@ export default function SellerPortal() {
     };
   }, []);
 
+  // Chequeo rápido: intenta subir de una; si no hay señal o falla, queda
+  // pendiente SIN recargar la página, y se reintenta solo cada 25s.
   const syncQueue = useCallback(async () => {
     if (!userId || !navigator.onLine) return;
     const queue = loadQueue();
     const pending = queue.filter((v) => !v.synced);
     if (!pending.length) return;
     for (const visit of pending) {
-      const { error } = await supabase.from("visits").upsert(
-        {
-          client_generated_id: visit.client_generated_id,
-          seller_id: userId,
-          prospect_name: visit.prospect_name,
-          company_name: visit.company_name || null,
-          visited_on: visit.visited_on,
-          visit_time: visit.visit_time || null,
-        },
-        { onConflict: "client_generated_id", ignoreDuplicates: true }
-      );
-      if (!error) visit.synced = true;
+      const record: Record<string, unknown> = {
+        client_generated_id: visit.client_generated_id,
+        seller_id: userId,
+        prospect_name: visit.prospect_name,
+        company_name: visit.company_name || null,
+        visited_on: visit.visited_on,
+      };
+      if (visit.visit_time) record.visit_time = visit.visit_time;
+      let { error } = await supabase.from("visits").upsert(record, {
+        onConflict: "client_generated_id",
+        ignoreDuplicates: true,
+      });
+      // Base de datos sin la columna de hora todavía: reintentar sin ella
+      if (error && error.message.includes("visit_time")) {
+        delete record.visit_time;
+        ({ error } = await supabase.from("visits").upsert(record, {
+          onConflict: "client_generated_id",
+          ignoreDuplicates: true,
+        }));
+      }
+      if (!error) {
+        visit.synced = true;
+        saveQueue(queue);
+        setVisits([...queue]);
+      }
     }
-    saveQueue(queue);
-    setVisits([...queue]);
   }, [supabase, userId]);
 
   useEffect(() => {
     if (online) void syncQueue();
+    const interval = setInterval(() => {
+      if (navigator.onLine) void syncQueue();
+    }, 25000);
+    return () => clearInterval(interval);
   }, [online, userId, syncQueue]);
 
   // ── Acciones ──────────────────────────────────────────────────────
@@ -305,12 +336,20 @@ export default function SellerPortal() {
 
       {/* Lista de visitas */}
       <div className="mt-6 rounded-2xl border border-judo-lilac/20 bg-judo-surface p-6">
-        <h2 className="font-semibold">
-          {t("visitsListTitle")}{" "}
+        <h2 className="flex flex-wrap items-center gap-2 font-semibold">
+          {t("visitsListTitle")}
           {unsyncedCount > 0 && (
-            <span className="ml-2 rounded-full bg-amber-400/15 px-2 py-0.5 text-xs text-amber-200">
-              {unsyncedCount} {t("pendingSync")}
-            </span>
+            <>
+              <span className="rounded-full bg-amber-400/15 px-2 py-0.5 text-xs text-amber-200">
+                {unsyncedCount} {t("pendingSync")}
+              </span>
+              <button
+                onClick={() => void syncQueue()}
+                className="rounded-full border border-judo-lilac/30 px-2.5 py-0.5 text-xs text-judo-lilac hover:bg-judo-purple/15"
+              >
+                ⟳ {t("uploadNow")}
+              </button>
+            </>
           )}
         </h2>
         {visits.length === 0 ? (
@@ -345,14 +384,51 @@ export default function SellerPortal() {
         )}
       </div>
 
+      {/* Contratos */}
+      {!pending && (
+        <div className="mt-6 rounded-2xl border border-judo-lilac/20 bg-judo-surface p-6">
+          <h2 className="font-semibold">📑 {t("contractsTitle")}</h2>
+          <button onClick={() => setShowSigner(true)} className="btn-primary mt-3 w-full">
+            📝 {t("newContract")}
+          </button>
+          {contracts.length === 0 ? (
+            <p className="mt-3 text-sm text-judo-fog/50">{t("contractsEmpty")}</p>
+          ) : (
+            <ul className="mt-3 divide-y divide-judo-lilac/10">
+              {contracts.map((contract) => (
+                <li
+                  key={contract.id}
+                  className="flex items-center justify-between gap-2 py-2.5 text-sm"
+                >
+                  <span className="min-w-0">
+                    <span className="font-medium">{contract.client_name}</span>
+                    {contract.business_name && (
+                      <span className="text-judo-fog/50"> · {contract.business_name}</span>
+                    )}
+                    <span className="ml-2 text-xs text-judo-lilac">{contract.code}</span>
+                  </span>
+                  <button
+                    onClick={async () => {
+                      const { data } = await supabase.storage
+                        .from("contracts")
+                        .createSignedUrl(contract.pdf_path, 3600);
+                      if (data?.signedUrl)
+                        window.open(data.signedUrl, "_blank", "noopener");
+                    }}
+                    className="shrink-0 text-xs text-judo-lilac hover:underline"
+                  >
+                    {t("viewPdf")} →
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
       {/* Documentos */}
       <div className="mt-6 rounded-2xl border border-judo-lilac/20 bg-judo-surface p-6">
         <h2 className="font-semibold">📄 {t("docsTitle")}</h2>
-        {!pending && (
-          <button onClick={() => setShowSigner(true)} className="btn-primary mt-3 w-full">
-            📝 {t("signContract")}
-          </button>
-        )}
         <ul className="mt-3 space-y-2 text-sm">
           <li>
             <a
@@ -379,7 +455,13 @@ export default function SellerPortal() {
         <ContractSigner
           sellerId={userId}
           sellerName={profile.full_name}
+          visits={visits.map((v) => ({
+            id: v.client_generated_id,
+            name: v.prospect_name,
+            company: v.company_name,
+          }))}
           onClose={() => setShowSigner(false)}
+          onSigned={(contract) => setContracts((prev) => [contract, ...prev])}
         />
       )}
     </div>

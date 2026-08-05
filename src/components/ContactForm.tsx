@@ -16,8 +16,8 @@ export default function ContactForm() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`Nuevo proyecto — ${name}`);
-    const body = encodeURIComponent(`${message}\n\n— ${name}\n${contact}`);
+    const subject = encodeURIComponent(`Nuevo proyecto de ${name}`);
+    const body = encodeURIComponent(`${message}\n\nDe: ${name}\n${contact}`);
     window.location.href = `mailto:admin@judomarketing.net?subject=${subject}&body=${body}`;
   };
 
