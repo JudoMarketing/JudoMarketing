@@ -100,9 +100,9 @@ export default function HomePage({
           className="hero-in mt-10 flex flex-col gap-4 sm:flex-row"
           style={{ animationDelay: "0.45s" }}
         >
-          <a href="mailto:admin@judomarketing.net" className="btn-primary">
+          <Link href="/contact" className="btn-primary">
             {t("hero.ctaPrimary")} →
-          </a>
+          </Link>
           <Link href="/services" className="btn-secondary">
             {t("hero.ctaSecondary")}
           </Link>

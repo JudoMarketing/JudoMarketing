@@ -22,7 +22,9 @@ export default function LegalPage({
 
   return (
     <div className="judo-glow">
-      <section className="mx-auto max-w-3xl px-6 pt-16 pb-24">
+      {/* Panel sólido: las líneas animadas molestan al leer texto largo */}
+      <section className="mx-auto max-w-3xl px-4 pt-10 pb-24 sm:px-6 sm:pt-16">
+        <div className="rounded-2xl border border-judo-lilac/15 bg-[#0e0e16] p-6 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)] sm:p-10">
         <h1 className="text-3xl font-bold sm:text-5xl">{t("title")}</h1>
         <p className="mt-2 text-judo-fog/60">{t("subtitle")}</p>
         <p className="mt-1 text-sm text-judo-lilac">{content.effective}</p>
@@ -70,6 +72,7 @@ export default function LegalPage({
               ))}
             </section>
           ))}
+        </div>
         </div>
       </section>
     </div>

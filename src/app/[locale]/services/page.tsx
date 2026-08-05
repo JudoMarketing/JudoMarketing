@@ -1,10 +1,18 @@
 import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { use } from "react";
+import { Link } from "@/i18n/navigation";
 import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
+import CheckoutButton from "@/components/CheckoutButton";
 
 type DiffItem = { title: string; description: string };
+
+const STRIPE_PRICES: Record<string, string | undefined> = {
+  essential: process.env.STRIPE_PRICE_ESSENTIAL,
+  complex: process.env.STRIPE_PRICE_COMPLEX,
+  apps: process.env.STRIPE_PRICE_APPS,
+};
 
 export default function ServicesPage({
   params,
@@ -14,6 +22,7 @@ export default function ServicesPage({
   const { locale } = use(params);
   setRequestLocale(locale);
   const t = useTranslations("services");
+  const tBuy = useTranslations("buy");
 
   const plans = ["essential", "complex", "apps"] as const;
   const diffs = t.raw("diff.items") as DiffItem[];
@@ -57,12 +66,17 @@ export default function ServicesPage({
                       </li>
                     ))}
                   </ul>
-                  <a
-                    href="mailto:admin@judomarketing.net"
-                    className="btn-primary mt-8 w-full"
-                  >
-                    {t("cta")} →
-                  </a>
+                  {process.env.STRIPE_SECRET_KEY && STRIPE_PRICES[plan] ? (
+                    <CheckoutButton
+                      plan={plan}
+                      label={tBuy("subscribe")}
+                      secureNote={tBuy("secure")}
+                    />
+                  ) : (
+                    <Link href="/contact" className="btn-primary mt-8 w-full">
+                      {t("cta")} →
+                    </Link>
+                  )}
                 </TiltCard>
               </Reveal>
             );

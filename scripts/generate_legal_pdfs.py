@@ -149,14 +149,20 @@ def build_contract():
     story += [Spacer(1, 10),
               HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#CCCCCC")),
               Spacer(1, 6)]
+    # Tres firmantes: el vendedor asignado también firma (recoge la firma del
+    # cliente desde su portal; Administración contrafirma desde su email)
     sig = Table([
         [Paragraph("<b>EL CLIENTE</b>", BODY),
+         Paragraph("<b>EL VENDEDOR</b>", BODY),
          Paragraph("<b>JUDO MARKETING — ADMINISTRACIÓN</b>", BODY)],
-        [Paragraph("Firma: " + "_" * 34, BODY), Paragraph("Firma: " + "_" * 34, BODY)],
-        [Paragraph("Nombre: " + "_" * 32, BODY), Paragraph("Nombre: " + "_" * 32, BODY)],
-        [Paragraph("Fecha: ____ / ____ / ______", BODY),
-         Paragraph("Fecha: ____ / ____ / ______", BODY)],
-    ], colWidths=[3.4 * inch, 3.4 * inch])
+        [Paragraph("Firma: " + "_" * 20, BODY), Paragraph("Firma: " + "_" * 20, BODY),
+         Paragraph("Firma: " + "_" * 20, BODY)],
+        [Paragraph("Nombre: " + "_" * 18, BODY), Paragraph("Nombre: " + "_" * 18, BODY),
+         Paragraph("Nombre: " + "_" * 18, BODY)],
+        [Paragraph("Fecha: ___ / ___ / _____", BODY),
+         Paragraph("Fecha: ___ / ___ / _____", BODY),
+         Paragraph("Fecha: ___ / ___ / _____", BODY)],
+    ], colWidths=[2.26 * inch, 2.26 * inch, 2.26 * inch])
     sig.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ("TOPPADDING", (0, 0), (-1, -1), 6),

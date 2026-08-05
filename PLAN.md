@@ -144,6 +144,17 @@ solución, pero hay que decidirlas conscientemente:
 - [ ] Checkbox de aceptación de términos en TODO registro (con fecha/versión aceptada)
   → se implementa con el registro en Fase 3 (tabla `terms_acceptances` ya existe).
 
+> **Aclaración del dueño (08/05/2026) sobre los portales:**
+> - El **portal de administrador de cada cliente vive en SU propio website** (lo crea el
+>   dueño desde el sitio del cliente), NO en judomarketing.net.
+> - El **Portal de Clientes de judomarketing.net** es para las estadísticas de su cuenta
+>   de publicidad: reportes de gastos de ads, progreso en redes sociales y Google,
+>   cuando Judo maneja su publicidad paga. Al iniciar un cliente, desde su propio portal
+>   se conecta Meta y esa información se manda al panel de judomarketing. (Los stats de
+>   presupuesto de negocio se definirán más adelante.)
+> - El servidor tiene conexión al MCP de Facebook/Meta Ads disponible para esta
+>   integración en la fase correspondiente.
+
 ### Fase 3 — Auth y Portal de Vendedores
 - Registro: email + clave + código de referido opcional. Turnstile anti-bot.
 - Estado "pendiente de aprobación" → el admin aprueba y en ese momento fija su comisión
@@ -154,11 +165,11 @@ solución, pero hay que decidirlas conscientemente:
 - Dashboard: gráfica de ganancias mensuales, ejes ventas vs ganancia, proyecciones.
   Nunca se le muestra la fórmula de otros; si no ha vendido, muestra $0.
 - **Flujo de firma del contrato de cliente** (documento ya creado en
-  `docs/legal/contracts/`): el vendedor genera el contrato desde su teléfono con los
-  datos del cliente pre-llenados, el cliente firma en pantalla (touch), Administración
-  recibe email para contrafirmar desde su bandeja, y el PDF firmado por ambos se archiva
-  automáticamente en el portal de admin. También descargable en blanco para firma en
-  papel.
+  `docs/legal/contracts/`, con TRES firmantes): el vendedor genera el contrato desde su
+  teléfono con los datos pre-llenados, **firma él mismo y recoge la firma del cliente en
+  pantalla (touch) desde su app**, Administración recibe email para contrafirmar desde
+  su bandeja, y el PDF firmado por los tres se archiva automáticamente en el portal de
+  admin. También descargable en blanco para firma en papel.
 - Referidos entre vendedores (un solo nivel).
 
 ### Fase 4 — Portal de Admin (`/admin`)

@@ -220,7 +220,16 @@
     "emailDesc": "admin@judomarketing.net",
     "addressTitle": "Visítanos",
     "maps": "Ver perfil en Google",
-    "chatSoon": "Muy pronto también podrás chatear aquí con nuestro robotsito 🤖"
+    "chatSoon": "Muy pronto también podrás chatear aquí con nuestro robotsito 🤖",
+    "booking": {
+      "title": "¿Prefieres una videollamada?",
+      "subtitle": "Agenda tu cita por Zoom: elige el día y la hora que te convenga.",
+      "date": "Fecha",
+      "time": "Hora (hora de Miami)",
+      "note": "Disponible todos los días de 7:00 AM a 11:30 PM.",
+      "button": "Agendar cita por Zoom",
+      "hint": "Se abrirá Google Calendar con la invitación lista. Al guardarla, la cita llega a nuestro calendario y te confirmamos el enlace de Zoom por email."
+    }
   },
   "legal": {
     "title": "Política de Servicio y Términos",
@@ -234,5 +243,9 @@
   "footerLegal": {
     "legal": "Política de Servicio y Términos",
     "contact": "Contacto"
+  },
+  "buy": {
+    "subscribe": "Suscribirme",
+    "secure": "Pago seguro con Stripe"
   }
 }

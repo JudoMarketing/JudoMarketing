@@ -83,11 +83,14 @@ electrónicas tienen la misma validez que las manuscritas.
 
 ## Firmas
 
-| EL CLIENTE | JUDO MARKETING — ADMINISTRACIÓN |
-|---|---|
-| Firma: ________________________ | Firma: ________________________ |
-| Nombre: ______________________ | Nombre: ______________________ |
-| Fecha: ____ / ____ / ______ | Fecha: ____ / ____ / ______ |
+El contrato lo firman las tres partes: el cliente, el vendedor asignado (quien recoge la
+firma del cliente desde su portal) y Administración (quien contrafirma desde su email).
+
+| EL CLIENTE | EL VENDEDOR | JUDO MARKETING — ADMINISTRACIÓN |
+|---|---|---|
+| Firma: ________________ | Firma: ________________ | Firma: ________________ |
+| Nombre: ______________ | Nombre: ______________ | Nombre: ______________ |
+| Fecha: ___ / ___ / _____ | Fecha: ___ / ___ / _____ | Fecha: ___ / ___ / _____ |
 
 ---
 

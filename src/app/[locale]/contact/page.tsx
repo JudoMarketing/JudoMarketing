@@ -4,6 +4,7 @@ import { use } from "react";
 import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
+import BookingWidget from "@/components/BookingWidget";
 
 export default function ContactPage({
   params,
@@ -55,7 +56,14 @@ export default function ContactPage({
           </p>
         </div>
 
-        <div className="mt-12 grid gap-8 lg:grid-cols-5">
+        {/* Cita por Zoom */}
+        <Reveal className="mt-12">
+          <TiltCard className="p-7 sm:p-9">
+            <BookingWidget />
+          </TiltCard>
+        </Reveal>
+
+        <div className="mt-8 grid gap-8 lg:grid-cols-5">
           {/* Formulario */}
           <Reveal className="lg:col-span-3">
             <TiltCard className="p-7 sm:p-9">

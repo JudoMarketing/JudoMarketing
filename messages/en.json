@@ -220,7 +220,16 @@
     "emailDesc": "admin@judomarketing.net",
     "addressTitle": "Visit us",
     "maps": "View Google profile",
-    "chatSoon": "Very soon you'll also be able to chat here with our little robot 🤖"
+    "chatSoon": "Very soon you'll also be able to chat here with our little robot 🤖",
+    "booking": {
+      "title": "Prefer a video call?",
+      "subtitle": "Book your Zoom appointment: pick the day and time that works for you.",
+      "date": "Date",
+      "time": "Time (Miami time)",
+      "note": "Available every day from 7:00 AM to 11:30 PM.",
+      "button": "Book Zoom appointment",
+      "hint": "Google Calendar will open with the invitation ready. When you save it, the appointment reaches our calendar and we'll confirm the Zoom link by email."
+    }
   },
   "legal": {
     "title": "Service Policy & Terms",
@@ -234,5 +243,9 @@
   "footerLegal": {
     "legal": "Service Policy & Terms",
     "contact": "Contact"
+  },
+  "buy": {
+    "subscribe": "Subscribe",
+    "secure": "Secure checkout with Stripe"
   }
 }

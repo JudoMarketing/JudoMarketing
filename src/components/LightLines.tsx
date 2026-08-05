@@ -68,7 +68,8 @@ function makeLine(w: number, h: number): LightLine {
     p2: mid(),
     head: 0,
     trail: 0.28 + Math.random() * 0.25,
-    speed: 0.0016 + Math.random() * 0.0022,
+    // Velocidad reducida 30% (pedido del dueño: movimiento más calmado)
+    speed: (0.0016 + Math.random() * 0.0022) * 0.7,
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
     width: 1.4 + Math.random() * 1.8,
   };
