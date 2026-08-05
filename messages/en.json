@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "title": "Judo Marketing — Websites, Apps & AI-Powered Marketing",
+    "description": "We build all kinds of scalable websites fully controlled by the owner. Modern, secure solutions designed to grow your business."
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "login": "Log in"
+  },
+  "hero": {
+    "kicker": "Affordable & professional marketing services with AI",
+    "title": "Build Trust,",
+    "titleAccent": "Create Value",
+    "subtitle": "We build all kinds of scalable websites fully controlled by the owner. Modern, secure solutions designed to grow your business.",
+    "ctaPrimary": "Let's talk about your project",
+    "ctaSecondary": "View services"
+  },
+  "plans": {
+    "title": "Our services",
+    "essential": {
+      "name": "Essential Websites",
+      "price": "from $50/mo",
+      "description": "Professional, functional online presence: stores, bookings, services."
+    },
+    "complex": {
+      "name": "Complex Websites",
+      "price": "from $100/mo",
+      "description": "Bigger operations: delivery, logistics, virtual classes, integrations."
+    },
+    "apps": {
+      "name": "Mobile Apps",
+      "price": "from $150/mo",
+      "description": "Native iOS & Android mobile apps with push notifications."
+    }
+  },
+  "footer": {
+    "tagline": "Your business deserves a platform that matches its ambition.",
+    "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
+    "rights": "All rights reserved."
+  }
+}

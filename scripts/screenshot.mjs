@@ -1,0 +1,12 @@
+import { chromium } from 'playwright-core';
+const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.goto('http://localhost:3100/es', { waitUntil: 'networkidle' });
+await page.screenshot({ path: process.env.SCRATCH + '/home-es.png', fullPage: true });
+await page.goto('http://localhost:3100/en', { waitUntil: 'networkidle' });
+await page.screenshot({ path: process.env.SCRATCH + '/home-en.png' });
+await page.setViewportSize({ width: 390, height: 844 });
+await page.goto('http://localhost:3100/es', { waitUntil: 'networkidle' });
+await page.screenshot({ path: process.env.SCRATCH + '/home-es-mobile.png', fullPage: true });
+await browser.close();
+console.log('screenshots ok');

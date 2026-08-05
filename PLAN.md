@@ -229,6 +229,13 @@ solución, pero hay que decidirlas conscientemente:
   `docs/legal/archive/` (referencia, no se publican)
 - [x] Contrato de Cliente creado (ES, 2 páginas): `docs/legal/contracts/` — para el
   portal de vendedores, con firma de cliente y contrafirma de Administración
-- [x] Assets de marca subidos y organizados en `assets/brand/` (logo blanco
-  transparente, logo negro, OG thumbnail, brand sheet, flyer de servicios)
-- [ ] Fase 0 iniciada
+- [x] Assets de marca subidos y organizados en `assets/brand/` (logos alta resolución en
+  blanco y negro transparentes, OG thumbnail, brand sheet, flyer de servicios)
+- [x] **Fase 0 COMPLETA (08/05/2026):** Next.js 15 + Tailwind 4 + next-intl (ES/EN),
+  sistema de diseño con paleta y Poppins, home provisional con hero/planes/footer,
+  esquema inicial de Supabase (`supabase/migrations/0001_init.sql`), build verificado
+  en desktop y móvil
+- [ ] **PENDIENTE DEL DUEÑO:** conectar el repo a Vercel (importar proyecto, preset
+  Next.js) y aplicar la migración SQL en el editor de Supabase — ver README.md
+- [ ] Fase 1 (sitio público completo: mascota, luces, onboarding, reseñas, servicios,
+  about, contacto) — siguiente

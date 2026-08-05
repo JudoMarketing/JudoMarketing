@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "title": "Judo Marketing — Websites, Apps y Marketing con IA",
+    "description": "Hacemos todo tipo de websites escalables y controlados por el mismo usuario. Soluciones modernas, seguras y diseñadas para hacer crecer tu negocio."
+  },
+  "nav": {
+    "home": "Inicio",
+    "services": "Servicios",
+    "login": "Iniciar sesión"
+  },
+  "hero": {
+    "kicker": "Marketing profesional y accesible con IA",
+    "title": "Build Trust,",
+    "titleAccent": "Create Value",
+    "subtitle": "Hacemos todo tipo de websites escalables y controlados por el mismo usuario. Soluciones modernas, seguras y diseñadas para hacer crecer tu negocio.",
+    "ctaPrimary": "Hablemos de tu proyecto",
+    "ctaSecondary": "Ver servicios"
+  },
+  "plans": {
+    "title": "Nuestros servicios",
+    "essential": {
+      "name": "Websites Esenciales",
+      "price": "desde $50/mes",
+      "description": "Presencia online profesional y funcional: tiendas, citas, servicios."
+    },
+    "complex": {
+      "name": "Websites Complejos",
+      "price": "desde $100/mes",
+      "description": "Operaciones grandes: delivery, logística, clases virtuales, integraciones."
+    },
+    "apps": {
+      "name": "Apps para Teléfonos",
+      "price": "desde $150/mes",
+      "description": "Aplicaciones móviles nativas para iOS y Android con notificaciones push."
+    }
+  },
+  "footer": {
+    "tagline": "Tu negocio merece una plataforma a tu altura.",
+    "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
+    "rights": "Todos los derechos reservados."
+  }
+}

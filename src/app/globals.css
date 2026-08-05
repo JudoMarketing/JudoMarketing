@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  /* Paleta oficial Judo Marketing (docs/BRAND.md) */
+  --color-judo-purple: #7b2dff;
+  --color-judo-lilac: #a855f7;
+  --color-judo-black: #0b0b12;
+  --color-judo-surface: #11111a;
+  --color-judo-fog: #f5f5f7;
+
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-judo-black);
+  color: var(--color-judo-fog);
+  font-family: var(--font-sans);
+}
+
+/* Glow morado de fondo, base para las luces animadas de Fase 1 */
+.judo-glow {
+  background:
+    radial-gradient(ellipse 60% 40% at 70% 10%, rgba(123, 45, 255, 0.22), transparent 70%),
+    radial-gradient(ellipse 50% 35% at 20% 80%, rgba(168, 85, 247, 0.14), transparent 70%),
+    var(--color-judo-black);
+}
+
+.judo-card {
+  background-color: var(--color-judo-surface);
+  border: 1px solid rgba(168, 85, 247, 0.18);
+  border-radius: 1rem;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.judo-card:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+  transform: translateY(-2px);
+}
