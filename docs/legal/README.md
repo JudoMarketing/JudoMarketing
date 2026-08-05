@@ -35,22 +35,28 @@ markdown y regenerar).
 - **Uso aceptable** (§10): prohíbe testimonios falsos y reseñas fabricadas — aplica
   también a nosotros: las reseñas del home deben ser de clientes reales con permiso.
 
-## 📄 Documentos que FALTAN (a crear en Fase 2)
+## Publicación web (Fase 2 — hecho)
 
-1. **Seller / Vendedor Program Agreement** — registro y aprobación manual del vendedor,
-   foto de perfil obligatoria, estatus de contratista independiente (no empleado),
-   compensación "por comisión según acuerdo individual" (sin cifras ni promesas de
-   ingreso), pago solo mientras el cliente referido mantenga contrato activo, método de
-   pago internacional acordado por escrito, programa de referidos de un nivel,
-   responsabilidad sobre los datos de visitas que registran, terminación, impuestos por
-   cuenta del vendedor.
-2. **Términos de los Portales** — cuentas de usuario, seguridad de claves, uso aceptable
-   de los portales de admin/vendedor/cliente.
-3. **Política de Cookies / Consentimiento** — el sitio usará analytics y chatbot; falta
-   banner y política de cookies.
-4. **Términos del Chatbot** — aviso de que es un asistente automatizado, no consejo
-   profesional, y que las conversaciones pueden guardarse para mejorar el servicio.
-5. **Traducciones ES/EN** de la póliza y el contrato para la web bilingüe.
+- ✅ **Página /legal del sitio** — bilingüe: EN exacto al PDF oficial + traducción ES
+  informativa (`src/content/service-policy.ts`), con nota de que la versión en inglés es
+  la vigente y los 3 PDF descargables (copias en `public/legal/`). Enlazada en el footer.
+- ✅ **Acuerdo del Programa de Vendedores** — creado:
+  `contracts/acuerdo-programa-vendedores.md` → `Acuerdo_Programa_Vendedores.pdf`
+  (2 págs). Contratista independiente, aprobación manual + foto obligatoria, comisión
+  "según acuerdo individual" (sin cifras ni promesas de ingreso — regla del dueño),
+  comisiones solo mientras el cliente esté activo y al día, referidos de un nivel,
+  responsabilidad de datos, terminación libre, impuestos por cuenta del vendedor.
+
+> Si se edita `service-policy.md`: regenerar PDF (`python scripts/generate_legal_pdfs.py`),
+> copiar a `public/legal/` y actualizar `src/content/service-policy.ts` (EN y ES).
+
+## 📄 Documentos que FALTAN (fases posteriores)
+
+1. **Términos de los Portales** — cuentas de usuario, seguridad de claves, uso aceptable
+   de los portales de admin/vendedor/cliente. *(Crear en Fase 3 junto con el registro.)*
+2. **Política de Cookies / Consentimiento** — cuando se agregue analytics (Fase SEO).
+3. **Términos del Chatbot** — cuando se active el chat con IA (Fase chatbot).
+4. **Versión EN** del contrato de cliente y del acuerdo de vendedores (hoy solo ES).
 
 ## Archivo histórico
 

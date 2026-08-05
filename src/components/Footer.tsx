@@ -1,7 +1,9 @@
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export default function Footer() {
   const t = useTranslations("footer");
+  const tLegal = useTranslations("footerLegal");
   const year = new Date().getFullYear();
 
   return (
@@ -29,6 +31,14 @@ export default function Footer() {
           >
             @judo.marketing
           </a>
+        </p>
+        <p className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+          <Link href="/legal" className="hover:text-judo-lilac">
+            {tLegal("legal")}
+          </Link>
+          <Link href="/contact" className="hover:text-judo-lilac">
+            {tLegal("contact")}
+          </Link>
         </p>
         <p>
           © {year} Judo Marketing. {t("rights")}

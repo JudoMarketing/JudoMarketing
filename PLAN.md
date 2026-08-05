@@ -137,12 +137,12 @@ solución, pero hay que decidirlas conscientemente:
   dirección + perfil de Google, links a Instagram @judo.marketing.
 - SEO base: metadata, sitemap, hreflang, schema.org LocalBusiness.
 
-### Fase 2 — Legal y confianza
-- Páginas de Términos, Privacidad, Política de Reembolso (unificada con la Garantía de 30
-  días), Acuerdo de Vendedores, Contrato de Cliente descargable (PDF) desde los portales.
-- Checkbox de aceptación de términos en TODO registro (con registro de fecha/versión
-  aceptada — importante como evidencia).
-- Incorporar y corregir las pólizas del Drive (pendiente de acceso).
+### Fase 2 — Legal y confianza ✅ COMPLETA (08/05/2026)
+- [x] Póliza única publicada en /legal (bilingüe, PDF descargables, link en footer).
+- [x] Acuerdo del Programa de Vendedores creado (md + PDF, sin cifras de comisión).
+- [x] Contrato de Cliente y póliza descargables desde el sitio.
+- [ ] Checkbox de aceptación de términos en TODO registro (con fecha/versión aceptada)
+  → se implementa con el registro en Fase 3 (tabla `terms_acceptances` ya existe).
 
 ### Fase 3 — Auth y Portal de Vendedores
 - Registro: email + clave + código de referido opcional. Turnstile anti-bot.

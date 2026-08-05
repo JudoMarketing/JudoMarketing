@@ -208,7 +208,73 @@ def build_policy():
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
 
 
+def build_seller_agreement():
+    """Convierte docs/legal/contracts/acuerdo-programa-vendedores.md al PDF oficial."""
+    lines = open("docs/legal/contracts/acuerdo-programa-vendedores.md",
+                 encoding="utf-8").read().splitlines()
+    story, para = [], []
+    style = [BODY]  # estilo del párrafo en curso (holder mutable)
+
+    def flush():
+        nonlocal para
+        if para:
+            story.append(Paragraph(md_bold(" ".join(para)), style[0]))
+            para = []
+        style[0] = BODY
+
+    for line in lines:
+        s = line.strip()
+        if s.startswith(">"):
+            continue  # notas internas del md, no van al PDF
+        if s == "---":
+            break  # de aquí en adelante solo queda el pie de página del md
+        if s.startswith("|"):
+            continue  # la tabla de firmas se dibuja aparte
+        if s.startswith("# "):
+            flush()
+            story.append(Paragraph("ACUERDO DEL PROGRAMA DE VENDEDORES", H1))
+            story.append(Paragraph("JUDO MARKETING · Representante independiente de "
+                                   "ventas", SUB))
+        elif s.startswith("*") and s.endswith("*") and not s.startswith("**"):
+            continue  # línea de subtítulo en cursiva del md
+        elif s.startswith("## Firmas"):
+            flush()
+        elif s.startswith("## "):
+            flush()
+            story.append(Paragraph(s[3:], H2))
+        elif s.startswith("- "):
+            flush()
+            style[0] = BULLET
+            para = [chr(8226) + " " + s[2:]]
+        elif s == "":
+            flush()
+        else:
+            para.append(s)  # continuación del párrafo o viñeta en curso
+    flush()
+
+    story += [Spacer(1, 10),
+              HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#CCCCCC")),
+              Spacer(1, 6)]
+    sig = Table([
+        [Paragraph("<b>EL VENDEDOR</b>", BODY),
+         Paragraph("<b>JUDO MARKETING — ADMINISTRACIÓN</b>", BODY)],
+        [Paragraph("Firma: " + "_" * 34, BODY), Paragraph("Firma: " + "_" * 34, BODY)],
+        [Paragraph("Nombre: " + "_" * 32, BODY), Paragraph("Nombre: " + "_" * 32, BODY)],
+        [Paragraph("Fecha: ____ / ____ / ______", BODY),
+         Paragraph("Fecha: ____ / ____ / ______", BODY)],
+    ], colWidths=[3.4 * inch, 3.4 * inch])
+    sig.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("TOPPADDING", (0, 0), (-1, -1), 6),
+    ]))
+    story.append(sig)
+
+    doc = doc_template("docs/legal/contracts/Acuerdo_Programa_Vendedores.pdf")
+    doc.build(story, onFirstPage=footer, onLaterPages=footer)
+
+
 if __name__ == "__main__":
     build_contract()
     build_policy()
+    build_seller_agreement()
     print("PDFs generados.")

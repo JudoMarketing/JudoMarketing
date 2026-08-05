@@ -221,5 +221,18 @@
     "addressTitle": "Visit us",
     "maps": "View Google profile",
     "chatSoon": "Very soon you'll also be able to chat here with our little robot 🤖"
+  },
+  "legal": {
+    "title": "Service Policy & Terms",
+    "subtitle": "One clear policy: how we protect you and how we work.",
+    "officialNote": "The English version of this policy is the official, legally binding version.",
+    "downloads": "Downloadable documents",
+    "policyPdf": "Service Policy & Terms (PDF)",
+    "clientPdf": "Client Service Agreement (PDF)",
+    "sellerPdf": "Seller Program Agreement (PDF)"
+  },
+  "footerLegal": {
+    "legal": "Service Policy & Terms",
+    "contact": "Contact"
   }
 }

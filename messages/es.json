@@ -221,5 +221,18 @@
     "addressTitle": "Visítanos",
     "maps": "Ver perfil en Google",
     "chatSoon": "Muy pronto también podrás chatear aquí con nuestro robotsito 🤖"
+  },
+  "legal": {
+    "title": "Política de Servicio y Términos",
+    "subtitle": "Una sola política clara: cómo te protegemos y cómo trabajamos.",
+    "officialNote": "La versión oficial y legalmente vigente de esta política es la versión en inglés. Esta traducción al español es informativa.",
+    "downloads": "Documentos descargables",
+    "policyPdf": "Política de Servicio y Términos (PDF)",
+    "clientPdf": "Acuerdo de Servicio — Cliente (PDF)",
+    "sellerPdf": "Acuerdo del Programa de Vendedores (PDF)"
+  },
+  "footerLegal": {
+    "legal": "Política de Servicio y Términos",
+    "contact": "Contacto"
   }
 }
