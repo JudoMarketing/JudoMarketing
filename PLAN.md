@@ -223,7 +223,21 @@ vendedores, exportar emails de vendedores, calendario de cobros consolidado.
   emails para campañas.
 - Pagos: calendario de cobros ("a quién colectar y cuándo"), historial.
 
-### Fase 5 — Red multi-sitio (Judo Site Kit)
+### Fase 5 — Red multi-sitio (Judo Site Kit) 🔨 EN CURSO (núcleo entregado 08/05/2026)
+
+**Hecho:** migración 0007 con las funciones del Kit (site_status para el kill switch y
+report_site_metrics para la telemetría, ambas keyed por la kit_api_key secreta de cada
+sitio). Carpeta `kit/` con los archivos que se copian a cada website de cliente:
+middleware con caché de 60s y fail-open, helper de telemetría, y la página
+"Temporalmente deshabilitado" con la mascota triste sentada sobre el enlace a
+www.judomarketing.net (sin publicidad, sin indexar). Botón "🔑 Kit" en el portal de
+admin para copiar la clave de cada sitio. Demo interna en /es/demo-suspension.
+
+**Pendiente de esta fase:** plantilla completa de sitio nuevo (repo starter), vista de
+métricas de sitios en el portal de admin, chequeos SEO automáticos, integración con la
+API de Vercel para uptime y dominios.
+
+#### (Especificación original)
 - Paquete compartido con middleware de suspensión (pantalla "Temporalmente deshabilitado" +
   mascota triste sobre el link a judomarketing.net, sin publicidad) y telemetría.
 - API central de estado + integración con Vercel API (deploys, dominios, uptime).

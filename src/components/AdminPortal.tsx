@@ -43,6 +43,7 @@ type SiteRow = {
   months_paid: number;
   next_payment_due: string | null;
   seller_id: string | null;
+  kit_api_key: string;
   clients: { full_name: string; business_name: string | null } | null;
 };
 
@@ -84,7 +85,7 @@ export default function AdminPortal() {
       supabase
         .from("sites")
         .select(
-          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,clients(full_name,business_name)"
+          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,kit_api_key,clients(full_name,business_name)"
         )
         .order("created_at", { ascending: false }),
     ]);
@@ -414,6 +415,16 @@ export default function AdminPortal() {
                   </b>
                 </p>
               </div>
+              <button
+                onClick={async () => {
+                  await navigator.clipboard.writeText(site.kit_api_key);
+                  flash("Clave del kit copiada ✓ (para conectar el website del cliente)");
+                }}
+                className="rounded-full border border-judo-lilac/30 px-3 py-1.5 text-sm text-judo-lilac hover:bg-judo-purple/15"
+                title="Copiar la clave del Judo Site Kit"
+              >
+                🔑 Kit
+              </button>
               <button onClick={() => registerPayment(site)} className="btn-secondary px-4 py-1.5 text-sm">
                 💵 Registrar pago
               </button>
