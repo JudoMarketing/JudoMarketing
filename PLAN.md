@@ -315,7 +315,37 @@ API de Vercel para uptime y dominios.
   sistema de diseño con paleta y Poppins, home provisional con hero/planes/footer,
   esquema inicial de Supabase (`supabase/migrations/0001_init.sql`), build verificado
   en desktop y móvil
-- [ ] **PENDIENTE DEL DUEÑO:** conectar el repo a Vercel (importar proyecto, preset
-  Next.js) y aplicar la migración SQL en el editor de Supabase — ver README.md
-- [ ] Fase 1 (sitio público completo: mascota, luces, onboarding, reseñas, servicios,
-  about, contacto) — siguiente
+- [x] Vercel conectado, dominio www.judomarketing.net activo, migraciones 0001 a 0007
+  aplicadas y verificadas; SMTP de Vercel funcionando (emails de marca)
+- [x] Fases 1 a 4 núcleo COMPLETAS; Fase 5 (kit de sitios, kill switch, telemetría)
+  núcleo completa; DNS de correo arreglado (MX, SPF y DKIM verificados 08/05/2026)
+- [x] **Idioma (08/05/2026): INGLÉS es el idioma por defecto.** La raíz
+  www.judomarketing.net sirve inglés, el español vive bajo /es (/es/servicios,
+  /es/contacto, etc.). Sitemap, robots, emails y checkout ya reflejan esto.
+
+## 7. Próximos pasos (lista de entrega, 08/05/2026)
+
+**Pendiente del dueño (se puede hacer sin Claude):**
+1. Aplicar la migración `supabase/migrations/0008_crypto.sql` en el editor SQL de
+   Supabase (habilita pagos USDT en las verificaciones; AÚN NO APLICADA).
+2. Stripe: crear cuenta/activarla, crear 3 productos de suscripción y poner en Vercel
+   `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ESSENTIAL`, `STRIPE_PRICE_COMPLEX`,
+   `STRIPE_PRICE_APPS` (ver .env.example).
+3. PayPal: poner `NEXT_PUBLIC_PAYPAL_ME` (usuario de paypal.me) en Vercel.
+4. Supabase → Auth → SMTP: corregir la configuración (usuario = cuenta real de
+   Workspace, no el alias info@; clave de aplicación sin espacios; smtp.gmail.com:465;
+   remitente info@judomarketing.net) y probar "olvidé mi clave".
+5. Google Search Console: agregar la propiedad judomarketing.net y enviar
+   https://www.judomarketing.net/sitemap.xml.
+6. Borrar los usuarios de prueba (+vendedorprueba, +vendedor2) en Supabase → Auth.
+7. Cloudflare: crear cuenta (registrar elegido para dominios de clientes) y Turnstile
+   (anti-bots del registro).
+
+**Siguientes bloques de construcción (con Claude):**
+- Chatbot mascota (solo en judomarketing.net, solo temas de Judo, vendedor sutil);
+  requiere API key de Anthropic y presupuesto mensual del dueño.
+- Dashboard de inversión publicitaria del cliente (alcance, presupuesto, gasto,
+  seguidores) al conectar Meta.
+- Motor de comisiones (regla: mes con sitio deshabilitado no genera comisión).
+- Gráficas de proyección del vendedor, 2FA del admin, versiones EN de contratos,
+  plantilla starter de sitio de cliente + uptime por API de Vercel.
