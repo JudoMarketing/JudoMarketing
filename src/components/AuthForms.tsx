@@ -4,8 +4,13 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { getSupabase } from "@/lib/supabase";
+import Turnstile, { resetTurnstile, turnstileEnabled } from "./Turnstile";
 
 const TERMS_VERSION = "2026-08-05";
+
+// El inglés vive sin prefijo; solo el español lleva /es
+export const localePath = (locale: string, path: string) =>
+  locale === "es" ? `/es${path}` : path;
 
 export const inputClass =
   "w-full rounded-xl border border-judo-lilac/25 bg-judo-black/60 px-4 py-3 text-sm text-judo-fog placeholder:text-judo-fog/35 outline-none transition focus:border-judo-lilac focus:ring-1 focus:ring-judo-lilac";
@@ -15,6 +20,7 @@ export function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [captcha, setCaptcha] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -25,9 +31,12 @@ export function LoginForm() {
     const { error: err } = await getSupabase().auth.signInWithPassword({
       email,
       password,
+      options: captcha ? { captchaToken: captcha } : undefined,
     });
     setLoading(false);
     if (err) {
+      resetTurnstile();
+      setCaptcha("");
       setError(err.message === "Invalid login credentials" ? t("error") : err.message);
       return;
     }
@@ -54,8 +63,13 @@ export function LoginForm() {
         placeholder={t("password")}
         className={inputClass}
       />
+      <Turnstile onToken={setCaptcha} />
       {error && <p className="text-sm text-red-400">{error}</p>}
-      <button type="submit" disabled={loading} className="btn-3d py-3 disabled:opacity-60">
+      <button
+        type="submit"
+        disabled={loading || (turnstileEnabled() && !captcha)}
+        className="btn-3d py-3 disabled:opacity-60"
+      >
         {loading ? "…" : t("submitLogin")}
       </button>
       <p className="text-center text-sm">
@@ -81,6 +95,7 @@ export function RegisterForm() {
   const [password, setPassword] = useState("");
   const [refCode, setRefCode] = useState("");
   const [accepted, setAccepted] = useState(false);
+  const [captcha, setCaptcha] = useState("");
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -90,11 +105,14 @@ export function RegisterForm() {
     if (!accepted) return;
     setError("");
     setLoading(true);
+    // Un solo correo: el de confirmación de Supabase, con el diseño de marca
+    // y el aviso de esperar aprobación (plantilla en docs/emails/)
     const { error: err } = await getSupabase().auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/${locale}/login`,
+        emailRedirectTo: `${window.location.origin}${localePath(locale, "/login")}`,
+        captchaToken: captcha || undefined,
         data: {
           full_name: fullName.trim(),
           referred_by_code: refCode.trim(),
@@ -105,15 +123,11 @@ export function RegisterForm() {
     });
     setLoading(false);
     if (err) {
+      resetTurnstile();
+      setCaptcha("");
       setError(err.message);
       return;
     }
-    // Confirmación de aplicación recibida (si el correo está configurado)
-    void fetch("/api/notify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type: "applied", email, name: fullName.trim() }),
-    }).catch(() => {});
     setDone(true);
   };
 
@@ -182,10 +196,11 @@ export function RegisterForm() {
           </a>
         </span>
       </label>
+      <Turnstile onToken={setCaptcha} />
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"
-        disabled={loading || !accepted}
+        disabled={loading || !accepted || (turnstileEnabled() && !captcha)}
         className="btn-3d py-3 disabled:opacity-60"
       >
         {loading ? "…" : t("submitRegister")}
