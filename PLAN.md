@@ -189,7 +189,22 @@ vendedores desde el portal de admin (Fase 4 — mientras tanto se aprueba cambia
   admin. También descargable en blanco para firma en papel.
 - Referidos entre vendedores (un solo nivel).
 
-### Fase 4 — Portal de Admin (`/admin`)
+### Fase 4 — Portal de Admin (`/admin`) 🔨 EN CURSO (MVP entregado 08/05/2026)
+
+**Hecho:** `/es/admin` protegido por rol (solo `admin@judomarketing.net`, cuyo registro
+se convierte en admin automáticamente vía trigger). Pestañas: **Vendedores** (aprobar /
+suspender / rechazar, fijar comisión individual — $ por cada $50 o % — con foto y código
+visibles), **Pagos Zelle** (ver captura con URL firmada, verificar/rechazar), **Websites**
+(crear sitio + cliente, asignar vendedor o "yo", precio, fecha de próximo pago, registrar
+pago manual que suma months_paid y corre la fecha un mes, y el interruptor
+Deshabilitar/Reactivar con auditoría — la base del kill switch de Fase 5). Migración
+`0003_admin.sql`: función is_admin(), políticas de admin, y cierre del hueco que permitía
+a un usuario cambiarse el rol a sí mismo.
+
+**Pendiente de esta fase:** 2FA del admin, Turnstile, vista espejo de portales de
+vendedores, exportar emails de vendedores, calendario de cobros consolidado.
+
+#### (Especificación original)
 - Seguridad alta: 2FA obligatorio, rate limiting, Turnstile, sesiones cortas, audit log de
   cada acción (quién apagó qué sitio y cuándo).
 - Pestañas: **Clientes** | **Vendedores** | **Websites** | **Pagos**.

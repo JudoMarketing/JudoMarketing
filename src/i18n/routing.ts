@@ -12,5 +12,6 @@ export const routing = defineRouting({
     "/login": "/login",
     "/register": { es: "/registro", en: "/register" },
     "/portal": "/portal",
+    "/admin": "/admin",
   },
 });
