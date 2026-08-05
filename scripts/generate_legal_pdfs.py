@@ -1,9 +1,10 @@
-"""Genera los PDF legales descargables: contrato de cliente (ES) y Policy Amendment No. 1 (EN).
+"""Genera los PDF legales descargables: contrato de cliente (ES) y Service Policy & Terms (EN).
 
 Uso: python scripts/generate_legal_pdfs.py
 Salida: docs/legal/contracts/Acuerdo_de_Servicio_Cliente.pdf
-        docs/legal/pdf/Policy_Amendment_1.pdf
+        docs/legal/Service_Policy_and_Terms.pdf (desde docs/legal/service-policy.md)
 """
+import re
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
@@ -133,8 +134,8 @@ def build_contract():
             "admin@judomarketing.net.",
         ]),
         ("6. Marco legal", [
-            "Este acuerdo se complementa con los Términos y Condiciones y las pólizas "
-            "publicadas en www.judomarketing.net (incluida la Enmienda No. 1), que el "
+            "Este acuerdo se complementa con la Política de Servicio y Términos "
+            "(Service Policy &amp; Terms) publicada en www.judomarketing.net, que el "
             "cliente declara conocer. Se rige por las leyes del Estado de Florida; "
             "jurisdicción: Miami-Dade County, Florida. Las firmas electrónicas tienen "
             "la misma validez que las manuscritas.",
@@ -166,74 +167,48 @@ def build_contract():
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
 
 
-def build_amendment():
-    story = [
-        Paragraph("POLICY AMENDMENT NO. 1", H1),
-        Paragraph("JUDO MARKETING · Effective Date: 08/05/2026", SUB),
-        Paragraph("This Amendment modifies the Judo Marketing policies dated 07/06/2026 "
-                  "to reflect Judo Marketing's twelve-month subscription model. Where "
-                  "this Amendment conflicts with any policy, proposal, or prior "
-                  "document, this Amendment controls. All other terms remain in full "
-                  "force.", BODY),
-    ]
-    sections = [
-        ("1. Website and Domain Ownership (replaces Terms and Conditions §10 and "
-         "Subscription and Website Ownership Policy §5)", [
-            "For monthly website and application subscription plans, Judo Marketing "
-            "retains ownership and administrative control of the website code, design, "
-            "portals, hosting configuration, and domain during the first twelve (12) "
-            "months of service.",
-            "Ownership transfer becomes available only when all of the following "
-            "conditions are satisfied: (1) the client has completed twelve (12) full "
-            "monthly subscription payments; (2) the account has no unpaid invoices, "
-            "chargebacks, disputes, or outstanding balances; (3) the client has "
-            "complied with Judo Marketing's policies and any applicable service "
-            "agreement; and (4) any third-party transfer fees, registrar fees, hosting "
-            "fees, or platform fees required for transfer have been paid.",
-            "If the client decides to end the service after the twelve-month term, the "
-            "client may request delivery of the domain and website code by submitting a "
-            "formal written request through the contact page at www.judomarketing.net "
-            "or by email to admin@judomarketing.net. Transfers are subject to registrar "
-            "rules, lock periods, verification requirements, and third-party fees. Any "
-            "reference in any policy to ownership transfer “after the third "
-            "month” is replaced by this twelve-month rule.",
-        ]),
-        ("2. Suspension Page (supplements Terms and Conditions §14)", [
-            "If an account becomes past due, Judo Marketing may temporarily disable the "
-            "client's website and display a neutral suspension page stating that the "
-            "site is temporarily disabled. The suspension page is identified with Judo "
-            "Marketing branding and a link to www.judomarketing.net and contains no "
-            "advertising. The client expressly authorizes the display of this "
-            "suspension page. Service is restored promptly once the account is current. "
-            "Judo Marketing does not charge late fees or non-payment penalties; "
-            "suspension is the only consequence of a past-due account.",
-        ]),
-        ("3. 30-Day Delivery Guarantee (supplements Refund and Cancellation Policy §2)", [
-            "If Judo Marketing fails to deliver the client's initial website or agreed "
-            "project within thirty (30) days after receiving all required client "
-            "materials, information, access, and approvals, the client may request a "
-            "full refund of the first subscription payment. This Delivery Guarantee is "
-            "the only exception to the general no-refund rule. It does not apply to "
-            "delays caused by the client, incomplete client materials, third-party "
-            "platforms, or scope changes requested after the project started.",
-        ]),
-        ("4. Client Communication Channel", [
-            "The client's primary point of contact is the assigned Judo Marketing "
-            "representative. Clients who wish to communicate directly with "
-            "administration may do so through the contact page at "
-            "www.judomarketing.net. Formal requests (cancellation, ownership transfer, "
-            "billing disputes) must be submitted in writing to admin@judomarketing.net.",
-        ]),
-    ]
-    for title, paras in sections:
-        story.append(Paragraph(title, H2))
-        for p in paras:
-            story.append(Paragraph(p, BODY))
-    doc = doc_template("docs/legal/pdf/Policy_Amendment_1.pdf")
+def md_bold(text):
+    return re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
+
+
+def build_policy():
+    """Convierte docs/legal/service-policy.md al PDF oficial."""
+    lines = open("docs/legal/service-policy.md", encoding="utf-8").read().splitlines()
+    story, para = [], []
+
+    def flush(style=BODY):
+        nonlocal para
+        if para:
+            story.append(Paragraph(md_bold(" ".join(para)), style))
+            para = []
+
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("# "):
+            flush()
+            story.append(Paragraph(stripped[2:], H1))
+        elif stripped.startswith("## "):
+            flush()
+            story.append(Paragraph(stripped[3:], H2))
+        elif stripped.startswith("- "):
+            flush()
+            para = [chr(8226) + " " + stripped[2:]]
+            flush(BULLET)
+        elif stripped == "":
+            flush()
+        elif stripped.startswith("Effective Date:"):
+            flush()
+            story.append(Paragraph(stripped, SUB))
+        elif len(story) == 1:  # subtítulo justo después del título
+            story.append(Paragraph(stripped, SUB))
+        else:
+            para.append(stripped)
+    flush()
+    doc = doc_template("docs/legal/Service_Policy_and_Terms.pdf")
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
 
 
 if __name__ == "__main__":
     build_contract()
-    build_amendment()
+    build_policy()
     print("PDFs generados.")

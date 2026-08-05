@@ -76,8 +76,8 @@ escrito a admin@judomarketing.net.
 
 ## 6. Marco legal
 
-Este acuerdo se complementa con los Términos y Condiciones y las pólizas publicadas en
-www.judomarketing.net (incluida la Enmienda No. 1), que el cliente declara conocer. Se
+Este acuerdo se complementa con la Política de Servicio y Términos (Service Policy &
+Terms) publicada en www.judomarketing.net, que el cliente declara conocer. Se
 rige por las leyes del Estado de Florida; jurisdicción: Miami-Dade County. Las firmas
 electrónicas tienen la misma validez que las manuscritas.
 

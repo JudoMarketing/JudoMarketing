@@ -61,12 +61,19 @@ Comportamiento en la web (Fase 1):
 - **Instagram:** @judo.marketing
 - **Supabase (producción):** https://ajsuskyeatgatbubctzl.supabase.co
 
-## Assets pendientes de subir al repo (en `assets/brand/`)
+## Assets en `assets/brand/`
 
-Las imágenes se compartieron por chat (no se pueden extraer como archivos). Subir por
-GitHub → Add file → Upload files:
-- [ ] `logo-transparent.png` (logo fondo transparente)
-- [ ] `logo-black.png` (logo fondo negro — miniatura oficial)
-- [ ] `brand-sheet.png` (hoja de marca completa)
-- [ ] `og-thumbnail.png` (imagen de preview para compartir)
-- [ ] Renders del robot (todas las poses disponibles: frente, sentado, con laptop, etc.)
+| Archivo | Contenido | Uso |
+|---|---|---|
+| `logo-white-transparent.png` | Logo blanco, fondo transparente, 3000×3000 | Header del sitio, fondos oscuros |
+| `logo-black.jpg` | Logo sobre fondo negro, 1500×1500 (baja resolución) | Miniatura oficial / favicon / avatar |
+| `og-thumbnail.png` | Hero con logo + robot + dashboard, 1536×1024 | Open Graph: preview al compartir el sitio |
+| `brand-sheet.png` | Hoja de marca completa, 1536×1024 | Referencia de diseño |
+| `flyer-servicios.png` | Flyer vertical de servicios/precios, 1024×1536 | Referencia de contenido para la página Servicios |
+
+Pendientes deseables:
+- [ ] Logo en SVG o PNG de alta resolución en versión fondo negro (el `.jpg` actual es
+  baja resolución — pedir el original si existe)
+- [ ] Renders del robot en poses sueltas y fondo transparente (frente, sentado/triste
+  para la página de suspensión, saludando) — si no existen, se recrea vectorialmente en
+  Fase 1

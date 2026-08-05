@@ -223,11 +223,12 @@ solución, pero hay que decidirlas conscientemente:
 - [x] Pólizas recibidas, leídas y organizadas → `docs/legal/` (análisis y huecos en `docs/legal/README.md`)
 - [x] Guía de marca documentada → `docs/BRAND.md` (paleta #7B2DFF/#A855F7/#0B0B12, Poppins, dirección Miami)
 - [x] Supabase creado: https://ajsuskyeatgatbubctzl.supabase.co
-- [x] **DECISIÓN TOMADA (08/05/2026): modelo de 12 meses.** Pólizas corregidas con la
-  Policy Amendment No. 1 (`docs/legal/AMENDMENT-1.md` + PDF)
+- [x] **DECISIÓN TOMADA (08/05/2026): modelo de 12 meses.** Como no hay clientes bajo
+  las pólizas viejas, se creó UNA póliza única nueva: `docs/legal/service-policy.md` →
+  `Service_Policy_and_Terms.pdf`. Las 8 pólizas originales quedaron en
+  `docs/legal/archive/` (referencia, no se publican)
 - [x] Contrato de Cliente creado (ES, 2 páginas): `docs/legal/contracts/` — para el
   portal de vendedores, con firma de cliente y contrafirma de Administración
-- [ ] Archivos de imagen de marca subidos a `assets/brand/` (compartidos por chat; el
-  intento de subida al repo del 08/05 no llegó — reintentar: GitHub → rama
-  `claude/judo-marketing-redesign-ci2rj5` → Add file → Upload files)
+- [x] Assets de marca subidos y organizados en `assets/brand/` (logo blanco
+  transparente, logo negro, OG thumbnail, brand sheet, flyer de servicios)
 - [ ] Fase 0 iniciada
