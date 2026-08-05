@@ -79,17 +79,54 @@ export default function SellerPortal() {
       }
       setUserId(session.user.id);
       const uid = session.user.id;
-      const [{ data: prof }, { data: sel }, contractsRes] = await Promise.all([
-        supabase.from("profiles").select("full_name, photo_url").eq("id", uid).single(),
-        supabase.from("sellers").select("status, referral_code").eq("id", uid).single(),
-        supabase
-          .from("signed_contracts")
-          .select("id, code, client_name, business_name, pdf_path, created_at")
-          .order("created_at", { ascending: false }),
-      ]);
+      const [{ data: prof }, { data: sel }, contractsRes, serverVisitsRes] =
+        await Promise.all([
+          supabase.from("profiles").select("full_name, photo_url").eq("id", uid).single(),
+          supabase.from("sellers").select("status, referral_code").eq("id", uid).single(),
+          supabase
+            .from("signed_contracts")
+            .select("id, code, client_name, business_name, pdf_path, created_at")
+            .order("created_at", { ascending: false }),
+          supabase
+            .from("visits")
+            .select("client_generated_id, prospect_name, company_name, visited_on, visit_time")
+            .order("visited_on", { ascending: false })
+            .limit(200),
+        ]);
       setProfile(prof as Profile | null);
       setSeller(sel as Seller | null);
       setContracts((contractsRes.data as SignedContract[]) ?? []);
+
+      // Fusionar historial del servidor con la cola local del teléfono:
+      // así el vendedor ve todas sus visitas aunque cambie de dispositivo
+      const queue = loadQueue();
+      const known = new Set(queue.map((v) => v.client_generated_id));
+      type ServerVisit = {
+        client_generated_id: string;
+        prospect_name: string;
+        company_name: string | null;
+        visited_on: string;
+        visit_time: string | null;
+      };
+      for (const sv of (serverVisitsRes.data as ServerVisit[]) ?? []) {
+        if (known.has(sv.client_generated_id)) {
+          const local = queue.find(
+            (v) => v.client_generated_id === sv.client_generated_id
+          );
+          if (local) local.synced = true;
+        } else {
+          queue.push({
+            client_generated_id: sv.client_generated_id,
+            prospect_name: sv.prospect_name,
+            company_name: sv.company_name ?? "",
+            visited_on: sv.visited_on,
+            visit_time: sv.visit_time?.slice(0, 5) || undefined,
+            synced: true,
+          });
+        }
+      }
+      saveQueue(queue);
+      setVisits(queue);
       setChecking(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps

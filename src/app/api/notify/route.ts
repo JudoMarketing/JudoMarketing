@@ -9,6 +9,18 @@ import { brandedEmail, isEmailConfigured, sendBrandedEmail } from "@/lib/email";
  *    (solo puede dispararla una sesión de admin).
  */
 
+// Límite básico por IP para el aviso público de aplicación (anti-spam;
+// se refuerza con Turnstile en la ronda de seguridad)
+const hits = new Map<string, number[]>();
+
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < 60_000);
+  recent.push(now);
+  hits.set(ip, recent);
+  return recent.length > 3;
+}
+
 export async function POST(req: NextRequest) {
   if (!isEmailConfigured()) {
     return NextResponse.json({ sent: false, reason: "smtp_not_configured" });
@@ -19,8 +31,20 @@ export async function POST(req: NextRequest) {
     email?: string;
     name?: string;
   };
-  if (!email || !name || !type) {
+  if (
+    !email ||
+    !name ||
+    !type ||
+    email.length > 120 ||
+    name.length > 80 ||
+    !email.includes("@")
+  ) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
+  }
+
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (type === "applied" && rateLimited(ip)) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 
   if (type === "applied") {
