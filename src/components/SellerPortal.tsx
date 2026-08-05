@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./AuthForms";
+import ContractSigner from "./ContractSigner";
 
 /**
  * Portal del Vendedor (MVP Fase 3).
@@ -20,6 +21,7 @@ type LocalVisit = {
   prospect_name: string;
   company_name: string;
   visited_on: string;
+  visit_time?: string;
   synced: boolean;
 };
 
@@ -53,7 +55,9 @@ export default function SellerPortal() {
   const [prospect, setProspect] = useState("");
   const [company, setCompany] = useState("");
   const [visitDate, setVisitDate] = useState("");
+  const [visitTime, setVisitTime] = useState("");
   const [justSaved, setJustSaved] = useState(false);
+  const [showSigner, setShowSigner] = useState(false);
 
   // ── Sesión y datos ────────────────────────────────────────────────
   useEffect(() => {
@@ -109,6 +113,7 @@ export default function SellerPortal() {
           prospect_name: visit.prospect_name,
           company_name: visit.company_name || null,
           visited_on: visit.visited_on,
+          visit_time: visit.visit_time || null,
         },
         { onConflict: "client_generated_id", ignoreDuplicates: true }
       );
@@ -130,6 +135,7 @@ export default function SellerPortal() {
       prospect_name: prospect.trim(),
       company_name: company.trim(),
       visited_on: visitDate,
+      visit_time: visitTime || undefined,
       synced: false,
     };
     const queue = [visit, ...loadQueue()];
@@ -137,6 +143,7 @@ export default function SellerPortal() {
     setVisits(queue);
     setProspect("");
     setCompany("");
+    setVisitTime("");
     setJustSaved(true);
     setTimeout(() => setJustSaved(false), 2500);
     void syncQueue();
@@ -266,16 +273,27 @@ export default function SellerPortal() {
             placeholder={t("companyName")}
             className={inputClass}
           />
-          <label className="flex flex-col gap-1 text-xs text-judo-fog/60">
-            {t("visitDate")}
-            <input
-              required
-              type="date"
-              value={visitDate}
-              onChange={(e) => setVisitDate(e.target.value)}
-              className={inputClass}
-            />
-          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="flex flex-col gap-1 text-xs text-judo-fog/60">
+              {t("visitDate")}
+              <input
+                required
+                type="date"
+                value={visitDate}
+                onChange={(e) => setVisitDate(e.target.value)}
+                className={inputClass}
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-xs text-judo-fog/60">
+              {t("visitTime")}
+              <input
+                type="time"
+                value={visitTime}
+                onChange={(e) => setVisitTime(e.target.value)}
+                className={inputClass}
+              />
+            </label>
+          </div>
           <button type="submit" className="btn-primary">
             {t("saveVisit")}
           </button>
@@ -311,6 +329,7 @@ export default function SellerPortal() {
                   )}
                   <span className="ml-2 text-xs text-judo-fog/40">
                     {visit.visited_on}
+                    {visit.visit_time ? ` · ${visit.visit_time}` : ""}
                   </span>
                 </span>
                 <span className="text-xs">
@@ -329,6 +348,11 @@ export default function SellerPortal() {
       {/* Documentos */}
       <div className="mt-6 rounded-2xl border border-judo-lilac/20 bg-judo-surface p-6">
         <h2 className="font-semibold">📄 {t("docsTitle")}</h2>
+        {!pending && (
+          <button onClick={() => setShowSigner(true)} className="btn-primary mt-3 w-full">
+            📝 {t("signContract")}
+          </button>
+        )}
         <ul className="mt-3 space-y-2 text-sm">
           <li>
             <a
@@ -350,6 +374,14 @@ export default function SellerPortal() {
           </li>
         </ul>
       </div>
+
+      {showSigner && userId && profile && (
+        <ContractSigner
+          sellerId={userId}
+          sellerName={profile.full_name}
+          onClose={() => setShowSigner(false)}
+        />
+      )}
     </div>
   );
 }

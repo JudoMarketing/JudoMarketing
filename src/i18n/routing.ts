@@ -13,5 +13,6 @@ export const routing = defineRouting({
     "/register": { es: "/registro", en: "/register" },
     "/portal": "/portal",
     "/admin": "/admin",
+    "/pay": { es: "/pagar", en: "/pay" },
   },
 });

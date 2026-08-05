@@ -294,7 +294,9 @@
     "docsTitle": "Tus documentos",
     "docContract": "Contrato de cliente (para firmar con tu cliente)",
     "docSeller": "Tu Acuerdo del Programa de Vendedores",
-    "offlineBadge": "Sin conexión — tus visitas se guardan en el teléfono"
+    "offlineBadge": "Sin conexión — tus visitas se guardan en el teléfono",
+    "visitTime": "Hora (opcional)",
+    "signContract": "Firmar contrato con un cliente"
   },
   "zelle": {
     "chooseTitle": "¿Cómo prefieres pagar?",
@@ -319,5 +321,19 @@
     "success": "¡Comprobante recibido! Verificaremos tu pago y te contactaremos hoy mismo para arrancar tu proyecto. 💜",
     "error": "No pudimos subir el comprobante. Intenta de nuevo o escríbenos por WhatsApp.",
     "back": "Volver"
+  },
+  "pay": {
+    "title": "Completa tu suscripción",
+    "subtitle": "Elige cómo prefieres pagar. Todos los pagos son en dólares (USD).",
+    "planLabel": "Plan elegido",
+    "stripeTitle": "Tarjeta de crédito o débito",
+    "stripeDesc": "Y todos los métodos que ofrece Stripe. Pago seguro y automático.",
+    "paypalTitle": "PayPal",
+    "paypalDesc": "Paga con tu cuenta PayPal.",
+    "paypalSoon": "Muy pronto",
+    "zelleTitle": "Transferencia Zelle",
+    "zelleDesc": "Envía tu pago y sube el comprobante.",
+    "pay": "Pagar",
+    "back": "← Volver a servicios"
   }
 }

@@ -157,6 +157,15 @@ solución, pero hay que decidirlas conscientemente:
 
 ### Fase 3 — Auth y Portal de Vendedores 🔨 EN CURSO (core entregado 08/05/2026)
 
+**Hecho (adicional 08/05):** firma digital del contrato desde el teléfono del vendedor
+(wizard de 4 pasos: datos del cliente con su correo → el cliente lee y firma en pantalla →
+el vendedor firma → PDF con las tres firmas, la de Administración se agrega
+automáticamente, código único JM-AAAA-XXXXXXXX, archivado en Supabase y compartible por
+correo/WhatsApp con enlace seguro; el envío automático por email llega con la fase de
+comunicaciones). Hora opcional en el registro de visitas. Página dedicada de métodos de
+pago /pagar (orden: Stripe → PayPal → Zelle; PayPal requiere el usuario PayPal.me del
+dueño en NEXT_PUBLIC_PAYPAL_ME). Migración 0004.
+
 **Hecho:** registro de vendedores (nombre obligatorio, email+clave, código de referido
 opcional, checkbox de aceptación con versión/fecha guardada como evidencia vía trigger),
 login real con Supabase Auth, portal del vendedor (estado pendiente/aprobado, subida de
@@ -169,8 +178,7 @@ admin@judomarketing.net, solo USD, subida de captura + nombre + código de refer
 Migración `0002_portal.sql` con RLS, buckets y trigger de registro.
 
 **Pendiente de esta fase:** Turnstile anti-bot (requiere cuenta Cloudflare del dueño),
-gráficas de proyecciones de ganancias (cuando haya datos de comisiones), flujo de firma
-digital del contrato (vendedor firma + recoge firma del cliente), aprobación de
+gráficas de proyecciones de ganancias (cuando haya datos de comisiones), aprobación de
 vendedores desde el portal de admin (Fase 4 — mientras tanto se aprueba cambiando
 `sellers.status` a `aprobado` en el Table Editor de Supabase).
 - Registro: email + clave + código de referido opcional. Turnstile anti-bot.

@@ -1,17 +1,11 @@
 import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { use } from "react";
+import { Link } from "@/i18n/navigation";
 import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
-import PaymentOptions from "@/components/PaymentOptions";
 
 type DiffItem = { title: string; description: string };
-
-const STRIPE_PRICES: Record<string, string | undefined> = {
-  essential: process.env.STRIPE_PRICE_ESSENTIAL,
-  complex: process.env.STRIPE_PRICE_COMPLEX,
-  apps: process.env.STRIPE_PRICE_APPS,
-};
 
 export default function ServicesPage({
   params,
@@ -64,12 +58,12 @@ export default function ServicesPage({
                       </li>
                     ))}
                   </ul>
-                  <PaymentOptions
-                    plan={plan}
-                    stripeReady={Boolean(
-                      process.env.STRIPE_SECRET_KEY && STRIPE_PRICES[plan]
-                    )}
-                  />
+                  <Link
+                    href={{ pathname: "/pay", query: { plan } }}
+                    className="btn-primary mt-8 w-full"
+                  >
+                    {locale === "es" ? "Iniciar" : "Get started"} →
+                  </Link>
                 </TiltCard>
               </Reveal>
             );

@@ -294,7 +294,9 @@
     "docsTitle": "Your documents",
     "docContract": "Client contract (to sign with your client)",
     "docSeller": "Your Seller Program Agreement",
-    "offlineBadge": "Offline — your visits are being saved on your phone"
+    "offlineBadge": "Offline — your visits are being saved on your phone",
+    "visitTime": "Time (optional)",
+    "signContract": "Sign a contract with a client"
   },
   "zelle": {
     "chooseTitle": "How would you like to pay?",
@@ -319,5 +321,19 @@
     "success": "Receipt received! We'll verify your payment and contact you today to start your project. 💜",
     "error": "We couldn't upload the receipt. Try again or message us on WhatsApp.",
     "back": "Back"
+  },
+  "pay": {
+    "title": "Complete your subscription",
+    "subtitle": "Choose how you prefer to pay. All payments are in US dollars (USD).",
+    "planLabel": "Selected plan",
+    "stripeTitle": "Credit or debit card",
+    "stripeDesc": "Plus every method Stripe offers. Secure, automatic payment.",
+    "paypalTitle": "PayPal",
+    "paypalDesc": "Pay with your PayPal account.",
+    "paypalSoon": "Coming soon",
+    "zelleTitle": "Zelle transfer",
+    "zelleDesc": "Send your payment and upload the receipt.",
+    "pay": "Pay",
+    "back": "← Back to services"
   }
 }
