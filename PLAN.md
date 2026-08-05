@@ -155,7 +155,24 @@ solución, pero hay que decidirlas conscientemente:
 > - El servidor tiene conexión al MCP de Facebook/Meta Ads disponible para esta
 >   integración en la fase correspondiente.
 
-### Fase 3 — Auth y Portal de Vendedores
+### Fase 3 — Auth y Portal de Vendedores 🔨 EN CURSO (core entregado 08/05/2026)
+
+**Hecho:** registro de vendedores (nombre obligatorio, email+clave, código de referido
+opcional, checkbox de aceptación con versión/fecha guardada como evidencia vía trigger),
+login real con Supabase Auth, portal del vendedor (estado pendiente/aprobado, subida de
+foto de perfil obligatoria para aprobación, registro de visitas **offline-first** con
+cola en localStorage + sincronización al volver la señal + UUID antiduplicados, lista de
+visitas con indicador de sincronización, stats en $0 hasta que Admin asigne comisión,
+descargas de contratos), y **pago por Zelle** en Servicios (instrucciones con
+admin@judomarketing.net, solo USD, subida de captura + nombre + código de referido +
+"¿dónde supiste de nosotros?"; el comprobante queda en Supabase para verificación).
+Migración `0002_portal.sql` con RLS, buckets y trigger de registro.
+
+**Pendiente de esta fase:** Turnstile anti-bot (requiere cuenta Cloudflare del dueño),
+gráficas de proyecciones de ganancias (cuando haya datos de comisiones), flujo de firma
+digital del contrato (vendedor firma + recoge firma del cliente), aprobación de
+vendedores desde el portal de admin (Fase 4 — mientras tanto se aprueba cambiando
+`sellers.status` a `aprobado` en el Table Editor de Supabase).
 - Registro: email + clave + código de referido opcional. Turnstile anti-bot.
 - Estado "pendiente de aprobación" → el admin aprueba y en ese momento fija su comisión
   (% o monto fijo por cada $50).

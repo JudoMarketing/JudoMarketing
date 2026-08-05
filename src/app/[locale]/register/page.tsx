@@ -2,9 +2,9 @@ import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { use } from "react";
 import TiltCard from "@/components/TiltCard";
-import { LoginForm } from "@/components/AuthForms";
+import { RegisterForm } from "@/components/AuthForms";
 
-export default function LoginPage({
+export default function RegisterPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -17,13 +17,13 @@ export default function LoginPage({
     <div className="judo-glow">
       <section className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-20">
         <div className="text-center">
-          <h1 className="hero-in text-4xl font-bold">{t("loginTitle")}</h1>
+          <h1 className="hero-in text-4xl font-bold">{t("registerTitle")}</h1>
           <p className="hero-in mt-2 text-judo-fog/60" style={{ animationDelay: "0.15s" }}>
-            {t("loginSubtitle")}
+            {t("registerSubtitle")}
           </p>
         </div>
         <TiltCard className="mt-8 p-7">
-          <LoginForm />
+          <RegisterForm />
         </TiltCard>
       </section>
     </div>

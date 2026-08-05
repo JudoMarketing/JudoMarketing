@@ -1,10 +1,9 @@
 import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { use } from "react";
-import { Link } from "@/i18n/navigation";
 import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
-import CheckoutButton from "@/components/CheckoutButton";
+import PaymentOptions from "@/components/PaymentOptions";
 
 type DiffItem = { title: string; description: string };
 
@@ -22,7 +21,6 @@ export default function ServicesPage({
   const { locale } = use(params);
   setRequestLocale(locale);
   const t = useTranslations("services");
-  const tBuy = useTranslations("buy");
 
   const plans = ["essential", "complex", "apps"] as const;
   const diffs = t.raw("diff.items") as DiffItem[];
@@ -66,17 +64,12 @@ export default function ServicesPage({
                       </li>
                     ))}
                   </ul>
-                  {process.env.STRIPE_SECRET_KEY && STRIPE_PRICES[plan] ? (
-                    <CheckoutButton
-                      plan={plan}
-                      label={tBuy("subscribe")}
-                      secureNote={tBuy("secure")}
-                    />
-                  ) : (
-                    <Link href="/contact" className="btn-primary mt-8 w-full">
-                      {t("cta")} →
-                    </Link>
-                  )}
+                  <PaymentOptions
+                    plan={plan}
+                    stripeReady={Boolean(
+                      process.env.STRIPE_SECRET_KEY && STRIPE_PRICES[plan]
+                    )}
+                  />
                 </TiltCard>
               </Reveal>
             );
