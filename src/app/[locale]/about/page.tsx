@@ -36,6 +36,24 @@ export default function AboutPage({
         </p>
       </section>
 
+      {/* La estrategia judo, explicada. Panel sólido: las líneas animadas
+          molestan al leer texto largo */}
+      <section className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+        <Reveal>
+          <div className="rounded-2xl border border-judo-lilac/15 bg-[#0e0e16] p-6 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)] sm:p-10">
+            <h2 className="text-2xl font-bold text-judo-lilac">{t("deepTitle")}</h2>
+            {(t.raw("deepParagraphs") as string[]).map((paragraph, i) => (
+              <p
+                key={i}
+                className="mt-4 leading-relaxed text-judo-fog/75"
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
       <section className="mx-auto max-w-5xl px-6 py-12 pb-24">
         <div className="grid gap-6 md:grid-cols-3">
           {sections.map((section, i) => (
