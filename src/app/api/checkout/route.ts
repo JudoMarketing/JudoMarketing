@@ -7,6 +7,9 @@ const PLAN_ENV: Record<string, string | undefined> = {
   apps: process.env.STRIPE_PRICE_APPS,
 };
 
+// Cache de prod_... → price_... para no consultar Stripe en cada checkout
+const resolvedPrices = new Map<string, string>();
+
 export async function POST(req: NextRequest) {
   const secret = process.env.STRIPE_SECRET_KEY;
   if (!secret) {
@@ -17,12 +20,40 @@ export async function POST(req: NextRequest) {
     plan?: string;
     locale?: string;
   };
-  const price = plan ? PLAN_ENV[plan] : undefined;
+  let price = plan ? PLAN_ENV[plan] : undefined;
   if (!price) {
     return NextResponse.json({ error: "unknown_plan" }, { status: 400 });
   }
 
   const stripe = new Stripe(secret);
+
+  // Las variables aceptan tanto el price_... como el prod_...: si llega un
+  // producto, se usa su precio por defecto
+  if (price.startsWith("prod_")) {
+    const cached = resolvedPrices.get(price);
+    if (cached) {
+      price = cached;
+    } else {
+      try {
+        const product = await stripe.products.retrieve(price);
+        const def =
+          typeof product.default_price === "string"
+            ? product.default_price
+            : product.default_price?.id;
+        if (!def) {
+          return NextResponse.json(
+            { error: "stripe_error", message: `El producto ${price} no tiene un precio por defecto` },
+            { status: 502 }
+          );
+        }
+        resolvedPrices.set(price, def);
+        price = def;
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "unknown";
+        return NextResponse.json({ error: "stripe_error", message: msg }, { status: 502 });
+      }
+    }
+  }
   const origin = req.nextUrl.origin;
   const loc = locale === "en" ? "en" : "es";
 
