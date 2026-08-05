@@ -4,6 +4,7 @@ import { use } from "react";
 import { Link } from "@/i18n/navigation";
 import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
+import CommunityReviews from "@/components/CommunityReviews";
 
 type Step = { title: string; description: string };
 type Review = { text: string; name: string; place: string };
@@ -185,6 +186,8 @@ export default function HomePage({
             </Reveal>
           ))}
         </div>
+        {/* Reseñas aprobadas de visitantes + botón discreto para enviar una */}
+        <CommunityReviews />
       </section>
 
       {/* ── DIRECCIÓN / VISÍTANOS ────────────────────────────────── */}

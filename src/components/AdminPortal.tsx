@@ -11,7 +11,7 @@ import { useRouter } from "@/i18n/navigation";
 import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./AuthForms";
 
-type Tab = "vendedores" | "pagos" | "sitios";
+type Tab = "vendedores" | "pagos" | "sitios" | "resenas";
 
 type SellerRow = {
   id: string;
@@ -68,6 +68,15 @@ type CommissionRow = {
   sites: { name: string } | null;
 };
 
+type ReviewModRow = {
+  id: string;
+  name: string;
+  place: string;
+  body: string;
+  status: string;
+  created_at: string;
+};
+
 type BonusRow = {
   id: string;
   amount: number;
@@ -93,6 +102,7 @@ export default function AdminPortal() {
   const [sites, setSites] = useState<SiteRow[]>([]);
   const [commissions, setCommissions] = useState<CommissionRow[]>([]);
   const [bonuses, setBonuses] = useState<BonusRow[]>([]);
+  const [reviews, setReviews] = useState<ReviewModRow[]>([]);
   const [metrics, setMetrics] = useState<Record<string, SiteMetric>>({});
   const [msg, setMsg] = useState("");
 
@@ -105,7 +115,7 @@ export default function AdminPortal() {
   const [siteDue, setSiteDue] = useState("");
 
   const loadAll = useCallback(async () => {
-    const [selRes, proofRes, siteRes, metricsRes, comRes, bonusRes] = await Promise.all([
+    const [selRes, proofRes, siteRes, metricsRes, comRes, bonusRes, revRes] = await Promise.all([
       supabase
         .from("sellers")
         .select(
@@ -141,12 +151,18 @@ export default function AdminPortal() {
         )
         .order("created_at", { ascending: false })
         .limit(200),
+      supabase
+        .from("reviews")
+        .select("id,name,place,body,status,created_at")
+        .order("created_at", { ascending: false })
+        .limit(100),
     ]);
     setSellers((selRes.data as unknown as SellerRow[]) ?? []);
     setProofs((proofRes.data as ProofRow[]) ?? []);
     setSites((siteRes.data as unknown as SiteRow[]) ?? []);
     setCommissions((comRes.data as unknown as CommissionRow[]) ?? []);
     setBonuses((bonusRes.data as unknown as BonusRow[]) ?? []);
+    setReviews((revRes.data as ReviewModRow[]) ?? []);
 
     // Telemetría del Judo Site Kit: último reporte y ventas acumuladas por sitio
     const metricRows = (metricsRes.data ?? []) as {
@@ -339,6 +355,13 @@ export default function AdminPortal() {
     void loadAll();
   };
 
+  const setReviewStatus = async (id: string, status: "aprobada" | "rechazada") => {
+    const { error } = await supabase.from("reviews").update({ status }).eq("id", id);
+    if (error) return flash(`Error: ${error.message}`);
+    flash(status === "aprobada" ? "Reseña publicada ✓" : "Reseña rechazada");
+    void loadAll();
+  };
+
   const markBonusPaid = async (id: string) => {
     const { error } = await supabase
       .from("referral_bonuses")
@@ -408,6 +431,10 @@ export default function AdminPortal() {
               })`,
             ],
             ["sitios", `Websites (${sites.length})`],
+            [
+              "resenas",
+              `Reseñas (${reviews.filter((r) => r.status === "pendiente").length})`,
+            ],
           ] as [Tab, string][]
         ).map(([key, label]) => (
           <button
@@ -619,6 +646,57 @@ export default function AdminPortal() {
               </>
             )}
           </div>
+        </div>
+      )}
+
+      {/* ── RESEÑAS DE VISITANTES ── */}
+      {tab === "resenas" && (
+        <div className="mt-6 flex flex-col gap-3">
+          {reviews.length === 0 && (
+            <p className="text-sm text-judo-fog/50">
+              Aún no hay reseñas enviadas por visitantes.
+            </p>
+          )}
+          {reviews.map((r) => (
+            <div key={r.id} className={`${box} flex flex-wrap items-center gap-3`}>
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold">
+                  {r.name}{" "}
+                  <span className="text-sm font-normal text-judo-fog/50">
+                    · {r.place} · {new Date(r.created_at).toLocaleDateString("es-US")} ·{" "}
+                    <b
+                      className={
+                        r.status === "aprobada"
+                          ? "text-emerald-300"
+                          : r.status === "rechazada"
+                            ? "text-red-300"
+                            : "text-amber-300"
+                      }
+                    >
+                      {r.status}
+                    </b>
+                  </span>
+                </p>
+                <p className="mt-1 text-sm text-judo-fog/70">“{r.body}”</p>
+              </div>
+              {r.status !== "aprobada" && (
+                <button
+                  onClick={() => setReviewStatus(r.id, "aprobada")}
+                  className="btn-primary px-4 py-1.5 text-sm"
+                >
+                  Publicar ✓
+                </button>
+              )}
+              {r.status !== "rechazada" && (
+                <button
+                  onClick={() => setReviewStatus(r.id, "rechazada")}
+                  className="rounded-full border border-red-400/40 px-4 py-1.5 text-sm text-red-300 hover:bg-red-400/10"
+                >
+                  {r.status === "aprobada" ? "Quitar" : "Rechazar"}
+                </button>
+              )}
+            </div>
+          ))}
         </div>
       )}
 

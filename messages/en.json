@@ -66,7 +66,7 @@
       {
         "text": "My bot answers messages and sells while I sleep. I wake up and orders are already waiting.",
         "name": "María G.",
-        "place": "Caracas"
+        "place": "Miami, FL"
       },
       {
         "text": "The booking site stays fully packed. Clients schedule on their own because it's so easy, and everything stays organized for me.",
@@ -77,8 +77,26 @@
         "text": "I love the control I have over my company from my admin portal. I see and change everything myself.",
         "name": "Carolina P.",
         "place": "Valencia"
+      },
+      {
+        "text": "They built my wholesale shoe store and I didn't expect it to be this simple. Orders come in neatly organized every morning and shipping practically runs itself. It saves me hours every week.",
+        "name": "Álvaro M.",
+        "place": "Alicante, Spain"
+      },
+      {
+        "text": "We just renewed our website and it looks so much better. Clients keep telling me it feels intuitive and easy to navigate, even though we have a ton of information to offer.",
+        "name": "Sarah K.",
+        "place": "Orlando, FL"
       }
-    ]
+    ],
+    "add": "Add your review",
+    "formTitle": "Tell us about your experience",
+    "formName": "Your name",
+    "formPlace": "Your city",
+    "formText": "Your experience with Judo Marketing",
+    "formSend": "Submit review",
+    "formThanks": "Thank you! Your review will be published after we review it.",
+    "formError": "Could not submit, please try again."
   },
   "visit": {
     "title": "Visit us",

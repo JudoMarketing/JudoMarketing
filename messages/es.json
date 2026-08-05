@@ -66,7 +66,7 @@
       {
         "text": "Mi bot responde los mensajes y vende mientras yo duermo. Me levanto y ya hay pedidos listos.",
         "name": "María G.",
-        "place": "Caracas"
+        "place": "Miami, FL"
       },
       {
         "text": "La página de citas se la pasa full. Los clientes agendan solos por lo fácil que es, y a mí me queda todo organizado.",
@@ -77,8 +77,26 @@
         "text": "Me encanta el control que tengo de mi empresa desde mi portal de administrador. Todo lo veo y lo cambio yo misma.",
         "name": "Carolina P.",
         "place": "Valencia"
+      },
+      {
+        "text": "Monté con ellos la tienda para distribuir zapatos al mayor y no me lo esperaba tan sencillo. Recibo los pedidos ordenaditos cada mañana y los envíos salen casi solos. Me ha quitado horas de trabajo a la semana.",
+        "name": "Álvaro M.",
+        "place": "Alicante, España"
+      },
+      {
+        "text": "We just renewed our website and it looks so much better. Clients keep telling me it feels intuitive and easy to navigate, even though we have a ton of information to offer.",
+        "name": "Sarah K.",
+        "place": "Orlando, FL"
       }
-    ]
+    ],
+    "add": "Agregar tu reseña",
+    "formTitle": "Cuéntanos tu experiencia",
+    "formName": "Tu nombre",
+    "formPlace": "Tu ciudad",
+    "formText": "Tu experiencia con Judo Marketing",
+    "formSend": "Enviar reseña",
+    "formThanks": "¡Gracias! Tu reseña se publicará después de que la revisemos.",
+    "formError": "No se pudo enviar, intenta de nuevo."
   },
   "visit": {
     "title": "Visítanos",
