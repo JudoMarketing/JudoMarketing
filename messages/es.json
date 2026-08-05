@@ -16,8 +16,32 @@
     "ctaPrimary": "Hablemos de tu proyecto",
     "ctaSecondary": "Ver servicios"
   },
+  "onboarding": {
+    "title": "Así trabajamos contigo",
+    "subtitle": "Cuatro pasos, sin sorpresas.",
+    "steps": [
+      {
+        "title": "Entrevista inicial",
+        "description": "Conocemos tu proyecto y te decimos con honestidad si podemos lograrlo."
+      },
+      {
+        "title": "Suscripción protegida",
+        "description": "Pagas tu suscripción, reembolsable si no terminamos tu proyecto en menos de un mes."
+      },
+      {
+        "title": "Tu portal, a tu gusto",
+        "description": "Una vez aprobado todo, creamos tu portal de administrador personalizado."
+      },
+      {
+        "title": "¡Tu website está vivo!",
+        "description": "Lanzamos tu website o app, con soporte y mantenimiento incluidos."
+      }
+    ]
+  },
   "plans": {
     "title": "Nuestros servicios",
+    "subtitle": "Elige el punto de partida; todo crece contigo.",
+    "more": "Ver todos los detalles",
     "essential": {
       "name": "Websites Esenciales",
       "price": "desde $50/mes",
@@ -33,6 +57,123 @@
       "price": "desde $150/mes",
       "description": "Aplicaciones móviles nativas para iOS y Android con notificaciones push."
     }
+  },
+  "reviews": {
+    "title": "Lo que dicen nuestros clientes",
+    "items": [
+      {
+        "text": "Mi bot responde los mensajes y vende mientras yo duermo. Me levanto y ya hay pedidos listos.",
+        "name": "María G.",
+        "place": "Caracas"
+      },
+      {
+        "text": "La página de citas se la pasa full. Los clientes agendan solos por lo fácil que es, y a mí me queda todo organizado.",
+        "name": "Luis R.",
+        "place": "Maracaibo"
+      },
+      {
+        "text": "Me encanta el control que tengo de mi empresa desde mi portal de administrador. Todo lo veo y lo cambio yo misma.",
+        "name": "Carolina P.",
+        "place": "Valencia"
+      }
+    ]
+  },
+  "visit": {
+    "title": "Visítanos",
+    "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
+    "maps": "Ver en Google Maps",
+    "whatsapp": "Escríbenos por WhatsApp"
+  },
+  "services": {
+    "title": "Servicios",
+    "subtitle": "Todo lo que construimos incluye diseño moderno, seguridad y tu propio panel de control.",
+    "note": "Precios «desde», total mensual con contrato de 12 meses.",
+    "cta": "Hablemos de tu proyecto",
+    "essential": {
+      "name": "Websites Esenciales",
+      "price": "$50",
+      "tagline": "Ideales para negocios que necesitan presencia online profesional y funcional.",
+      "features": [
+        "Tiendas virtuales",
+        "Páginas de citas",
+        "Ventas de servicios",
+        "Diseño moderno y responsivo",
+        "Panel fácil de usar",
+        "Soporte y mantenimiento"
+      ]
+    },
+    "complex": {
+      "name": "Websites Complejos",
+      "price": "$100",
+      "tagline": "Soluciones avanzadas para operaciones más grandes y procesos complejos.",
+      "features": [
+        "Aplicaciones de delivery",
+        "Logísticas de distribución",
+        "Páginas de clases virtuales",
+        "Sistemas avanzados",
+        "Integraciones personalizadas",
+        "Escalables y seguras"
+      ]
+    },
+    "apps": {
+      "name": "Apps para Teléfonos",
+      "price": "$150",
+      "tagline": "Lleva tu negocio al siguiente nivel con aplicaciones móviles nativas.",
+      "features": [
+        "Apps de fitness",
+        "Apps de alimentación",
+        "Diseño intuitivo y moderno",
+        "iOS y Android",
+        "Notificaciones push",
+        "Soporte y actualizaciones"
+      ]
+    },
+    "perMonth": "/mes",
+    "diff": {
+      "title": "Lo que nos hace diferentes",
+      "items": [
+        {
+          "title": "Aplicaciones con IA integrada",
+          "description": "Automatiza, analiza y escala tu negocio con inteligencia artificial."
+        },
+        {
+          "title": "Aplicaciones de código madre",
+          "description": "Desarrollamos con código limpio y escalable que evoluciona junto a tu negocio."
+        },
+        {
+          "title": "Tu código, tu propiedad",
+          "description": "Cumple 1 año en contrato con nosotros y el código es completamente tuyo."
+        },
+        {
+          "title": "Control total",
+          "description": "Gestiona tu contenido, usuarios, productos y todo desde un solo lugar."
+        },
+        {
+          "title": "Seguridad y respaldos",
+          "description": "Protegemos tu información y la de tus clientes todos los días."
+        }
+      ]
+    }
+  },
+  "login": {
+    "title": "Portales",
+    "subtitle": "Un solo lugar para gestionar tu negocio con nosotros.",
+    "soon": "Muy pronto",
+    "clients": {
+      "title": "Portal de Clientes",
+      "description": "Administra tu website, contenido, usuarios y pagos desde un solo lugar."
+    },
+    "sellers": {
+      "title": "Portal de Vendedores",
+      "description": "Registra tus visitas, sigue tus ventas y observa crecer tus metas."
+    },
+    "back": "Volver al inicio"
+  },
+  "mascot": {
+    "greeting": "¡Hola! ¿En qué idioma prefieres verme?",
+    "chatSoon": "Muy pronto vas a poder chatear conmigo aquí mismo 💜",
+    "spanish": "Español",
+    "english": "English"
   },
   "footer": {
     "tagline": "Tu negocio merece una plataforma a tu altura.",

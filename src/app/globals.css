@@ -21,22 +21,228 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Glow morado de fondo, base para las luces animadas de Fase 1 */
+/* ── Fondo con glow morado ─────────────────────────────────────────── */
 .judo-glow {
   background:
-    radial-gradient(ellipse 60% 40% at 70% 10%, rgba(123, 45, 255, 0.22), transparent 70%),
-    radial-gradient(ellipse 50% 35% at 20% 80%, rgba(168, 85, 247, 0.14), transparent 70%),
-    var(--color-judo-black);
+    radial-gradient(ellipse 60% 40% at 70% 8%, rgba(123, 45, 255, 0.2), transparent 70%),
+    radial-gradient(ellipse 50% 35% at 15% 55%, rgba(109, 91, 255, 0.1), transparent 70%),
+    radial-gradient(ellipse 45% 30% at 85% 90%, rgba(168, 85, 247, 0.12), transparent 70%);
 }
 
-.judo-card {
-  background-color: var(--color-judo-surface);
+/* ── Tarjetas 3D ───────────────────────────────────────────────────── */
+.tilt-card {
+  position: relative;
+  background: linear-gradient(160deg, #171722 0%, #11111a 60%, #0d0d15 100%);
   border: 1px solid rgba(168, 85, 247, 0.18);
-  border-radius: 1rem;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  border-radius: 1.25rem;
+  transform-style: preserve-3d;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  will-change: transform;
+  overflow: hidden;
 }
 
-.judo-card:hover {
-  border-color: rgba(168, 85, 247, 0.5);
+.tilt-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    420px circle at var(--gx, 50%) var(--gy, 50%),
+    rgba(168, 85, 247, 0.14),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.tilt-card:hover {
+  border-color: rgba(168, 85, 247, 0.55);
+  box-shadow:
+    0 20px 50px -18px rgba(123, 45, 255, 0.45),
+    0 0 0 1px rgba(123, 45, 255, 0.12);
+}
+
+.tilt-card:hover::before {
+  opacity: 1;
+}
+
+/* ── Botones ───────────────────────────────────────────────────────── */
+.btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(120deg, #7b2dff, #9a4dff 55%, #7b2dff);
+  background-size: 200% 100%;
+  color: white;
+  font-weight: 600;
+  padding: 0.8rem 2rem;
+  box-shadow: 0 12px 34px -12px rgba(123, 45, 255, 0.75);
+  transition: background-position 0.5s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-position: 100% 0;
   transform: translateY(-2px);
+  box-shadow: 0 18px 44px -12px rgba(123, 45, 255, 0.9);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid rgba(123, 45, 255, 0.7);
+  color: var(--color-judo-lilac);
+  font-weight: 600;
+  padding: 0.8rem 2rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(123, 45, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ── Navegación ────────────────────────────────────────────────────── */
+.nav-link {
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.nav-link-active {
+  color: var(--color-judo-lilac);
+}
+
+.nav-link-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #7b2dff, #a855f7);
+}
+
+/* ── Scroll reveal ─────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Entrada del hero ──────────────────────────────────────────────── */
+@keyframes heroUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-in {
+  opacity: 0;
+  animation: heroUp 0.8s ease forwards;
+}
+
+/* ── Elementos flotantes 3D ────────────────────────────────────────── */
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-16px) rotate(3deg);
+  }
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.float-slow {
+  animation: floatY 7s ease-in-out infinite;
+}
+
+.float-slower {
+  animation: floatY 10s ease-in-out infinite;
+}
+
+.spin-slow {
+  animation: spinSlow 40s linear infinite;
+}
+
+.mascot-float {
+  animation: floatY 5s ease-in-out infinite;
+}
+
+/* ── Burbuja de pensamiento (anime) ────────────────────────────────── */
+.thought-bubble {
+  position: absolute;
+  bottom: 118%;
+  right: 30%;
+  width: 200px;
+  padding: 0.8rem 1rem;
+  border-radius: 1.2rem;
+  background: rgba(21, 21, 30, 0.96);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  box-shadow: 0 14px 40px -12px rgba(123, 45, 255, 0.5);
+  text-align: center;
+  animation: heroUp 0.35s ease;
+}
+
+.thought-dot {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgba(21, 21, 30, 0.96);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+}
+
+.thought-dot-1 {
+  width: 12px;
+  height: 12px;
+  bottom: -14px;
+  right: 26px;
+}
+
+.thought-dot-2 {
+  width: 7px;
+  height: 7px;
+  bottom: -26px;
+  right: 16px;
+}
+
+/* ── Marcas de verificación en listas de servicios ─────────────────── */
+.check-item::before {
+  content: "✓";
+  margin-right: 0.6rem;
+  font-weight: 700;
+  color: var(--color-judo-lilac);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-in,
+  .float-slow,
+  .float-slower,
+  .spin-slow,
+  .mascot-float {
+    animation: none;
+    opacity: 1;
+  }
 }

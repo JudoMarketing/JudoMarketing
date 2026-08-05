@@ -16,8 +16,32 @@
     "ctaPrimary": "Let's talk about your project",
     "ctaSecondary": "View services"
   },
+  "onboarding": {
+    "title": "How we work with you",
+    "subtitle": "Four steps, no surprises.",
+    "steps": [
+      {
+        "title": "Initial interview",
+        "description": "We get to know your project and tell you honestly whether we can deliver it."
+      },
+      {
+        "title": "Protected subscription",
+        "description": "You pay your subscription — refundable if we don't finish your project in under a month."
+      },
+      {
+        "title": "Your portal, your way",
+        "description": "Once everything is approved, we build your personalized admin portal."
+      },
+      {
+        "title": "Your website is live!",
+        "description": "We launch your website or app, with support and maintenance included."
+      }
+    ]
+  },
   "plans": {
     "title": "Our services",
+    "subtitle": "Pick your starting point; everything grows with you.",
+    "more": "See full details",
     "essential": {
       "name": "Essential Websites",
       "price": "from $50/mo",
@@ -33,6 +57,123 @@
       "price": "from $150/mo",
       "description": "Native iOS & Android mobile apps with push notifications."
     }
+  },
+  "reviews": {
+    "title": "What our clients say",
+    "items": [
+      {
+        "text": "My bot answers messages and sells while I sleep. I wake up and orders are already waiting.",
+        "name": "María G.",
+        "place": "Caracas"
+      },
+      {
+        "text": "The booking site stays fully packed. Clients schedule on their own because it's so easy, and everything stays organized for me.",
+        "name": "Luis R.",
+        "place": "Maracaibo"
+      },
+      {
+        "text": "I love the control I have over my company from my admin portal. I see and change everything myself.",
+        "name": "Carolina P.",
+        "place": "Valencia"
+      }
+    ]
+  },
+  "visit": {
+    "title": "Visit us",
+    "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
+    "maps": "View on Google Maps",
+    "whatsapp": "Message us on WhatsApp"
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Everything we build includes modern design, security, and your own control panel.",
+    "note": "\"From\" pricing, monthly total with a 12-month agreement.",
+    "cta": "Let's talk about your project",
+    "essential": {
+      "name": "Essential Websites",
+      "price": "$50",
+      "tagline": "Ideal for businesses that need a professional, functional online presence.",
+      "features": [
+        "Online stores",
+        "Booking pages",
+        "Service sales",
+        "Modern, responsive design",
+        "Easy-to-use panel",
+        "Support & maintenance"
+      ]
+    },
+    "complex": {
+      "name": "Complex Websites",
+      "price": "$100",
+      "tagline": "Advanced solutions for bigger operations and complex processes.",
+      "features": [
+        "Delivery applications",
+        "Distribution logistics",
+        "Virtual class pages",
+        "Advanced systems",
+        "Custom integrations",
+        "Scalable & secure"
+      ]
+    },
+    "apps": {
+      "name": "Mobile Apps",
+      "price": "$150",
+      "tagline": "Take your business to the next level with native mobile apps.",
+      "features": [
+        "Fitness apps",
+        "Food & nutrition apps",
+        "Intuitive, modern design",
+        "iOS & Android",
+        "Push notifications",
+        "Support & updates"
+      ]
+    },
+    "perMonth": "/mo",
+    "diff": {
+      "title": "What makes us different",
+      "items": [
+        {
+          "title": "AI-integrated applications",
+          "description": "Automate, analyze, and scale your business with artificial intelligence."
+        },
+        {
+          "title": "Mother-code applications",
+          "description": "We build with clean, scalable code that evolves with your business."
+        },
+        {
+          "title": "Your code, your property",
+          "description": "Complete 1 year under contract with us and the code is completely yours."
+        },
+        {
+          "title": "Total control",
+          "description": "Manage your content, users, products, and everything from one place."
+        },
+        {
+          "title": "Security & backups",
+          "description": "We protect your information and your clients' information every day."
+        }
+      ]
+    }
+  },
+  "login": {
+    "title": "Portals",
+    "subtitle": "One place to manage your business with us.",
+    "soon": "Coming soon",
+    "clients": {
+      "title": "Client Portal",
+      "description": "Manage your website, content, users, and payments from one place."
+    },
+    "sellers": {
+      "title": "Seller Portal",
+      "description": "Log your visits, track your sales, and watch your goals grow."
+    },
+    "back": "Back to home"
+  },
+  "mascot": {
+    "greeting": "Hi! Which language do you prefer?",
+    "chatSoon": "Very soon you'll be able to chat with me right here 💜",
+    "spanish": "Español",
+    "english": "English"
   },
   "footer": {
     "tagline": "Your business deserves a platform that matches its ambition.",

@@ -6,6 +6,8 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import LightLines from "@/components/LightLines";
+import Mascot from "@/components/Mascot";
 import "../globals.css";
 
 const poppins = Poppins({
@@ -60,9 +62,13 @@ export default async function LocaleLayout({
     <html lang={locale} className={poppins.variable}>
       <body className="min-h-screen antialiased">
         <NextIntlClientProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
+          <LightLines />
+          <div className="relative z-10">
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </div>
+          <Mascot />
         </NextIntlClientProvider>
       </body>
     </html>

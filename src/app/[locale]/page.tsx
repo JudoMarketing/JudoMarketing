@@ -2,6 +2,11 @@ import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { use } from "react";
 import { Link } from "@/i18n/navigation";
+import TiltCard from "@/components/TiltCard";
+import Reveal from "@/components/Reveal";
+
+type Step = { title: string; description: string };
+type Review = { text: string; name: string; place: string };
 
 export default function HomePage({
   params,
@@ -13,56 +18,201 @@ export default function HomePage({
   const t = useTranslations();
 
   const plans = ["essential", "complex", "apps"] as const;
+  const steps = t.raw("onboarding.steps") as Step[];
+  const reviews = t.raw("reviews.items") as Review[];
 
   return (
-    <div className="judo-glow">
-      <section className="mx-auto flex max-w-5xl flex-col items-center px-6 pt-24 pb-16 text-center">
-        <p className="mb-4 rounded-full border border-judo-lilac/40 px-4 py-1 text-sm text-judo-lilac">
+    <div className="judo-glow overflow-hidden">
+      {/* ── HERO ─────────────────────────────────────────────────── */}
+      <section className="relative mx-auto flex max-w-5xl flex-col items-center px-6 pt-24 pb-20 text-center">
+        {/* Elementos 3D flotantes */}
+        <svg
+          aria-hidden
+          className="float-slow pointer-events-none absolute -left-10 top-24 hidden opacity-50 md:block"
+          width="120"
+          height="132"
+          viewBox="0 0 100 110"
+        >
+          <g className="spin-slow" style={{ transformOrigin: "50px 55px" }}>
+            <polygon
+              points="50,5 95,30 95,80 50,105 5,80 5,30"
+              fill="none"
+              stroke="#a855f7"
+              strokeWidth="1.2"
+            />
+            <line x1="50" y1="5" x2="50" y2="105" stroke="#a855f7" strokeWidth="0.7" />
+            <line x1="5" y1="30" x2="95" y2="80" stroke="#a855f7" strokeWidth="0.7" />
+            <line x1="95" y1="30" x2="5" y2="80" stroke="#a855f7" strokeWidth="0.7" />
+          </g>
+        </svg>
+        <div
+          aria-hidden
+          className="float-slower pointer-events-none absolute -right-16 top-40 hidden h-40 w-40 rounded-full opacity-70 md:block"
+          style={{
+            background:
+              "radial-gradient(circle at 35% 30%, rgba(168,85,247,0.7), rgba(123,45,255,0.25) 55%, transparent 75%)",
+            filter: "blur(2px)",
+          }}
+        />
+        <svg
+          aria-hidden
+          className="pointer-events-none absolute right-8 bottom-10 hidden opacity-40 md:block"
+          width="140"
+          height="80"
+          viewBox="0 0 140 80"
+        >
+          {Array.from({ length: 5 }).map((_, r) =>
+            Array.from({ length: 9 }).map((_, c) => (
+              <circle
+                key={`${r}-${c}`}
+                cx={8 + c * 15}
+                cy={8 + r * 15}
+                r="1.6"
+                fill="#7b2dff"
+              />
+            ))
+          )}
+        </svg>
+
+        <p
+          className="hero-in mb-5 rounded-full border border-judo-lilac/40 bg-judo-surface/60 px-5 py-1.5 text-sm text-judo-lilac backdrop-blur"
+          style={{ animationDelay: "0.05s" }}
+        >
           {t("hero.kicker")}
         </p>
-        <h1 className="text-5xl font-bold leading-tight sm:text-7xl">
+        <h1
+          className="hero-in text-5xl font-bold leading-tight tracking-tight sm:text-7xl"
+          style={{ animationDelay: "0.15s" }}
+        >
           {t("hero.title")}
           <br />
-          <span className="bg-gradient-to-r from-judo-purple to-judo-lilac bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-judo-purple via-judo-lilac to-judo-purple bg-clip-text text-transparent">
             {t("hero.titleAccent")}
           </span>
         </h1>
-        <p className="mt-6 max-w-2xl text-lg text-judo-fog/70">
+        <p
+          className="hero-in mt-6 max-w-2xl text-lg text-judo-fog/70"
+          style={{ animationDelay: "0.3s" }}
+        >
           {t("hero.subtitle")}
         </p>
-        <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-          <a
-            href="mailto:admin@judomarketing.net"
-            className="rounded-full bg-judo-purple px-8 py-3 font-semibold text-white transition hover:bg-judo-lilac"
-          >
+        <div
+          className="hero-in mt-10 flex flex-col gap-4 sm:flex-row"
+          style={{ animationDelay: "0.45s" }}
+        >
+          <a href="mailto:admin@judomarketing.net" className="btn-primary">
             {t("hero.ctaPrimary")} →
           </a>
-          <Link
-            href="/"
-            className="rounded-full border border-judo-purple px-8 py-3 font-semibold text-judo-lilac transition hover:bg-judo-purple/10"
-          >
+          <Link href="/services" className="btn-secondary">
             {t("hero.ctaSecondary")}
           </Link>
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl px-6 pb-24">
-        <h2 className="mb-8 text-center text-2xl font-semibold">
-          {t("plans.title")}
-        </h2>
-        <div className="grid gap-6 sm:grid-cols-3">
-          {plans.map((plan) => (
-            <div key={plan} className="judo-card p-6">
-              <h3 className="text-lg font-semibold">{t(`plans.${plan}.name`)}</h3>
-              <p className="mt-1 font-bold text-judo-lilac">
-                {t(`plans.${plan}.price`)}
-              </p>
-              <p className="mt-3 text-sm text-judo-fog/70">
-                {t(`plans.${plan}.description`)}
-              </p>
-            </div>
+      {/* ── ONBOARDING: 4 PASOS ──────────────────────────────────── */}
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <Reveal className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl">{t("onboarding.title")}</h2>
+          <p className="mt-2 text-judo-fog/60">{t("onboarding.subtitle")}</p>
+        </Reveal>
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map((step, i) => (
+            <Reveal key={step.title} delay={i * 120}>
+              <TiltCard className="h-full p-6">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-judo-purple to-judo-lilac text-lg font-bold text-white shadow-[0_8px_24px_-8px_rgba(123,45,255,0.8)]">
+                  {i + 1}
+                </span>
+                <h3 className="mt-4 text-lg font-semibold">{step.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-judo-fog/65">
+                  {step.description}
+                </p>
+              </TiltCard>
+            </Reveal>
           ))}
         </div>
+      </section>
+
+      {/* ── SERVICIOS (VITRINA) ──────────────────────────────────── */}
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <Reveal className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl">{t("plans.title")}</h2>
+          <p className="mt-2 text-judo-fog/60">{t("plans.subtitle")}</p>
+        </Reveal>
+        <div className="mt-12 grid gap-6 sm:grid-cols-3">
+          {plans.map((plan, i) => (
+            <Reveal key={plan} delay={i * 120}>
+              <Link href="/services" className="block h-full">
+                <TiltCard className="h-full p-7">
+                  <h3 className="text-xl font-semibold">{t(`plans.${plan}.name`)}</h3>
+                  <p className="mt-1 text-2xl font-bold text-judo-lilac">
+                    {t(`plans.${plan}.price`)}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-judo-fog/65">
+                    {t(`plans.${plan}.description`)}
+                  </p>
+                  <p className="mt-5 text-sm font-semibold text-judo-lilac">
+                    {t("plans.more")} →
+                  </p>
+                </TiltCard>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ── RESEÑAS ──────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <Reveal className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl">{t("reviews.title")}</h2>
+        </Reveal>
+        <div className="mt-12 grid gap-6 sm:grid-cols-3">
+          {reviews.map((review, i) => (
+            <Reveal key={review.name} delay={i * 120}>
+              <TiltCard className="flex h-full flex-col p-7">
+                <div className="text-judo-lilac" aria-label="5 estrellas">
+                  {"★★★★★"}
+                </div>
+                <p className="mt-4 flex-1 text-sm leading-relaxed text-judo-fog/80">
+                  “{review.text}”
+                </p>
+                <p className="mt-5 text-sm font-semibold">
+                  {review.name}
+                  <span className="ml-2 font-normal text-judo-fog/50">
+                    {review.place}
+                  </span>
+                </p>
+              </TiltCard>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ── DIRECCIÓN / VISÍTANOS ────────────────────────────────── */}
+      <section className="mx-auto max-w-4xl px-6 pb-24">
+        <Reveal>
+          <TiltCard className="p-8 text-center sm:p-10">
+            <h2 className="text-2xl font-bold">{t("visit.title")}</h2>
+            <p className="mt-3 text-judo-fog/70">{t("visit.address")}</p>
+            <div className="mt-6 flex flex-col justify-center gap-4 sm:flex-row">
+              <a
+                href="https://maps.google.com/?q=66+W+Flagler+St+Suite+900+PMB+11674,+Miami,+FL+33130"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary"
+              >
+                📍 {t("visit.maps")}
+              </a>
+              <a
+                href="https://wa.me/13059349981"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+              >
+                {t("visit.whatsapp")}
+              </a>
+            </div>
+          </TiltCard>
+        </Reveal>
       </section>
     </div>
   );
