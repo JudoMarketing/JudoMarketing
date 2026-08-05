@@ -342,12 +342,24 @@ API de Vercel para uptime y dominios.
    (anti-bots del registro).
 
 **Siguientes bloques de construcción (con Claude):**
-- Chatbot mascota (solo en judomarketing.net, solo temas de Judo, vendedor sutil);
-  requiere API key de Anthropic y presupuesto mensual del dueño.
 - Dashboard de inversión publicitaria del cliente (alcance, presupuesto, gasto,
   seguidores) al conectar Meta.
-- 2FA del admin, Turnstile, versiones EN de contratos, vista espejo,
+- 2FA del admin, versiones EN de contratos, vista espejo,
   plantilla starter de sitio de cliente + uptime por API de Vercel.
+
+**Chatbot mascota (construido y verificado en producción 08/05/2026):**
+- Vive SOLO en judomarketing.net: al tocar al robotsito se abre el chat.
+- Cerebro en src/content/chatbot.ts (servicios, precios, pasos, pagos,
+  términos resumidos, vendedores, contacto) + reglas: solo temas de Judo,
+  vendedor sutil, no revela cómo se construyó, sin promesas de ingresos.
+- Endpoint /api/chat con ANTHROPIC_API_KEY (en Vercel), límite por IP,
+  historial recortado y respuestas cortas para cuidar el presupuesto.
+- Verificado en vivo: responde, declina temas ajenos, guarda la receta
+  secreta y vende sutil en ES y EN.
+
+**Turnstile + emails (completados 08/05/2026):** anti-bots activo en
+login/registro/recuperación (verificado), un solo correo de aplicación con
+diseño de marca, SMTP de Supabase funcionando, reseñas con moderación.
 
 **Motor de comisiones (construido 08/05/2026, requiere migración 0009):**
 - Trigger en la base: cada pago registrado genera la comisión del vendedor
