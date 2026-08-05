@@ -6,7 +6,9 @@
   "nav": {
     "home": "Inicio",
     "services": "Servicios",
-    "login": "Iniciar sesión"
+    "about": "Nosotros",
+    "contact": "Contacto",
+    "login": "Log in"
   },
   "hero": {
     "kicker": "Marketing profesional y accesible con IA",
@@ -179,5 +181,45 @@
     "tagline": "Tu negocio merece una plataforma a tu altura.",
     "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
     "rights": "Todos los derechos reservados."
+  },
+  "about": {
+    "title": "Nosotros",
+    "subtitle": "La estrategia judo aplicada al marketing.",
+    "intro": "En el judo no gana el más grande: gana quien usa el impulso a su favor. Judo Marketing nació con esa filosofía — ayudar a negocios pequeños y medianos a competir contra gigantes usando la tecnología, la inteligencia artificial y la estrategia como palanca.",
+    "sections": [
+      {
+        "title": "Usa el impulso del mercado",
+        "description": "No necesitas el presupuesto de una corporación. Necesitas posicionarte donde el mercado ya se está moviendo: búsquedas de Google, redes sociales y automatización con IA que trabaja mientras duermes."
+      },
+      {
+        "title": "Honestidad primero",
+        "description": "En la entrevista inicial te decimos con franqueza si podemos lograr tu proyecto. Sin humo, sin promesas infladas: si no entregamos tu proyecto en menos de un mes, te devolvemos tu primer pago."
+      },
+      {
+        "title": "Prosperidad compartida",
+        "description": "Crecemos cuando tú creces. Por eso cada website incluye tu propio portal de control, y al cumplir tu año de contrato el código es completamente tuyo."
+      }
+    ],
+    "cta": "Conoce nuestros servicios"
+  },
+  "contact": {
+    "title": "Contáctanos",
+    "subtitle": "Cuéntanos tu proyecto y te respondemos el mismo día.",
+    "form": {
+      "name": "Tu nombre",
+      "email": "Tu email o teléfono",
+      "message": "Cuéntanos sobre tu proyecto…",
+      "send": "Enviar mensaje",
+      "hint": "Se abrirá tu app de correo para enviar el mensaje a admin@judomarketing.net"
+    },
+    "whatsapp": "WhatsApp",
+    "whatsappDesc": "Respuesta rápida",
+    "call": "Llámanos",
+    "callDesc": "305-934-9981",
+    "emailTitle": "Email",
+    "emailDesc": "admin@judomarketing.net",
+    "addressTitle": "Visítanos",
+    "maps": "Ver perfil en Google",
+    "chatSoon": "Muy pronto también podrás chatear aquí con nuestro robotsito 🤖"
   }
 }

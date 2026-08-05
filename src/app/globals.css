@@ -106,6 +106,41 @@ body {
   transform: translateY(-2px);
 }
 
+/* ── Botón Log in 3D ───────────────────────────────────────────────── */
+.btn-3d {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.5rem 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(180deg, #a061ff 0%, #7b2dff 55%, #5f1fd6 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 4px 0 #45159e,
+    0 12px 26px -8px rgba(123, 45, 255, 0.75),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+.btn-3d:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow:
+    0 5px 0 #45159e,
+    0 16px 32px -8px rgba(123, 45, 255, 0.9),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.btn-3d:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 #45159e,
+    0 6px 14px -6px rgba(123, 45, 255, 0.7),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.3);
+}
+
 /* ── Navegación ────────────────────────────────────────────────────── */
 .nav-link {
   position: relative;

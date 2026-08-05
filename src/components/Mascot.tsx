@@ -115,7 +115,7 @@ export default function Mascot() {
   return (
     <div
       ref={wrapRef}
-      className="fixed right-2 bottom-2 z-40 origin-bottom-right scale-[0.68] select-none sm:right-6 sm:bottom-6 sm:scale-100"
+      className="fixed right-1 bottom-1 z-40 origin-bottom-right scale-[0.5] select-none sm:right-6 sm:bottom-6 sm:scale-100"
     >
       {bubble && (
         <div className="thought-bubble">
@@ -182,42 +182,50 @@ export default function Mascot() {
           </defs>
 
           {/* Resplandor bajo el robot */}
-          <ellipse cx="70" cy="148" rx="46" ry="9" fill="url(#mGlow)" />
+          <ellipse cx="70" cy="150" rx="44" ry="8" fill="url(#mGlow)" />
 
-          {/* Cuerpo */}
+          {/* Cuerpo (pequeño, redondeado, como el original) */}
           <g>
-            <rect x="38" y="86" width="64" height="52" rx="22" fill="url(#mBody)" stroke="#3a2a5e" strokeWidth="1" />
-            <rect x="50" y="98" width="40" height="28" rx="12" fill="#0a0a12" stroke="#5b3aa0" strokeWidth="0.8" opacity="0.9" />
-            <circle cx="70" cy="112" r="6" fill="#7b2dff" opacity="0.55" filter="url(#mBlur)" />
-            {/* Brazos */}
-            <rect x="22" y="92" width="16" height="34" rx="8" fill="url(#mBody)" stroke="#3a2a5e" strokeWidth="0.8" transform="rotate(8 30 109)" />
-            <rect x="102" y="92" width="16" height="34" rx="8" fill="url(#mBody)" stroke="#3a2a5e" strokeWidth="0.8" transform="rotate(-8 110 109)" />
+            {/* Brazos: hombros redondos pegados al torso */}
+            <ellipse cx="34" cy="112" rx="10" ry="14" fill="url(#mBody)" stroke="#3a2a5e" strokeWidth="0.8" transform="rotate(12 34 112)" />
+            <ellipse cx="106" cy="112" rx="10" ry="14" fill="url(#mBody)" stroke="#3a2a5e" strokeWidth="0.8" transform="rotate(-12 106 112)" />
+            <rect x="44" y="98" width="52" height="46" rx="20" fill="url(#mBody)" stroke="#3a2a5e" strokeWidth="1" />
+            {/* Brillo del pecho */}
+            <ellipse cx="58" cy="106" rx="14" ry="6" fill="#ffffff" opacity="0.07" />
+            <circle cx="70" cy="122" r="7" fill="#7b2dff" opacity="0.5" filter="url(#mBlur)" />
+            <circle cx="70" cy="122" r="3.2" fill="#c9a2ff" opacity="0.9" />
           </g>
 
-          {/* Cabeza (sigue el cursor) */}
-          <g ref={headRef} style={{ transformOrigin: "70px 52px" }}>
-            {/* Audífonos laterales */}
-            <rect x="8" y="34" width="14" height="30" rx="7" fill="url(#mBody)" stroke="#5b3aa0" strokeWidth="1" />
-            <rect x="118" y="34" width="14" height="30" rx="7" fill="url(#mBody)" stroke="#5b3aa0" strokeWidth="1" />
-            {/* Cabeza */}
-            <rect x="18" y="8" width="104" height="82" rx="36" fill="url(#mBody)" stroke="#3a2a5e" strokeWidth="1.2" />
-            {/* Brillo superior */}
-            <ellipse cx="52" cy="20" rx="26" ry="8" fill="#ffffff" opacity="0.08" />
-            {/* Placa de la cara */}
-            <rect x="30" y="24" width="80" height="52" rx="24" fill="url(#mFace)" stroke="#2a1f45" strokeWidth="1" />
-            {/* Ojos (siguen el cursor, parpadean) */}
+          {/* Cabeza (sigue el cursor) — grande y redonda como el original */}
+          <g ref={headRef} style={{ transformOrigin: "70px 54px" }}>
+            {/* Pods circulares de las orejas */}
+            <circle cx="13" cy="52" r="12" fill="url(#mBody)" stroke="#5b3aa0" strokeWidth="1" />
+            <circle cx="127" cy="52" r="12" fill="url(#mBody)" stroke="#5b3aa0" strokeWidth="1" />
+            <circle cx="13" cy="52" r="4.5" fill="#7b2dff" opacity="0.7" filter="url(#mBlur)" />
+            <circle cx="127" cy="52" r="4.5" fill="#7b2dff" opacity="0.7" filter="url(#mBlur)" />
+            {/* Cabeza: casco redondeado grande */}
+            <rect x="16" y="2" width="108" height="98" rx="46" fill="url(#mBody)" stroke="#3a2a5e" strokeWidth="1.2" />
+            {/* Brillos glossy */}
+            <ellipse cx="50" cy="16" rx="30" ry="9" fill="#ffffff" opacity="0.1" />
+            <ellipse cx="98" cy="88" rx="20" ry="6" fill="#7b2dff" opacity="0.12" />
+            {/* Visor / placa de la cara */}
+            <rect x="28" y="22" width="84" height="62" rx="30" fill="url(#mFace)" stroke="#2a1f45" strokeWidth="1" />
+            <ellipse cx="54" cy="30" rx="22" ry="5" fill="#ffffff" opacity="0.05" />
+            {/* Ojos (siguen el cursor, parpadean) — óvalos verticales con núcleo brillante */}
             <g
               ref={eyesRef}
               style={{
-                transformOrigin: "70px 50px",
+                transformOrigin: "70px 53px",
                 transform: blink ? "scaleY(0.08)" : undefined,
                 transition: blink ? "transform 0.06s" : "transform 0.12s",
               }}
             >
-              <ellipse cx="53" cy="50" rx="10.5" ry="13.5" fill="url(#mEye)" />
-              <ellipse cx="87" cy="50" rx="10.5" ry="13.5" fill="url(#mEye)" />
-              <ellipse cx="53" cy="50" rx="15" ry="18" fill="#7b2dff" opacity="0.25" filter="url(#mBlur)" />
-              <ellipse cx="87" cy="50" rx="15" ry="18" fill="#7b2dff" opacity="0.25" filter="url(#mBlur)" />
+              <ellipse cx="53" cy="53" rx="16" ry="20" fill="#7b2dff" opacity="0.3" filter="url(#mBlur)" />
+              <ellipse cx="87" cy="53" rx="16" ry="20" fill="#7b2dff" opacity="0.3" filter="url(#mBlur)" />
+              <ellipse cx="53" cy="53" rx="10" ry="14" fill="url(#mEye)" />
+              <ellipse cx="87" cy="53" rx="10" ry="14" fill="url(#mEye)" />
+              <ellipse cx="53" cy="50" rx="4" ry="6.5" fill="#ffffff" opacity="0.95" />
+              <ellipse cx="87" cy="50" rx="4" ry="6.5" fill="#ffffff" opacity="0.95" />
             </g>
           </g>
         </svg>

@@ -6,6 +6,8 @@
   "nav": {
     "home": "Home",
     "services": "Services",
+    "about": "About Us",
+    "contact": "Contact",
     "login": "Log in"
   },
   "hero": {
@@ -179,5 +181,45 @@
     "tagline": "Your business deserves a platform that matches its ambition.",
     "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
     "rights": "All rights reserved."
+  },
+  "about": {
+    "title": "About Us",
+    "subtitle": "The judo strategy applied to marketing.",
+    "intro": "In judo, the biggest fighter doesn't win — the one who uses momentum in their favor does. Judo Marketing was born from that philosophy: helping small and medium businesses compete against giants using technology, artificial intelligence, and strategy as leverage.",
+    "sections": [
+      {
+        "title": "Use the market's momentum",
+        "description": "You don't need a corporation's budget. You need to position yourself where the market is already moving: Google searches, social media, and AI automation that works while you sleep."
+      },
+      {
+        "title": "Honesty first",
+        "description": "In the initial interview we tell you frankly whether we can deliver your project. No smoke, no inflated promises: if we don't deliver your project in under a month, we refund your first payment."
+      },
+      {
+        "title": "Shared prosperity",
+        "description": "We grow when you grow. That's why every website includes your own control portal, and once you complete your contract year the code is completely yours."
+      }
+    ],
+    "cta": "Explore our services"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Tell us about your project and we'll reply the same day.",
+    "form": {
+      "name": "Your name",
+      "email": "Your email or phone",
+      "message": "Tell us about your project…",
+      "send": "Send message",
+      "hint": "Your email app will open to send the message to admin@judomarketing.net"
+    },
+    "whatsapp": "WhatsApp",
+    "whatsappDesc": "Fast response",
+    "call": "Call us",
+    "callDesc": "305-934-9981",
+    "emailTitle": "Email",
+    "emailDesc": "admin@judomarketing.net",
+    "addressTitle": "Visit us",
+    "maps": "View Google profile",
+    "chatSoon": "Very soon you'll also be able to chat here with our little robot 🤖"
   }
 }

@@ -1,38 +1,87 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import LanguageSwitcher from "./LanguageSwitcher";
 import NavLink from "./NavLink";
 
+const LINKS = [
+  { href: "/", key: "home" },
+  { href: "/services", key: "services" },
+  { href: "/about", key: "about" },
+  { href: "/contact", key: "contact" },
+] as const;
+
 export default function Header() {
   const t = useTranslations("nav");
+  const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-judo-lilac/15 bg-judo-black/85 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-        <Link href="/" className="flex items-center gap-2">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <Link href="/" className="flex shrink-0 items-center gap-2">
           <Image
             src="/brand/logo-white-transparent.png"
             alt="Judo Marketing"
             width={120}
             height={120}
             priority
-            className="h-12 w-12 object-contain sm:h-14 sm:w-14"
+            className="h-11 w-11 object-contain sm:h-14 sm:w-14"
           />
           <span className="sr-only">Judo Marketing</span>
         </Link>
-        <nav className="flex items-center gap-4 text-sm sm:gap-6">
-          <NavLink href="/">{t("home")}</NavLink>
-          <NavLink href="/services">{t("services")}</NavLink>
+
+        {/* Navegación de escritorio */}
+        <nav className="hidden items-center gap-6 text-sm lg:flex">
+          {LINKS.map((link) => (
+            <NavLink key={link.key} href={link.href}>
+              {t(link.key)}
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-2.5 sm:gap-3">
           <LanguageSwitcher />
-          <Link
-            href="/login"
-            className="rounded-full border border-judo-purple px-4 py-1.5 font-medium text-judo-lilac transition hover:bg-judo-purple hover:text-white"
-          >
+          <Link href="/login" className="btn-3d text-sm">
             {t("login")}
           </Link>
-        </nav>
+          {/* Hamburguesa (móvil) */}
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Menu"
+            aria-expanded={open}
+            className="flex h-9 w-9 flex-col items-center justify-center gap-[5px] rounded-lg border border-judo-lilac/25 lg:hidden"
+          >
+            <span
+              className={`h-0.5 w-4.5 rounded bg-judo-fog transition ${open ? "translate-y-[7px] rotate-45" : ""}`}
+            />
+            <span
+              className={`h-0.5 w-4.5 rounded bg-judo-fog transition ${open ? "opacity-0" : ""}`}
+            />
+            <span
+              className={`h-0.5 w-4.5 rounded bg-judo-fog transition ${open ? "-translate-y-[7px] -rotate-45" : ""}`}
+            />
+          </button>
+        </div>
       </div>
+
+      {/* Menú móvil */}
+      {open && (
+        <nav
+          className="border-t border-judo-lilac/15 bg-judo-black/95 px-6 py-4 backdrop-blur lg:hidden"
+          onClick={() => setOpen(false)}
+        >
+          <div className="flex flex-col gap-4 text-base">
+            {LINKS.map((link) => (
+              <NavLink key={link.key} href={link.href}>
+                {t(link.key)}
+              </NavLink>
+            ))}
+          </div>
+        </nav>
+      )}
     </header>
   );
 }

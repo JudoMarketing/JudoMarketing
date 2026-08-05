@@ -6,6 +6,8 @@ export const routing = defineRouting({
   pathnames: {
     "/": "/",
     "/services": { es: "/servicios", en: "/services" },
+    "/about": { es: "/nosotros", en: "/about" },
+    "/contact": { es: "/contacto", en: "/contact" },
     "/login": "/login",
   },
 });
