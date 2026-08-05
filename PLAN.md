@@ -346,6 +346,19 @@ API de Vercel para uptime y dominios.
   requiere API key de Anthropic y presupuesto mensual del dueño.
 - Dashboard de inversión publicitaria del cliente (alcance, presupuesto, gasto,
   seguidores) al conectar Meta.
-- Motor de comisiones (regla: mes con sitio deshabilitado no genera comisión).
-- Gráficas de proyección del vendedor, 2FA del admin, versiones EN de contratos,
+- 2FA del admin, Turnstile, versiones EN de contratos, vista espejo,
   plantilla starter de sitio de cliente + uptime por API de Vercel.
+
+**Motor de comisiones (construido 08/05/2026, requiere migración 0009):**
+- Trigger en la base: cada pago registrado genera la comisión del vendedor
+  asignado según su tarifa (monto fijo por cada $50, proporcional, o %).
+- Regla de solvencia: sitio deshabilitado no genera comisión, y al
+  deshabilitarlo se anulan las pendientes de ese mes (estado "anulada").
+- Portal del vendedor: total vendido real, comisión pendiente/pagada, gráfica
+  mensual que sube con las ventas, y proyección con ejes ventas vs ganancia
+  ("Estás aquí") según su acuerdo individual. Cero si no hay nada.
+- Admin: sección "Comisiones de vendedores" en Pagos (por pagar por vendedor,
+  marcar pagada), y selector para reasignar cada website a un vendedor o a
+  Administración.
+- Referidos entre vendedores: el vínculo referred_by ya se guarda; la tarifa
+  de referido la negocia el dueño (pendiente definir monto para automatizar).

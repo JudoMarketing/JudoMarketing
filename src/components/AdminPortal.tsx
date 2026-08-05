@@ -57,6 +57,17 @@ type SiteMetric = {
   traffic: number | null;
 };
 
+type CommissionRow = {
+  id: string;
+  seller_id: string;
+  amount: number;
+  status: string;
+  period: string | null;
+  created_at: string;
+  sellers: { profiles: { full_name: string } | null } | null;
+  sites: { name: string } | null;
+};
+
 const box = "rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5";
 
 export default function AdminPortal() {
@@ -70,6 +81,7 @@ export default function AdminPortal() {
   const [sellers, setSellers] = useState<SellerRow[]>([]);
   const [proofs, setProofs] = useState<ProofRow[]>([]);
   const [sites, setSites] = useState<SiteRow[]>([]);
+  const [commissions, setCommissions] = useState<CommissionRow[]>([]);
   const [metrics, setMetrics] = useState<Record<string, SiteMetric>>({});
   const [msg, setMsg] = useState("");
 
@@ -82,7 +94,7 @@ export default function AdminPortal() {
   const [siteDue, setSiteDue] = useState("");
 
   const loadAll = useCallback(async () => {
-    const [selRes, proofRes, siteRes, metricsRes] = await Promise.all([
+    const [selRes, proofRes, siteRes, metricsRes, comRes] = await Promise.all([
       supabase
         .from("sellers")
         .select(
@@ -104,10 +116,18 @@ export default function AdminPortal() {
         .select("site_id,is_live,sales_count,traffic_count,reported_at")
         .order("reported_at", { ascending: false })
         .limit(400),
+      supabase
+        .from("commissions")
+        .select(
+          "id,seller_id,amount,status,period,created_at,sellers(profiles(full_name)),sites(name)"
+        )
+        .order("created_at", { ascending: false })
+        .limit(200),
     ]);
     setSellers((selRes.data as unknown as SellerRow[]) ?? []);
     setProofs((proofRes.data as ProofRow[]) ?? []);
     setSites((siteRes.data as unknown as SiteRow[]) ?? []);
+    setCommissions((comRes.data as unknown as CommissionRow[]) ?? []);
 
     // Telemetría del Judo Site Kit: último reporte y ventas acumuladas por sitio
     const metricRows = (metricsRes.data ?? []) as {
@@ -290,6 +310,26 @@ export default function AdminPortal() {
     void loadAll();
   };
 
+  const markCommissionPaid = async (id: string) => {
+    const { error } = await supabase
+      .from("commissions")
+      .update({ status: "pagada", paid_at: new Date().toISOString().slice(0, 10) })
+      .eq("id", id);
+    if (error) return flash(`Error: ${error.message}`);
+    flash("Comisión marcada como pagada ✓");
+    void loadAll();
+  };
+
+  const assignSeller = async (site: SiteRow, sellerId: string) => {
+    const { error } = await supabase
+      .from("sites")
+      .update({ seller_id: sellerId || null })
+      .eq("id", site.id);
+    if (error) return flash(`Error: ${error.message}`);
+    flash("Vendedor asignado ✓ (aplica a los pagos que se registren desde ahora)");
+    void loadAll();
+  };
+
   // ── Render ─────────────────────────────────────────────────────────
   if (denied) {
     return (
@@ -330,7 +370,13 @@ export default function AdminPortal() {
         {(
           [
             ["vendedores", `Vendedores (${sellers.length})`],
-            ["pagos", `Pagos Zelle (${proofs.filter((p) => p.status === "pendiente").length})`],
+            [
+              "pagos",
+              `Pagos y comisiones (${
+                proofs.filter((p) => p.status === "pendiente").length +
+                commissions.filter((c) => c.status === "pendiente").length
+              })`,
+            ],
             ["sitios", `Websites (${sites.length})`],
           ] as [Tab, string][]
         ).map(([key, label]) => (
@@ -424,6 +470,79 @@ export default function AdminPortal() {
               </button>
             </div>
           ))}
+
+          {/* ── Comisiones de vendedores ── */}
+          <div className={`${box} mt-2`}>
+            <h2 className="font-semibold">💰 Comisiones de vendedores</h2>
+            <p className="mt-1 text-xs text-judo-fog/50">
+              Se generan solas al registrar un pago de un website con vendedor
+              asignado. Si un sitio se deshabilita, las pendientes de ese mes se
+              anulan (regla de solvencia).
+            </p>
+            {commissions.length === 0 ? (
+              <p className="mt-3 text-sm text-judo-fog/50">
+                Aún no hay comisiones generadas.
+              </p>
+            ) : (
+              <>
+                {(() => {
+                  const pendingBySeller = new Map<string, number>();
+                  for (const c of commissions) {
+                    if (c.status !== "pendiente") continue;
+                    const name = c.sellers?.profiles?.full_name ?? "¿?";
+                    pendingBySeller.set(
+                      name,
+                      (pendingBySeller.get(name) ?? 0) + Number(c.amount)
+                    );
+                  }
+                  return pendingBySeller.size > 0 ? (
+                    <p className="mt-3 text-sm">
+                      Por pagar:{" "}
+                      {[...pendingBySeller.entries()].map(([name, total], i) => (
+                        <span key={name}>
+                          {i > 0 && " · "}
+                          <b className="text-judo-lilac">{name}</b> ${total.toFixed(2)}
+                        </span>
+                      ))}
+                    </p>
+                  ) : null;
+                })()}
+                <ul className="mt-3 divide-y divide-judo-lilac/10">
+                  {commissions.map((c) => (
+                    <li
+                      key={c.id}
+                      className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm"
+                    >
+                      <span className={c.status === "anulada" ? "opacity-50 line-through" : ""}>
+                        <b>{c.sellers?.profiles?.full_name ?? "¿?"}</b>
+                        <span className="text-judo-fog/50">
+                          {" "}· {c.sites?.name ?? "sitio"} ·{" "}
+                          {(c.period ?? c.created_at).slice(0, 7)}
+                        </span>{" "}
+                        <b className="text-judo-lilac">${Number(c.amount).toFixed(2)}</b>
+                      </span>
+                      {c.status === "pendiente" ? (
+                        <button
+                          onClick={() => markCommissionPaid(c.id)}
+                          className="btn-primary px-3 py-1 text-xs"
+                        >
+                          Marcar pagada ✓
+                        </button>
+                      ) : (
+                        <span
+                          className={`text-xs ${
+                            c.status === "pagada" ? "text-emerald-300" : "text-red-300"
+                          }`}
+                        >
+                          {c.status === "pagada" ? "✓ pagada" : "anulada"}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
         </div>
       )}
 
@@ -483,6 +602,23 @@ export default function AdminPortal() {
                   )}
                 </p>
                 <SiteDates site={site} onSaved={loadAll} flash={flash} />
+                <label className="mt-1.5 flex items-center gap-2 text-xs text-judo-fog/50">
+                  👤 Vendedor:
+                  <select
+                    value={site.seller_id ?? ""}
+                    onChange={(e) => void assignSeller(site, e.target.value)}
+                    className="rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
+                  >
+                    <option value="" className="bg-judo-surface">
+                      Yo (Administración)
+                    </option>
+                    {approvedSellers.map((s) => (
+                      <option key={s.id} value={s.id} className="bg-judo-surface">
+                        {s.profiles?.full_name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               </div>
               <button
                 onClick={async () => {

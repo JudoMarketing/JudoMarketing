@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./AuthForms";
 import ContractSigner from "./ContractSigner";
+import EarningsPanel from "./EarningsPanel";
 
 /**
  * Portal del Vendedor (MVP Fase 3).
@@ -304,22 +305,8 @@ export default function SellerPortal() {
         </div>
       )}
 
-      {/* Stats */}
-      <div className="mt-6 grid grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5">
-          <p className="text-xs uppercase tracking-wide text-judo-fog/50">
-            {t("statTotal")}
-          </p>
-          <p className="mt-1 text-3xl font-bold">$0</p>
-        </div>
-        <div className="rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5">
-          <p className="text-xs uppercase tracking-wide text-judo-fog/50">
-            {t("statCommission")}
-          </p>
-          <p className="mt-1 text-3xl font-bold text-judo-lilac">$0</p>
-          <p className="mt-1 text-[11px] text-judo-fog/45">{t("commissionNote")}</p>
-        </div>
-      </div>
+      {/* Ganancias: totales, gráfica mensual y proyección */}
+      {userId && <EarningsPanel sellerId={userId} />}
 
       {/* Registrar visita */}
       <form
