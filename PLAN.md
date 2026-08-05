@@ -153,7 +153,12 @@ solución, pero hay que decidirlas conscientemente:
   el teléfono, sincroniza al volver la señal, indicador de "pendiente de subir").
 - Dashboard: gráfica de ganancias mensuales, ejes ventas vs ganancia, proyecciones.
   Nunca se le muestra la fórmula de otros; si no ha vendido, muestra $0.
-- Contrato de cliente descargable para hacerlo firmar.
+- **Flujo de firma del contrato de cliente** (documento ya creado en
+  `docs/legal/contracts/`): el vendedor genera el contrato desde su teléfono con los
+  datos del cliente pre-llenados, el cliente firma en pantalla (touch), Administración
+  recibe email para contrafirmar desde su bandeja, y el PDF firmado por ambos se archiva
+  automáticamente en el portal de admin. También descargable en blanco para firma en
+  papel.
 - Referidos entre vendedores (un solo nivel).
 
 ### Fase 4 — Portal de Admin (`/admin`)
@@ -218,6 +223,11 @@ solución, pero hay que decidirlas conscientemente:
 - [x] Pólizas recibidas, leídas y organizadas → `docs/legal/` (análisis y huecos en `docs/legal/README.md`)
 - [x] Guía de marca documentada → `docs/BRAND.md` (paleta #7B2DFF/#A855F7/#0B0B12, Poppins, dirección Miami)
 - [x] Supabase creado: https://ajsuskyeatgatbubctzl.supabase.co
-- [ ] Archivos de imagen de marca subidos a `assets/brand/` (compartidos por chat; falta subirlos como archivos)
-- [ ] **DECISIÓN PENDIENTE (bloquea Fase 2):** propiedad del website/dominio a los 3 meses (como dicen las pólizas) o a los 12 meses (como dice el plan de negocio) — ver `docs/legal/README.md` conflicto #1
+- [x] **DECISIÓN TOMADA (08/05/2026): modelo de 12 meses.** Pólizas corregidas con la
+  Policy Amendment No. 1 (`docs/legal/AMENDMENT-1.md` + PDF)
+- [x] Contrato de Cliente creado (ES, 2 páginas): `docs/legal/contracts/` — para el
+  portal de vendedores, con firma de cliente y contrafirma de Administración
+- [ ] Archivos de imagen de marca subidos a `assets/brand/` (compartidos por chat; el
+  intento de subida al repo del 08/05 no llegó — reintentar: GitHub → rama
+  `claude/judo-marketing-redesign-ci2rj5` → Add file → Upload files)
 - [ ] Fase 0 iniciada
