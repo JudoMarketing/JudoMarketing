@@ -215,6 +215,9 @@ solución, pero hay que decidirlas conscientemente:
 ## 6. Estado
 
 - [x] Esqueleto del proyecto definido
-- [ ] Acceso a pólizas del Drive (bloqueado por red del entorno — ver dependencias)
-- [ ] Assets de marca recibidos
+- [x] Pólizas recibidas, leídas y organizadas → `docs/legal/` (análisis y huecos en `docs/legal/README.md`)
+- [x] Guía de marca documentada → `docs/BRAND.md` (paleta #7B2DFF/#A855F7/#0B0B12, Poppins, dirección Miami)
+- [x] Supabase creado: https://ajsuskyeatgatbubctzl.supabase.co
+- [ ] Archivos de imagen de marca subidos a `assets/brand/` (compartidos por chat; falta subirlos como archivos)
+- [ ] **DECISIÓN PENDIENTE (bloquea Fase 2):** propiedad del website/dominio a los 3 meses (como dicen las pólizas) o a los 12 meses (como dice el plan de negocio) — ver `docs/legal/README.md` conflicto #1
 - [ ] Fase 0 iniciada
