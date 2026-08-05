@@ -6,9 +6,9 @@
  * Solo USD.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import QRCode from "qrcode";
+import Image from "next/image";
 import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./AuthForms";
 
@@ -47,18 +47,7 @@ export default function PaymentOptions({
   const [source, setSource] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [txHash, setTxHash] = useState("");
-  const [qr, setQr] = useState("");
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (cryptoOpen && !qr) {
-      QRCode.toDataURL(USDT_ADDRESS, {
-        width: 190,
-        margin: 1,
-        color: { dark: "#0b0b12", light: "#f5f5f7" },
-      }).then(setQr);
-    }
-  }, [cryptoOpen, qr]);
 
   const amount = AMOUNTS[plan];
 
@@ -231,7 +220,7 @@ export default function PaymentOptions({
           <input required value={payerName} onChange={(e) => setPayerName(e.target.value)} placeholder={tz("payerName")} className={inputClass} />
           <input value={refCode} onChange={(e) => setRefCode(e.target.value)} placeholder={tz("refCode")} className={inputClass} />
           <select value={source} onChange={(e) => setSource(e.target.value)} className={inputClass}>
-            <option value="" className="bg-judo-surface">{tz("source")} {tz("sourceNone")}</option>
+            <option value="" className="bg-judo-surface">{tz("source")}</option>
             <option value="google" className="bg-judo-surface">{tz("sourceGoogle")}</option>
             <option value="friend" className="bg-judo-surface">{tz("sourceFriend")}</option>
             <option value="social" className="bg-judo-surface">{tz("sourceSocial")}</option>
@@ -277,10 +266,17 @@ export default function PaymentOptions({
           </p>
           <p className="text-xs text-judo-fog/60">{tc("network")}</p>
           <div className="flex flex-col items-center gap-2 rounded-xl border border-judo-lilac/25 bg-judo-black/50 p-4">
-            {qr && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={qr} alt="QR USDT" className="rounded-lg" width={160} height={160} />
-            )}
+            {/* QR oficial de Tether del dueño (verificado: apunta al contrato
+                real de USDT con su dirección). Escaneable desde el teléfono
+                si el cliente está en la computadora. */}
+            <Image
+              src="/pay/usdt-qr.png"
+              alt="QR para pagar USDT desde tu teléfono"
+              width={190}
+              height={190}
+              className="rounded-2xl border-2 border-judo-purple/60 shadow-[0_14px_40px_-12px_rgba(123,45,255,0.65)]"
+            />
+            <p className="text-xs text-judo-fog/55">📱 {tc("scanHint")}</p>
             <p className="text-xs text-judo-fog/60">{tc("address")}:</p>
             <code className="break-all text-center text-xs text-judo-lilac">{USDT_ADDRESS}</code>
             <button
@@ -306,7 +302,7 @@ export default function PaymentOptions({
           />
           <input value={refCode} onChange={(e) => setRefCode(e.target.value)} placeholder={tz("refCode")} className={inputClass} />
           <select value={source} onChange={(e) => setSource(e.target.value)} className={inputClass}>
-            <option value="" className="bg-judo-surface">{tz("source")} {tz("sourceNone")}</option>
+            <option value="" className="bg-judo-surface">{tz("source")}</option>
             <option value="google" className="bg-judo-surface">{tz("sourceGoogle")}</option>
             <option value="friend" className="bg-judo-surface">{tz("sourceFriend")}</option>
             <option value="social" className="bg-judo-surface">{tz("sourceSocial")}</option>

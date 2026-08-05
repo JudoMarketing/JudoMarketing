@@ -368,6 +368,7 @@
     "txHash": "Hash de la transacción (empieza con 0x…)",
     "screenshot": "Captura del envío (opcional)",
     "verifyNote": "La red tarda de 30 minutos a 1 hora en verificar tu pago. Te recomendamos esperar la confirmación con calma, nosotros la revisaremos y te contactaremos ese mismo día.",
-    "submit": "Enviar comprobante de pago"
+    "submit": "Enviar comprobante de pago",
+    "scanHint": "Escanéalo con tu billetera si estás en la computadora"
   }
 }

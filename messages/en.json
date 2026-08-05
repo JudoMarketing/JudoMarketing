@@ -368,6 +368,7 @@
     "txHash": "Transaction hash (starts with 0x…)",
     "screenshot": "Screenshot of the transfer (optional)",
     "verifyNote": "The network takes 30 minutes to 1 hour to verify your payment. We recommend waiting calmly for the confirmation, we will review it and contact you the same day.",
-    "submit": "Send payment proof"
+    "submit": "Send payment proof",
+    "scanHint": "Scan it with your wallet if you are on a computer"
   }
 }
