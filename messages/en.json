@@ -353,6 +353,7 @@
     "zelleTitle": "Zelle transfer",
     "zelleDesc": "Send your payment and upload the receipt.",
     "pay": "Pay",
+    "opening": "Opening secure checkout…",
     "back": "← Back to services",
     "feesNote": "The amount to pay is the plan total. Processing or network fees are covered by the client."
   },

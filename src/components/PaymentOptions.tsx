@@ -173,8 +173,12 @@ export default function PaymentOptions({
           <span className="block font-semibold">{t("stripeTitle")}</span>
           <span className="block text-sm text-judo-fog/60">{t("stripeDesc")}</span>
         </span>
-        <span className="font-bold text-judo-lilac">
-          {stripeReady ? `${t("pay")} ${amount} →` : t("paypalSoon")}
+        <span className={`font-bold text-judo-lilac ${loading ? "animate-pulse" : ""}`}>
+          {loading
+            ? t("opening")
+            : stripeReady
+              ? `${t("pay")} ${amount} →`
+              : t("paypalSoon")}
         </span>
       </button>
 

@@ -353,6 +353,7 @@
     "zelleTitle": "Transferencia Zelle",
     "zelleDesc": "Envía tu pago y sube el comprobante.",
     "pay": "Pagar",
+    "opening": "Abriendo pago seguro…",
     "back": "← Volver a servicios",
     "feesNote": "El monto a pagar es el total del plan. Los fees de procesamiento o de red los cubre el cliente."
   },
