@@ -203,7 +203,7 @@
   "about": {
     "title": "About Us",
     "subtitle": "The judo strategy applied to marketing.",
-    "intro": "In judo, the biggest fighter doesn't win, the one who uses momentum in their favor does. Judo Marketing was born from that philosophy: helping small and medium businesses compete against giants using technology, artificial intelligence, and strategy as leverage.",
+    "intro": "In judo the biggest fighter doesn't win, the one who turns the opponent's momentum to their advantage does. Judo Marketing was born from that philosophy: we help small and medium businesses compete against giants using technology, artificial intelligence, and strategy as leverage.",
     "sections": [
       {
         "title": "Use the market's momentum",
@@ -219,13 +219,7 @@
       }
     ],
     "cta": "Explore our services",
-    "deepTitle": "What is the judo strategy?",
-    "deepParagraphs": [
-      "Judo means the way of flexibility. Jigoro Kano created it in 1882 around a revolutionary idea: your opponent's strength is not a threat, it is a resource. When someone bigger pushes you, you don't block them head on. You move with them, break their balance, and use their own momentum to throw them. That is why in judo a small fighter can beat a huge one: size doesn't win, technique wins.",
-      "Marketing works exactly the same way. Big corporations push with millions in advertising. A small business that tries to stop that push head on loses. The one who applies judo doesn't fight the current, it rides it: Google already moves millions of searches every day, social networks already decide what people see, artificial intelligence already works without sleeping. That momentum exists and it is available. Our job is to put it to work for your business.",
-      "Two judo principles guide everything we do. The first is Seiryoku Zen'yo, maximum efficiency with minimum effort: every dollar in your budget should do the work of ten, which is why we automate, measure, and adjust instead of spending for the sake of spending. The second is Jita Kyoei, mutual benefit: we only win when you win, which is why your portal gives you control of your business and after one year under contract the code is completely yours.",
-      "In practice it looks like this: we find the spot where your big competitor is off balance. A niche they ignore, a search they don't answer, a slow customer service your bot can beat on speed. That is where we apply the technique. You don't need to be bigger than them, you need better leverage."
-    ]
+    "intro2": "We don't try to stop the big players head on. We ride the momentum that already exists, Google searches, social media, and automation that works while you sleep, and we put it to work for your business."
   },
   "contact": {
     "title": "Contact Us",

@@ -203,7 +203,7 @@
   "about": {
     "title": "Nosotros",
     "subtitle": "La estrategia judo aplicada al marketing.",
-    "intro": "En el judo no gana el más grande: gana quien usa el impulso a su favor. Judo Marketing nació con esa filosofía, ayudar a negocios pequeños y medianos a competir contra gigantes usando la tecnología, la inteligencia artificial y la estrategia como palanca.",
+    "intro": "En el judo no gana el más grande, gana quien usa el impulso del otro a su favor. Con esa filosofía nació Judo Marketing: ayudamos a negocios pequeños y medianos a competir contra gigantes usando la tecnología, la inteligencia artificial y la estrategia como palanca.",
     "sections": [
       {
         "title": "Usa el impulso del mercado",
@@ -219,13 +219,7 @@
       }
     ],
     "cta": "Conoce nuestros servicios",
-    "deepTitle": "¿Qué es la estrategia judo?",
-    "deepParagraphs": [
-      "El judo significa el camino de la flexibilidad. Lo creó Jigoro Kano en 1882 con una idea revolucionaria: la fuerza del oponente no es una amenaza, es un recurso. Cuando alguien más grande te empuja, no lo frenas de frente. Lo acompañas, lo desequilibras y usas su propio impulso para proyectarlo. Por eso en el judo un peleador pequeño puede vencer a uno enorme: no gana el tamaño, gana la técnica.",
-      "En marketing pasa exactamente lo mismo. Las grandes corporaciones empujan con millones en publicidad. Un negocio pequeño que intenta frenar ese empuje de frente, pierde. El que aplica judo no pelea contra la corriente, se sube en ella: Google ya mueve millones de búsquedas cada día, las redes sociales ya deciden qué ve la gente, la inteligencia artificial ya trabaja sin dormir. Ese impulso existe y está disponible. Nuestro trabajo es ponerlo a favor de tu negocio.",
-      "Dos principios del judo guían todo lo que hacemos. El primero es Seiryoku Zen'yo, máxima eficiencia con mínimo esfuerzo: cada dólar de tu presupuesto debe hacer el trabajo de diez, por eso automatizamos, medimos y ajustamos en lugar de gastar por gastar. El segundo es Jita Kyoei, beneficio mutuo: nosotros solo ganamos cuando tú ganas, por eso tu portal te da el control de tu negocio y al cumplir tu año de contrato el código es completamente tuyo.",
-      "En la práctica se ve así: encontramos el punto donde tu competencia grande está desequilibrada. Un nicho que ignora, una búsqueda que no responde, una atención al cliente lenta que tu bot puede ganar por velocidad. Ahí aplicamos la técnica. No necesitas ser más grande que ellos, necesitas mejor palanca."
-    ]
+    "intro2": "No intentamos frenar a los grandes de frente. Nos subimos al impulso que ya existe, las búsquedas de Google, las redes sociales y la automatización que trabaja mientras duermes, y lo ponemos a favor de tu negocio."
   },
   "contact": {
     "title": "Contáctanos",
