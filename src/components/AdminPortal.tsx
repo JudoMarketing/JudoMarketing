@@ -44,7 +44,15 @@ type SiteRow = {
   next_payment_due: string | null;
   seller_id: string | null;
   kit_api_key: string;
+  domain_expires_at: string | null;
   clients: { full_name: string; business_name: string | null } | null;
+};
+
+type SiteMetric = {
+  is_live: boolean | null;
+  reported_at: string;
+  salesTotal: number;
+  traffic: number | null;
 };
 
 const box = "rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5";
@@ -60,6 +68,7 @@ export default function AdminPortal() {
   const [sellers, setSellers] = useState<SellerRow[]>([]);
   const [proofs, setProofs] = useState<ProofRow[]>([]);
   const [sites, setSites] = useState<SiteRow[]>([]);
+  const [metrics, setMetrics] = useState<Record<string, SiteMetric>>({});
   const [msg, setMsg] = useState("");
 
   // Formulario de nuevo sitio
@@ -71,7 +80,7 @@ export default function AdminPortal() {
   const [siteDue, setSiteDue] = useState("");
 
   const loadAll = useCallback(async () => {
-    const [selRes, proofRes, siteRes] = await Promise.all([
+    const [selRes, proofRes, siteRes, metricsRes] = await Promise.all([
       supabase
         .from("sellers")
         .select(
@@ -85,13 +94,40 @@ export default function AdminPortal() {
       supabase
         .from("sites")
         .select(
-          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,kit_api_key,clients(full_name,business_name)"
+          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,kit_api_key,domain_expires_at,clients(full_name,business_name)"
         )
         .order("created_at", { ascending: false }),
+      supabase
+        .from("site_metrics")
+        .select("site_id,is_live,sales_count,traffic_count,reported_at")
+        .order("reported_at", { ascending: false })
+        .limit(400),
     ]);
     setSellers((selRes.data as unknown as SellerRow[]) ?? []);
     setProofs((proofRes.data as ProofRow[]) ?? []);
     setSites((siteRes.data as unknown as SiteRow[]) ?? []);
+
+    // Telemetría del Judo Site Kit: último reporte y ventas acumuladas por sitio
+    const metricRows = (metricsRes.data ?? []) as {
+      site_id: string;
+      is_live: boolean | null;
+      sales_count: number | null;
+      traffic_count: number | null;
+      reported_at: string;
+    }[];
+    const byId: Record<string, SiteMetric> = {};
+    for (const row of metricRows) {
+      if (!byId[row.site_id]) {
+        byId[row.site_id] = {
+          is_live: row.is_live,
+          reported_at: row.reported_at,
+          salesTotal: 0,
+          traffic: row.traffic_count,
+        };
+      }
+      byId[row.site_id].salesTotal += row.sales_count ?? 0;
+    }
+    setMetrics(byId);
   }, [supabase]);
 
   useEffect(() => {
@@ -409,11 +445,24 @@ export default function AdminPortal() {
                 <p className="text-xs text-judo-fog/50">
                   {site.clients?.full_name ?? "Sin cliente"} · ${site.monthly_price}/mes ·{" "}
                   {site.months_paid}/12 pagos ·{" "}
-                  {site.next_payment_due ? `próximo: ${site.next_payment_due}` : "sin fecha"} ·{" "}
                   <b className={site.status === "activo" ? "text-emerald-300" : site.status === "deshabilitado" ? "text-red-300" : "text-amber-300"}>
                     {site.status}
                   </b>
                 </p>
+                {/* Telemetría del Judo Site Kit */}
+                <p className="text-xs text-judo-fog/50">
+                  {metrics[site.id] ? (
+                    <>
+                      {metrics[site.id].is_live === false ? "🔴 caído" : "🟢 en vivo"} · último
+                      reporte {new Date(metrics[site.id].reported_at).toLocaleString("es-US", { dateStyle: "short", timeStyle: "short" })} ·
+                      ventas reportadas: <b className="text-judo-fog">{metrics[site.id].salesTotal}</b>
+                      {metrics[site.id].traffic != null && <> · tráfico: {metrics[site.id].traffic}</>}
+                    </>
+                  ) : (
+                    "📡 sin telemetría aún (kit no conectado)"
+                  )}
+                </p>
+                <SiteDates site={site} onSaved={loadAll} flash={flash} />
               </div>
               <button
                 onClick={async () => {
@@ -441,6 +490,56 @@ export default function AdminPortal() {
             </div>
           ))}
         </div>
+      )}
+    </div>
+  );
+}
+
+// ── Fechas editables del sitio (próximo pago y expiración de dominio) ──
+function SiteDates({
+  site,
+  onSaved,
+  flash,
+}: {
+  site: SiteRow;
+  onSaved: () => void;
+  flash: (m: string) => void;
+}) {
+  const supabase = getSupabase();
+  const [due, setDue] = useState(site.next_payment_due ?? "");
+  const [domainExp, setDomainExp] = useState(site.domain_expires_at ?? "");
+  const dirty = due !== (site.next_payment_due ?? "") || domainExp !== (site.domain_expires_at ?? "");
+
+  const save = async () => {
+    const { error } = await supabase
+      .from("sites")
+      .update({
+        next_payment_due: due || null,
+        domain_expires_at: domainExp || null,
+      })
+      .eq("id", site.id);
+    if (error) return flash(`Error: ${error.message}`);
+    flash("Fechas actualizadas ✓");
+    onSaved();
+  };
+
+  const dateClass =
+    "rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac";
+
+  return (
+    <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-judo-fog/50">
+      <label className="flex items-center gap-1">
+        💵 Próximo cobro:
+        <input type="date" value={due} onChange={(e) => setDue(e.target.value)} className={dateClass} />
+      </label>
+      <label className="flex items-center gap-1">
+        🌐 Dominio expira:
+        <input type="date" value={domainExp} onChange={(e) => setDomainExp(e.target.value)} className={dateClass} />
+      </label>
+      {dirty && (
+        <button onClick={save} className="rounded-full bg-judo-purple px-3 py-1 text-xs font-semibold text-white hover:bg-judo-lilac">
+          Guardar
+        </button>
       )}
     </div>
   );

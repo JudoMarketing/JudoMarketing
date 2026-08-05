@@ -147,11 +147,11 @@ solución, pero hay que decidirlas conscientemente:
 > **Aclaración del dueño (08/05/2026) sobre los portales:**
 > - El **portal de administrador de cada cliente vive en SU propio website** (lo crea el
 >   dueño desde el sitio del cliente), NO en judomarketing.net.
-> - El **Portal de Clientes de judomarketing.net** es para las estadísticas de su cuenta
->   de publicidad: reportes de gastos de ads, progreso en redes sociales y Google,
->   cuando Judo maneja su publicidad paga. Al iniciar un cliente, desde su propio portal
->   se conecta Meta y esa información se manda al panel de judomarketing. (Los stats de
->   presupuesto de negocio se definirán más adelante.)
+> - El **Portal de Clientes de judomarketing.net** muestra SOLO métricas de inversión
+>   publicitaria: alcance, presupuestos, cuánto se ha gastado en campañas, seguidores,
+>   un dashboard de inversión (aclarado de nuevo el 08/05). El comportamiento del
+>   website lo ve cada cliente en el portal de administración propio de su sitio.
+>   La conexión de Meta se hace desde el portal del cliente al iniciar.
 > - El servidor tiene conexión al MCP de Facebook/Meta Ads disponible para esta
 >   integración en la fase correspondiente.
 
