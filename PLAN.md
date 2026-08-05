@@ -245,6 +245,21 @@ API de Vercel para uptime y dominios.
   el Kit incluido y registro automático en el portal.
 - Chequeos SEO básicos automatizados por sitio.
 
+> **Reglas de negocio confirmadas por el dueño (08/05):**
+> - **Comisiones atadas a solvencia:** si un website se desactiva, ese mes el vendedor
+>   NO percibe los ingresos de ese website. (El Acuerdo de Vendedores §4 ya lo dice; el
+>   motor de comisiones debe saltar los meses con sitio deshabilitado.)
+> - **Chatbot de la mascota:** SOLO en judomarketing.net (la mascota no aparece en los
+>   sitios de clientes). Responde únicamente sobre Judo Marketing: lo que está en el
+>   website y en los términos, y actúa como vendedor hablando de beneficios. No responde
+>   sobre otras compañías ni sobre cómo se construyó la plataforma.
+> - **Cada sitio nuevo se construye en su propio chat de Claude Code** independiente.
+> - **Registrar de dominios: Cloudflare** (renovaciones a precio de costo, más barato
+>   que Namecheap). Recordatorio activo para cuando se registre el primer dominio.
+> - **Pagos:** Stripe + PayPal + cripto USDT ERC-20 (red Ethereum) a la dirección
+>   0x1848289C74282b1b2F58CfEf43019A9f9d180086. El cliente cubre los fees y envía el
+>   total; la verificación cripto tarda 30-60 min y se le recomienda esperar.
+
 ### Fase 6 — Pagos y comunicaciones
 - Stripe: suscripciones, webhooks → actualizan solvencia automáticamente; convive con
   pagos manuales.

@@ -6,8 +6,9 @@
  * Solo USD.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import QRCode from "qrcode";
 import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./AuthForms";
 
@@ -18,6 +19,8 @@ const AMOUNTS: Record<string, string> = {
 };
 
 const ZELLE_EMAIL = "admin@judomarketing.net";
+// USDT ERC-20 (red Ethereum), billetera de Judo Marketing
+const USDT_ADDRESS = "0x1848289C74282b1b2F58CfEf43019A9f9d180086";
 
 export default function PaymentOptions({
   plan,
@@ -30,9 +33,11 @@ export default function PaymentOptions({
 }) {
   const t = useTranslations("pay");
   const tz = useTranslations("zelle");
+  const tc = useTranslations("crypto");
   const locale = useLocale();
 
   const [zelleOpen, setZelleOpen] = useState(false);
+  const [cryptoOpen, setCryptoOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
@@ -41,6 +46,19 @@ export default function PaymentOptions({
   const [refCode, setRefCode] = useState("");
   const [source, setSource] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [txHash, setTxHash] = useState("");
+  const [qr, setQr] = useState("");
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (cryptoOpen && !qr) {
+      QRCode.toDataURL(USDT_ADDRESS, {
+        width: 190,
+        margin: 1,
+        color: { dark: "#0b0b12", light: "#f5f5f7" },
+      }).then(setQr);
+    }
+  }, [cryptoOpen, qr]);
 
   const amount = AMOUNTS[plan];
 
@@ -65,24 +83,54 @@ export default function PaymentOptions({
     }
   };
 
+  const uploadScreenshot = async (theFile: File): Promise<string> => {
+    const supabase = getSupabase();
+    const ext = theFile.name.split(".").pop() ?? "jpg";
+    const path = `${plan}/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from("payment-proofs")
+      .upload(path, theFile);
+    if (upErr) throw upErr;
+    return path;
+  };
+
   const submitZelle = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) return;
     setLoading(true);
     setError("");
     try {
-      const supabase = getSupabase();
-      const ext = file.name.split(".").pop() ?? "jpg";
-      const path = `${plan}/${crypto.randomUUID()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("payment-proofs")
-        .upload(path, file);
-      if (upErr) throw upErr;
-      const { error: insErr } = await supabase.from("payment_proofs").insert({
+      const path = await uploadScreenshot(file);
+      const { error: insErr } = await getSupabase().from("payment_proofs").insert({
         plan,
+        method: "zelle",
         payer_name: payerName.trim(),
         referral_code: refCode.trim() || null,
         source: source || null,
+        screenshot_path: path,
+      });
+      if (insErr) throw insErr;
+      setDone(true);
+    } catch {
+      setError(tz("error"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const submitCrypto = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const path = file ? await uploadScreenshot(file) : null;
+      const { error: insErr } = await getSupabase().from("payment_proofs").insert({
+        plan,
+        method: "usdt",
+        payer_name: payerName.trim(),
+        referral_code: refCode.trim() || null,
+        source: source || null,
+        tx_hash: txHash.trim(),
         screenshot_path: path,
       });
       if (insErr) throw insErr;
@@ -155,7 +203,10 @@ export default function PaymentOptions({
 
       {/* 3º ZELLE */}
       <button
-        onClick={() => setZelleOpen(!zelleOpen)}
+        onClick={() => {
+          setZelleOpen(!zelleOpen);
+          setCryptoOpen(false);
+        }}
         className={`${card} border-judo-lilac/25 hover:border-judo-lilac hover:bg-judo-purple/10`}
       >
         <span className="text-3xl">🏦</span>
@@ -202,7 +253,88 @@ export default function PaymentOptions({
         </form>
       )}
 
-      {error && !zelleOpen && <p className="text-center text-sm text-red-400">{error}</p>}
+      {/* 4º CRIPTO (USDT ERC-20) */}
+      <button
+        onClick={() => {
+          setCryptoOpen(!cryptoOpen);
+          setZelleOpen(false);
+        }}
+        className={`${card} border-judo-lilac/25 hover:border-judo-lilac hover:bg-judo-purple/10`}
+      >
+        <span className="text-3xl">🪙</span>
+        <span className="flex-1">
+          <span className="block font-semibold">{tc("title")}</span>
+          <span className="block text-sm text-judo-fog/60">{tc("desc")}</span>
+        </span>
+        <span className="font-bold text-judo-lilac">{cryptoOpen ? "▲" : "▼"}</span>
+      </button>
+
+      {cryptoOpen && (
+        <form onSubmit={submitCrypto} className="flex flex-col gap-3 rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5">
+          <p className="text-sm font-semibold">{tc("panelTitle")}</p>
+          <p className="rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
+            ⚠️ {tc("warning")} ({AMOUNTS[plan].replace("$", "")} USDT)
+          </p>
+          <p className="text-xs text-judo-fog/60">{tc("network")}</p>
+          <div className="flex flex-col items-center gap-2 rounded-xl border border-judo-lilac/25 bg-judo-black/50 p-4">
+            {qr && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={qr} alt="QR USDT" className="rounded-lg" width={160} height={160} />
+            )}
+            <p className="text-xs text-judo-fog/60">{tc("address")}:</p>
+            <code className="break-all text-center text-xs text-judo-lilac">{USDT_ADDRESS}</code>
+            <button
+              type="button"
+              onClick={async () => {
+                await navigator.clipboard.writeText(USDT_ADDRESS);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2200);
+              }}
+              className="btn-secondary px-4 py-1.5 text-xs"
+            >
+              {copied ? tc("copied") : `📋 ${tc("copy")}`}
+            </button>
+          </div>
+          <input required value={payerName} onChange={(e) => setPayerName(e.target.value)} placeholder={tz("payerName")} className={inputClass} />
+          <input
+            required
+            value={txHash}
+            onChange={(e) => setTxHash(e.target.value)}
+            placeholder={tc("txHash")}
+            pattern="0x[a-fA-F0-9]{10,}"
+            className={inputClass}
+          />
+          <input value={refCode} onChange={(e) => setRefCode(e.target.value)} placeholder={tz("refCode")} className={inputClass} />
+          <select value={source} onChange={(e) => setSource(e.target.value)} className={inputClass}>
+            <option value="" className="bg-judo-surface">{tz("source")} {tz("sourceNone")}</option>
+            <option value="google" className="bg-judo-surface">{tz("sourceGoogle")}</option>
+            <option value="friend" className="bg-judo-surface">{tz("sourceFriend")}</option>
+            <option value="social" className="bg-judo-surface">{tz("sourceSocial")}</option>
+          </select>
+          <label className="flex flex-col gap-1 text-xs text-judo-fog/60">
+            {tc("screenshot")}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              className={`${inputClass} file:mr-3 file:rounded-lg file:border-0 file:bg-judo-purple file:px-3 file:py-1 file:text-white`}
+            />
+          </label>
+          <p className="rounded-xl border border-judo-lilac/25 bg-judo-black/40 px-3 py-2 text-xs text-judo-fog/60">
+            ⏳ {tc("verifyNote")}
+          </p>
+          {error && <p className="text-sm text-red-400">{error}</p>}
+          <button type="submit" disabled={loading} className="btn-primary disabled:opacity-60">
+            {loading ? "…" : `${tc("submit")} →`}
+          </button>
+        </form>
+      )}
+
+      <p className="mt-1 text-center text-xs text-judo-fog/45">{t("feesNote")}</p>
+
+      {error && !zelleOpen && !cryptoOpen && (
+        <p className="text-center text-sm text-red-400">{error}</p>
+      )}
     </div>
   );
 }

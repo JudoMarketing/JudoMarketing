@@ -26,10 +26,12 @@ type SellerRow = {
 type ProofRow = {
   id: string;
   plan: string;
+  method: string | null;
+  tx_hash: string | null;
   payer_name: string;
   referral_code: string | null;
   source: string | null;
-  screenshot_path: string;
+  screenshot_path: string | null;
   status: string;
   created_at: string;
 };
@@ -368,9 +370,10 @@ export default function AdminPortal() {
             <div key={p.id} className={`${box} flex flex-wrap items-center gap-3`}>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold">
-                  {p.payer_name}{" "}
+                  {p.method === "usdt" ? "🪙" : "🏦"} {p.payer_name}{" "}
                   <span className="text-sm font-normal text-judo-fog/50">
-                    · plan {p.plan} · {new Date(p.created_at).toLocaleDateString("es-US")}
+                    · {p.method === "usdt" ? "USDT" : "Zelle"} · plan {p.plan} ·{" "}
+                    {new Date(p.created_at).toLocaleDateString("es-US")}
                   </span>
                 </p>
                 <p className="text-xs text-judo-fog/50">
@@ -388,11 +391,28 @@ export default function AdminPortal() {
                   >
                     {p.status}
                   </b>
+                  {p.method === "usdt" && p.status === "pendiente" && (
+                    <span className="ml-2 text-amber-200">
+                      ⏳ la red tarda 30 a 60 min en confirmar
+                    </span>
+                  )}
                 </p>
               </div>
-              <button onClick={() => viewProof(p.screenshot_path)} className="btn-secondary px-4 py-1.5 text-sm">
-                Ver captura
-              </button>
+              {p.tx_hash && (
+                <a
+                  href={`https://etherscan.io/tx/${p.tx_hash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary px-4 py-1.5 text-sm"
+                >
+                  Ver en Etherscan
+                </a>
+              )}
+              {p.screenshot_path && (
+                <button onClick={() => viewProof(p.screenshot_path!)} className="btn-secondary px-4 py-1.5 text-sm">
+                  Ver captura
+                </button>
+              )}
               <button onClick={() => setProofStatus(p.id, "verificado")} className="btn-primary px-4 py-1.5 text-sm">
                 Verificar ✓
               </button>

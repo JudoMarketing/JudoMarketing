@@ -353,6 +353,21 @@
     "zelleTitle": "Zelle transfer",
     "zelleDesc": "Send your payment and upload the receipt.",
     "pay": "Pay",
-    "back": "← Back to services"
+    "back": "← Back to services",
+    "feesNote": "The amount to pay is the plan total. Processing or network fees are covered by the client."
+  },
+  "crypto": {
+    "title": "Crypto (USDT)",
+    "desc": "USDT on the Ethereum network (ERC-20)",
+    "panelTitle": "Pay with USDT (ERC-20, Ethereum network)",
+    "warning": "Important: send the TOTAL amount of the plan. You cover the Ethereum network fees, the amount we receive must be the full total.",
+    "network": "Network: Ethereum (ERC-20). Send ONLY USDT on this network, other networks will lose the funds.",
+    "address": "Payment address",
+    "copy": "Copy address",
+    "copied": "Address copied ✓",
+    "txHash": "Transaction hash (starts with 0x…)",
+    "screenshot": "Screenshot of the transfer (optional)",
+    "verifyNote": "The network takes 30 minutes to 1 hour to verify your payment. We recommend waiting calmly for the confirmation, we will review it and contact you the same day.",
+    "submit": "Send payment proof"
   }
 }

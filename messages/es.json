@@ -353,6 +353,21 @@
     "zelleTitle": "Transferencia Zelle",
     "zelleDesc": "Envía tu pago y sube el comprobante.",
     "pay": "Pagar",
-    "back": "← Volver a servicios"
+    "back": "← Volver a servicios",
+    "feesNote": "El monto a pagar es el total del plan. Los fees de procesamiento o de red los cubre el cliente."
+  },
+  "crypto": {
+    "title": "Cripto (USDT)",
+    "desc": "USDT por la red Ethereum (ERC-20)",
+    "panelTitle": "Pago con USDT (ERC-20, red Ethereum)",
+    "warning": "Importante: envía el TOTAL del plan. Los fees de la red Ethereum los cubres tú, el monto que nos llegue debe ser el total.",
+    "network": "Red: Ethereum (ERC-20). Envía SOLO USDT por esta red, otras redes pierden los fondos.",
+    "address": "Dirección de pago",
+    "copy": "Copiar dirección",
+    "copied": "Dirección copiada ✓",
+    "txHash": "Hash de la transacción (empieza con 0x…)",
+    "screenshot": "Captura del envío (opcional)",
+    "verifyNote": "La red tarda de 30 minutos a 1 hora en verificar tu pago. Te recomendamos esperar la confirmación con calma, nosotros la revisaremos y te contactaremos ese mismo día.",
+    "submit": "Enviar comprobante de pago"
   }
 }
