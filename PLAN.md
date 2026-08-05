@@ -360,5 +360,8 @@ API de Vercel para uptime y dominios.
 - Admin: sección "Comisiones de vendedores" en Pagos (por pagar por vendedor,
   marcar pagada), y selector para reasignar cada website a un vendedor o a
   Administración.
-- Referidos entre vendedores: el vínculo referred_by ya se guarda; la tarifa
-  de referido la negocia el dueño (pendiente definir monto para automatizar).
+- Referidos entre vendedores (regla definida por el dueño 08/05/2026,
+  migración 0010): el que refirió gana $10 extra UNA SOLA VEZ por cada
+  suscripción (website) que consiga su referido; se acredita con el primer
+  pago del sitio y nunca más por ese sitio, solo por sitios nuevos. Se ve en
+  el panel del vendedor y en admin con su botón de marcar pagado.

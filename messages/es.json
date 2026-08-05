@@ -304,6 +304,7 @@
     "earnProjection": "Vende más, gana más",
     "earnProjDesc": "Esto es lo que ganas al mes según lo que vendas, con tu acuerdo actual.",
     "earnYouAreHere": "Estás aquí",
+    "earnBonusLine": "{count} bono(s) por vendedores que referiste: {amount}. Ganas $10 una sola vez por cada suscripción nueva que consiga tu referido.",
     "earnAxisSold": "Ventas del mes (USD)",
     "earnAxisEarn": "Tu ganancia (USD)",
     "visitsTitle": "Registra tu visita",

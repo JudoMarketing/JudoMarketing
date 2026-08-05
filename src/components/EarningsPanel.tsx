@@ -19,6 +19,11 @@ type CommissionRow = {
   created_at: string;
 };
 type PaymentRow = { amount: number; paid_at: string };
+type BonusRow = {
+  amount: number;
+  status: "pendiente" | "pagada" | "anulada";
+  created_at: string;
+};
 type Deal = { commission_kind: string | null; commission_value: number | null };
 
 function monthKey(d: Date): string {
@@ -32,17 +37,22 @@ export default function EarningsPanel({ sellerId }: { sellerId: string }) {
 
   const [commissions, setCommissions] = useState<CommissionRow[]>([]);
   const [payments, setPayments] = useState<PaymentRow[]>([]);
+  const [bonuses, setBonuses] = useState<BonusRow[]>([]);
   const [deal, setDeal] = useState<Deal | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const [comRes, payRes, dealRes] = await Promise.all([
+      const [comRes, payRes, bonusRes, dealRes] = await Promise.all([
         supabase
           .from("commissions")
           .select("amount,status,period,created_at")
           .eq("seller_id", sellerId),
         supabase.from("payments").select("amount,paid_at"),
+        supabase
+          .from("referral_bonuses")
+          .select("amount,status,created_at")
+          .eq("referrer_id", sellerId),
         supabase
           .from("sellers")
           .select("commission_kind,commission_value")
@@ -51,6 +61,7 @@ export default function EarningsPanel({ sellerId }: { sellerId: string }) {
       ]);
       setCommissions((comRes.data as CommissionRow[]) ?? []);
       setPayments((payRes.data as PaymentRow[]) ?? []);
+      setBonuses((bonusRes.data as BonusRow[]) ?? []);
       setDeal((dealRes.data as Deal) ?? null);
       setLoaded(true);
     })();
@@ -60,12 +71,22 @@ export default function EarningsPanel({ sellerId }: { sellerId: string }) {
   const stats = useMemo(() => {
     const totalSold = payments.reduce((sum, p) => sum + Number(p.amount), 0);
     const valid = commissions.filter((c) => c.status !== "anulada");
-    const pending = valid
-      .filter((c) => c.status === "pendiente")
-      .reduce((s, c) => s + Number(c.amount), 0);
-    const paid = valid
-      .filter((c) => c.status === "pagada")
-      .reduce((s, c) => s + Number(c.amount), 0);
+    const validBonuses = bonuses.filter((b) => b.status !== "anulada");
+    const pending =
+      valid
+        .filter((c) => c.status === "pendiente")
+        .reduce((s, c) => s + Number(c.amount), 0) +
+      validBonuses
+        .filter((b) => b.status === "pendiente")
+        .reduce((s, b) => s + Number(b.amount), 0);
+    const paid =
+      valid
+        .filter((c) => c.status === "pagada")
+        .reduce((s, c) => s + Number(c.amount), 0) +
+      validBonuses
+        .filter((b) => b.status === "pagada")
+        .reduce((s, b) => s + Number(b.amount), 0);
+    const bonusTotal = validBonuses.reduce((s, b) => s + Number(b.amount), 0);
 
     // Ganancias por mes, últimos 6 meses (los meses sin ventas marcan cero)
     const months: { key: string; label: string; earned: number; sold: number }[] = [];
@@ -86,6 +107,10 @@ export default function EarningsPanel({ sellerId }: { sellerId: string }) {
       const m = months.find((x) => x.key === key);
       if (m) m.earned += Number(c.amount);
     }
+    for (const b of validBonuses) {
+      const m = months.find((x) => x.key === b.created_at.slice(0, 7));
+      if (m) m.earned += Number(b.amount);
+    }
     for (const p of payments) {
       const m = months.find((x) => x.key === p.paid_at.slice(0, 7));
       if (m) m.sold += Number(p.amount);
@@ -99,8 +124,8 @@ export default function EarningsPanel({ sellerId }: { sellerId: string }) {
         ? Math.round(active.reduce((s, m) => s + m.earned, 0) / active.length)
         : 0;
 
-    return { totalSold, pending, paid, months, thisMonth, projection };
-  }, [commissions, payments, locale]);
+    return { totalSold, pending, paid, bonusTotal, months, thisMonth, projection };
+  }, [commissions, payments, bonuses, locale]);
 
   const money = (n: number) =>
     `$${n.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
@@ -139,6 +164,17 @@ export default function EarningsPanel({ sellerId }: { sellerId: string }) {
           </p>
         </div>
       </div>
+
+      {/* Bonos por referir vendedores: $10 una sola vez por cada
+          suscripción que consiga el referido */}
+      {stats.bonusTotal > 0 && (
+        <p className="mt-3 rounded-xl border border-judo-lilac/20 bg-judo-purple/10 px-4 py-2 text-sm text-judo-fog/80">
+          🎁 {t("earnBonusLine", {
+            count: bonuses.filter((b) => b.status !== "anulada").length,
+            amount: money(stats.bonusTotal),
+          })}
+        </p>
+      )}
 
       {/* Acuerdo de comisión (visible después de la aprobación) */}
       {dealSet && deal && (

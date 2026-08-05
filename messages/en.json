@@ -304,6 +304,7 @@
     "earnProjection": "Sell more, earn more",
     "earnProjDesc": "This is what you earn per month based on what you sell, with your current deal.",
     "earnYouAreHere": "You are here",
+    "earnBonusLine": "{count} bonus(es) for sellers you referred: {amount}. You earn $10 once for every new subscription your referral lands.",
     "earnAxisSold": "Monthly sales (USD)",
     "earnAxisEarn": "Your earnings (USD)",
     "visitsTitle": "Log your visit",

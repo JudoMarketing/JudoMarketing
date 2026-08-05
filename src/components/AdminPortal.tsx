@@ -68,6 +68,16 @@ type CommissionRow = {
   sites: { name: string } | null;
 };
 
+type BonusRow = {
+  id: string;
+  amount: number;
+  status: string;
+  created_at: string;
+  referrer: { profiles: { full_name: string } | null } | null;
+  referred: { profiles: { full_name: string } | null } | null;
+  sites: { name: string } | null;
+};
+
 const box = "rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5";
 
 export default function AdminPortal() {
@@ -82,6 +92,7 @@ export default function AdminPortal() {
   const [proofs, setProofs] = useState<ProofRow[]>([]);
   const [sites, setSites] = useState<SiteRow[]>([]);
   const [commissions, setCommissions] = useState<CommissionRow[]>([]);
+  const [bonuses, setBonuses] = useState<BonusRow[]>([]);
   const [metrics, setMetrics] = useState<Record<string, SiteMetric>>({});
   const [msg, setMsg] = useState("");
 
@@ -94,7 +105,7 @@ export default function AdminPortal() {
   const [siteDue, setSiteDue] = useState("");
 
   const loadAll = useCallback(async () => {
-    const [selRes, proofRes, siteRes, metricsRes, comRes] = await Promise.all([
+    const [selRes, proofRes, siteRes, metricsRes, comRes, bonusRes] = await Promise.all([
       supabase
         .from("sellers")
         .select(
@@ -123,11 +134,19 @@ export default function AdminPortal() {
         )
         .order("created_at", { ascending: false })
         .limit(200),
+      supabase
+        .from("referral_bonuses")
+        .select(
+          "id,amount,status,created_at,referrer:sellers!referral_bonuses_referrer_id_fkey(profiles(full_name)),referred:sellers!referral_bonuses_referred_id_fkey(profiles(full_name)),sites(name)"
+        )
+        .order("created_at", { ascending: false })
+        .limit(200),
     ]);
     setSellers((selRes.data as unknown as SellerRow[]) ?? []);
     setProofs((proofRes.data as ProofRow[]) ?? []);
     setSites((siteRes.data as unknown as SiteRow[]) ?? []);
     setCommissions((comRes.data as unknown as CommissionRow[]) ?? []);
+    setBonuses((bonusRes.data as unknown as BonusRow[]) ?? []);
 
     // Telemetría del Judo Site Kit: último reporte y ventas acumuladas por sitio
     const metricRows = (metricsRes.data ?? []) as {
@@ -320,6 +339,16 @@ export default function AdminPortal() {
     void loadAll();
   };
 
+  const markBonusPaid = async (id: string) => {
+    const { error } = await supabase
+      .from("referral_bonuses")
+      .update({ status: "pagada", paid_at: new Date().toISOString().slice(0, 10) })
+      .eq("id", id);
+    if (error) return flash(`Error: ${error.message}`);
+    flash("Bono de referido marcado como pagado ✓");
+    void loadAll();
+  };
+
   const assignSeller = async (site: SiteRow, sellerId: string) => {
     const { error } = await supabase
       .from("sites")
@@ -374,7 +403,8 @@ export default function AdminPortal() {
               "pagos",
               `Pagos y comisiones (${
                 proofs.filter((p) => p.status === "pendiente").length +
-                commissions.filter((c) => c.status === "pendiente").length
+                commissions.filter((c) => c.status === "pendiente").length +
+                bonuses.filter((b) => b.status === "pendiente").length
               })`,
             ],
             ["sitios", `Websites (${sites.length})`],
@@ -479,7 +509,7 @@ export default function AdminPortal() {
               asignado. Si un sitio se deshabilita, las pendientes de ese mes se
               anulan (regla de solvencia).
             </p>
-            {commissions.length === 0 ? (
+            {commissions.length === 0 && bonuses.length === 0 ? (
               <p className="mt-3 text-sm text-judo-fog/50">
                 Aún no hay comisiones generadas.
               </p>
@@ -495,6 +525,14 @@ export default function AdminPortal() {
                       (pendingBySeller.get(name) ?? 0) + Number(c.amount)
                     );
                   }
+                  for (const b of bonuses) {
+                    if (b.status !== "pendiente") continue;
+                    const name = b.referrer?.profiles?.full_name ?? "¿?";
+                    pendingBySeller.set(
+                      name,
+                      (pendingBySeller.get(name) ?? 0) + Number(b.amount)
+                    );
+                  }
                   return pendingBySeller.size > 0 ? (
                     <p className="mt-3 text-sm">
                       Por pagar:{" "}
@@ -507,6 +545,44 @@ export default function AdminPortal() {
                     </p>
                   ) : null;
                 })()}
+                {/* Bonos por referir vendedores: $10 una sola vez por cada
+                    suscripción nueva que consiga el referido */}
+                {bonuses.length > 0 && (
+                  <ul className="mt-3 divide-y divide-judo-lilac/10 border-b border-judo-lilac/10">
+                    {bonuses.map((b) => (
+                      <li
+                        key={b.id}
+                        className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm"
+                      >
+                        <span className={b.status === "anulada" ? "opacity-50 line-through" : ""}>
+                          🎁 <b>{b.referrer?.profiles?.full_name ?? "¿?"}</b>
+                          <span className="text-judo-fog/50">
+                            {" "}· bono por referir a{" "}
+                            {b.referred?.profiles?.full_name ?? "¿?"} ·{" "}
+                            {b.sites?.name ?? "sitio"}
+                          </span>{" "}
+                          <b className="text-judo-lilac">${Number(b.amount).toFixed(2)}</b>
+                        </span>
+                        {b.status === "pendiente" ? (
+                          <button
+                            onClick={() => markBonusPaid(b.id)}
+                            className="btn-primary px-3 py-1 text-xs"
+                          >
+                            Marcar pagado ✓
+                          </button>
+                        ) : (
+                          <span
+                            className={`text-xs ${
+                              b.status === "pagada" ? "text-emerald-300" : "text-red-300"
+                            }`}
+                          >
+                            {b.status === "pagada" ? "✓ pagado" : "anulado"}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <ul className="mt-3 divide-y divide-judo-lilac/10">
                   {commissions.map((c) => (
                     <li
