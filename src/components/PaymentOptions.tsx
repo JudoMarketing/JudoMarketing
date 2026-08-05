@@ -142,6 +142,20 @@ export default function PaymentOptions({
   const card =
     "flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition";
 
+  // Acepta en NEXT_PUBLIC_PAYPAL_ME tanto el usuario solo ("judomarketing")
+  // como el enlace completo pegado desde PayPal
+  const paypalHref = (() => {
+    if (!paypalMe) return null;
+    const amt = amount.replace("$", "");
+    const v = paypalMe.trim();
+    if (/^https?:\/\//i.test(v)) {
+      const base = v.replace(/\/+$/, "");
+      return /paypal\.me\//i.test(base) ? `${base}/${amt}usd` : base;
+    }
+    const user = (v.split("/").filter(Boolean).pop() ?? v).replace(/^@/, "");
+    return `https://paypal.me/${user}/${amt}usd`;
+  })();
+
   return (
     <div className="flex flex-col gap-3">
       {/* 1º STRIPE */}
@@ -165,9 +179,9 @@ export default function PaymentOptions({
       </button>
 
       {/* 2º PAYPAL */}
-      {paypalMe ? (
+      {paypalHref ? (
         <a
-          href={`https://paypal.me/${paypalMe}/${amount.replace("$", "")}usd`}
+          href={paypalHref}
           target="_blank"
           rel="noopener noreferrer"
           className={`${card} border-judo-lilac/25 hover:border-judo-lilac hover:bg-judo-purple/10`}

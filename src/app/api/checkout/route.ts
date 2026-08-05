@@ -26,7 +26,9 @@ export async function POST(req: NextRequest) {
   const origin = req.nextUrl.origin;
   const loc = locale === "en" ? "en" : "es";
 
-  const session = await stripe.checkout.sessions.create({
+  let session: Stripe.Checkout.Session;
+  try {
+    session = await stripe.checkout.sessions.create({
     mode: "subscription",
     line_items: [{ price, quantity: 1 }],
     locale: loc,
@@ -70,7 +72,14 @@ export async function POST(req: NextRequest) {
     success_url:
       loc === "es" ? `${origin}/es?checkout=success` : `${origin}/?checkout=success`,
     cancel_url: loc === "es" ? `${origin}/es/servicios` : `${origin}/services`,
-  });
+    });
+  } catch (e) {
+    // El mensaje de Stripe dice exactamente qué está mal configurado
+    // (price inexistente, clave inválida, precio no recurrente, etc.)
+    const msg = e instanceof Error ? e.message : "unknown";
+    console.error("stripe checkout error:", msg);
+    return NextResponse.json({ error: "stripe_error", message: msg }, { status: 502 });
+  }
 
   return NextResponse.json({ url: session.url });
 }
