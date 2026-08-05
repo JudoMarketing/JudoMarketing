@@ -66,8 +66,10 @@ export async function POST(req: NextRequest) {
         },
       },
     ],
-    success_url: `${origin}/${loc}?checkout=success`,
-    cancel_url: `${origin}/${loc}/${loc === "es" ? "servicios" : "services"}`,
+    // Inglés vive sin prefijo; solo el español lleva /es
+    success_url:
+      loc === "es" ? `${origin}/es?checkout=success` : `${origin}/?checkout=success`,
+    cancel_url: loc === "es" ? `${origin}/es/servicios` : `${origin}/services`,
   });
 
   return NextResponse.json({ url: session.url });
