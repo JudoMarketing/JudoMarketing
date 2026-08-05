@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import MascotChat from "./MascotChat";
 
 /**
  * La mascota de Judo Marketing: el robotsito negro brillante de ojos morados.
@@ -24,7 +25,8 @@ export default function Mascot() {
   const target = useRef({ x: 0, y: 0 });
   const current = useRef({ x: 0, y: 0 });
 
-  const [bubble, setBubble] = useState<"lang" | "chat" | null>(null);
+  const [bubble, setBubble] = useState<"lang" | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
   const [blink, setBlink] = useState(false);
 
   // Pregunta de idioma en la primera visita
@@ -109,37 +111,34 @@ export default function Mascot() {
   );
 
   const onRobotClick = () => {
-    setBubble((b) => (b === "chat" ? null : b === "lang" ? "lang" : "chat"));
+    if (bubble === "lang") return;
+    setChatOpen((open) => !open);
   };
 
   return (
+    <>
+    {chatOpen && <MascotChat onClose={() => setChatOpen(false)} />}
     <div
       ref={wrapRef}
       className="fixed right-1 bottom-1 z-40 origin-bottom-right scale-[0.5] select-none sm:right-6 sm:bottom-6 sm:scale-100"
     >
-      {bubble && (
+      {bubble === "lang" && (
         <div className="thought-bubble">
-          {bubble === "lang" ? (
-            <>
-              <p className="text-sm">{t("greeting")}</p>
-              <div className="mt-2 flex justify-center gap-2">
-                <button
-                  onClick={() => chooseLang("es")}
-                  className="rounded-full bg-judo-purple px-3 py-1 text-xs font-semibold text-white transition hover:bg-judo-lilac"
-                >
-                  {t("spanish")}
-                </button>
-                <button
-                  onClick={() => chooseLang("en")}
-                  className="rounded-full border border-judo-purple px-3 py-1 text-xs font-semibold text-judo-lilac transition hover:bg-judo-purple/15"
-                >
-                  {t("english")}
-                </button>
-              </div>
-            </>
-          ) : (
-            <p className="text-sm">{t("chatSoon")}</p>
-          )}
+          <p className="text-sm">{t("greeting")}</p>
+          <div className="mt-2 flex justify-center gap-2">
+            <button
+              onClick={() => chooseLang("es")}
+              className="rounded-full bg-judo-purple px-3 py-1 text-xs font-semibold text-white transition hover:bg-judo-lilac"
+            >
+              {t("spanish")}
+            </button>
+            <button
+              onClick={() => chooseLang("en")}
+              className="rounded-full border border-judo-purple px-3 py-1 text-xs font-semibold text-judo-lilac transition hover:bg-judo-purple/15"
+            >
+              {t("english")}
+            </button>
+          </div>
           <span className="thought-dot thought-dot-1" />
           <span className="thought-dot thought-dot-2" />
         </div>
@@ -231,5 +230,6 @@ export default function Mascot() {
         </svg>
       </button>
     </div>
+    </>
   );
 }

@@ -193,7 +193,14 @@
     "greeting": "¡Hola! ¿En qué idioma prefieres verme?",
     "chatSoon": "Muy pronto vas a poder chatear conmigo aquí mismo 💜",
     "spanish": "Español",
-    "english": "English"
+    "english": "English",
+    "chatTitle": "Chatea conmigo",
+    "chatIntro": "¡Hola! Soy la mascota de Judo Marketing. Pregúntame lo que quieras sobre nuestros servicios, precios o cómo trabajamos 💜",
+    "chatPlaceholder": "Escribe tu pregunta…",
+    "chatSend": "Enviar",
+    "chatThinking": "Pensando…",
+    "chatError": "Ups, algo falló. Intenta de nuevo.",
+    "chatSlow": "Vas muy rápido, dame unos segundos."
   },
   "footer": {
     "tagline": "Tu negocio merece una plataforma a tu altura.",
