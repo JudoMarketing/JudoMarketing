@@ -2,6 +2,16 @@ import { setRequestLocale } from "next-intl/server";
 import { useLocale, useTranslations } from "next-intl";
 import { use } from "react";
 import { policyContent } from "@/content/service-policy";
+import { pageMetadata } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  return pageMetadata("legal", locale);
+}
 
 export default function LegalPage({
   params,

@@ -4,8 +4,19 @@ import { use } from "react";
 import { Link } from "@/i18n/navigation";
 import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
+import { pageMetadata } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  return pageMetadata("services", locale);
+}
 
 type DiffItem = { title: string; description: string };
+type FaqItem = { q: string; a: string };
 
 export default function ServicesPage({
   params,
@@ -18,6 +29,7 @@ export default function ServicesPage({
 
   const plans = ["essential", "complex", "apps"] as const;
   const diffs = t.raw("diff.items") as DiffItem[];
+  const faqs = t.raw("faq.items") as FaqItem[];
 
   return (
     <div className="judo-glow">
@@ -88,6 +100,41 @@ export default function ServicesPage({
             </Reveal>
           ))}
         </div>
+      </section>
+
+      {/* Preguntas frecuentes: contenido indexable + datos estructurados
+          FAQPage para los resultados enriquecidos de Google */}
+      <section className="mx-auto max-w-3xl px-6 pb-28">
+        <Reveal className="text-center">
+          <h2 className="text-3xl font-bold">{t("faq.title")}</h2>
+        </Reveal>
+        <div className="mt-8 space-y-3">
+          {faqs.map((faq) => (
+            <details
+              key={faq.q}
+              className="group rounded-2xl border border-judo-lilac/20 bg-judo-surface/80 px-5 py-4"
+            >
+              <summary className="cursor-pointer list-none font-semibold text-judo-fog transition group-open:text-judo-lilac">
+                {faq.q}
+              </summary>
+              <p className="mt-3 text-sm leading-relaxed text-judo-fog/75">{faq.a}</p>
+            </details>
+          ))}
+        </div>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: faqs.map((faq) => ({
+                "@type": "Question",
+                name: faq.q,
+                acceptedAnswer: { "@type": "Answer", text: faq.a },
+              })),
+            }),
+          }}
+        />
       </section>
     </div>
   );

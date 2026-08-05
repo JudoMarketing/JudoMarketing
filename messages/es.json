@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Judo Marketing, Websites, Apps y Marketing con IA",
-    "description": "Hacemos todo tipo de websites escalables y controlados por el mismo usuario. Soluciones modernas, seguras y diseñadas para hacer crecer tu negocio."
+    "title": "Judo Marketing | Diseño de Páginas Web, Apps y Marketing con IA en Miami",
+    "description": "Agencia en Miami: páginas web por suscripción desde $50 al mes, tiendas online, páginas de citas y apps móviles para negocios pequeños y medianos. Atendemos en español e inglés a todo Estados Unidos y Latinoamérica."
   },
   "nav": {
     "home": "Inicio",
@@ -171,6 +171,35 @@
         {
           "title": "Seguridad y respaldos",
           "description": "Protegemos tu información y la de tus clientes todos los días."
+        }
+      ]
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "items": [
+        {
+          "q": "¿Cuánto cuesta una página web con Judo Marketing?",
+          "a": "Nuestros websites funcionan por suscripción mensual: Websites Esenciales desde $50 al mes (tiendas online, citas, servicios), Websites Complejos desde $100 (delivery, logística, integraciones) y Apps para Teléfonos desde $150. Todo incluye diseño, soporte, mantenimiento y tu propio panel de control."
+        },
+        {
+          "q": "¿Cuánto tardan en entregar mi website?",
+          "a": "Menos de un mes. Y lo respaldamos con garantía: si no terminamos tu proyecto en menos de un mes, te devolvemos tu primer pago."
+        },
+        {
+          "q": "¿El código de mi página web será mío?",
+          "a": "Sí. Durante los primeros 12 meses el código, el diseño y el dominio son de Judo Marketing, y al cumplir tu año de contrato el código pasa a ser completamente tuyo."
+        },
+        {
+          "q": "¿Qué métodos de pago aceptan?",
+          "a": "Tarjeta de crédito o débito y todos los métodos de Stripe, PayPal, transferencia Zelle y cripto USDT (red Ethereum). Todos los pagos son en dólares."
+        },
+        {
+          "q": "¿Atienden solo en Miami?",
+          "a": "Atendemos desde Miami a clientes de todo Estados Unidos y Latinoamérica, en español y en inglés. Todo el proceso se puede hacer online, incluida la cita por Zoom."
+        },
+        {
+          "q": "¿Qué incluye la mensualidad?",
+          "a": "Hosting, mantenimiento, seguridad y respaldos diarios, soporte, y tu portal de administrador para controlar tu contenido, usuarios y ventas desde un solo lugar."
         }
       ]
     }

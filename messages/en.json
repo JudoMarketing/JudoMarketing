@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Judo Marketing, Websites, Apps & AI-Powered Marketing",
-    "description": "We build all kinds of scalable websites fully controlled by the owner. Modern, secure solutions designed to grow your business."
+    "title": "Judo Marketing | Website Design, Apps & AI-Powered Marketing in Miami",
+    "description": "Miami agency: subscription websites from $50 a month, online stores, booking pages, and mobile apps for small and medium businesses. Serving the US and Latin America in English and Spanish."
   },
   "nav": {
     "home": "Home",
@@ -171,6 +171,35 @@
         {
           "title": "Security & backups",
           "description": "We protect your information and your clients' information every day."
+        }
+      ]
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": [
+        {
+          "q": "How much does a website cost with Judo Marketing?",
+          "a": "Our websites work as a monthly subscription: Essential Websites from $50 a month (online stores, bookings, services), Complex Websites from $100 (delivery, logistics, integrations), and Mobile Apps from $150. Everything includes design, support, maintenance, and your own admin panel."
+        },
+        {
+          "q": "How long does it take to deliver my website?",
+          "a": "Less than a month. And we back it with a guarantee: if we don't finish your project in under a month, we refund your first payment."
+        },
+        {
+          "q": "Will the code of my website be mine?",
+          "a": "Yes. During the first 12 months the code, design, and domain belong to Judo Marketing, and once you complete your year under contract the code becomes completely yours."
+        },
+        {
+          "q": "What payment methods do you accept?",
+          "a": "Credit or debit card and every method Stripe offers, PayPal, Zelle transfer, and USDT crypto (Ethereum network). All payments are in US dollars."
+        },
+        {
+          "q": "Do you only serve Miami?",
+          "a": "From Miami we serve clients across the United States and Latin America, in Spanish and English. The whole process can happen online, including a Zoom meeting."
+        },
+        {
+          "q": "What does the monthly fee include?",
+          "a": "Hosting, maintenance, security and daily backups, support, and your admin portal to control your content, users, and sales from one place."
         }
       ]
     }

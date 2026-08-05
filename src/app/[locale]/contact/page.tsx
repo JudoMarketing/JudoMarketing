@@ -5,6 +5,16 @@ import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
 import BookingWidget from "@/components/BookingWidget";
+import { pageMetadata } from "@/lib/seo";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  return pageMetadata("contact", locale);
+}
 
 export default function ContactPage({
   params,

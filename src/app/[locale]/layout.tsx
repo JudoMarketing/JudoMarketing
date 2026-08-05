@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LightLines from "@/components/LightLines";
 import Mascot from "@/components/Mascot";
+import JsonLd from "@/components/JsonLd";
 import "../globals.css";
 
 const poppins = Poppins({
@@ -32,6 +33,10 @@ export async function generateMetadata({
     metadataBase: new URL("https://www.judomarketing.net"),
     title: t("title"),
     description: t("description"),
+    alternates: {
+      canonical: locale === "es" ? "/es" : "/",
+      languages: { en: "/", es: "/es", "x-default": "/" },
+    },
     icons: { icon: "/brand/logo-black.jpg" },
     openGraph: {
       title: t("title"),
@@ -61,6 +66,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className={poppins.variable}>
       <body className="min-h-screen antialiased">
+        <JsonLd locale={locale} />
         <NextIntlClientProvider>
           <LightLines />
           <div className="relative z-10">
