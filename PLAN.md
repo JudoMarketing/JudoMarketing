@@ -250,7 +250,7 @@ vendedores desde el portal de admin (Fase 4 — mientras tanto se aprueba cambia
 - [x] Esqueleto del proyecto definido
 - [x] Pólizas recibidas, leídas y organizadas → `docs/legal/` (análisis y huecos en `docs/legal/README.md`)
 - [x] Guía de marca documentada → `docs/BRAND.md` (paleta #7B2DFF/#A855F7/#0B0B12, Poppins, dirección Miami)
-- [x] Supabase creado: https://ajsuskyeatgatbubctzl.supabase.co
+- [x] Supabase creado: https://ajsuskyeatgatbubctzl.supabase.co — migración 0001 aplicada ✓ (verificado 08/05); falta aplicar 0002
 - [x] **DECISIÓN TOMADA (08/05/2026): modelo de 12 meses.** Como no hay clientes bajo
   las pólizas viejas, se creó UNA póliza única nueva: `docs/legal/service-policy.md` →
   `Service_Policy_and_Terms.pdf`. Las 8 pólizas originales quedaron en
