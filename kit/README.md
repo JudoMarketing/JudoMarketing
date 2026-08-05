@@ -14,7 +14,7 @@ App Router). Conectan el sitio al panel central de judomarketing.net:
 
 ## Cómo instalarlo en un sitio nuevo
 
-1. En el portal de admin (judomarketing.net/es/admin, pestaña Websites), crea el
+1. En el portal de admin (judomarketing.net/admin, pestaña Websites), crea el
    sitio y copia su **clave del kit** (kit key).
 2. Copia estos archivos al proyecto del cliente:
    - `middleware.ts` → a la raíz (o fusiónalo con el middleware existente)

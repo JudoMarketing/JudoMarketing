@@ -17,7 +17,7 @@ conectado al panel central de judomarketing.net.
 ## Pasos del procedimiento
 
 1. El dueño (o Claude con acceso al admin) crea el sitio en
-   judomarketing.net/es/admin → pestaña Websites → "Nuevo website" con los
+   judomarketing.net/admin → pestaña Websites → "Nuevo website" con los
    datos de arriba, y copia la **clave del kit** (botón 🔑 Kit).
 2. Crear el repositorio nuevo del cliente (GitHub del dueño) y el proyecto
    en Vercel.

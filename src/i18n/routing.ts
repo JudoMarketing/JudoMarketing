@@ -3,6 +3,9 @@ import { defineRouting } from "next-intl/routing";
 export const routing = defineRouting({
   locales: ["es", "en"],
   defaultLocale: "es",
+  // El español (idioma principal) vive SIN prefijo: www.judomarketing.net
+  // sirve directo; solo el inglés usa /en
+  localePrefix: "as-needed",
   pathnames: {
     "/": "/",
     "/services": { es: "/servicios", en: "/services" },

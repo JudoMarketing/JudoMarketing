@@ -239,7 +239,7 @@ export default function ContractSigner({
   const mailtoLink = () => {
     const subject = encodeURIComponent(`Tu contrato con Judo Marketing, código ${code}`);
     const body = encodeURIComponent(
-      `Hola ${clientName},\n\n¡Bienvenido a Judo Marketing! 💜\n\nTu Acuerdo de Servicio quedó firmado por ti, por tu vendedor ${sellerName} y por ${ADMIN_SIGNER_NAME} (Administración).\n\nCódigo de verificación: ${code}\nDescarga tu contrato firmado aquí:\n${pdfUrl}\n\nCualquier duda, tu canal directo es tu vendedor, o escríbenos en www.judomarketing.net/es/contacto\n\nJudo Marketing\n66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130`
+      `Hola ${clientName},\n\n¡Bienvenido a Judo Marketing! 💜\n\nTu Acuerdo de Servicio quedó firmado por ti, por tu vendedor ${sellerName} y por ${ADMIN_SIGNER_NAME} (Administración).\n\nCódigo de verificación: ${code}\nDescarga tu contrato firmado aquí:\n${pdfUrl}\n\nCualquier duda, tu canal directo es tu vendedor, o escríbenos en www.judomarketing.net/contacto\n\nJudo Marketing\n66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130`
     );
     return `mailto:${clientEmail}?subject=${subject}&body=${body}`;
   };

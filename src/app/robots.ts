@@ -5,7 +5,15 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/es/admin", "/en/admin", "/es/portal", "/en/portal", "/api/"],
+      disallow: [
+        "/admin",
+        "/portal",
+        "/en/admin",
+        "/en/portal",
+        "/api/",
+        "/demo-suspension",
+        "/en/suspended-demo",
+      ],
     },
     sitemap: "https://www.judomarketing.net/sitemap.xml",
   };
