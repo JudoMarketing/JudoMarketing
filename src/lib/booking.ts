@@ -96,6 +96,45 @@ export function cuposDelDia(anio: number, mes: number, dia: number): Date[] {
 }
 
 /**
+ * Todos los cupos que caen dentro de un rango de fechas. Se usa para cruzar la
+ * agenda de Google contra la rejilla y saber cuales hay que apagar.
+ */
+export function cuposEnRango(desde: Date, hasta: Date): Date[] {
+  const cupos: Date[] = [];
+  // Empezamos un dia antes porque el cupo de la 1:00 AM pertenece al dia anterior.
+  const inicio = new Date(desde.getTime() - 24 * 60 * 60_000);
+  const p = partesMiami(inicio);
+  const cursor = new Date(Date.UTC(p.anio, p.mes - 1, p.dia));
+
+  while (cursor.getTime() <= hasta.getTime() + 24 * 60 * 60_000) {
+    for (const cupo of cuposDelDia(
+      cursor.getUTCFullYear(),
+      cursor.getUTCMonth() + 1,
+      cursor.getUTCDate()
+    )) {
+      if (cupo >= desde && cupo <= hasta) cupos.push(cupo);
+    }
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+  return cupos;
+}
+
+/**
+ * ¿Este cupo choca con algún bloque ocupado? Comparamos contra la duración
+ * real de la reunión, no contra las dos horas de separación: un evento que
+ * arranca justo cuando la videollamada ya terminó no estorba.
+ */
+export function chocaConOcupado(
+  cupo: Date,
+  ocupados: { inicio: Date; fin: Date }[]
+): boolean {
+  const fin = finDeCita(cupo);
+  return ocupados.some(
+    (bloque) => bloque.inicio < fin && bloque.fin > cupo
+  );
+}
+
+/**
  * Un cupo es valido si cae en punto y en una de las horas permitidas.
  * Las horas validas son todas impares: 1 AM, y de 7 AM a 11 PM.
  */

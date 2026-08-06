@@ -4,11 +4,13 @@ import { brandedEmail, isEmailConfigured, sendBrandedEmail } from "@/lib/email";
 import {
   DIAS_A_FUTURO,
   TZ,
+  chocaConOcupado,
   cupoValido,
+  cuposEnRango,
   finDeCita,
   invitacionIcs,
 } from "@/lib/booking";
-import { crearCitaEnGoogle } from "@/lib/google-calendar";
+import { crearCitaEnGoogle, horariosOcupados } from "@/lib/google-calendar";
 
 /**
  * Citas por videollamada (Google Meet).
@@ -24,6 +26,23 @@ import { crearCitaEnGoogle } from "@/lib/google-calendar";
 const CORREO_NEGOCIO = "admin@judomarketing.net";
 const CORREO_CALENDARIO = "juniorosorio36@gmail.com";
 const ORGANIZADOR = "info@judomarketing.net";
+
+/**
+ * Agendas que se revisan para no ofrecer una hora en la que ya hay algo.
+ * "primary" es la del calendario de negocio; la personal se suma para que los
+ * compromisos propios también bloqueen. Se puede cambiar con
+ * GOOGLE_BUSY_CALENDARS (separadas por coma).
+ */
+function agendasARevisar(): string[] {
+  const desdeEntorno = process.env.GOOGLE_BUSY_CALENDARS?.trim();
+  if (desdeEntorno) {
+    return desdeEntorno
+      .split(",")
+      .map((id) => id.trim())
+      .filter(Boolean);
+  }
+  return ["primary", CORREO_CALENDARIO];
+}
 
 function servicio() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -72,24 +91,41 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
 
-  // Si la consulta falla no bloqueamos el calendario: se muestra todo libre y
-  // el POST sigue siendo el que manda sobre los choques de horario.
+  // Si algo falla no bloqueamos el calendario: se muestra todo libre y el POST
+  // sigue siendo el que manda sobre los choques de horario.
   try {
-    const supabase = servicio();
-    if (!supabase) return NextResponse.json({ tomados: [] });
+    const inicioRango = new Date(desde);
+    const finRango = new Date(hasta);
+    if (Number.isNaN(inicioRango.getTime()) || Number.isNaN(finRango.getTime())) {
+      return NextResponse.json({ error: "bad_request" }, { status: 400 });
+    }
 
-    const { data, error } = await supabase
-      .from("bookings")
-      .select("starts_at")
-      .eq("status", "confirmada")
-      .gte("starts_at", desde)
-      .lte("starts_at", hasta);
+    // Las dos fuentes se consultan a la vez: las citas ya agendadas en nuestra
+    // base y los ratos ocupados de las agendas de Google.
+    const [enBase, ocupados] = await Promise.all([
+      (async () => {
+        const supabase = servicio();
+        if (!supabase) return [] as string[];
+        const { data, error } = await supabase
+          .from("bookings")
+          .select("starts_at")
+          .eq("status", "confirmada")
+          .gte("starts_at", desde)
+          .lte("starts_at", hasta);
+        if (error) return [] as string[];
+        return (data ?? []).map((fila) => fila.starts_at as string);
+      })(),
+      horariosOcupados(inicioRango, finRango, agendasARevisar()),
+    ]);
 
-    if (error) return NextResponse.json({ tomados: [] });
+    const tomados = new Set(enBase.map((s) => new Date(s).toISOString()));
+    if (ocupados.length > 0) {
+      for (const cupo of cuposEnRango(inicioRango, finRango)) {
+        if (chocaConOcupado(cupo, ocupados)) tomados.add(cupo.toISOString());
+      }
+    }
 
-    return NextResponse.json({
-      tomados: (data ?? []).map((fila) => fila.starts_at as string),
-    });
+    return NextResponse.json({ tomados: [...tomados] });
   } catch {
     return NextResponse.json({ tomados: [] });
   }
@@ -148,6 +184,17 @@ export async function POST(req: NextRequest) {
   // de citas por IP.
   if (pasoElLimite(reservas, ip, 3)) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
+
+  // El calendario ya apaga las horas ocupadas, pero alguien podría mandar el
+  // horario a mano: lo volvemos a revisar contra la agenda antes de guardar.
+  const ocupados = await horariosOcupados(
+    inicio,
+    finDeCita(inicio),
+    agendasARevisar()
+  );
+  if (chocaConOcupado(inicio, ocupados)) {
+    return NextResponse.json({ error: "slot_taken" }, { status: 409 });
   }
 
   const supabase = servicio();

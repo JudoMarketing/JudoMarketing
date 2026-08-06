@@ -16,7 +16,9 @@ import { createSign } from "crypto";
  * sigue funcionando con la invitación por correo.
  */
 
-const SCOPE = "https://www.googleapis.com/auth/calendar.events";
+const SCOPE_EVENTOS = "https://www.googleapis.com/auth/calendar.events";
+// Permiso mínimo: solo dice "ocupado de tal hora a tal hora", nunca de qué.
+const SCOPE_OCUPACION = "https://www.googleapis.com/auth/calendar.freebusy";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 
 export function googleCalendarConfigurado(): boolean {
@@ -166,7 +168,8 @@ export async function diagnosticarGoogle() {
 
 /** Cambia la cuenta de servicio por un token de acceso de Google. */
 async function pedirToken(
-  detallado = false
+  detallado = false,
+  scope: string = SCOPE_EVENTOS
 ): Promise<string | { estado: number; error: string } | null> {
   const email = process.env.GOOGLE_SA_EMAIL!.trim().replace(/^["']|["']$/g, "");
   const usuario = process.env
@@ -180,7 +183,7 @@ async function pedirToken(
     JSON.stringify({
       iss: email,
       sub: usuario, // actuamos en nombre de esta cuenta del Workspace
-      scope: SCOPE,
+      scope,
       aud: TOKEN_URL,
       iat: ahora,
       exp: ahora + 3600,
@@ -208,6 +211,85 @@ async function pedirToken(
   }
   const data = (await res.json()) as { access_token?: string };
   return data.access_token ?? null;
+}
+
+export type Ocupado = { inicio: Date; fin: Date };
+
+// La agenda no cambia cada segundo: guardamos la respuesta un ratito para no
+// preguntarle a Google en cada visita al calendario.
+const cacheOcupados = new Map<string, { hasta: number; datos: Ocupado[] }>();
+const VIDA_CACHE = 60_000;
+
+/**
+ * Bloques ocupados de las agendas indicadas, según Google.
+ *
+ * Usa el permiso freebusy, que solo devuelve horarios: nunca el título ni los
+ * invitados de un evento. Si el permiso no está autorizado, si un calendario
+ * no está compartido, o si Google falla, devuelve lo que haya podido leer (o
+ * nada) sin romper el sistema de citas.
+ */
+export async function horariosOcupados(
+  desde: Date,
+  hasta: Date,
+  calendarios: string[]
+): Promise<Ocupado[]> {
+  if (!googleCalendarConfigurado() || calendarios.length === 0) return [];
+
+  const llaveCache = `${desde.toISOString()}|${hasta.toISOString()}|${calendarios.join(",")}`;
+  const guardado = cacheOcupados.get(llaveCache);
+  if (guardado && guardado.hasta > Date.now()) return guardado.datos;
+
+  try {
+    const token = await pedirToken(false, SCOPE_OCUPACION);
+    if (typeof token !== "string") return [];
+
+    const res = await fetch("https://www.googleapis.com/calendar/v3/freeBusy", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        timeMin: desde.toISOString(),
+        timeMax: hasta.toISOString(),
+        items: calendarios.map((id) => ({ id })),
+      }),
+    });
+
+    if (!res.ok) {
+      console.error("freeBusy falló:", await res.text());
+      return [];
+    }
+
+    const data = (await res.json()) as {
+      calendars?: Record<
+        string,
+        { busy?: { start: string; end: string }[]; errors?: unknown[] }
+      >;
+    };
+
+    const bloques: Ocupado[] = [];
+    for (const agenda of Object.values(data.calendars ?? {})) {
+      // Un calendario que no esté compartido viene con errores: lo saltamos y
+      // seguimos con los demás.
+      for (const rato of agenda.busy ?? []) {
+        const inicio = new Date(rato.start);
+        const fin = new Date(rato.end);
+        if (!Number.isNaN(inicio.getTime()) && !Number.isNaN(fin.getTime())) {
+          bloques.push({ inicio, fin });
+        }
+      }
+    }
+
+    cacheOcupados.set(llaveCache, {
+      hasta: Date.now() + VIDA_CACHE,
+      datos: bloques,
+    });
+    return bloques;
+  } catch (fallo) {
+    console.error("No se pudo leer la agenda:", fallo);
+    return [];
+  }
 }
 
 export type CitaGoogle = {
