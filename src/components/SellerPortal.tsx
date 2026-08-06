@@ -41,6 +41,27 @@ type LocalVisit = {
 
 const QUEUE_KEY = "judo-visit-queue";
 
+/** Achica la selfie a 900px y la pasa a JPEG (queda en pocos KB). */
+async function shrinkSelfie(file: File): Promise<File> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, 900 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((res) =>
+      canvas.toBlob(res, "image/jpeg", 0.85)
+    );
+    if (!blob) return file;
+    return new File([blob], "selfie.jpg", { type: "image/jpeg" });
+  } catch {
+    return file; // si el navegador no puede, sube la original
+  }
+}
+
 function loadQueue(): LocalVisit[] {
   try {
     return JSON.parse(localStorage.getItem(QUEUE_KEY) ?? "[]") as LocalVisit[];
@@ -234,16 +255,21 @@ export default function SellerPortal() {
     void syncQueue();
   };
 
-  const uploadPhoto = async (file: File) => {
+  const uploadPhoto = async (rawFile: File) => {
     if (!userId) return;
     setPhotoError("");
     setUploadingPhoto(true);
     try {
-      const ext = file.name.split(".").pop() || "jpg";
-      const path = `${userId}/avatar-${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from("avatars").upload(path, file);
+      // Las selfies de teléfono pesan varios MB y las de iPhone vienen en
+      // HEIC: se achican y se convierten a JPEG aquí mismo para que suban
+      // rápido con poco internet y nunca choquen con el límite del bucket
+      const file = await shrinkSelfie(rawFile);
+      const path = `${userId}/avatar-${Date.now()}.jpg`;
+      const { error } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, { contentType: file.type, upsert: true });
       if (error) {
-        setPhotoError(t("photoError"));
+        setPhotoError(`${t("photoError")} (${error.message})`);
         return;
       }
       const { data } = supabase.storage.from("avatars").getPublicUrl(path);
@@ -254,7 +280,9 @@ export default function SellerPortal() {
         .update({ photo_url: data.publicUrl })
         .eq("id", userId);
       if (upErr) {
-        setPhotoError(t("photoLocked"));
+        setPhotoError(
+          upErr.message.includes("Administración") ? t("photoLocked") : `${t("photoError")} (${upErr.message})`
+        );
         return;
       }
       setProfile((p) =>

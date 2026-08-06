@@ -11,9 +11,25 @@ import { useRouter } from "@/i18n/navigation";
 import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./AuthForms";
 
-type Tab = "resumen" | "vendedores" | "pagos" | "sitios" | "resenas";
+type Tab = "resumen" | "vendedores" | "visitas" | "pagos" | "sitios" | "resenas";
 
-type VisitRow = { seller_id: string };
+type VisitRow = {
+  id: string;
+  seller_id: string;
+  prospect_name: string;
+  company_name: string | null;
+  visited_on: string;
+  visit_time: string | null;
+};
+
+type ContractRow = {
+  id: string;
+  seller_id: string;
+  client_name: string;
+  business_name: string | null;
+  code: string;
+  created_at: string;
+};
 type PayRow = {
   amount: number;
   paid_at: string;
@@ -116,6 +132,8 @@ export default function AdminPortal() {
   const [bonuses, setBonuses] = useState<BonusRow[]>([]);
   const [reviews, setReviews] = useState<ReviewModRow[]>([]);
   const [visitRows, setVisitRows] = useState<VisitRow[]>([]);
+  const [contractRows, setContractRows] = useState<ContractRow[]>([]);
+  const [visitFilter, setVisitFilter] = useState("");
   const [payRows, setPayRows] = useState<PayRow[]>([]);
   const [metrics, setMetrics] = useState<Record<string, SiteMetric>>({});
   const [msg, setMsg] = useState("");
@@ -129,7 +147,7 @@ export default function AdminPortal() {
   const [siteDue, setSiteDue] = useState("");
 
   const loadAll = useCallback(async () => {
-    const [selRes, proofRes, siteRes, metricsRes, comRes, bonusRes, visitRes, payRes, revRes] = await Promise.all([
+    const [selRes, proofRes, siteRes, metricsRes, comRes, bonusRes, visitRes, contractRes, payRes, revRes] = await Promise.all([
       // profiles va desambiguado: sellers tiene dos caminos a profiles
       // (el perfil propio y el de quien aprobó) y sin esto la base rechaza
       // la consulta entera y las aplicaciones no se ven
@@ -168,7 +186,16 @@ export default function AdminPortal() {
         )
         .order("created_at", { ascending: false })
         .limit(200),
-      supabase.from("visits").select("seller_id").limit(2000),
+      supabase
+        .from("visits")
+        .select("id,seller_id,prospect_name,company_name,visited_on,visit_time")
+        .order("visited_on", { ascending: false })
+        .limit(2000),
+      supabase
+        .from("signed_contracts")
+        .select("id,seller_id,client_name,business_name,code,created_at")
+        .order("created_at", { ascending: false })
+        .limit(500),
       supabase
         .from("payments")
         .select("amount,paid_at,sites(seller_id)")
@@ -187,6 +214,7 @@ export default function AdminPortal() {
     setBonuses((bonusRes.data as unknown as BonusRow[]) ?? []);
     setReviews((revRes.data as ReviewModRow[]) ?? []);
     setVisitRows((visitRes.data as VisitRow[]) ?? []);
+    setContractRows((contractRes.data as ContractRow[]) ?? []);
     setPayRows((payRes.data as unknown as PayRow[]) ?? []);
 
     // Telemetría del Judo Site Kit: último reporte y ventas acumuladas por sitio
@@ -493,6 +521,7 @@ export default function AdminPortal() {
                   : ""
               })`,
             ],
+            ["visitas", `Visitas (${visitRows.length})`],
             [
               "pagos",
               `Pagos y comisiones (${
@@ -812,6 +841,176 @@ export default function AdminPortal() {
           </div>
         </div>
       )}
+
+      {/* ── VISITAS Y CONVERSIÓN ── */}
+      {tab === "visitas" && (() => {
+        const nameOf = (id: string) =>
+          sellers.find((s) => s.id === id)?.profiles?.full_name ?? "¿?";
+        const norm = (s: string) =>
+          s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+        // Un prospecto "convirtió" si su nombre o empresa aparece en un
+        // contrato firmado o en un website ya creado
+        const closed = new Set<string>();
+        for (const c of contractRows) {
+          closed.add(norm(c.client_name));
+          if (c.business_name) closed.add(norm(c.business_name));
+        }
+        for (const s of sites) {
+          closed.add(norm(s.name));
+          if (s.clients?.full_name) closed.add(norm(s.clients.full_name));
+          if (s.clients?.business_name) closed.add(norm(s.clients.business_name));
+        }
+        const converted = (v: VisitRow) =>
+          closed.has(norm(v.prospect_name)) ||
+          (v.company_name ? closed.has(norm(v.company_name)) : false);
+
+        const board = approvedSellers.map((s) => {
+          const mine = visitRows.filter((v) => v.seller_id === s.id);
+          const won = mine.filter(converted).length;
+          return {
+            id: s.id,
+            name: s.profiles?.full_name ?? "¿?",
+            visits: mine.length,
+            contracts: contractRows.filter((c) => c.seller_id === s.id).length,
+            websites: sites.filter((si) => si.seller_id === s.id).length,
+            rate: mine.length ? Math.round((won / mine.length) * 100) : 0,
+          };
+        });
+
+        const q = norm(visitFilter);
+        const shown = visitRows.filter(
+          (v) =>
+            !q ||
+            norm(v.prospect_name).includes(q) ||
+            norm(v.company_name ?? "").includes(q) ||
+            norm(nameOf(v.seller_id)).includes(q)
+        );
+
+        return (
+          <div className="mt-6 flex flex-col gap-5">
+            <div className={box}>
+              <h2 className="font-semibold">📊 Visitas contra cierres, por vendedor</h2>
+              <p className="mt-1 text-xs text-judo-fog/50">
+                Cuántas puertas tocó cada uno y cuántas se volvieron contrato o
+                website. Así ves quién tiene puntería y quién necesita apoyo.
+              </p>
+              {board.length === 0 ? (
+                <p className="mt-3 text-sm text-judo-fog/50">
+                  Aún no hay vendedores aprobados.
+                </p>
+              ) : (
+                <div className="mt-3 overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-xs uppercase tracking-wide text-judo-fog/50">
+                        <th className="py-2 pr-3">Vendedor</th>
+                        <th className="py-2 pr-3">Visitas</th>
+                        <th className="py-2 pr-3">Contratos</th>
+                        <th className="py-2 pr-3">Websites</th>
+                        <th className="py-2">Conversión</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-judo-lilac/10">
+                      {board.map((r) => (
+                        <tr key={r.id}>
+                          <td className="py-2.5 pr-3 font-semibold">{r.name}</td>
+                          <td className="py-2.5 pr-3">{r.visits}</td>
+                          <td className="py-2.5 pr-3">{r.contracts}</td>
+                          <td className="py-2.5 pr-3">{r.websites}</td>
+                          <td className="py-2.5 text-judo-lilac">{r.rate}%</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            <div className={box}>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="font-semibold">📍 Todas las visitas ({visitRows.length})</h2>
+                <input
+                  value={visitFilter}
+                  onChange={(e) => setVisitFilter(e.target.value)}
+                  placeholder="Buscar por prospecto, empresa o vendedor…"
+                  className={`${inputClass} w-auto min-w-[240px] py-1.5 text-sm`}
+                />
+              </div>
+              {shown.length === 0 ? (
+                <p className="mt-3 text-sm text-judo-fog/50">
+                  {visitRows.length === 0
+                    ? "Todavía no hay visitas registradas por los vendedores."
+                    : "Ninguna visita coincide con esa búsqueda."}
+                </p>
+              ) : (
+                <div className="mt-3 overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-xs uppercase tracking-wide text-judo-fog/50">
+                        <th className="py-2 pr-3">Fecha</th>
+                        <th className="py-2 pr-3">Prospecto</th>
+                        <th className="py-2 pr-3">Empresa</th>
+                        <th className="py-2 pr-3">Vendedor</th>
+                        <th className="py-2 pr-3">Estado</th>
+                        <th className="py-2"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-judo-lilac/10">
+                      {shown.slice(0, 300).map((v) => {
+                        const won = converted(v);
+                        return (
+                          <tr key={v.id}>
+                            <td className="whitespace-nowrap py-2.5 pr-3 text-judo-fog/60">
+                              {v.visited_on}
+                              {v.visit_time ? ` · ${v.visit_time.slice(0, 5)}` : ""}
+                            </td>
+                            <td className="py-2.5 pr-3 font-semibold">{v.prospect_name}</td>
+                            <td className="py-2.5 pr-3 text-judo-fog/70">
+                              {v.company_name || "—"}
+                            </td>
+                            <td className="py-2.5 pr-3 text-judo-fog/70">
+                              {nameOf(v.seller_id)}
+                            </td>
+                            <td className="py-2.5 pr-3">
+                              {won ? (
+                                <span className="text-emerald-300">✓ cerrado</span>
+                              ) : (
+                                <span className="text-judo-fog/45">en seguimiento</span>
+                              )}
+                            </td>
+                            <td className="py-2.5">
+                              {!won && (
+                                <button
+                                  onClick={() => {
+                                    setSiteClient(v.prospect_name);
+                                    setSiteName(v.company_name || v.prospect_name);
+                                    setSiteSeller(v.seller_id);
+                                    setTab("sitios");
+                                    flash("Datos cargados en el formulario de nuevo website ✓");
+                                  }}
+                                  className="whitespace-nowrap rounded-full border border-judo-lilac/30 px-3 py-1 text-xs text-judo-lilac hover:bg-judo-purple/15"
+                                >
+                                  ➕ Crear website
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                  {shown.length > 300 && (
+                    <p className="mt-2 text-xs text-judo-fog/45">
+                      Mostrando las 300 visitas más recientes de {shown.length}. Usa la
+                      búsqueda para encontrar una en particular.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── RESEÑAS DE VISITANTES ── */}
       {tab === "resenas" && (
