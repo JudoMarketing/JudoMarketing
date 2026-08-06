@@ -10,7 +10,10 @@ import { useEffect, useRef } from "react";
  * token y se pasa en cada llamada de auth.
  */
 
-const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+// La site key es pública por diseño (la secreta vive en Supabase). Va fija
+// en el código porque .env.production no se sube al repo y Vercel no la veía.
+const SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "0x4AAAAAAEHaSqddymNB_HBp";
 
 type TurnstileApi = {
   render: (el: HTMLElement, opts: Record<string, unknown>) => string;
