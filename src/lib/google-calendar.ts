@@ -35,8 +35,79 @@ function base64Url(dato: string | Buffer): string {
     .replace(/=+$/, "");
 }
 
+/** Tapa correos, llaves y tokens antes de mostrar un mensaje de Google. */
+function censurar(texto: string): string {
+  return texto
+    .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, "«correo»")
+    .replace(/[A-Za-z0-9_-]{40,}/g, "«token»")
+    .slice(0, 500);
+}
+
+/**
+ * Revisa paso por paso dónde se rompe la conexión con Google, sin exponer
+ * ningún secreto. Lo usa /api/booking/diagnostico.
+ */
+export async function diagnosticarGoogle() {
+  const variables = {
+    GOOGLE_SA_EMAIL: Boolean(process.env.GOOGLE_SA_EMAIL),
+    GOOGLE_SA_PRIVATE_KEY: Boolean(process.env.GOOGLE_SA_PRIVATE_KEY),
+    GOOGLE_CALENDAR_USER: Boolean(process.env.GOOGLE_CALENDAR_USER),
+  };
+
+  const pistas: Record<string, unknown> = { variables };
+
+  if (!googleCalendarConfigurado()) {
+    return {
+      ...pistas,
+      paso: "faltan_variables",
+      mensaje:
+        "Alguna variable no llegó al despliegue. Revisa que estén en Production y vuelve a desplegar.",
+    };
+  }
+
+  // La llave privada tiene que verse como una llave, no como un pedazo suelto.
+  const llave = process.env.GOOGLE_SA_PRIVATE_KEY!.replace(/\\n/g, "\n");
+  pistas.llave = {
+    empiezaBien: llave.trimStart().startsWith("-----BEGIN"),
+    terminaBien: llave.trimEnd().endsWith("PRIVATE KEY-----"),
+    tieneSaltos: llave.includes("\n"),
+    largo: llave.length,
+  };
+  pistas.usuario = process.env.GOOGLE_CALENDAR_USER!.split("@")[1] ?? null;
+
+  try {
+    const token = await pedirToken(true);
+    if (typeof token !== "string") {
+      return { ...pistas, paso: "token", error: token };
+    }
+
+    // Con el token en mano, probamos leer el calendario. Es la prueba más
+    // barata de que la delegación quedó bien hecha.
+    const calendario = encodeURIComponent(
+      process.env.GOOGLE_CALENDAR_ID?.trim() || "primary"
+    );
+    const res = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${calendario}`,
+      { headers: { authorization: `Bearer ${token}` } }
+    );
+    if (!res.ok) {
+      return {
+        ...pistas,
+        paso: "calendario",
+        estado: res.status,
+        error: censurar(await res.text()),
+      };
+    }
+    return { ...pistas, paso: "listo", mensaje: "Google responde correctamente." };
+  } catch (fallo) {
+    return { ...pistas, paso: "excepcion", error: censurar(String(fallo)) };
+  }
+}
+
 /** Cambia la cuenta de servicio por un token de acceso de Google. */
-async function pedirToken(): Promise<string | null> {
+async function pedirToken(
+  detallado = false
+): Promise<string | { estado: number; error: string } | null> {
   const email = process.env.GOOGLE_SA_EMAIL!;
   const usuario = process.env.GOOGLE_CALENDAR_USER!;
   // En Vercel la llave se pega con \n escritos como texto.
@@ -70,8 +141,9 @@ async function pedirToken(): Promise<string | null> {
   });
 
   if (!res.ok) {
-    console.error("Google no dio token:", await res.text());
-    return null;
+    const detalle = await res.text();
+    console.error("Google no dio token:", detalle);
+    return detallado ? { estado: res.status, error: censurar(detalle) } : null;
   }
   const data = (await res.json()) as { access_token?: string };
   return data.access_token ?? null;
@@ -107,7 +179,7 @@ export async function crearCitaEnGoogle({
 
   try {
     const token = await pedirToken();
-    if (!token) return null;
+    if (typeof token !== "string") return null;
 
     const calendario = encodeURIComponent(
       process.env.GOOGLE_CALENDAR_ID?.trim() || "primary"
