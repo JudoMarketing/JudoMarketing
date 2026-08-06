@@ -96,7 +96,8 @@
     "formText": "Tu experiencia con Judo Marketing",
     "formSend": "Enviar reseña",
     "formThanks": "¡Gracias! Tu reseña se publicará después de que la revisemos.",
-    "formError": "No se pudo enviar, intenta de nuevo."
+    "formError": "No se pudo enviar, intenta de nuevo.",
+    "google": "Reseñarnos en Google"
   },
   "visit": {
     "title": "Visítanos",

@@ -78,14 +78,22 @@ export default function CommunityReviews() {
         </div>
       )}
 
-      {/* Botón pequeño, que no moleste la vista */}
-      <p className="mt-8 text-center">
+      {/* Botones pequeños, que no molesten la vista */}
+      <p className="mt-8 flex flex-wrap justify-center gap-2 text-center">
         <button
           onClick={() => setOpen(true)}
           className="rounded-full border border-judo-lilac/25 px-4 py-1.5 text-xs text-judo-fog/50 transition hover:border-judo-lilac hover:text-judo-lilac"
         >
           ＋ {t("add")}
         </button>
+        <a
+          href="https://g.page/r/CQ6htnynSX33EBM/review"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-full border border-judo-lilac/25 px-4 py-1.5 text-xs text-judo-fog/50 transition hover:border-judo-lilac hover:text-judo-lilac"
+        >
+          ⭐ {t("google")}
+        </a>
       </p>
 
       {open && (

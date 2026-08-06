@@ -18,8 +18,8 @@ detecta señales de negocio que un artículo no puede tener:
 | Títulos de página con la marca "Judo Marketing" | ✅ Implementado |
 | Página Nosotros que captura las búsquedas de "estrategia judo marketing" y las convierte en visitas a la marca | ✅ Ya existe |
 | Dominio exacto judomarketing.net + Search Console verificado | ✅ |
-| **Perfil de Empresa de Google (Google Business Profile)** | ⬜ PENDIENTE DEL DUEÑO, es la señal más fuerte de todas |
-| Perfiles sociales con el nombre exacto "Judo Marketing" | ⬜ Pendiente del dueño |
+| **Perfil de Empresa de Google (Google Business Profile)** | ✅ Activo 08/2026, conectado al schema (sameAs) y a los botones del sitio |
+| Perfiles sociales con el nombre exacto "Judo Marketing" | ✅ Instagram y Facebook activos, conectados al schema |
 | Reseñas de clientes en Google | ⬜ A medida que lleguen clientes |
 
 Nota honesta: la palabra "judo" a secas es del deporte (federaciones,
@@ -110,3 +110,15 @@ nosotros por un vendedor o un anuncio.
 - Agregar sameAs al schema cuando existan los perfiles sociales.
 - Velocidad: el sitio ya es rápido (Next.js estático); revisar Core Web
   Vitals en Search Console cuando haya datos.
+
+## 6. Enlaces oficiales del negocio (08/2026)
+
+- Perfil de Empresa de Google: https://share.google/L4AqIiUXUBUE9Oav6
+- Enlace para pedir reseñas (mandar a cada cliente contento):
+  https://g.page/r/CQ6htnynSX33EBM/review
+- Instagram: https://www.instagram.com/judo.marketing/
+- Facebook: https://www.facebook.com/Judomarketi/
+
+Conectados en el sitio: sameAs del schema (JsonLd.tsx), botones
+"Ver en Google" (home y contacto) y botón "Reseñarnos en Google" en la
+sección de reseñas del home.

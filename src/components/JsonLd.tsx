@@ -36,6 +36,12 @@ export default function JsonLd({ locale }: { locale: string }) {
       geo: { "@type": "GeoCoordinates", latitude: 25.7743, longitude: -80.1937 },
       priceRange: "$50 - $150",
       currenciesAccepted: "USD",
+      // Mismo negocio en Google, Instagram y Facebook (amarra la identidad)
+      sameAs: [
+        "https://share.google/L4AqIiUXUBUE9Oav6",
+        "https://www.instagram.com/judo.marketing/",
+        "https://www.facebook.com/Judomarketi/",
+      ],
       knowsLanguage: ["es", "en"],
       areaServed: ["Miami", "Florida", "United States", "Latin America"],
       makesOffer: [

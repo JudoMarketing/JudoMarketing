@@ -96,7 +96,8 @@
     "formText": "Your experience with Judo Marketing",
     "formSend": "Submit review",
     "formThanks": "Thank you! Your review will be published after we review it.",
-    "formError": "Could not submit, please try again."
+    "formError": "Could not submit, please try again.",
+    "google": "Review us on Google"
   },
   "visit": {
     "title": "Visit us",

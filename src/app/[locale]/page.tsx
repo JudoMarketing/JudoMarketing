@@ -198,7 +198,7 @@ export default function HomePage({
             <p className="mt-3 text-judo-fog/70">{t("visit.address")}</p>
             <div className="mt-6 flex flex-col justify-center gap-4 sm:flex-row">
               <a
-                href="https://www.google.com/maps/search/?api=1&query=Judo+Marketing+66+W+Flagler+St+Miami+FL+33130"
+                href="https://share.google/L4AqIiUXUBUE9Oav6"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary"
