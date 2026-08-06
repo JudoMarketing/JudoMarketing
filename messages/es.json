@@ -298,7 +298,8 @@
       "again": "Agendar otra",
       "errorTaken": "Alguien tomó esa hora hace un instante. Elige otra, por favor.",
       "errorSlot": "Esa hora ya no está disponible. Elige otra.",
-      "errorGeneric": "No pudimos agendar la cita. Inténtalo de nuevo o escríbenos por WhatsApp."
+      "errorGeneric": "No pudimos agendar la cita. Inténtalo de nuevo o escríbenos por WhatsApp.",
+      "joinLink": "Tu enlace:"
     }
   },
   "legal": {

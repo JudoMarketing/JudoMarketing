@@ -298,7 +298,8 @@
       "again": "Book another",
       "errorTaken": "Someone just grabbed that time. Please pick another one.",
       "errorSlot": "That time is no longer available. Please pick another.",
-      "errorGeneric": "We couldn't book it. Try again or message us on WhatsApp."
+      "errorGeneric": "We couldn't book it. Try again or message us on WhatsApp.",
+      "joinLink": "Your link:"
     }
   },
   "legal": {

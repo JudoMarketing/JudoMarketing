@@ -178,8 +178,9 @@ export async function POST(req: NextRequest) {
 
   // La cita ya quedó guardada. Si el correo falla no le devolvemos un error al
   // cliente: la cita es real y Administración la ve igual en su portal.
+  let aviso: Aviso = { meet: null, google: false };
   try {
-    await avisarPorCorreo({
+    aviso = await avisarPorCorreo({
       id: cita.id as string,
       inicio,
       nombre,
@@ -189,11 +190,19 @@ export async function POST(req: NextRequest) {
       locale,
     });
   } catch (fallo) {
-    console.error("cita guardada pero el correo no salió:", fallo);
+    console.error("cita guardada pero el aviso no salió:", fallo);
   }
 
-  return NextResponse.json({ ok: true, id: cita.id });
+  return NextResponse.json({
+    ok: true,
+    id: cita.id,
+    meet: aviso.meet,
+    google: aviso.google,
+  });
 }
+
+/** Lo que sabemos de la cita después de avisar: enlace de Meet y si lo creó Google. */
+type Aviso = { meet: string | null; google: boolean };
 
 async function avisarPorCorreo({
   id,
@@ -211,7 +220,7 @@ async function avisarPorCorreo({
   telefono: string | null;
   nota: string | null;
   locale: string;
-}) {
+}): Promise<Aviso> {
   const fin = finDeCita(inicio);
   const cuandoEs = fechaLegible(inicio, "es");
   const cuandoCliente = fechaLegible(inicio, locale);
@@ -238,8 +247,9 @@ async function avisarPorCorreo({
   });
 
   const meet = enGoogle?.enlaceMeet ?? process.env.GOOGLE_MEET_URL?.trim() ?? null;
+  const resultado: Aviso = { meet, google: Boolean(enGoogle) };
 
-  if (!isEmailConfigured()) return;
+  if (!isEmailConfigured()) return resultado;
 
   // Si Google ya mandó sus invitaciones, no adjuntamos otra: sería duplicada.
   const invitacion = enGoogle
@@ -321,4 +331,6 @@ async function avisarPorCorreo({
     cliente,
     { invitacion, replyTo: CORREO_NEGOCIO }
   );
+
+  return resultado;
 }

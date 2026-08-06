@@ -48,6 +48,7 @@ export default function BookingWidget() {
   const [nota, setNota] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [meet, setMeet] = useState<string | null>(null);
 
   // Arrancamos en el mes actual de Miami (en el efecto, para no chocar con el
   // HTML que se renderiza en el servidor).
@@ -186,6 +187,8 @@ export default function BookingWidget() {
         }),
       });
       if (res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { meet?: string | null };
+        setMeet(data.meet ?? null);
         setPaso("listo");
         if (cursor) void cargarTomados(cursor.anio, cursor.mes);
         return;
@@ -219,6 +222,7 @@ export default function BookingWidget() {
     setTelefono("");
     setNota("");
     setError(null);
+    setMeet(null);
   };
 
   if (paso === "listo") {
@@ -230,6 +234,16 @@ export default function BookingWidget() {
           {citaLegible}
         </p>
         <p className="max-w-sm text-sm text-judo-fog/60">{t("successBody")}</p>
+        {meet && (
+          <a
+            href={meet}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="max-w-full rounded-xl border border-judo-purple/40 bg-judo-purple/10 px-4 py-2 text-sm font-semibold break-all text-judo-lilac transition hover:bg-judo-purple/20"
+          >
+            {t("joinLink")} {meet.replace(/^https?:\/\//, "")}
+          </a>
+        )}
         <button onClick={reiniciar} className="btn-3d mt-2 px-6 py-2 text-sm">
           {t("again")}
         </button>
