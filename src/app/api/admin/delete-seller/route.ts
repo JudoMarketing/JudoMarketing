@@ -55,16 +55,62 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "cannot_delete_admin" }, { status: 400 });
   }
 
-  const { error } = await admin.auth.admin.deleteUser(userId);
-  if (error) {
-    // Restricciones de la base: el vendedor tiene actividad ligada
-    const msg = error.message ?? "unknown";
-    console.error("delete seller error:", msg);
-    return NextResponse.json(
-      { error: "has_activity", message: msg },
-      { status: 409 }
-    );
+  // Regla del dueño: al eliminar un vendedor, todo su historial pasa a la
+  // cuenta de la casa (juniorosorio36@gmail.com): comisiones, bonos,
+  // websites asignados, visitas y contratos. Nada de dinero ni evidencia
+  // legal se pierde.
+  const FALLBACK_EMAIL = "juniorosorio36@gmail.com";
+  const { data: fallback } = await admin
+    .from("profiles")
+    .select("id")
+    .eq("email", FALLBACK_EMAIL)
+    .single();
+  if (!fallback) {
+    return NextResponse.json({ error: "fallback_missing" }, { status: 500 });
+  }
+  if (fallback.id === userId) {
+    return NextResponse.json({ error: "cannot_delete_fallback" }, { status: 400 });
+  }
+  const { data: fallbackSeller } = await admin
+    .from("sellers")
+    .select("id")
+    .eq("id", fallback.id)
+    .single();
+  if (!fallbackSeller) {
+    return NextResponse.json({ error: "fallback_missing" }, { status: 500 });
   }
 
-  return NextResponse.json({ deleted: true });
+  const transfers: [string, PromiseLike<{ error: { message: string } | null }>][] = [
+    ["comisiones", admin.from("commissions").update({ seller_id: fallback.id }).eq("seller_id", userId)],
+    ["bonos (referidor)", admin.from("referral_bonuses").update({ referrer_id: fallback.id }).eq("referrer_id", userId)],
+    ["bonos (referido)", admin.from("referral_bonuses").update({ referred_id: fallback.id }).eq("referred_id", userId)],
+    ["websites", admin.from("sites").update({ seller_id: fallback.id }).eq("seller_id", userId)],
+    ["visitas", admin.from("visits").update({ seller_id: fallback.id }).eq("seller_id", userId)],
+    ["contratos", admin.from("signed_contracts").update({ seller_id: fallback.id }).eq("seller_id", userId)],
+    ["referidos del vendedor", admin.from("sellers").update({ referred_by: fallback.id }).eq("referred_by", userId)],
+    ["aprobaciones", admin.from("sellers").update({ approved_by: null }).eq("approved_by", userId)],
+    ["pagos registrados", admin.from("payments").update({ recorded_by: null }).eq("recorded_by", userId)],
+    ["auditoría", admin.from("audit_log").update({ actor: null }).eq("actor", userId)],
+    ["clientes", admin.from("clients").update({ profile_id: null }).eq("profile_id", userId)],
+    ["aceptación de términos", admin.from("terms_acceptances").delete().eq("user_id", userId)],
+  ];
+  for (const [label, op] of transfers) {
+    const { error: tErr } = await op;
+    if (tErr) {
+      console.error(`transfer error (${label}):`, tErr.message);
+      return NextResponse.json(
+        { error: "transfer_failed", message: `${label}: ${tErr.message}` },
+        { status: 500 }
+      );
+    }
+  }
+
+  const { error } = await admin.auth.admin.deleteUser(userId);
+  if (error) {
+    const msg = error.message ?? "unknown";
+    console.error("delete seller error:", msg);
+    return NextResponse.json({ error: "delete_failed", message: msg }, { status: 500 });
+  }
+
+  return NextResponse.json({ deleted: true, transferredTo: FALLBACK_EMAIL });
 }

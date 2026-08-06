@@ -385,7 +385,8 @@
     "pickVisit": "Choose who to send the contract to",
     "manualEntry": "Another client, type the details",
     "uploadNow": "Upload now",
-    "viewPdf": "View PDF"
+    "viewPdf": "View PDF",
+    "docScript": "Sales script (study it until you own it)"
   },
   "zelle": {
     "chooseTitle": "How would you like to pay?",

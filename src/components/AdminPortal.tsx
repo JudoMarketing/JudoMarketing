@@ -368,7 +368,7 @@ export default function AdminPortal() {
   const deleteSeller = async (id: string, name: string) => {
     if (
       !window.confirm(
-        `¿Eliminar por completo la aplicación de ${name}? Se borra su cuenta, su correo queda libre para registrarse de nuevo, y esto no se puede deshacer.`
+        `¿Eliminar por completo a ${name}? Su cuenta se borra (no se puede deshacer) y todo su historial (comisiones, bonos, websites asignados, visitas y contratos) pasa automáticamente a tu cuenta juniorosorio36@gmail.com.`
       )
     )
       return;
@@ -383,12 +383,12 @@ export default function AdminPortal() {
     });
     const data = (await res.json()) as { deleted?: boolean; error?: string };
     if (data.deleted) {
-      flash(`Aplicación de ${name} eliminada ✓`);
+      flash(`${name} eliminado ✓ Su historial pasó a juniorosorio36@gmail.com`);
       void loadAll();
       return;
     }
-    if (data.error === "has_activity") {
-      flash("Este vendedor tiene actividad registrada (visitas, contratos o comisiones). Usa Rechazar o Suspender para conservar el historial.");
+    if (data.error === "cannot_delete_fallback") {
+      flash("Esa es tu cuenta de la casa (recibe los traspasos), no se puede eliminar.");
     } else if (data.error === "not_configured") {
       flash("Falta la SUPABASE_SERVICE_ROLE_KEY en Vercel para poder eliminar cuentas.");
     } else {

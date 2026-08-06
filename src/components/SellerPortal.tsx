@@ -461,6 +461,15 @@ export default function SellerPortal() {
         <ul className="mt-3 space-y-2 text-sm">
           <li>
             <a
+              href="/legal/Guion_de_Ventas.pdf"
+              download
+              className="font-semibold text-judo-lilac underline-offset-4 hover:underline"
+            >
+              ⬇ {t("docScript")}
+            </a>
+          </li>
+          <li>
+            <a
               href="/legal/Acuerdo_de_Servicio_Cliente.pdf"
               download
               className="text-judo-fog/80 underline-offset-4 hover:text-judo-lilac hover:underline"
