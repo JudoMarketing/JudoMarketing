@@ -11,6 +11,8 @@ import Mascot from "@/components/Mascot";
 import JsonLd from "@/components/JsonLd";
 import ChunkGuard from "@/components/ChunkGuard";
 import ServiceWorkerPurge from "@/components/ServiceWorkerPurge";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 import "../globals.css";
 
 const poppins = Poppins({
@@ -45,7 +47,7 @@ export async function generateMetadata({
       description: t("description"),
       url: "https://www.judomarketing.net",
       siteName: "Judo Marketing",
-      images: [{ url: "/brand/og-thumbnail.png", width: 1536, height: 1024 }],
+      images: [{ url: "/brand/og-thumbnail.jpg", width: 1200, height: 800 }],
       locale: locale === "es" ? "es_US" : "en_US",
       type: "website",
     },
@@ -80,6 +82,8 @@ export default async function LocaleLayout({
           </div>
           <Mascot />
         </NextIntlClientProvider>
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

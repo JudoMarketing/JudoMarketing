@@ -18,7 +18,7 @@ export default function JsonLd({ locale }: { locale: string }) {
       name: "Judo Marketing",
       url: SITE_URL,
       logo: `${SITE_URL}/brand/logo-white-transparent.png`,
-      image: `${SITE_URL}/brand/og-thumbnail.png`,
+      image: `${SITE_URL}/brand/og-thumbnail.jpg`,
       telephone: "+13059349981",
       email: "admin@judomarketing.net",
       slogan: "Build Trust, Create Value",
