@@ -131,6 +131,7 @@ export async function diagnosticarGoogle() {
   pistas.usuario = process.env.GOOGLE_CALENDAR_USER!.split("@")[1] ?? null;
   pistas.cuentaDeServicio = process.env
     .GOOGLE_SA_EMAIL!.trim()
+    .replace(/^["']|["']$/g, "")
     .endsWith(".iam.gserviceaccount.com");
 
   try {
@@ -139,13 +140,14 @@ export async function diagnosticarGoogle() {
       return { ...pistas, paso: "token", error: token };
     }
 
-    // Con el token en mano, probamos leer el calendario. Es la prueba más
-    // barata de que la delegación quedó bien hecha.
+    // Con el token en mano probamos leer los eventos, que es justo lo que
+    // cubre el permiso calendar.events. Pedir los datos del calendario en sí
+    // exigiría un permiso más amplio y daría un 403 engañoso.
     const calendario = encodeURIComponent(
       process.env.GOOGLE_CALENDAR_ID?.trim() || "primary"
     );
     const res = await fetch(
-      `https://www.googleapis.com/calendar/v3/calendars/${calendario}`,
+      `https://www.googleapis.com/calendar/v3/calendars/${calendario}/events?maxResults=1`,
       { headers: { authorization: `Bearer ${token}` } }
     );
     if (!res.ok) {
