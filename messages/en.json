@@ -279,13 +279,26 @@
     "maps": "View Google profile",
     "chatSoon": "Very soon you'll also be able to chat here with our little robot 🤖",
     "booking": {
-      "title": "Prefer a video call?",
-      "subtitle": "Book your Zoom appointment: pick the day and time that works for you.",
-      "date": "Date",
-      "time": "Time (Miami time)",
-      "note": "Available every day from 7:00 AM to 11:30 PM.",
-      "button": "Book Zoom appointment",
-      "hint": "Google Calendar will open with the invitation ready. When you save it, the appointment reaches our calendar and we'll confirm the Zoom link by email."
+      "title": "Rather jump on a call?",
+      "subtitle": "Book your Zoom call in under a minute.",
+      "note": "Every 2 hours, from 7:00 AM to 1:00 AM (Miami time). Calls run about 45 minutes.",
+      "pickDay": "1 · Pick a day",
+      "pickTime": "2 · Pick a time",
+      "pickData": "3 · Your details",
+      "noSlots": "No times left that day. Try another one.",
+      "nextDay": "late night",
+      "name": "Your name",
+      "email": "Your email",
+      "phone": "Phone or WhatsApp (optional)",
+      "message": "What would you like to talk about? (optional)",
+      "submit": "Confirm booking",
+      "sending": "Booking…",
+      "successTitle": "You're booked!",
+      "successBody": "We sent you a confirmation email with a calendar invite. See you there.",
+      "again": "Book another",
+      "errorTaken": "Someone just grabbed that time. Please pick another one.",
+      "errorSlot": "That time is no longer available. Please pick another.",
+      "errorGeneric": "We couldn't book it. Try again or message us on WhatsApp."
     }
   },
   "legal": {

@@ -60,7 +60,7 @@ export default function MascotChat({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed right-2 bottom-20 z-50 flex max-h-[70vh] w-[330px] max-w-[94vw] flex-col overflow-hidden rounded-2xl border border-judo-lilac/30 bg-[#0e0e16] shadow-[0_24px_70px_-20px_rgba(123,45,255,0.45)] sm:right-6 sm:bottom-44">
       <div className="flex items-center justify-between border-b border-judo-lilac/15 bg-judo-purple/15 px-4 py-2.5">
-        <p className="text-sm font-semibold">🤖 {t("chatTitle")}</p>
+        <p className="text-sm font-semibold">👾 {t("chatTitle")}</p>
         <button
           onClick={onClose}
           aria-label="Cerrar chat"

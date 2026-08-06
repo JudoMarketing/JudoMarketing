@@ -68,9 +68,14 @@ export function brandedEmail({
 }
 
 export async function sendBrandedEmail(
-  to: string,
+  to: string | string[],
   subject: string,
-  html: string
+  html: string,
+  extras?: {
+    /** Invitación de calendario: Gmail la agrega sola a Google Calendar. */
+    invitacion?: string;
+    replyTo?: string;
+  }
 ): Promise<boolean> {
   if (!isEmailConfigured()) return false;
   const transporter = nodemailer.createTransport({
@@ -79,6 +84,21 @@ export async function sendBrandedEmail(
     secure: true,
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
   });
-  await transporter.sendMail({ from: FROM, to, subject, html });
+  await transporter.sendMail({
+    from: FROM,
+    to: Array.isArray(to) ? to.join(", ") : to,
+    subject,
+    html,
+    replyTo: extras?.replyTo,
+    ...(extras?.invitacion
+      ? {
+          icalEvent: {
+            method: "REQUEST",
+            filename: "cita-judo-marketing.ics",
+            content: extras.invitacion,
+          },
+        }
+      : {}),
+  });
   return true;
 }

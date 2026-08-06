@@ -280,12 +280,25 @@
     "chatSoon": "Muy pronto también podrás chatear aquí con nuestro robotsito 🤖",
     "booking": {
       "title": "¿Prefieres una videollamada?",
-      "subtitle": "Agenda tu cita por Zoom: elige el día y la hora que te convenga.",
-      "date": "Fecha",
-      "time": "Hora (hora de Miami)",
-      "note": "Disponible todos los días de 7:00 AM a 11:30 PM.",
-      "button": "Agendar cita por Zoom",
-      "hint": "Se abrirá Google Calendar con la invitación lista. Al guardarla, la cita llega a nuestro calendario y te confirmamos el enlace de Zoom por email."
+      "subtitle": "Agenda tu cita por Zoom en menos de un minuto.",
+      "note": "Citas cada 2 horas, de 7:00 AM a 1:00 AM (hora de Miami). Duran unos 45 minutos.",
+      "pickDay": "1 · Elige el día",
+      "pickTime": "2 · Elige la hora",
+      "pickData": "3 · Tus datos",
+      "noSlots": "Ese día ya no tiene horas libres. Prueba con otro.",
+      "nextDay": "madrugada",
+      "name": "Tu nombre",
+      "email": "Tu correo",
+      "phone": "Teléfono o WhatsApp (opcional)",
+      "message": "¿De qué quieres que hablemos? (opcional)",
+      "submit": "Confirmar cita",
+      "sending": "Agendando…",
+      "successTitle": "¡Listo, tu cita quedó agendada!",
+      "successBody": "Te llegó un correo con la confirmación y la invitación para tu calendario. Nos vemos ahí.",
+      "again": "Agendar otra",
+      "errorTaken": "Alguien tomó esa hora hace un instante. Elige otra, por favor.",
+      "errorSlot": "Esa hora ya no está disponible. Elige otra.",
+      "errorGeneric": "No pudimos agendar la cita. Inténtalo de nuevo o escríbenos por WhatsApp."
     }
   },
   "legal": {
