@@ -11,7 +11,14 @@ import { useRouter } from "@/i18n/navigation";
 import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./AuthForms";
 
-type Tab = "vendedores" | "pagos" | "sitios" | "resenas";
+type Tab = "resumen" | "vendedores" | "pagos" | "sitios" | "resenas";
+
+type VisitRow = { seller_id: string };
+type PayRow = {
+  amount: number;
+  paid_at: string;
+  sites: { seller_id: string | null } | null;
+};
 
 type SellerRow = {
   id: string;
@@ -95,7 +102,7 @@ export default function AdminPortal() {
 
   const [ready, setReady] = useState(false);
   const [denied, setDenied] = useState(false);
-  const [tab, setTab] = useState<Tab>("vendedores");
+  const [tab, setTab] = useState<Tab>("resumen");
 
   const [sellers, setSellers] = useState<SellerRow[]>([]);
   const [proofs, setProofs] = useState<ProofRow[]>([]);
@@ -103,6 +110,8 @@ export default function AdminPortal() {
   const [commissions, setCommissions] = useState<CommissionRow[]>([]);
   const [bonuses, setBonuses] = useState<BonusRow[]>([]);
   const [reviews, setReviews] = useState<ReviewModRow[]>([]);
+  const [visitRows, setVisitRows] = useState<VisitRow[]>([]);
+  const [payRows, setPayRows] = useState<PayRow[]>([]);
   const [metrics, setMetrics] = useState<Record<string, SiteMetric>>({});
   const [msg, setMsg] = useState("");
 
@@ -115,11 +124,14 @@ export default function AdminPortal() {
   const [siteDue, setSiteDue] = useState("");
 
   const loadAll = useCallback(async () => {
-    const [selRes, proofRes, siteRes, metricsRes, comRes, bonusRes, revRes] = await Promise.all([
+    const [selRes, proofRes, siteRes, metricsRes, comRes, bonusRes, visitRes, payRes, revRes] = await Promise.all([
+      // profiles va desambiguado: sellers tiene dos caminos a profiles
+      // (el perfil propio y el de quien aprobó) y sin esto la base rechaza
+      // la consulta entera y las aplicaciones no se ven
       supabase
         .from("sellers")
         .select(
-          "id,status,referral_code,commission_kind,commission_value,created_at,profiles(full_name,photo_url,phone)"
+          "id,status,referral_code,commission_kind,commission_value,created_at,profiles!sellers_id_fkey(full_name,photo_url,phone)"
         )
         .order("created_at", { ascending: false }),
       supabase
@@ -140,17 +152,23 @@ export default function AdminPortal() {
       supabase
         .from("commissions")
         .select(
-          "id,seller_id,amount,status,period,created_at,sellers(profiles(full_name)),sites(name)"
+          "id,seller_id,amount,status,period,created_at,sellers(profiles!sellers_id_fkey(full_name)),sites(name)"
         )
         .order("created_at", { ascending: false })
         .limit(200),
       supabase
         .from("referral_bonuses")
         .select(
-          "id,amount,status,created_at,referrer:sellers!referral_bonuses_referrer_id_fkey(profiles(full_name)),referred:sellers!referral_bonuses_referred_id_fkey(profiles(full_name)),sites(name)"
+          "id,amount,status,created_at,referrer:sellers!referral_bonuses_referrer_id_fkey(profiles!sellers_id_fkey(full_name)),referred:sellers!referral_bonuses_referred_id_fkey(profiles!sellers_id_fkey(full_name)),sites(name)"
         )
         .order("created_at", { ascending: false })
         .limit(200),
+      supabase.from("visits").select("seller_id").limit(2000),
+      supabase
+        .from("payments")
+        .select("amount,paid_at,sites(seller_id)")
+        .order("paid_at", { ascending: false })
+        .limit(1000),
       supabase
         .from("reviews")
         .select("id,name,place,body,status,created_at")
@@ -163,6 +181,8 @@ export default function AdminPortal() {
     setCommissions((comRes.data as unknown as CommissionRow[]) ?? []);
     setBonuses((bonusRes.data as unknown as BonusRow[]) ?? []);
     setReviews((revRes.data as ReviewModRow[]) ?? []);
+    setVisitRows((visitRes.data as VisitRow[]) ?? []);
+    setPayRows((payRes.data as unknown as PayRow[]) ?? []);
 
     // Telemetría del Judo Site Kit: último reporte y ventas acumuladas por sitio
     const metricRows = (metricsRes.data ?? []) as {
@@ -421,7 +441,15 @@ export default function AdminPortal() {
       <div className="mt-6 flex gap-2">
         {(
           [
-            ["vendedores", `Vendedores (${sellers.length})`],
+            ["resumen", "📊 Resumen"],
+            [
+              "vendedores",
+              `Vendedores (${sellers.length}${
+                sellers.filter((s) => s.status === "pendiente").length > 0
+                  ? `, ${sellers.filter((s) => s.status === "pendiente").length} nuevas`
+                  : ""
+              })`,
+            ],
             [
               "pagos",
               `Pagos y comisiones (${
@@ -450,6 +478,93 @@ export default function AdminPortal() {
           </button>
         ))}
       </div>
+
+      {/* ── RESUMEN: estadísticas y leaderboard ── */}
+      {tab === "resumen" && (() => {
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+        const monthRevenue = payRows
+          .filter((p) => p.paid_at?.startsWith(monthKey))
+          .reduce((s, p) => s + Number(p.amount), 0);
+        const totalRevenue = payRows.reduce((s, p) => s + Number(p.amount), 0);
+        const pendingCommissions =
+          commissions.filter((c) => c.status === "pendiente").reduce((s, c) => s + Number(c.amount), 0) +
+          bonuses.filter((b) => b.status === "pendiente").reduce((s, b) => s + Number(b.amount), 0);
+        const stats: [string, string, string][] = [
+          ["🆕", "Aplicaciones nuevas", String(sellers.filter((s) => s.status === "pendiente").length)],
+          ["🧑‍💼", "Vendedores aprobados", String(approvedSellers.length)],
+          ["🌐", "Websites activos", `${sites.filter((s) => s.status === "activo").length}/${sites.length}`],
+          ["💵", "Ingresos este mes", `$${monthRevenue.toFixed(0)}`],
+          ["📈", "Ingresos totales", `$${totalRevenue.toFixed(0)}`],
+          ["💰", "Comisiones por pagar", `$${pendingCommissions.toFixed(2)}`],
+          ["🧾", "Pagos por verificar", String(proofs.filter((p) => p.status === "pendiente").length)],
+          ["⭐", "Reseñas por moderar", String(reviews.filter((r) => r.status === "pendiente").length)],
+        ];
+
+        // Leaderboard: vendido, visitas y comisiones por vendedor aprobado
+        const board = approvedSellers
+          .map((s) => {
+            const sold = payRows
+              .filter((p) => p.sites?.seller_id === s.id)
+              .reduce((sum, p) => sum + Number(p.amount), 0);
+            const visits = visitRows.filter((v) => v.seller_id === s.id).length;
+            const earned =
+              commissions
+                .filter((c) => c.seller_id === s.id && c.status !== "anulada")
+                .reduce((sum, c) => sum + Number(c.amount), 0);
+            return { id: s.id, name: s.profiles?.full_name ?? "¿?", sold, visits, earned };
+          })
+          .sort((a, b) => b.sold - a.sold || b.visits - a.visits);
+        const medals = ["🥇", "🥈", "🥉"];
+
+        return (
+          <div className="mt-6 flex flex-col gap-5">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {stats.map(([icon, label, value]) => (
+                <div key={label} className={box}>
+                  <p className="text-xs text-judo-fog/50">{icon} {label}</p>
+                  <p className="mt-1 text-2xl font-bold text-judo-lilac">{value}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className={box}>
+              <h2 className="font-semibold">🏆 Leaderboard de vendedores</h2>
+              {board.length === 0 ? (
+                <p className="mt-3 text-sm text-judo-fog/50">
+                  Aún no hay vendedores aprobados. Las nuevas aplicaciones te
+                  esperan en la pestaña Vendedores.
+                </p>
+              ) : (
+                <div className="mt-3 overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-xs uppercase tracking-wide text-judo-fog/50">
+                        <th className="py-2 pr-3">#</th>
+                        <th className="py-2 pr-3">Vendedor</th>
+                        <th className="py-2 pr-3">Vendido</th>
+                        <th className="py-2 pr-3">Visitas</th>
+                        <th className="py-2">Comisiones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-judo-lilac/10">
+                      {board.map((r, i) => (
+                        <tr key={r.id}>
+                          <td className="py-2.5 pr-3">{medals[i] ?? `#${i + 1}`}</td>
+                          <td className="py-2.5 pr-3 font-semibold">{r.name}</td>
+                          <td className="py-2.5 pr-3 text-judo-lilac">${r.sold.toFixed(0)}</td>
+                          <td className="py-2.5 pr-3">{r.visits}</td>
+                          <td className="py-2.5">${r.earned.toFixed(2)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── VENDEDORES ── */}
       {tab === "vendedores" && (
