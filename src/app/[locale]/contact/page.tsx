@@ -48,7 +48,7 @@ export default function ContactPage({
       icon: "📍",
       title: t("addressTitle"),
       desc: "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
-      href: "https://maps.google.com/?q=66+W+Flagler+St+Suite+900+PMB+11674,+Miami,+FL+33130",
+      href: "https://www.google.com/maps/search/?api=1&query=Judo+Marketing+66+W+Flagler+St+Miami+FL+33130",
       linkLabel: t("maps"),
     },
   ];
