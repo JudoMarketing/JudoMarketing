@@ -5,5 +5,5 @@ export default createMiddleware(routing);
 
 export const config = {
   // Excluir api, archivos estáticos y assets de Next
-  matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
+  matcher: "/((?!api|trpc|reparar|_next|_vercel|.*\\..*).*)",
 };
