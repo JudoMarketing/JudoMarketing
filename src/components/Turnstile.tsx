@@ -14,6 +14,11 @@ import { useLocale } from "next-intl";
  * se genera el token que se pasa en cada llamada de auth.
  */
 
+// Apagado por decisión del dueño (08/2026) hasta resolver la carga del
+// widget en todos los navegadores. Para reactivar: (1) cambiar a true,
+// (2) encender el captcha en Supabase → Auth → Attack Protection.
+const CAPTCHA_ON = false;
+
 // La site key es pública por diseño (la secreta vive en Supabase). Va fija
 // en el código porque .env.production no se sube al repo y Vercel no la veía.
 const SITE_KEY =
@@ -31,7 +36,7 @@ declare global {
 }
 
 export function turnstileEnabled(): boolean {
-  return Boolean(SITE_KEY);
+  return CAPTCHA_ON && Boolean(SITE_KEY);
 }
 
 export function resetTurnstile() {
@@ -74,7 +79,7 @@ export default function Turnstile({ onToken }: { onToken: (t: string) => void })
   // Reintento por sondeo: cubre navegación entre login/registro (script ya
   // cargado) y cargas lentas. A los 20s sin widget, aviso visible.
   useEffect(() => {
-    if (!SITE_KEY) return;
+    if (!CAPTCHA_ON || !SITE_KEY) return;
     tryRender();
     const poll = setInterval(() => {
       if (widgetId.current) {
@@ -93,7 +98,7 @@ export default function Turnstile({ onToken }: { onToken: (t: string) => void })
     };
   }, [tryRender]);
 
-  if (!SITE_KEY) return null;
+  if (!CAPTCHA_ON || !SITE_KEY) return null;
 
   return (
     <>
