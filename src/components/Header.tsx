@@ -22,23 +22,35 @@ export default function Header() {
   const [dashboard, setDashboard] = useState<"/admin" | "/portal" | null>(null);
 
   useEffect(() => {
-    const supabase = getSupabase();
     let alive = true;
+    let supabase;
+    try {
+      supabase = getSupabase();
+    } catch {
+      return; // sin sesión disponible: el botón se queda en Log in
+    }
 
     const resolve = async (userId: string | undefined) => {
       if (!userId) {
         if (alive) setDashboard(null);
         return;
       }
-      const { data: prof } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", userId)
-        .single();
-      if (alive) setDashboard(prof?.role === "admin" ? "/admin" : "/portal");
+      try {
+        const { data: prof } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", userId)
+          .single();
+        if (alive) setDashboard(prof?.role === "admin" ? "/admin" : "/portal");
+      } catch {
+        if (alive) setDashboard("/portal");
+      }
     };
 
-    void supabase.auth.getSession().then(({ data }) => resolve(data.session?.user.id));
+    void supabase.auth
+      .getSession()
+      .then(({ data }) => resolve(data.session?.user.id))
+      .catch(() => {});
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       void resolve(session?.user.id);
     });

@@ -7,6 +7,7 @@ import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./AuthForms";
 import ContractSigner from "./ContractSigner";
 import EarningsPanel from "./EarningsPanel";
+import { safeGet, safeSet, safeUuid } from "@/lib/safe";
 
 /**
  * Portal del Vendedor (MVP Fase 3).
@@ -64,14 +65,14 @@ async function shrinkSelfie(file: File): Promise<File> {
 
 function loadQueue(): LocalVisit[] {
   try {
-    return JSON.parse(localStorage.getItem(QUEUE_KEY) ?? "[]") as LocalVisit[];
+    return JSON.parse(safeGet(QUEUE_KEY) ?? "[]") as LocalVisit[];
   } catch {
     return [];
   }
 }
 
 function saveQueue(q: LocalVisit[]) {
-  localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
+  safeSet(QUEUE_KEY, JSON.stringify(q));
 }
 
 export default function SellerPortal() {
@@ -237,7 +238,7 @@ export default function SellerPortal() {
   const addVisit = (e: React.FormEvent) => {
     e.preventDefault();
     const visit: LocalVisit = {
-      client_generated_id: crypto.randomUUID(),
+      client_generated_id: safeUuid(),
       prospect_name: prospect.trim(),
       company_name: company.trim(),
       visited_on: visitDate,

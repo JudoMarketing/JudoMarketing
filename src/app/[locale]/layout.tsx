@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import LightLines from "@/components/LightLines";
 import Mascot from "@/components/Mascot";
 import JsonLd from "@/components/JsonLd";
+import ChunkGuard from "@/components/ChunkGuard";
 import "../globals.css";
 
 const poppins = Poppins({
@@ -67,6 +68,7 @@ export default async function LocaleLayout({
     <html lang={locale} className={poppins.variable}>
       <body className="min-h-screen antialiased">
         <JsonLd locale={locale} />
+        <ChunkGuard />
         <NextIntlClientProvider>
           <LightLines />
           <div className="relative z-10">

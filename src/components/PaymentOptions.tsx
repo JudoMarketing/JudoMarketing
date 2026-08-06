@@ -11,6 +11,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./AuthForms";
+import { safeUuid } from "@/lib/safe";
 
 const AMOUNTS: Record<string, string> = {
   essential: "$50",
@@ -75,7 +76,7 @@ export default function PaymentOptions({
   const uploadScreenshot = async (theFile: File): Promise<string> => {
     const supabase = getSupabase();
     const ext = theFile.name.split(".").pop() ?? "jpg";
-    const path = `${plan}/${crypto.randomUUID()}.${ext}`;
+    const path = `${plan}/${safeUuid()}.${ext}`;
     const { error: upErr } = await supabase.storage
       .from("payment-proofs")
       .upload(path, theFile);

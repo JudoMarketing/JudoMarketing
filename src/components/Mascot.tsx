@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import MascotChat from "./MascotChat";
+import { safeGet, safeSet } from "@/lib/safe";
 
 /**
  * La mascota de Judo Marketing: el robotsito negro brillante de ojos morados.
@@ -31,7 +32,7 @@ export default function Mascot() {
 
   // Pregunta de idioma en la primera visita
   useEffect(() => {
-    if (!localStorage.getItem(LANG_KEY)) setBubble("lang");
+    if (!safeGet(LANG_KEY)) setBubble("lang");
   }, []);
 
   // Parpadeo natural
@@ -101,7 +102,7 @@ export default function Mascot() {
 
   const chooseLang = useCallback(
     (lang: "es" | "en") => {
-      localStorage.setItem(LANG_KEY, lang);
+      safeSet(LANG_KEY, lang);
       setBubble(null);
       if (lang !== locale) {
         router.replace(pathname, { locale: lang });
