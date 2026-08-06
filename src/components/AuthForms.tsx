@@ -28,7 +28,8 @@ export function LoginForm() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const { error: err } = await getSupabase().auth.signInWithPassword({
+    const supabase = getSupabase();
+    const { data, error: err } = await supabase.auth.signInWithPassword({
       email,
       password,
       options: captcha ? { captchaToken: captcha } : undefined,
@@ -40,7 +41,13 @@ export function LoginForm() {
       setError(err.message === "Invalid login credentials" ? t("error") : err.message);
       return;
     }
-    router.push("/portal");
+    // El admin va directo a su dashboard; los vendedores a su portal
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
+    router.push(prof?.role === "admin" ? "/admin" : "/portal");
   };
 
   return (

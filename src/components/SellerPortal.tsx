@@ -15,7 +15,7 @@ import EarningsPanel from "./EarningsPanel";
  * client_generated_id evita duplicados si un reintento se repite).
  */
 
-type Profile = { full_name: string; photo_url: string | null };
+type Profile = { full_name: string; photo_url: string | null; role?: string };
 type Seller = { status: string; referral_code: string | null };
 type SignedContract = {
   id: string;
@@ -82,7 +82,7 @@ export default function SellerPortal() {
       const uid = session.user.id;
       const [{ data: prof }, { data: sel }, contractsRes, serverVisitsRes] =
         await Promise.all([
-          supabase.from("profiles").select("full_name, photo_url").eq("id", uid).single(),
+          supabase.from("profiles").select("full_name, photo_url, role").eq("id", uid).single(),
           supabase.from("sellers").select("status, referral_code").eq("id", uid).single(),
           supabase
             .from("signed_contracts")
@@ -94,6 +94,11 @@ export default function SellerPortal() {
             .order("visited_on", { ascending: false })
             .limit(200),
         ]);
+      // El portal de vendedores no es para el admin: a su dashboard
+      if ((prof as Profile | null)?.role === "admin") {
+        router.replace("/admin");
+        return;
+      }
       setProfile(prof as Profile | null);
       setSeller(sel as Seller | null);
       setContracts((contractsRes.data as SignedContract[]) ?? []);
