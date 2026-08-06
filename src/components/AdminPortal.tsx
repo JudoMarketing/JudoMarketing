@@ -117,6 +117,15 @@ type BonusRow = {
 
 const box = "rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5";
 
+// Botones compactos y consistentes en todo el panel
+const btn = "rounded-full px-3 py-1 text-xs font-semibold transition whitespace-nowrap";
+const btnGreen = `${btn} bg-emerald-500/90 text-white hover:bg-emerald-500`;
+const btnPurple = `${btn} bg-judo-purple text-white hover:bg-judo-lilac`;
+const btnGhost = `${btn} border border-judo-lilac/30 text-judo-lilac hover:bg-judo-purple/15`;
+const btnDanger = `${btn} border border-red-400/40 text-red-300 hover:bg-red-400/10`;
+const fieldSm =
+  "rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac";
+
 export default function AdminPortal() {
   const supabase = getSupabase();
   const router = useRouter();
@@ -540,7 +549,7 @@ export default function AdminPortal() {
           <button
             key={key}
             onClick={() => setTab(key)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+            className={`rounded-full px-3.5 py-1 text-xs font-semibold transition ${
               tab === key
                 ? "bg-judo-purple text-white"
                 : "border border-judo-lilac/25 text-judo-fog/60 hover:text-judo-lilac"
@@ -699,22 +708,22 @@ export default function AdminPortal() {
                   href={`https://etherscan.io/tx/${p.tx_hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-secondary px-4 py-1.5 text-sm"
+                  className={btnGhost}
                 >
                   Ver en Etherscan
                 </a>
               )}
               {p.screenshot_path && (
-                <button onClick={() => viewProof(p.screenshot_path!)} className="btn-secondary px-4 py-1.5 text-sm">
+                <button onClick={() => viewProof(p.screenshot_path!)} className={btnGhost}>
                   Ver captura
                 </button>
               )}
-              <button onClick={() => setProofStatus(p.id, "verificado")} className="btn-primary px-4 py-1.5 text-sm">
+              <button onClick={() => setProofStatus(p.id, "verificado")} className={btnGreen}>
                 Verificar ✓
               </button>
               <button
                 onClick={() => setProofStatus(p.id, "rechazado")}
-                className="rounded-full border border-red-400/40 px-4 py-1.5 text-sm text-red-300 hover:bg-red-400/10"
+                className={btnDanger}
               >
                 Rechazar
               </button>
@@ -786,7 +795,7 @@ export default function AdminPortal() {
                         {b.status === "pendiente" ? (
                           <button
                             onClick={() => markBonusPaid(b.id)}
-                            className="btn-primary px-3 py-1 text-xs"
+                            className={btnGreen}
                           >
                             Marcar pagado ✓
                           </button>
@@ -820,7 +829,7 @@ export default function AdminPortal() {
                       {c.status === "pendiente" ? (
                         <button
                           onClick={() => markCommissionPaid(c.id)}
-                          className="btn-primary px-3 py-1 text-xs"
+                          className={btnGreen}
                         >
                           Marcar pagada ✓
                         </button>
@@ -933,7 +942,7 @@ export default function AdminPortal() {
                   value={visitFilter}
                   onChange={(e) => setVisitFilter(e.target.value)}
                   placeholder="Buscar por prospecto, empresa o vendedor…"
-                  className={`${inputClass} w-auto min-w-[240px] py-1.5 text-sm`}
+                  className={`${fieldSm} w-auto min-w-[220px]`}
                 />
               </div>
               {shown.length === 0 ? (
@@ -988,7 +997,7 @@ export default function AdminPortal() {
                                     setTab("sitios");
                                     flash("Datos cargados en el formulario de nuevo website ✓");
                                   }}
-                                  className="whitespace-nowrap rounded-full border border-judo-lilac/30 px-3 py-1 text-xs text-judo-lilac hover:bg-judo-purple/15"
+                                  className={btnGhost}
                                 >
                                   ➕ Crear website
                                 </button>
@@ -1045,7 +1054,7 @@ export default function AdminPortal() {
               {r.status !== "aprobada" && (
                 <button
                   onClick={() => setReviewStatus(r.id, "aprobada")}
-                  className="btn-primary px-4 py-1.5 text-sm"
+                  className={btnGreen}
                 >
                   Publicar ✓
                 </button>
@@ -1053,7 +1062,7 @@ export default function AdminPortal() {
               {r.status !== "rechazada" && (
                 <button
                   onClick={() => setReviewStatus(r.id, "rechazada")}
-                  className="rounded-full border border-red-400/40 px-4 py-1.5 text-sm text-red-300 hover:bg-red-400/10"
+                  className={btnDanger}
                 >
                   {r.status === "aprobada" ? "Quitar" : "Rechazar"}
                 </button>
@@ -1086,7 +1095,7 @@ export default function AdminPortal() {
                 <input type="date" value={siteDue} onChange={(e) => setSiteDue(e.target.value)} className={inputClass} />
               </label>
             </div>
-            <button type="submit" className="btn-primary mt-4">Crear website</button>
+            <button type="submit" className={`${btnPurple} mt-4`}>Crear website</button>
           </form>
 
           {sites.map((site) => (
@@ -1142,21 +1151,17 @@ export default function AdminPortal() {
                   await navigator.clipboard.writeText(site.kit_api_key);
                   flash("Clave del kit copiada ✓ (para conectar el website del cliente)");
                 }}
-                className="rounded-full border border-judo-lilac/30 px-3 py-1.5 text-sm text-judo-lilac hover:bg-judo-purple/15"
+                className={btnGhost}
                 title="Copiar la clave del Judo Site Kit"
               >
                 🔑 Kit
               </button>
-              <button onClick={() => registerPayment(site)} className="btn-secondary px-4 py-1.5 text-sm">
+              <button onClick={() => registerPayment(site)} className={btnGhost}>
                 💵 Registrar pago
               </button>
               <button
                 onClick={() => toggleSite(site)}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
-                  site.status === "deshabilitado"
-                    ? "bg-emerald-500/80 text-white hover:bg-emerald-500"
-                    : "border border-red-400/40 text-red-300 hover:bg-red-400/10"
-                }`}
+                className={site.status === "deshabilitado" ? btnGreen : btnDanger}
               >
                 {site.status === "deshabilitado" ? "Reactivar" : "Deshabilitar"}
               </button>
@@ -1210,7 +1215,7 @@ function SiteDates({
         <input type="date" value={domainExp} onChange={(e) => setDomainExp(e.target.value)} className={dateClass} />
       </label>
       {dirty && (
-        <button onClick={save} className="rounded-full bg-judo-purple px-3 py-1 text-xs font-semibold text-white hover:bg-judo-lilac">
+        <button onClick={save} className={btnPurple}>
           Guardar
         </button>
       )}
@@ -1256,7 +1261,7 @@ function SellerCard({
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <select value={kind} onChange={(e) => setKind(e.target.value)} className={`${inputClass} w-auto py-2`}>
+        <select value={kind} onChange={(e) => setKind(e.target.value)} className={`${fieldSm} w-auto`}>
           <option value="monto_fijo" className="bg-judo-surface">$ por cada $50</option>
           <option value="porcentaje" className="bg-judo-surface">% de la venta</option>
         </select>
@@ -1267,24 +1272,24 @@ function SellerCard({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="0"
-          className={`${inputClass} w-24 py-2`}
+          className={`${fieldSm} w-20`}
         />
       </div>
       <div className="flex gap-2">
         {seller.status !== "aprobado" && (
-          <button onClick={() => onSave(seller.id, "aprobado", kind, value)} className="btn-primary px-4 py-1.5 text-sm">
+          <button onClick={() => onSave(seller.id, "aprobado", kind, value)} className={btnGreen}>
             Aprobar ✓
           </button>
         )}
         {seller.status === "aprobado" && (
-          <button onClick={() => onSave(seller.id, "aprobado", kind, value)} className="btn-primary px-4 py-1.5 text-sm">
+          <button onClick={() => onSave(seller.id, "aprobado", kind, value)} className={btnPurple}>
             Guardar
           </button>
         )}
         {seller.status !== "rechazado" && seller.status !== "suspendido" && (
           <button
             onClick={() => onSave(seller.id, seller.status === "aprobado" ? "suspendido" : "rechazado", kind, value)}
-            className="rounded-full border border-red-400/40 px-4 py-1.5 text-sm text-red-300 hover:bg-red-400/10"
+            className={btnDanger}
           >
             {seller.status === "aprobado" ? "Suspender" : "Rechazar"}
           </button>
@@ -1293,7 +1298,7 @@ function SellerCard({
           <button
             onClick={() => onPhotoChange(seller.id, seller.profiles?.full_name ?? "el vendedor")}
             title="Desbloquear su foto para que suba una nueva"
-            className="rounded-full border border-judo-lilac/30 px-3 py-1.5 text-sm text-judo-lilac hover:bg-judo-purple/15"
+            className={btnGhost}
           >
             📷 Pedir foto
           </button>
@@ -1301,7 +1306,7 @@ function SellerCard({
         <button
           onClick={() => onDelete(seller.id, seller.profiles?.full_name ?? "este vendedor")}
           title="Eliminar la cuenta por completo"
-          className="rounded-full border border-red-400/40 px-3 py-1.5 text-sm text-red-300 hover:bg-red-400/20"
+          className={btnDanger}
         >
           🗑
         </button>
