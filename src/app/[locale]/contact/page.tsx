@@ -66,7 +66,7 @@ export default function ContactPage({
           </p>
         </div>
 
-        {/* Cita por Zoom */}
+        {/* Cita por videollamada */}
         <Reveal className="mt-12">
           <TiltCard className="p-7 sm:p-9">
             <BookingWidget />

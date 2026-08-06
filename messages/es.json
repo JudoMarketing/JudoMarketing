@@ -197,7 +197,7 @@
         },
         {
           "q": "¿Atienden solo en Miami?",
-          "a": "Atendemos desde Miami a clientes de todo Estados Unidos y Latinoamérica, en español y en inglés. Todo el proceso se puede hacer online, incluida la cita por Zoom."
+          "a": "Atendemos desde Miami a clientes de todo Estados Unidos y Latinoamérica, en español y en inglés. Todo el proceso se puede hacer online, incluida la videollamada por Google Meet."
         },
         {
           "q": "¿Qué incluye la mensualidad?",
@@ -280,7 +280,7 @@
     "chatSoon": "Muy pronto también podrás chatear aquí con nuestro robotsito 🤖",
     "booking": {
       "title": "¿Prefieres una videollamada?",
-      "subtitle": "Agenda tu cita por Zoom en menos de un minuto.",
+      "subtitle": "Agenda tu videollamada por Google Meet en menos de un minuto.",
       "note": "Citas cada 2 horas, de 7:00 AM a 1:00 AM (hora de Miami). Duran unos 45 minutos.",
       "pickDay": "1 · Elige el día",
       "pickTime": "2 · Elige la hora",
@@ -291,7 +291,7 @@
       "email": "Tu correo",
       "phone": "Teléfono o WhatsApp (opcional)",
       "message": "¿De qué quieres que hablemos? (opcional)",
-      "submit": "Confirmar cita",
+      "submit": "Agendar reunión",
       "sending": "Agendando…",
       "successTitle": "¡Listo, tu cita quedó agendada!",
       "successBody": "Te llegó un correo con la confirmación y la invitación para tu calendario. Nos vemos ahí.",

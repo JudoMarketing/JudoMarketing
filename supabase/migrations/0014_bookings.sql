@@ -1,5 +1,5 @@
 -- ============================================================
--- 0014: Citas por Zoom
+-- 0014: Citas por videollamada (Google Meet)
 -- El visitante elige dia y hora desde el calendario de la pagina de
 -- contacto. Las citas van cada dos horas, de 7:00 AM a 1:00 AM (hora de
 -- Miami). Nadie del publico toca esta tabla directamente: todo entra por

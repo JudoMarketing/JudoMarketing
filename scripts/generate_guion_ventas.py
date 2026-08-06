@@ -110,7 +110,7 @@ say("Y mire lo mejor: si no le entregamos su proyecto en menos de un mes, le dev
 sub("Paso 6. Cierra (siempre con pregunta, siempre con siguiente paso)")
 b("<b>Cierre directo:</b> “¿Arrancamos de una? El pago se hace seguro desde la misma página, yo lo acompaño "
   "ahorita mismo.” (botón Iniciar en www.judomarketing.net)")
-b("<b>Cierre de agenda:</b> “¿Le agendo una llamada gratis por Zoom con la agencia? Ahí le dicen con honestidad "
+b("<b>Cierre de agenda:</b> “¿Le agendo una videollamada gratis con la agencia? Ahí le dicen con honestidad "
   "si su idea se puede hacer, escoja usted el día y la hora.” (página de Contacto)")
 b("<b>Apenas termines, registra la visita en tu portal.</b> Con o sin internet, el portal la guarda. Esa visita es "
   "tuya: si ese cliente compra después, tu comisión queda amarrada a tu registro.")
@@ -131,7 +131,7 @@ qa("“Yo no sé nada de tecnología”",
 qa("“Déjeme pensarlo”",
    "“Claro que sí, es una decisión de su negocio. Solo para ayudarle a pensar: ¿qué es lo que más le hace dudar, "
    "el precio o el tiempo? [Responde esa duda.] Mire, hagamos algo sin compromiso: le agendo la entrevista gratis "
-   "por Zoom, ahí le dicen honestamente si su idea se puede hacer y usted decide con calma después.”")
+   "por videollamada, ahí le dicen honestamente si su idea se puede hacer y usted decide con calma después.”")
 qa("“¿Y si no me gusta o no funciona?”",
    "“Por eso la garantía: si no le entregan su proyecto en menos de un mes, le devuelven su primer pago. Y puede "
    "cancelar cuando quiera, sin penalidad. Además usted aprueba el diseño: el portal se hace a su gusto.”")
@@ -167,7 +167,7 @@ qa("¿Atienden en inglés?", "Sí, la agencia es bilingüe y la página existe e
 qa("¿Dónde están ubicados?", "En Miami: 66 W Flagler St Suite 900. Y atendemos clientes de todo Estados Unidos y "
    "Latinoamérica, todo el proceso puede ser online.")
 qa("¿Cómo empiezo?", "Con la entrevista inicial gratis: en la página de Contacto elige día y hora para una llamada "
-   "por Zoom, o yo mismo te la agendo ahorita.")
+   "por videollamada, o yo mismo te la agendo ahorita.")
 qa("¿Y después de comprar, quién me atiende?", "Yo soy tu canal directo para todo. Y la administración de la agencia "
    "siempre está disponible en la página de Contacto.")
 qa("¿Hacen publicidad también?", "Sí, el paquete de marketing en redes sociales con 20% de incremento de tráfico "

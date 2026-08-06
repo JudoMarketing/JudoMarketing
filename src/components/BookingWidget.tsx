@@ -13,7 +13,7 @@ import {
 } from "@/lib/booking";
 
 /**
- * Cita por Zoom: calendario chiquito, horas cada dos horas de 7:00 AM a
+ * Videollamada por Google Meet: calendario chiquito, horas cada dos horas de 7:00 AM a
  * 1:00 AM (hora de Miami) y los datos del visitante. Al confirmar, la cita
  * queda guardada, le llega el aviso a Administración y la invitación cae
  * sola en el Google Calendar.

@@ -45,14 +45,14 @@ const COPY: Record<PageKey, Record<"en" | "es", { title: string; description: st
   },
   contact: {
     es: {
-      title: "Contacto: Agenda tu Llamada o Cita por Zoom | Judo Marketing",
+      title: "Contacto: Agenda tu Llamada o Videollamada | Judo Marketing",
       description:
-        "Hablemos de tu proyecto: WhatsApp +1 305 934 9981, formulario de contacto o agenda una cita por Zoom. Judo Marketing, 66 W Flagler St, Miami, FL.",
+        "Hablemos de tu proyecto: WhatsApp +1 305 934 9981, formulario de contacto o agenda una videollamada por Google Meet. Judo Marketing, 66 W Flagler St, Miami, FL.",
     },
     en: {
-      title: "Contact: Book a Call or Zoom Meeting | Judo Marketing",
+      title: "Contact: Book a Call or Google Meet | Judo Marketing",
       description:
-        "Let's talk about your project: WhatsApp +1 305 934 9981, contact form, or book a Zoom meeting. Judo Marketing, 66 W Flagler St, Miami, FL.",
+        "Let's talk about your project: WhatsApp +1 305 934 9981, contact form, or book a Google Meet call. Judo Marketing, 66 W Flagler St, Miami, FL.",
     },
   },
   legal: {

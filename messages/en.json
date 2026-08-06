@@ -197,7 +197,7 @@
         },
         {
           "q": "Do you only serve Miami?",
-          "a": "From Miami we serve clients across the United States and Latin America, in Spanish and English. The whole process can happen online, including a Zoom meeting."
+          "a": "From Miami we serve clients across the United States and Latin America, in Spanish and English. The whole process can happen online, including a Google Meet call."
         },
         {
           "q": "What does the monthly fee include?",
@@ -280,7 +280,7 @@
     "chatSoon": "Very soon you'll also be able to chat here with our little robot 🤖",
     "booking": {
       "title": "Rather jump on a call?",
-      "subtitle": "Book your Zoom call in under a minute.",
+      "subtitle": "Book your Google Meet call in under a minute.",
       "note": "Every 2 hours, from 7:00 AM to 1:00 AM (Miami time). Calls run about 45 minutes.",
       "pickDay": "1 · Pick a day",
       "pickTime": "2 · Pick a time",
@@ -291,7 +291,7 @@
       "email": "Your email",
       "phone": "Phone or WhatsApp (optional)",
       "message": "What would you like to talk about? (optional)",
-      "submit": "Confirm booking",
+      "submit": "Set a meeting",
       "sending": "Booking…",
       "successTitle": "You're booked!",
       "successBody": "We sent you a confirmation email with a calendar invite. See you there.",

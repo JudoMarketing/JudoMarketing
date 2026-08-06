@@ -1,5 +1,5 @@
 /**
- * Reglas de las citas por Zoom.
+ * Reglas de las citas por videollamada (Google Meet).
  *
  * Todo se maneja en hora de Miami. Las citas arrancan a las 7:00 AM y la
  * ultima entra a la 1:00 AM (madrugada del dia siguiente), con dos horas de
@@ -159,7 +159,7 @@ export function invitacionIcs({
   const lineas = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Judo Marketing//Citas Zoom//ES",
+    "PRODID:-//Judo Marketing//Citas//ES",
     "CALSCALE:GREGORIAN",
     "METHOD:REQUEST",
     "BEGIN:VEVENT",

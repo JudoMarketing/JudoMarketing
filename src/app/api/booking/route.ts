@@ -8,9 +8,10 @@ import {
   finDeCita,
   invitacionIcs,
 } from "@/lib/booking";
+import { crearCitaEnGoogle } from "@/lib/google-calendar";
 
 /**
- * Citas por Zoom.
+ * Citas por videollamada (Google Meet).
  *  GET  ?desde=YYYY-MM-DD&hasta=YYYY-MM-DD  → cupos ya tomados en ese rango.
  *  POST                                     → agenda la cita, avisa por correo
  *                                             y manda la invitación de calendario.
@@ -211,75 +212,101 @@ async function avisarPorCorreo({
   nota: string | null;
   locale: string;
 }) {
-  if (!isEmailConfigured()) return;
-
   const fin = finDeCita(inicio);
-  const zoom = process.env.ZOOM_MEETING_URL?.trim();
   const cuandoEs = fechaLegible(inicio, "es");
   const cuandoCliente = fechaLegible(inicio, locale);
+  const invitados = [CORREO_NEGOCIO, CORREO_CALENDARIO, correo];
 
-  const invitacion = invitacionIcs({
-    uid: id,
+  const detalle = [
+    `Videollamada con ${nombre}.`,
+    `Correo: ${correo}`,
+    telefono ? `Teléfono: ${telefono}` : "",
+    nota ? `Nota: ${nota}` : "",
+  ].filter(Boolean);
+
+  // Plan A: Google crea el evento con su propio enlace de Meet y manda las
+  // invitaciones. Plan B (si Google no está configurado o falla): la
+  // invitación estándar adjunta al correo, que Gmail agrega igual al calendario.
+  const enGoogle = await crearCitaEnGoogle({
+    id,
     inicio,
     fin,
-    titulo: `Cita Zoom · ${nombre} · Judo Marketing`,
-    descripcion: [
-      `Videollamada con ${nombre}.`,
-      `Correo: ${correo}`,
-      telefono ? `Teléfono: ${telefono}` : "",
-      nota ? `Nota: ${nota}` : "",
-      zoom ? `Zoom: ${zoom}` : "Enlace de Zoom: por confirmar.",
-    ]
-      .filter(Boolean)
-      .join("\n"),
-    lugar: zoom || "Zoom",
-    organizador: ORGANIZADOR,
-    invitados: [CORREO_NEGOCIO, CORREO_CALENDARIO, correo],
+    titulo: `Videollamada · ${nombre} · Judo Marketing`,
+    descripcion: detalle.join("\n"),
+    zonaHoraria: TZ,
+    invitados,
   });
 
-  // 1) Aviso interno + invitación que cae en el Google Calendar personal.
+  const meet = enGoogle?.enlaceMeet ?? process.env.GOOGLE_MEET_URL?.trim() ?? null;
+
+  if (!isEmailConfigured()) return;
+
+  // Si Google ya mandó sus invitaciones, no adjuntamos otra: sería duplicada.
+  const invitacion = enGoogle
+    ? undefined
+    : invitacionIcs({
+        uid: id,
+        inicio,
+        fin,
+        titulo: `Videollamada · ${nombre} · Judo Marketing`,
+        descripcion: [
+          ...detalle,
+          meet ? `Google Meet: ${meet}` : "Enlace de Google Meet: por confirmar.",
+        ].join("\n"),
+        lugar: meet || "Google Meet",
+        organizador: ORGANIZADOR,
+        invitados,
+      });
+
+  // 1) Aviso interno, al correo de negocio y al personal.
   const interno = brandedEmail({
-    title: "Nueva cita por Zoom 🎥",
+    title: "Nueva videollamada agendada 🎥",
     greeting: cuandoEs,
     paragraphs: [
       `<b>${nombre}</b> agendó una videollamada.`,
       `Correo: <a href="mailto:${correo}" style="color:#a855f7;">${correo}</a>`,
       telefono ? `Teléfono: ${telefono}` : "Teléfono: no lo dejó.",
       nota ? `Nota del cliente: “${nota}”` : "Sin nota adicional.",
-      zoom
-        ? `Enlace de Zoom: <a href="${zoom}" style="color:#a855f7;">${zoom}</a>`
-        : "Recuerda mandarle el enlace de Zoom.",
-      "La invitación va adjunta: al abrirla se agrega sola a tu Google Calendar.",
+      meet
+        ? `Google Meet: <a href="${meet}" style="color:#a855f7;">${meet}</a>`
+        : "Recuerda mandarle el enlace de la reunión.",
+      enGoogle
+        ? "La cita ya está en tu Google Calendar con su enlace de Meet."
+        : "La invitación va adjunta: al abrirla se agrega sola a tu Google Calendar.",
     ],
   });
 
   await sendBrandedEmail(
     [CORREO_NEGOCIO, CORREO_CALENDARIO],
-    `Cita Zoom: ${nombre} · ${cuandoEs}`,
+    `Videollamada: ${nombre} · ${cuandoEs}`,
     interno,
     { invitacion, replyTo: correo }
   );
 
-  // 2) Confirmación para el cliente, con su propia invitación.
+  // 2) Confirmación para el cliente, en su idioma.
   const esIngles = locale === "en";
   const cliente = brandedEmail({
-    title: esIngles ? "Your call is booked 🎥" : "Tu cita quedó agendada 🎥",
+    title: esIngles ? "Your meeting is booked 🎥" : "Tu reunión quedó agendada 🎥",
     greeting: `${esIngles ? "Hi" : "Hola"}, ${nombre.split(" ")[0]} 👋`,
     paragraphs: esIngles
       ? [
           `We'll meet on <b>${cuandoCliente}</b> (Miami time).`,
-          zoom
-            ? `Join here: <a href="${zoom}" style="color:#a855f7;">${zoom}</a>`
-            : "We'll send you the Zoom link before the call.",
-          "The invitation is attached — open it and it goes straight into your calendar.",
+          meet
+            ? `Join on Google Meet: <a href="${meet}" style="color:#a855f7;">${meet}</a>`
+            : "We'll send you the Google Meet link before the call.",
+          enGoogle
+            ? "Google sent you the calendar invite separately — accept it and you're set."
+            : "The invitation is attached — open it and it goes straight into your calendar.",
           "Need to change it? Just reply to this email.",
         ]
       : [
           `Nos vemos el <b>${cuandoCliente}</b> (hora de Miami).`,
-          zoom
-            ? `Entra por aquí: <a href="${zoom}" style="color:#a855f7;">${zoom}</a>`
-            : "Te mandamos el enlace de Zoom antes de la llamada.",
-          "La invitación va adjunta: al abrirla se guarda sola en tu calendario.",
+          meet
+            ? `Entra por Google Meet: <a href="${meet}" style="color:#a855f7;">${meet}</a>`
+            : "Te mandamos el enlace de Google Meet antes de la llamada.",
+          enGoogle
+            ? "Google te mandó la invitación de calendario por separado: acéptala y listo."
+            : "La invitación va adjunta: al abrirla se guarda sola en tu calendario.",
           "¿Necesitas cambiarla? Respóndenos este mismo correo.",
         ],
     ctaLabel: esIngles ? "Visit our site" : "Visitar el sitio",
@@ -289,8 +316,8 @@ async function avisarPorCorreo({
   await sendBrandedEmail(
     correo,
     esIngles
-      ? `Your Zoom call with Judo Marketing · ${cuandoCliente}`
-      : `Tu cita por Zoom con Judo Marketing · ${cuandoCliente}`,
+      ? `Your meeting with Judo Marketing · ${cuandoCliente}`
+      : `Tu reunión con Judo Marketing · ${cuandoCliente}`,
     cliente,
     { invitacion, replyTo: CORREO_NEGOCIO }
   );
