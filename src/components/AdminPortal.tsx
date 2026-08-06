@@ -365,6 +365,37 @@ export default function AdminPortal() {
     void loadAll();
   };
 
+  const deleteSeller = async (id: string, name: string) => {
+    if (
+      !window.confirm(
+        `¿Eliminar por completo la aplicación de ${name}? Se borra su cuenta, su correo queda libre para registrarse de nuevo, y esto no se puede deshacer.`
+      )
+    )
+      return;
+    const { data: sess } = await supabase.auth.getSession();
+    const res = await fetch("/api/admin/delete-seller", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sess.session?.access_token}`,
+      },
+      body: JSON.stringify({ userId: id }),
+    });
+    const data = (await res.json()) as { deleted?: boolean; error?: string };
+    if (data.deleted) {
+      flash(`Aplicación de ${name} eliminada ✓`);
+      void loadAll();
+      return;
+    }
+    if (data.error === "has_activity") {
+      flash("Este vendedor tiene actividad registrada (visitas, contratos o comisiones). Usa Rechazar o Suspender para conservar el historial.");
+    } else if (data.error === "not_configured") {
+      flash("Falta la SUPABASE_SERVICE_ROLE_KEY en Vercel para poder eliminar cuentas.");
+    } else {
+      flash(`No se pudo eliminar: ${data.error ?? "error desconocido"}`);
+    }
+  };
+
   const markCommissionPaid = async (id: string) => {
     const { error } = await supabase
       .from("commissions")
@@ -573,7 +604,7 @@ export default function AdminPortal() {
             <p className="text-sm text-judo-fog/50">Aún no hay vendedores registrados.</p>
           )}
           {sellers.map((s) => (
-            <SellerCard key={s.id} seller={s} onSave={saveSeller} />
+            <SellerCard key={s.id} seller={s} onSave={saveSeller} onDelete={deleteSeller} />
           ))}
         </div>
       )}
@@ -974,9 +1005,11 @@ function SiteDates({
 function SellerCard({
   seller,
   onSave,
+  onDelete,
 }: {
   seller: SellerRow;
   onSave: (id: string, status: string, kind: string | null, value: string) => void;
+  onDelete: (id: string, name: string) => void;
 }) {
   const [kind, setKind] = useState(seller.commission_kind ?? "monto_fijo");
   const [value, setValue] = useState(seller.commission_value?.toString() ?? "");
@@ -1033,6 +1066,13 @@ function SellerCard({
             {seller.status === "aprobado" ? "Suspender" : "Rechazar"}
           </button>
         )}
+        <button
+          onClick={() => onDelete(seller.id, seller.profiles?.full_name ?? "este vendedor")}
+          title="Eliminar la cuenta por completo"
+          className="rounded-full border border-red-400/40 px-3 py-1.5 text-sm text-red-300 hover:bg-red-400/20"
+        >
+          🗑
+        </button>
       </div>
     </div>
   );
