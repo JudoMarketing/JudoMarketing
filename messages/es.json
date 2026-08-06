@@ -386,7 +386,16 @@
     "manualEntry": "Otro cliente, escribir los datos",
     "uploadNow": "Subir ahora",
     "viewPdf": "Ver PDF",
-    "docScript": "Guion de ventas (estúdialo hasta dominarlo)"
+    "docScript": "Guion de ventas (estúdialo hasta dominarlo)",
+    "photoTitle": "Tu foto de perfil",
+    "photoDesc": "Tómate una selfie con tu teléfono. Es tu identificación ante Administración y ante tus clientes.",
+    "takeSelfie": "Tomarme la selfie",
+    "photoOnce": "Se sube una sola vez. Si necesitas cambiarla después, Administración debe autorizarlo.",
+    "photoNewRequested": "Administración te pidió una foto nueva",
+    "photoNewDesc": "Tu foto quedó desbloqueada. Tómate una selfie nueva y volverá a bloquearse al subirla.",
+    "photoLockedNote": "Tu foto de perfil está guardada y bloqueada. Para cambiarla, pídeselo a Administración.",
+    "photoLocked": "Tu foto está bloqueada. Pídele a Administración que autorice el cambio.",
+    "photoError": "No se pudo subir la foto, intenta de nuevo."
   },
   "zelle": {
     "chooseTitle": "¿Cómo prefieres pagar?",

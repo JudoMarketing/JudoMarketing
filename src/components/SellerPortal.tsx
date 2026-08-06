@@ -15,7 +15,12 @@ import EarningsPanel from "./EarningsPanel";
  * client_generated_id evita duplicados si un reintento se repite).
  */
 
-type Profile = { full_name: string; photo_url: string | null; role?: string };
+type Profile = {
+  full_name: string;
+  photo_url: string | null;
+  role?: string;
+  photo_change_requested?: boolean;
+};
 type Seller = { status: string; referral_code: string | null };
 type SignedContract = {
   id: string;
@@ -68,6 +73,8 @@ export default function SellerPortal() {
   const [justSaved, setJustSaved] = useState(false);
   const [showSigner, setShowSigner] = useState(false);
   const [contracts, setContracts] = useState<SignedContract[]>([]);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoError, setPhotoError] = useState("");
 
   // ── Sesión y datos ────────────────────────────────────────────────
   useEffect(() => {
@@ -82,7 +89,11 @@ export default function SellerPortal() {
       const uid = session.user.id;
       const [{ data: prof }, { data: sel }, contractsRes, serverVisitsRes] =
         await Promise.all([
-          supabase.from("profiles").select("full_name, photo_url, role").eq("id", uid).single(),
+          supabase
+            .from("profiles")
+            .select("full_name, photo_url, role, photo_change_requested")
+            .eq("id", uid)
+            .single(),
           supabase.from("sellers").select("status, referral_code").eq("id", uid).single(),
           supabase
             .from("signed_contracts")
@@ -225,15 +236,33 @@ export default function SellerPortal() {
 
   const uploadPhoto = async (file: File) => {
     if (!userId) return;
-    const path = `${userId}/avatar-${Date.now()}.${file.name.split(".").pop()}`;
-    const { error } = await supabase.storage.from("avatars").upload(path, file);
-    if (error) return;
-    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
-    await supabase
-      .from("profiles")
-      .update({ photo_url: data.publicUrl })
-      .eq("id", userId);
-    setProfile((p) => (p ? { ...p, photo_url: data.publicUrl } : p));
+    setPhotoError("");
+    setUploadingPhoto(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${userId}/avatar-${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("avatars").upload(path, file);
+      if (error) {
+        setPhotoError(t("photoError"));
+        return;
+      }
+      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+      // El candado de la base rechaza el cambio si ya hay foto y
+      // Administración no pidió una nueva
+      const { error: upErr } = await supabase
+        .from("profiles")
+        .update({ photo_url: data.publicUrl })
+        .eq("id", userId);
+      if (upErr) {
+        setPhotoError(t("photoLocked"));
+        return;
+      }
+      setProfile((p) =>
+        p ? { ...p, photo_url: data.publicUrl, photo_change_requested: false } : p
+      );
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
 
   const logout = async () => {
@@ -292,11 +321,27 @@ export default function SellerPortal() {
         <div className="mt-6 rounded-2xl border border-judo-lilac/30 bg-judo-surface p-6">
           <h2 className="text-lg font-semibold text-judo-lilac">⏳ {t("pendingTitle")}</h2>
           <p className="mt-2 text-sm text-judo-fog/70">{t("pendingDesc")}</p>
-          <label className="btn-secondary mt-4 inline-flex cursor-pointer text-sm">
-            {profile?.photo_url ? t("photoUploaded") : `📷 ${t("uploadPhoto")}`}
+        </div>
+      )}
+
+      {/* Foto de perfil: se puede subir en cualquier momento, antes o
+          después de la aprobación. Una vez subida queda bloqueada hasta
+          que Administración pida una nueva. */}
+      {(!profile?.photo_url || profile?.photo_change_requested) && (
+        <div className="mt-6 rounded-2xl border border-judo-lilac/30 bg-judo-surface p-6">
+          <h2 className="font-semibold">
+            📷 {profile?.photo_change_requested ? t("photoNewRequested") : t("photoTitle")}
+          </h2>
+          <p className="mt-2 text-sm text-judo-fog/70">
+            {profile?.photo_change_requested ? t("photoNewDesc") : t("photoDesc")}
+          </p>
+          <label className="btn-primary mt-4 inline-flex cursor-pointer text-sm">
+            {uploadingPhoto ? "…" : `🤳 ${t("takeSelfie")}`}
             <input
               type="file"
               accept="image/*"
+              capture="user"
+              disabled={uploadingPhoto}
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -304,10 +349,15 @@ export default function SellerPortal() {
               }}
             />
           </label>
-          {!profile?.photo_url && (
-            <p className="mt-2 text-xs text-judo-fog/50">{t("photoRequired")}</p>
-          )}
+          <p className="mt-2 text-xs text-judo-fog/50">{t("photoOnce")}</p>
+          {photoError && <p className="mt-2 text-sm text-red-400">{photoError}</p>}
         </div>
+      )}
+
+      {profile?.photo_url && !profile?.photo_change_requested && (
+        <p className="mt-4 text-center text-xs text-judo-fog/45">
+          🔒 {t("photoLockedNote")}
+        </p>
       )}
 
       {/* Ganancias: totales, gráfica mensual y proyección */}

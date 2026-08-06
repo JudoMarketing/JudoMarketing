@@ -386,7 +386,16 @@
     "manualEntry": "Another client, type the details",
     "uploadNow": "Upload now",
     "viewPdf": "View PDF",
-    "docScript": "Sales script (study it until you own it)"
+    "docScript": "Sales script (study it until you own it)",
+    "photoTitle": "Your profile photo",
+    "photoDesc": "Take a selfie with your phone. It is your ID with Administration and with your clients.",
+    "takeSelfie": "Take my selfie",
+    "photoOnce": "It is uploaded once. If you need to change it later, Administration must authorize it.",
+    "photoNewRequested": "Administration asked you for a new photo",
+    "photoNewDesc": "Your photo is unlocked. Take a new selfie and it will lock again once uploaded.",
+    "photoLockedNote": "Your profile photo is saved and locked. To change it, ask Administration.",
+    "photoLocked": "Your photo is locked. Ask Administration to authorize the change.",
+    "photoError": "Could not upload the photo, please try again."
   },
   "zelle": {
     "chooseTitle": "How would you like to pay?",

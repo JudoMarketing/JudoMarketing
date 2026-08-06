@@ -27,7 +27,12 @@ type SellerRow = {
   commission_kind: string | null;
   commission_value: number | null;
   created_at: string;
-  profiles: { full_name: string; photo_url: string | null; phone: string | null };
+  profiles: {
+    full_name: string;
+    photo_url: string | null;
+    phone: string | null;
+    photo_change_requested: boolean | null;
+  };
 };
 
 type ProofRow = {
@@ -131,7 +136,7 @@ export default function AdminPortal() {
       supabase
         .from("sellers")
         .select(
-          "id,status,referral_code,commission_kind,commission_value,created_at,profiles!sellers_id_fkey(full_name,photo_url,phone)"
+          "id,status,referral_code,commission_kind,commission_value,created_at,profiles!sellers_id_fkey(full_name,photo_url,phone,photo_change_requested)"
         )
         .order("created_at", { ascending: false }),
       supabase
@@ -362,6 +367,13 @@ export default function AdminPortal() {
       })
       .eq("id", site.id);
     flash(`Pago de $${site.monthly_price} registrado ✓`);
+    void loadAll();
+  };
+
+  const requestPhotoChange = async (id: string, name: string) => {
+    const { error } = await supabase.rpc("request_photo_change", { target: id });
+    if (error) return flash(`Error: ${error.message}`);
+    flash(`Le pediste una foto nueva a ${name}. Podrá subirla desde su portal ✓`);
     void loadAll();
   };
 
@@ -604,7 +616,13 @@ export default function AdminPortal() {
             <p className="text-sm text-judo-fog/50">Aún no hay vendedores registrados.</p>
           )}
           {sellers.map((s) => (
-            <SellerCard key={s.id} seller={s} onSave={saveSeller} onDelete={deleteSeller} />
+            <SellerCard
+              key={s.id}
+              seller={s}
+              onSave={saveSeller}
+              onDelete={deleteSeller}
+              onPhotoChange={requestPhotoChange}
+            />
           ))}
         </div>
       )}
@@ -1006,10 +1024,12 @@ function SellerCard({
   seller,
   onSave,
   onDelete,
+  onPhotoChange,
 }: {
   seller: SellerRow;
   onSave: (id: string, status: string, kind: string | null, value: string) => void;
   onDelete: (id: string, name: string) => void;
+  onPhotoChange: (id: string, name: string) => void;
 }) {
   const [kind, setKind] = useState(seller.commission_kind ?? "monto_fijo");
   const [value, setValue] = useState(seller.commission_value?.toString() ?? "");
@@ -1018,7 +1038,10 @@ function SellerCard({
     <div className={`${box} flex flex-wrap items-center gap-4`}>
       {seller.profiles?.photo_url ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={seller.profiles.photo_url} alt="" className="h-12 w-12 rounded-full border border-judo-lilac/40 object-cover" />
+        <a href={seller.profiles.photo_url} target="_blank" rel="noopener noreferrer" title="Ver la foto en grande">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={seller.profiles.photo_url} alt="" className="h-12 w-12 rounded-full border border-judo-lilac/40 object-cover" />
+        </a>
       ) : (
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-judo-purple/25">👤</span>
       )}
@@ -1030,6 +1053,7 @@ function SellerCard({
             {seller.status}
           </b>
           {!seller.profiles?.photo_url && " · ⚠ sin foto"}
+          {seller.profiles?.photo_change_requested && " · 📷 esperando foto nueva"}
         </p>
       </div>
       <div className="flex items-center gap-2">
@@ -1064,6 +1088,15 @@ function SellerCard({
             className="rounded-full border border-red-400/40 px-4 py-1.5 text-sm text-red-300 hover:bg-red-400/10"
           >
             {seller.status === "aprobado" ? "Suspender" : "Rechazar"}
+          </button>
+        )}
+        {seller.profiles?.photo_url && !seller.profiles?.photo_change_requested && (
+          <button
+            onClick={() => onPhotoChange(seller.id, seller.profiles?.full_name ?? "el vendedor")}
+            title="Desbloquear su foto para que suba una nueva"
+            className="rounded-full border border-judo-lilac/30 px-3 py-1.5 text-sm text-judo-lilac hover:bg-judo-purple/15"
+          >
+            📷 Pedir foto
           </button>
         )}
         <button
