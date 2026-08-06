@@ -8,7 +8,8 @@
     "services": "Servicios",
     "about": "Nosotros",
     "contact": "Contacto",
-    "login": "Log in"
+    "login": "Log in",
+    "dashboard": "Dashboard"
   },
   "hero": {
     "kicker": "Marketing profesional y accesible con IA",

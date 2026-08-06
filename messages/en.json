@@ -8,7 +8,8 @@
     "services": "Services",
     "about": "About Us",
     "contact": "Contact",
-    "login": "Log in"
+    "login": "Log in",
+    "dashboard": "Dashboard"
   },
   "hero": {
     "kicker": "Affordable & professional marketing services with AI",

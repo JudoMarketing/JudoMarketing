@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { getSupabase } from "@/lib/supabase";
 import LanguageSwitcher from "./LanguageSwitcher";
 import NavLink from "./NavLink";
 
@@ -17,6 +18,35 @@ const LINKS = [
 export default function Header() {
   const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
+  // Si ya hay sesión, el botón lleva directo al panel que le toca
+  const [dashboard, setDashboard] = useState<"/admin" | "/portal" | null>(null);
+
+  useEffect(() => {
+    const supabase = getSupabase();
+    let alive = true;
+
+    const resolve = async (userId: string | undefined) => {
+      if (!userId) {
+        if (alive) setDashboard(null);
+        return;
+      }
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userId)
+        .single();
+      if (alive) setDashboard(prof?.role === "admin" ? "/admin" : "/portal");
+    };
+
+    void supabase.auth.getSession().then(({ data }) => resolve(data.session?.user.id));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      void resolve(session?.user.id);
+    });
+    return () => {
+      alive = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-b border-judo-lilac/15 bg-judo-black/85 backdrop-blur">
@@ -44,8 +74,8 @@ export default function Header() {
 
         <div className="flex items-center gap-2.5 sm:gap-3">
           <LanguageSwitcher />
-          <Link href="/login" className="btn-3d text-sm">
-            {t("login")}
+          <Link href={dashboard ?? "/login"} className="btn-3d text-sm">
+            {dashboard ? t("dashboard") : t("login")}
           </Link>
           {/* Hamburguesa (móvil) */}
           <button
