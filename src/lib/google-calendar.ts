@@ -27,6 +27,67 @@ export function googleCalendarConfigurado(): boolean {
   );
 }
 
+/**
+ * Deja la llave privada en el formato que Node necesita, sin importar cómo se
+ * haya copiado del archivo JSON de Google. Acepta:
+ *   · la llave sola
+ *   · la llave con las comillas alrededor
+ *   · la línea completa   "private_key": "-----BEGIN…"
+ *   · el archivo JSON entero
+ *   · cualquiera de las anteriores en base64
+ */
+export function normalizarLlave(crudo: string): string {
+  let valor = crudo.trim();
+
+  // ¿Vino el JSON completo, o en base64?
+  const desdeJson = (texto: string): string | null => {
+    try {
+      const obj = JSON.parse(texto) as { private_key?: string };
+      return typeof obj.private_key === "string" ? obj.private_key : null;
+    } catch {
+      return null;
+    }
+  };
+
+  if (valor.startsWith("{")) {
+    valor = desdeJson(valor) ?? valor;
+  } else if (/^[A-Za-z0-9+/=\s]+$/.test(valor) && valor.length > 200) {
+    try {
+      const abierto = Buffer.from(valor, "base64").toString("utf8");
+      if (abierto.includes("BEGIN") || abierto.trimStart().startsWith("{")) {
+        valor = desdeJson(abierto) ?? abierto;
+      }
+    } catch {
+      /* no era base64: seguimos con lo que había */
+    }
+  }
+
+  // Etiqueta del campo pegada por delante:  "private_key": "-----BEGIN…
+  valor = valor.replace(/^["']?private_key["']?\s*:\s*/i, "").trim();
+  // Comillas alrededor, y una coma final si venía de una línea del JSON
+  valor = valor.replace(/,\s*$/, "").trim();
+  valor = valor.replace(/^["']|["']$/g, "").trim();
+  // Los \n escritos como texto
+  valor = valor.replace(/\\n/g, "\n").trim();
+
+  return valor;
+}
+
+/** Qué forma traía la llave, sin revelar nada de su contenido. */
+export function formaDeLlave(crudo: string) {
+  const limpia = normalizarLlave(crudo);
+  return {
+    crudoEmpiezaConLlaveJson: crudo.trimStart().startsWith("{"),
+    crudoEmpiezaConComilla: /^["']/.test(crudo.trim()),
+    crudoEmpiezaConEtiqueta: /^["']?private_key/i.test(crudo.trim()),
+    empiezaBien: limpia.startsWith("-----BEGIN"),
+    terminaBien: limpia.endsWith("PRIVATE KEY-----"),
+    tieneSaltos: limpia.includes("\n"),
+    lineas: limpia.split("\n").length,
+    largo: limpia.length,
+  };
+}
+
 function base64Url(dato: string | Buffer): string {
   return Buffer.from(dato)
     .toString("base64")
@@ -66,14 +127,11 @@ export async function diagnosticarGoogle() {
   }
 
   // La llave privada tiene que verse como una llave, no como un pedazo suelto.
-  const llave = process.env.GOOGLE_SA_PRIVATE_KEY!.replace(/\\n/g, "\n");
-  pistas.llave = {
-    empiezaBien: llave.trimStart().startsWith("-----BEGIN"),
-    terminaBien: llave.trimEnd().endsWith("PRIVATE KEY-----"),
-    tieneSaltos: llave.includes("\n"),
-    largo: llave.length,
-  };
+  pistas.llave = formaDeLlave(process.env.GOOGLE_SA_PRIVATE_KEY!);
   pistas.usuario = process.env.GOOGLE_CALENDAR_USER!.split("@")[1] ?? null;
+  pistas.cuentaDeServicio = process.env
+    .GOOGLE_SA_EMAIL!.trim()
+    .endsWith(".iam.gserviceaccount.com");
 
   try {
     const token = await pedirToken(true);
@@ -108,10 +166,11 @@ export async function diagnosticarGoogle() {
 async function pedirToken(
   detallado = false
 ): Promise<string | { estado: number; error: string } | null> {
-  const email = process.env.GOOGLE_SA_EMAIL!;
-  const usuario = process.env.GOOGLE_CALENDAR_USER!;
-  // En Vercel la llave se pega con \n escritos como texto.
-  const llave = process.env.GOOGLE_SA_PRIVATE_KEY!.replace(/\\n/g, "\n");
+  const email = process.env.GOOGLE_SA_EMAIL!.trim().replace(/^["']|["']$/g, "");
+  const usuario = process.env
+    .GOOGLE_CALENDAR_USER!.trim()
+    .replace(/^["']|["']$/g, "");
+  const llave = normalizarLlave(process.env.GOOGLE_SA_PRIVATE_KEY!);
 
   const ahora = Math.floor(Date.now() / 1000);
   const cabecera = base64Url(JSON.stringify({ alg: "RS256", typ: "JWT" }));
