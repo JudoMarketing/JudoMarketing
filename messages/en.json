@@ -6,6 +6,7 @@
   "nav": {
     "home": "Home",
     "services": "Services",
+    "portfolio": "Portfolio",
     "about": "About Us",
     "contact": "Contact",
     "login": "Log in",
@@ -60,6 +61,11 @@
       "price": "from $150/mo",
       "description": "Native iOS & Android mobile apps with push notifications."
     }
+  },
+  "portfolioHome": {
+    "title": "Work that's already live",
+    "subtitle": "We don't tell you what we do — we show you.",
+    "link": "See the full portfolio"
   },
   "reviews": {
     "title": "What our clients say",
@@ -466,5 +472,14 @@
     "verifyNote": "The network takes 30 minutes to 1 hour to verify your payment. We recommend waiting calmly for the confirmation, we will review it and contact you the same day.",
     "submit": "Send payment proof",
     "scanHint": "Scan it with your wallet if you are on a computer"
+  },
+  "portfolio": {
+    "title": "Portfolio",
+    "subtitle": "Real websites we've built. Open any of them and judge for yourself.",
+    "all": "All",
+    "visit": "Visit the site",
+    "ctaTitle": "Is yours next?",
+    "ctaText": "Tell us what your business needs and we'll tell you honestly whether we can build it, what it costs, and how long it takes.",
+    "ctaButton": "Let's talk about your project"
   }
 }

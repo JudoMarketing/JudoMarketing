@@ -9,10 +9,11 @@ import type { Metadata } from "next";
 
 export const SITE_URL = "https://www.judomarketing.net";
 
-type PageKey = "services" | "about" | "contact" | "legal";
+type PageKey = "services" | "portfolio" | "about" | "contact" | "legal";
 
 const PATHS: Record<PageKey, { en: string; es: string }> = {
   services: { en: "/services", es: "/es/servicios" },
+  portfolio: { en: "/portfolio", es: "/es/portafolio" },
   about: { en: "/about", es: "/es/nosotros" },
   contact: { en: "/contact", es: "/es/contacto" },
   legal: { en: "/legal", es: "/es/legal" },
@@ -29,6 +30,18 @@ const COPY: Record<PageKey, Record<"en" | "es", { title: string; description: st
       title: "Pricing: Websites from $50/month, Apps & Online Stores | Judo Marketing",
       description:
         "Website design for small businesses in Miami and beyond: online stores, booking pages, and mobile apps from $50 a month with support, security, and your own admin panel.",
+    },
+  },
+  portfolio: {
+    es: {
+      title: "Portafolio: Páginas Web que Hemos Hecho en Miami | Judo Marketing",
+      description:
+        "Mira páginas web reales hechas por Judo Marketing en Miami: tiendas online, apps de delivery y sitios de servicios. Entra a cada una y compruébalo tú mismo.",
+    },
+    en: {
+      title: "Portfolio: Websites We've Built in Miami | Judo Marketing",
+      description:
+        "See real websites built by Judo Marketing in Miami: online stores, delivery apps, and service sites. Open each one and judge for yourself.",
     },
   },
   about: {

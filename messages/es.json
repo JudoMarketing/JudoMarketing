@@ -6,6 +6,7 @@
   "nav": {
     "home": "Inicio",
     "services": "Servicios",
+    "portfolio": "Portafolio",
     "about": "Nosotros",
     "contact": "Contacto",
     "login": "Log in",
@@ -60,6 +61,11 @@
       "price": "desde $150/mes",
       "description": "Aplicaciones móviles nativas para iOS y Android con notificaciones push."
     }
+  },
+  "portfolioHome": {
+    "title": "Trabajos que ya están en línea",
+    "subtitle": "No te contamos lo que hacemos: te lo mostramos.",
+    "link": "Ver el portafolio completo"
   },
   "reviews": {
     "title": "Lo que dicen nuestros clientes",
@@ -466,5 +472,14 @@
     "verifyNote": "La red tarda de 30 minutos a 1 hora en verificar tu pago. Te recomendamos esperar la confirmación con calma, nosotros la revisaremos y te contactaremos ese mismo día.",
     "submit": "Enviar comprobante de pago",
     "scanHint": "Escanéalo con tu billetera si estás en la computadora"
+  },
+  "portfolio": {
+    "title": "Portafolio",
+    "subtitle": "Websites reales que hemos construido. Entra a cualquiera y compruébalo tú mismo.",
+    "all": "Todos",
+    "visit": "Ver el sitio",
+    "ctaTitle": "¿El próximo es el tuyo?",
+    "ctaText": "Cuéntanos qué necesita tu negocio y te decimos con honestidad si podemos hacerlo, cuánto cuesta y en cuánto tiempo.",
+    "ctaButton": "Hablemos de tu proyecto"
   }
 }

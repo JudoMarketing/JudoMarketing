@@ -11,6 +11,7 @@ import NavLink from "./NavLink";
 const LINKS = [
   { href: "/", key: "home" },
   { href: "/services", key: "services" },
+  { href: "/portfolio", key: "portfolio" },
   { href: "/about", key: "about" },
   { href: "/contact", key: "contact" },
 ] as const;
