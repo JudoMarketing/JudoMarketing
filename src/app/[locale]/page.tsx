@@ -79,12 +79,6 @@ export default function HomePage({
           )}
         </svg>
 
-        <p
-          className="hero-in mb-5 rounded-full border border-judo-lilac/40 bg-judo-surface/60 px-5 py-1.5 text-sm text-judo-lilac backdrop-blur"
-          style={{ animationDelay: "0.05s" }}
-        >
-          {t("hero.kicker")}
-        </p>
         <h1
           className="hero-in text-5xl font-bold leading-tight tracking-tight sm:text-7xl"
           style={{ animationDelay: "0.15s" }}
