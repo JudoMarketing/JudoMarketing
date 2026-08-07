@@ -25,7 +25,7 @@ export default async function PortfolioTeaser({ locale }: { locale: string }) {
       </div>
       <Reveal className="mt-10 text-center">
         <Link
-          href="/portfolio"
+          href="/showcase"
           className="text-sm font-semibold text-judo-lilac transition hover:text-judo-fog"
         >
           {t("link")} →

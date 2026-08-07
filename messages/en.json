@@ -6,7 +6,7 @@
   "nav": {
     "home": "Home",
     "services": "Services",
-    "portfolio": "Portfolio",
+    "showcase": "Showcase",
     "about": "About Us",
     "contact": "Contact",
     "login": "Log in",
@@ -18,7 +18,8 @@
     "titleAccent": "Create Value",
     "subtitle": "We build all kinds of scalable websites fully controlled by the owner. Modern, secure solutions designed to grow your business.",
     "ctaPrimary": "Let's talk about your project",
-    "ctaSecondary": "View services"
+    "ctaSecondary": "View services",
+    "ctaShowcase": "See our showcase"
   },
   "onboarding": {
     "title": "How we work with you",
@@ -65,7 +66,7 @@
   "portfolioHome": {
     "title": "Work that's already live",
     "subtitle": "We don't tell you what we do — we show you.",
-    "link": "See the full portfolio"
+    "link": "See the full showcase"
   },
   "reviews": {
     "title": "What our clients say",
@@ -474,7 +475,7 @@
     "scanHint": "Scan it with your wallet if you are on a computer"
   },
   "portfolio": {
-    "title": "Portfolio",
+    "title": "Showcase",
     "subtitle": "Real websites we've built. Open any of them and judge for yourself.",
     "all": "All",
     "visit": "Visit the site",

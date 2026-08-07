@@ -6,7 +6,7 @@
   "nav": {
     "home": "Inicio",
     "services": "Servicios",
-    "portfolio": "Portafolio",
+    "showcase": "Showcase",
     "about": "Nosotros",
     "contact": "Contacto",
     "login": "Log in",
@@ -18,7 +18,8 @@
     "titleAccent": "Create Value",
     "subtitle": "Hacemos todo tipo de websites escalables y controlados por el mismo usuario. Soluciones modernas, seguras y diseñadas para hacer crecer tu negocio.",
     "ctaPrimary": "Hablemos de tu proyecto",
-    "ctaSecondary": "Ver servicios"
+    "ctaSecondary": "Ver servicios",
+    "ctaShowcase": "Ver nuestro showcase"
   },
   "onboarding": {
     "title": "Así trabajamos contigo",
@@ -65,7 +66,7 @@
   "portfolioHome": {
     "title": "Trabajos que ya están en línea",
     "subtitle": "No te contamos lo que hacemos: te lo mostramos.",
-    "link": "Ver el portafolio completo"
+    "link": "Ver el showcase completo"
   },
   "reviews": {
     "title": "Lo que dicen nuestros clientes",
@@ -474,7 +475,7 @@
     "scanHint": "Escanéalo con tu billetera si estás en la computadora"
   },
   "portfolio": {
-    "title": "Portafolio",
+    "title": "Showcase",
     "subtitle": "Websites reales que hemos construido. Entra a cualquiera y compruébalo tú mismo.",
     "all": "Todos",
     "visit": "Ver el sitio",

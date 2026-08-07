@@ -7,7 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes: { es: string; en: string; priority: number }[] = [
     { en: "/", es: "/es", priority: 1 },
     { en: "/services", es: "/es/servicios", priority: 0.9 },
-    { en: "/portfolio", es: "/es/portafolio", priority: 0.8 },
+    { en: "/showcase", es: "/es/showcase", priority: 0.8 },
     { en: "/about", es: "/es/nosotros", priority: 0.8 },
     { en: "/contact", es: "/es/contacto", priority: 0.8 },
     { en: "/legal", es: "/es/legal", priority: 0.3 },

@@ -22,6 +22,15 @@ const nextConfig: NextConfig = {
     // de capturas, y aun así la imagen se refresca si el cliente cambia su sitio.
     minimumCacheTTL: 86400,
   },
+  // Las direcciones viejas del portafolio, por si Google alcanzó a verlas
+  async redirects() {
+    return [
+      { source: "/portfolio", destination: "/showcase", permanent: true },
+      { source: "/es/portafolio", destination: "/es/showcase", permanent: true },
+      { source: "/es/portfolio", destination: "/es/showcase", permanent: true },
+    ];
+  },
+
   async headers() {
     return [
       ...SW_PATHS.map((source) => ({

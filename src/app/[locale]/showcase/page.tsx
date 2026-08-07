@@ -15,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  return pageMetadata("portfolio", locale);
+  return pageMetadata("showcase", locale);
 }
 
 export default async function PortfolioPage({

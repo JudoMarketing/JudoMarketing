@@ -112,6 +112,17 @@ export default function HomePage({
             {t("hero.ctaSecondary")}
           </Link>
         </div>
+
+        {/* Tercer camino, más discreto: ver el trabajo ya hecho */}
+        <div className="hero-in mt-5" style={{ animationDelay: "0.6s" }}>
+          <Link
+            href="/showcase"
+            className="inline-flex items-center gap-2 rounded-full border border-judo-lilac/20 bg-white/5 px-6 py-2.5 text-sm text-judo-fog/70 backdrop-blur-sm transition hover:border-judo-lilac/45 hover:bg-white/10 hover:text-judo-fog"
+          >
+            {t("hero.ctaShowcase")}
+            <span aria-hidden>→</span>
+          </Link>
+        </div>
       </section>
 
       {/* ── ONBOARDING: 4 PASOS ──────────────────────────────────── */}
