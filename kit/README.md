@@ -132,15 +132,29 @@ import { otrosSitios } from "@/lib/judo-red";
 />
 ```
 
-### Un paso más (opcional): `sameAs` en el schema
+### Un paso más (opcional): `creator` en el schema
 
-Si el sitio del dueño ya emite datos estructurados de `Organization` o
-`LocalBusiness`, sumar los sitios hermanos y judomarketing.net al campo
-`sameAs` refuerza ante Google que son la misma mano detrás:
+Si el sitio ya emite datos estructurados de `WebSite`, vale la pena declarar
+quién lo construyó. La propiedad correcta es `creator`, no `sameAs`:
 
 ```json
-"sameAs": ["https://zanoah.shop", "https://www.judomarketing.net"]
+"creator": {
+  "@type": "Organization",
+  "name": "Judo Marketing",
+  "url": "https://www.judomarketing.net"
+}
 ```
 
-No lo hace el footer a propósito: si el sitio ya trae su propio schema, dos
-bloques `Organization` en la misma página se estorban.
+Ojo con la diferencia, porque es fácil equivocarse:
+
+- `publisher` / `Organization` del sitio = **el negocio del cliente**.
+- `creator` del `WebSite` = **quien hizo el website**, o sea Judo.
+- `sameAs` = otras páginas que hablan del MISMO negocio (su Instagram, su
+  perfil de Google). Meter ahí un sitio hermano o a Judo es una afirmación
+  falsa: son otras empresas, no otro perfil de esta.
+
+El enlace entre sitios hermanos no necesita schema: el enlace visible del pie
+ya es la señal, y el buscador arma el resto por el grafo de enlaces.
+
+Nada de esto lo hace el footer solo, a propósito: si el sitio ya trae su
+propio schema, dos bloques en la misma página se estorban.
