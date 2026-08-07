@@ -154,6 +154,10 @@ export default function AdminPortal() {
   const [siteClient, setSiteClient] = useState("");
   const [siteSeller, setSiteSeller] = useState("");
   const [siteDue, setSiteDue] = useState("");
+  // Un website que ya está publicado entra directo como activo
+  const [siteStatus, setSiteStatus] = useState<"en_desarrollo" | "activo">(
+    "en_desarrollo"
+  );
 
   const loadAll = useCallback(async () => {
     const [selRes, proofRes, siteRes, metricsRes, comRes, bonusRes, visitRes, contractRes, payRes, revRes] = await Promise.all([
@@ -354,17 +358,20 @@ export default function AdminPortal() {
     const { error: sErr } = await supabase.from("sites").insert({
       name: siteName.trim(),
       domain: siteDomain.trim() || null,
-      monthly_price: Number(sitePrice) || 50,
+      // Un sitio propio puede ir en 0: Number("0") es 0, así que no lo
+      // pisamos con el default de 50.
+      monthly_price: sitePrice === "" ? 50 : Number(sitePrice),
       client_id: client.id,
       seller_id: siteSeller || null,
       next_payment_due: siteDue || null,
-      status: "en_desarrollo",
+      status: siteStatus,
     });
     if (sErr) return flash(`Error: ${sErr.message}`);
     setSiteName("");
     setSiteDomain("");
     setSiteClient("");
     setSiteDue("");
+    setSiteStatus("en_desarrollo");
     flash("Sitio creado ✓");
     void loadAll();
   };
@@ -1081,7 +1088,15 @@ export default function AdminPortal() {
               <input required value={siteName} onChange={(e) => setSiteName(e.target.value)} placeholder="Nombre del proyecto" className={inputClass} />
               <input value={siteDomain} onChange={(e) => setSiteDomain(e.target.value)} placeholder="Dominio (ej. cliente.com)" className={inputClass} />
               <input required value={siteClient} onChange={(e) => setSiteClient(e.target.value)} placeholder="Nombre del cliente" className={inputClass} />
-              <input required type="number" min="1" value={sitePrice} onChange={(e) => setSitePrice(e.target.value)} placeholder="Precio mensual (USD)" className={inputClass} />
+              <input required type="number" min="0" value={sitePrice} onChange={(e) => setSitePrice(e.target.value)} placeholder="Precio mensual (USD)" className={inputClass} />
+              <select
+                value={siteStatus}
+                onChange={(e) => setSiteStatus(e.target.value as "en_desarrollo" | "activo")}
+                className={inputClass}
+              >
+                <option value="en_desarrollo" className="bg-judo-surface">En desarrollo</option>
+                <option value="activo" className="bg-judo-surface">Ya está listo (activo)</option>
+              </select>
               <select value={siteSeller} onChange={(e) => setSiteSeller(e.target.value)} className={inputClass}>
                 <option value="" className="bg-judo-surface">Vendedor: yo (Administración)</option>
                 {approvedSellers.map((s) => (
