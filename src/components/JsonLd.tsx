@@ -1,4 +1,5 @@
 import { SITE_URL } from "@/lib/seo";
+import { PERFIL_GOOGLE } from "./SocialLinks";
 
 /**
  * Datos estructurados (schema.org) para Google.
@@ -38,7 +39,7 @@ export default function JsonLd({ locale }: { locale: string }) {
       currenciesAccepted: "USD",
       // Mismo negocio en Google, Instagram y Facebook (amarra la identidad)
       sameAs: [
-        "https://share.google/L4AqIiUXUBUE9Oav6",
+        PERFIL_GOOGLE,
         "https://www.instagram.com/judo.marketing/",
         "https://www.facebook.com/Judomarketi/",
       ],

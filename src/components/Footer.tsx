@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { IconoRed, REDES } from "./SocialLinks";
+import { IconoRed, PERFIL_GOOGLE, REDES } from "./SocialLinks";
 
 /**
  * Pie de página en cuatro bloques: marca, navegación, contacto y redes.
@@ -75,7 +75,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://share.google/L4AqIiUXUBUE9Oav6"
+                  href={PERFIL_GOOGLE}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`${enlace} block max-w-[15rem] leading-relaxed`}

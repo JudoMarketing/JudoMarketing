@@ -5,6 +5,14 @@
  * externa ni de imágenes que haya que cargar.
  */
 
+/**
+ * Enlace directo a la ficha de Judo Marketing en Google.
+ *
+ * Los enlaces de share.google y g.page abren una PÁGINA DE BÚSQUEDA con el
+ * negocio al lado, no la ficha. Este va derecho al perfil en Google Maps.
+ */
+export const PERFIL_GOOGLE = "https://maps.google.com/?cid=17833491083157741838";
+
 export const REDES = [
   {
     id: "instagram",

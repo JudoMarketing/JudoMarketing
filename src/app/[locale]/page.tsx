@@ -6,6 +6,7 @@ import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
 import CommunityReviews from "@/components/CommunityReviews";
 import PortfolioTeaser from "@/components/PortfolioTeaser";
+import { PERFIL_GOOGLE } from "@/components/SocialLinks";
 
 // El adelanto del portafolio se refresca solo cada dos minutos
 export const revalidate = 120;
@@ -178,7 +179,7 @@ export default function HomePage({
         <Reveal className="text-center">
           <h2 className="text-3xl font-bold sm:text-4xl">{t("reviews.title")}</h2>
         </Reveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {reviews.map((review, i) => (
             <Reveal key={review.name} delay={i * 120}>
               <TiltCard className="flex h-full flex-col p-7">
@@ -208,22 +209,14 @@ export default function HomePage({
           <TiltCard className="p-8 text-center sm:p-10">
             <h2 className="text-2xl font-bold">{t("visit.title")}</h2>
             <p className="mt-3 text-judo-fog/70">{t("visit.address")}</p>
-            <div className="mt-6 flex flex-col justify-center gap-4 sm:flex-row">
+            <div className="mt-6 flex justify-center">
               <a
-                href="https://share.google/L4AqIiUXUBUE9Oav6"
+                href={PERFIL_GOOGLE}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary"
               >
                 📍 {t("visit.maps")}
-              </a>
-              <a
-                href="https://wa.me/13059349981"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-              >
-                {t("visit.whatsapp")}
               </a>
             </div>
           </TiltCard>

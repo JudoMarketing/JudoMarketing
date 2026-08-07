@@ -83,12 +83,7 @@
       {
         "text": "I love the control I have over my company from my admin portal. I see and change everything myself.",
         "name": "Carolina P.",
-        "place": "Valencia"
-      },
-      {
-        "text": "They built my wholesale shoe store and I didn't expect it to be this simple. Orders come in neatly organized every morning and shipping practically runs itself. It saves me hours every week.",
-        "name": "Álvaro M.",
-        "place": "Alicante, Spain"
+        "place": "Valencia, Venezuela"
       },
       {
         "text": "We just renewed our website and it looks so much better. Clients keep telling me it feels intuitive and easy to navigate, even though we have a ton of information to offer.",
@@ -109,8 +104,7 @@
   "visit": {
     "title": "Visit us",
     "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
-    "maps": "View on Google Maps",
-    "whatsapp": "Message us on WhatsApp"
+    "maps": "View on Google Maps"
   },
   "services": {
     "title": "Services",

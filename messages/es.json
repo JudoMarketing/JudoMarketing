@@ -83,12 +83,7 @@
       {
         "text": "Me encanta el control que tengo de mi empresa desde mi portal de administrador. Todo lo veo y lo cambio yo misma.",
         "name": "Carolina P.",
-        "place": "Valencia"
-      },
-      {
-        "text": "Monté con ellos la tienda para distribuir zapatos al mayor y no me lo esperaba tan sencillo. Recibo los pedidos ordenaditos cada mañana y los envíos salen casi solos. Me ha quitado horas de trabajo a la semana.",
-        "name": "Álvaro M.",
-        "place": "Alicante, España"
+        "place": "Valencia, Venezuela"
       },
       {
         "text": "We just renewed our website and it looks so much better. Clients keep telling me it feels intuitive and easy to navigate, even though we have a ton of information to offer.",
@@ -109,8 +104,7 @@
   "visit": {
     "title": "Visítanos",
     "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
-    "maps": "Ver en Google Maps",
-    "whatsapp": "Escríbenos por WhatsApp"
+    "maps": "Ver en Google Maps"
   },
   "services": {
     "title": "Servicios",

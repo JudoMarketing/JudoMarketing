@@ -5,7 +5,7 @@ import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
 import BookingWidget from "@/components/BookingWidget";
-import { IconoRed } from "@/components/SocialLinks";
+import { IconoRed, PERFIL_GOOGLE } from "@/components/SocialLinks";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({
@@ -49,7 +49,7 @@ export default function ContactPage({
       icon: "📍",
       title: t("addressTitle"),
       desc: "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
-      href: "https://share.google/L4AqIiUXUBUE9Oav6",
+      href: PERFIL_GOOGLE,
       linkLabel: t("maps"),
     },
     {
