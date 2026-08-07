@@ -23,9 +23,12 @@ conectado al panel central de judomarketing.net.
    en Vercel.
 3. Construir el sitio con la misma base de Judo (Next.js + Tailwind, estética
    según la marca DEL CLIENTE, no la de Judo).
-4. Copiar los archivos de `kit/` (middleware, página judo-suspendido, lib) y
-   configurar las variables de entorno del kit con la clave copiada
-   (ver kit/README.md).
+4. Copiar los archivos de `kit/` (middleware, página judo-suspendido, lib,
+   componente JudoFooter) y configurar las variables de entorno del kit con la
+   clave copiada (ver kit/README.md).
+   El pie SIEMPRE lleva "Website por Judo Marketing" con enlace: es la red de
+   backlinks del negocio. La lista `red` (sitios hermanos) solo se llena
+   cuando el dueño de ese sitio es el mismo dueño de los otros.
 5. Conectar telemetría: llamar `reportMetrics({ sales: 1 })` en cada venta
    del sitio, y un cron diario con `reportMetrics({ traffic, live: true })`.
 6. Crear el portal de administrador DEL CLIENTE dentro de su propio sitio

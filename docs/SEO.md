@@ -95,8 +95,19 @@ nosotros por un vendedor o un anuncio.
    reseñas de Google son el factor local #1.
 4. **Enlaces (backlinks)**: directorios gratuitos (Yelp, Bing Places,
    cámaras de comercio hispanas de Miami), y cada sitio de cliente que
-   construyas puede llevar en su pie "Website por Judo Marketing" con
-   enlace. Esa red de sitios propios será oro puro para el SEO.
+   construyas lleva en su pie "Website por Judo Marketing" con enlace. Esa
+   red de sitios propios será oro puro para el SEO.
+   El pie ya está hecho y listo para pegar: `kit/components/JudoFooter.tsx`
+   (instrucciones en `kit/README.md`). Los sitios del dueño, además, se
+   enlazan entre sí bajo "También del mismo dueño" (`kit/lib/judo-red.ts`):
+   son de la misma persona, así que el enlace cruzado es legítimo y le dice
+   a Google que son negocios hermanos. Regla: sitios de clientes ajenos NO
+   entran en esa lista, solo llevan el enlace a Judo.
+
+   | Sitio de la red | Estado del pie |
+   |---|---|
+   | zanoah.shop | ✅ Enlace a Judo + a Delivery Rush, y `creator` en el schema (rama `claude/footer-dos-sitios-1ctrw3`, falta merge y deploy) |
+   | deliveryrushflorida.com | ⬜ El repo `JudoMarketing/Delivery-Rush` está vacío: el sitio publicado no se construyó ahí. Hasta que su código esté en GitHub, el enlace de vuelta hacia Zanoah y Judo no se puede montar |
 5. **Search Console, revisar 1 vez al mes**: Rendimiento → ver con qué
    búsquedas apareces; Páginas → confirmar que se indexen.
 
