@@ -1,10 +1,13 @@
-import { setRequestLocale } from "next-intl/server";
-import { useTranslations } from "next-intl";
-import { use } from "react";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import Reveal from "@/components/Reveal";
 import PortfolioGrid from "@/components/PortfolioGrid";
+import { trabajosPublicados } from "@/lib/portfolio";
 import { pageMetadata } from "@/lib/seo";
+
+// Se refresca solo cada dos minutos: lo que Administración active o
+// deshabilite aparece o desaparece sin tener que desplegar nada.
+export const revalidate = 120;
 
 export async function generateMetadata({
   params,
@@ -15,14 +18,15 @@ export async function generateMetadata({
   return pageMetadata("portfolio", locale);
 }
 
-export default function PortfolioPage({
+export default async function PortfolioPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = use(params);
+  const { locale } = await params;
   setRequestLocale(locale);
-  const t = useTranslations("portfolio");
+  const t = await getTranslations({ locale, namespace: "portfolio" });
+  const trabajos = await trabajosPublicados();
 
   return (
     <div className="judo-glow">
@@ -38,7 +42,7 @@ export default function PortfolioPage({
         </div>
 
         <div className="mt-14">
-          <PortfolioGrid />
+          <PortfolioGrid trabajos={trabajos} />
         </div>
 
         {/* Cierre */}

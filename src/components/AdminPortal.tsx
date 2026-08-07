@@ -75,6 +75,10 @@ type SiteRow = {
   seller_id: string | null;
   kit_api_key: string;
   domain_expires_at: string | null;
+  portfolio_visible: boolean | null;
+  portfolio_category: string | null;
+  portfolio_desc_es: string | null;
+  portfolio_desc_en: string | null;
   clients: { full_name: string; business_name: string | null } | null;
 };
 
@@ -177,7 +181,7 @@ export default function AdminPortal() {
       supabase
         .from("sites")
         .select(
-          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,kit_api_key,domain_expires_at,clients(full_name,business_name)"
+          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,kit_api_key,domain_expires_at,portfolio_visible,portfolio_category,portfolio_desc_es,portfolio_desc_en,clients(full_name,business_name)"
         )
         .order("created_at", { ascending: false }),
       supabase
@@ -1143,6 +1147,7 @@ export default function AdminPortal() {
                   )}
                 </p>
                 <SiteDates site={site} onSaved={loadAll} flash={flash} />
+                <SitePortfolio site={site} onSaved={loadAll} flash={flash} />
                 <label className="mt-1.5 flex items-center gap-2 text-xs text-judo-fog/50">
                   👤 Vendedor:
                   <select
@@ -1182,6 +1187,111 @@ export default function AdminPortal() {
               </button>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Portafolio público: qué se muestra de este sitio en el website ──
+const CATEGORIAS_PORTAFOLIO = [
+  { id: "food", nombre: "Comida y restaurantes" },
+  { id: "delivery", nombre: "Apps de delivery" },
+  { id: "tiendas", nombre: "Tiendas online" },
+  { id: "servicios", nombre: "Servicios" },
+];
+
+function SitePortfolio({
+  site,
+  onSaved,
+  flash,
+}: {
+  site: SiteRow;
+  onSaved: () => void;
+  flash: (m: string) => void;
+}) {
+  const supabase = getSupabase();
+  const [abierto, setAbierto] = useState(false);
+  const [visible, setVisible] = useState(site.portfolio_visible ?? true);
+  const [categoria, setCategoria] = useState(site.portfolio_category ?? "");
+  const [descEs, setDescEs] = useState(site.portfolio_desc_es ?? "");
+  const [descEn, setDescEn] = useState(site.portfolio_desc_en ?? "");
+
+  const guardar = async (cambios: Record<string, unknown>) => {
+    const { error } = await supabase.from("sites").update(cambios).eq("id", site.id);
+    if (error) return flash(`Error: ${error.message}`);
+    flash("Portafolio actualizado ✓");
+    onSaved();
+  };
+
+  // Solo los sitios activos salen publicados; el resto no aparece igual.
+  const publicado = visible && site.status === "activo";
+
+  return (
+    <div className="mt-1.5 text-xs text-judo-fog/50">
+      <div className="flex flex-wrap items-center gap-2">
+        <span>🖼️ Portafolio:</span>
+        <button
+          onClick={() => {
+            const nuevo = !visible;
+            setVisible(nuevo);
+            void guardar({ portfolio_visible: nuevo });
+          }}
+          className={
+            publicado
+              ? "rounded-full bg-emerald-500/80 px-2 py-0.5 text-[11px] font-semibold text-white"
+              : "rounded-full border border-judo-lilac/30 px-2 py-0.5 text-[11px] text-judo-fog/60"
+          }
+        >
+          {publicado ? "publicado" : visible ? "listo (sitio no activo)" : "oculto"}
+        </button>
+        <button
+          onClick={() => setAbierto(!abierto)}
+          className="text-judo-lilac hover:underline"
+        >
+          {abierto ? "cerrar" : "editar"}
+        </button>
+      </div>
+
+      {abierto && (
+        <div className="mt-2 flex flex-col gap-2">
+          <select
+            value={categoria}
+            onChange={(e) => {
+              setCategoria(e.target.value);
+              void guardar({ portfolio_category: e.target.value || null });
+            }}
+            className="rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
+          >
+            <option value="" className="bg-judo-surface">Sin categoría</option>
+            {CATEGORIAS_PORTAFOLIO.map((c) => (
+              <option key={c.id} value={c.id} className="bg-judo-surface">
+                {c.nombre}
+              </option>
+            ))}
+          </select>
+          <textarea
+            rows={2}
+            maxLength={220}
+            value={descEs}
+            onChange={(e) => setDescEs(e.target.value)}
+            onBlur={() => guardar({ portfolio_desc_es: descEs.trim() || null })}
+            placeholder="Descripción en español (qué hace este website)"
+            className="resize-none rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
+          />
+          <textarea
+            rows={2}
+            maxLength={220}
+            value={descEn}
+            onChange={(e) => setDescEn(e.target.value)}
+            onBlur={() => guardar({ portfolio_desc_en: descEn.trim() || null })}
+            placeholder="Description in English (opcional, si no se usa la de arriba)"
+            className="resize-none rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
+          />
+          <p className="text-[11px] text-judo-fog/35">
+            La imagen es una captura del home, se genera sola. El portafolio se
+            refresca a los pocos minutos.
+          </p>
         </div>
       )}
     </div>

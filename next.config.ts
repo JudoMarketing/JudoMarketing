@@ -15,6 +15,13 @@ const SW_PATHS = [
 ];
 
 const nextConfig: NextConfig = {
+  images: {
+    // Capturas del home de los websites del portafolio
+    remotePatterns: [{ protocol: "https", hostname: "image.thum.io" }],
+    // Vercel guarda la captura un día: el visitante nunca espera al servicio
+    // de capturas, y aun así la imagen se refresca si el cliente cambia su sitio.
+    minimumCacheTTL: 86400,
+  },
   async headers() {
     return [
       ...SW_PATHS.map((source) => ({

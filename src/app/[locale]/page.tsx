@@ -5,7 +5,10 @@ import { Link } from "@/i18n/navigation";
 import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
 import CommunityReviews from "@/components/CommunityReviews";
-import PortfolioGrid from "@/components/PortfolioGrid";
+import PortfolioTeaser from "@/components/PortfolioTeaser";
+
+// El adelanto del portafolio se refresca solo cada dos minutos
+export const revalidate = 120;
 
 type Step = { title: string; description: string };
 type Review = { text: string; name: string; place: string };
@@ -163,25 +166,7 @@ export default function HomePage({
       </section>
 
       {/* ── PORTAFOLIO (adelanto) ────────────────────────────────── */}
-      <section className="mx-auto max-w-5xl px-6 py-20">
-        <Reveal className="text-center">
-          <h2 className="text-3xl font-bold sm:text-4xl">
-            {t("portfolioHome.title")}
-          </h2>
-          <p className="mt-2 text-judo-fog/60">{t("portfolioHome.subtitle")}</p>
-        </Reveal>
-        <div className="mt-12">
-          <PortfolioGrid limite={2} conFiltro={false} />
-        </div>
-        <Reveal className="mt-10 text-center">
-          <Link
-            href="/portfolio"
-            className="text-sm font-semibold text-judo-lilac transition hover:text-judo-fog"
-          >
-            {t("portfolioHome.link")} →
-          </Link>
-        </Reveal>
-      </section>
+      <PortfolioTeaser locale={locale} />
 
       {/* ── RESEÑAS ──────────────────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-6 py-20">

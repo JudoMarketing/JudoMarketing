@@ -480,6 +480,7 @@
     "visit": "Ver el sitio",
     "ctaTitle": "¿El próximo es el tuyo?",
     "ctaText": "Cuéntanos qué necesita tu negocio y te decimos con honestidad si podemos hacerlo, cuánto cuesta y en cuánto tiempo.",
-    "ctaButton": "Hablemos de tu proyecto"
+    "ctaButton": "Hablemos de tu proyecto",
+    "empty": "Todavía no hay trabajos publicados."
   }
 }
