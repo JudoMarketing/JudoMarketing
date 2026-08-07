@@ -243,7 +243,10 @@
   "footer": {
     "tagline": "Your business deserves a platform that matches its ambition.",
     "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "navTitle": "Navigation",
+    "contactTitle": "Contact",
+    "socialTitle": "Follow us"
   },
   "about": {
     "title": "About Us",
@@ -284,7 +287,7 @@
     "emailDesc": "admin@judomarketing.net",
     "addressTitle": "Visit us",
     "maps": "View Google profile",
-    "chatSoon": "Very soon you'll also be able to chat here with our little robot 🤖",
+    "chatSoon": "Rather type? Chat with our little robot 👾, bottom right.",
     "booking": {
       "title": "Rather jump on a call?",
       "subtitle": "Book your Google Meet call in under a minute.",
@@ -307,7 +310,9 @@
       "errorSlot": "That time is no longer available. Please pick another.",
       "errorGeneric": "We couldn't book it. Try again or message us on WhatsApp.",
       "joinLink": "Your link:"
-    }
+    },
+    "instagramDesc": "See our day-to-day work",
+    "facebookDesc": "Updates and new clients"
   },
   "legal": {
     "title": "Service Policy & Terms",

@@ -243,7 +243,10 @@
   "footer": {
     "tagline": "Tu negocio merece una plataforma a tu altura.",
     "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
-    "rights": "Todos los derechos reservados."
+    "rights": "Todos los derechos reservados.",
+    "navTitle": "Navegación",
+    "contactTitle": "Contacto",
+    "socialTitle": "Síguenos"
   },
   "about": {
     "title": "Nosotros",
@@ -284,7 +287,7 @@
     "emailDesc": "admin@judomarketing.net",
     "addressTitle": "Visítanos",
     "maps": "Ver perfil en Google",
-    "chatSoon": "Muy pronto también podrás chatear aquí con nuestro robotsito 🤖",
+    "chatSoon": "¿Prefieres escribir? Habla con nuestro robotsito 👾, está abajo a la derecha.",
     "booking": {
       "title": "¿Prefieres una videollamada?",
       "subtitle": "Agenda tu videollamada por Google Meet en menos de un minuto.",
@@ -307,7 +310,9 @@
       "errorSlot": "Esa hora ya no está disponible. Elige otra.",
       "errorGeneric": "No pudimos agendar la cita. Inténtalo de nuevo o escríbenos por WhatsApp.",
       "joinLink": "Tu enlace:"
-    }
+    },
+    "instagramDesc": "Mira nuestro trabajo del día a día",
+    "facebookDesc": "Novedades y clientes nuevos"
   },
   "legal": {
     "title": "Política de Servicio y Términos",

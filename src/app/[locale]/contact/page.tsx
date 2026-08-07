@@ -5,6 +5,7 @@ import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
 import BookingWidget from "@/components/BookingWidget";
+import { IconoRed } from "@/components/SocialLinks";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({
@@ -51,6 +52,18 @@ export default function ContactPage({
       href: "https://share.google/L4AqIiUXUBUE9Oav6",
       linkLabel: t("maps"),
     },
+    {
+      social: "instagram",
+      title: "Instagram",
+      desc: t("instagramDesc"),
+      href: "https://www.instagram.com/judo.marketing/",
+    },
+    {
+      social: "facebook",
+      title: "Facebook",
+      desc: t("facebookDesc"),
+      href: "https://www.facebook.com/Judomarketi/",
+    },
   ];
 
   return (
@@ -92,7 +105,13 @@ export default function ContactPage({
                   className="block"
                 >
                   <TiltCard className="flex items-center gap-4 p-5">
-                    <span className="text-2xl">{channel.icon}</span>
+                    {"social" in channel && channel.social ? (
+                      <span className="text-judo-lilac">
+                        <IconoRed id={channel.social} className="h-6 w-6" />
+                      </span>
+                    ) : (
+                      <span className="text-2xl">{channel.icon}</span>
+                    )}
                     <span>
                       <span className="block font-semibold">{channel.title}</span>
                       <span className="block text-sm text-judo-fog/60">
