@@ -8,6 +8,9 @@
 --
 -- La tabla sites NO se abre al público: guarda la clave del Judo Site Kit.
 -- La página lee con la llave de servicio y solo trae las columnas seguras.
+--
+-- Este archivo también da de alta los dos websites propios de Junior. Se
+-- puede correr las veces que haga falta sin duplicar nada.
 -- ============================================================
 
 alter table sites
@@ -29,15 +32,57 @@ alter table sites add constraint sites_portfolio_category_check
 create index if not exists sites_portfolio_idx
   on sites (status, portfolio_visible);
 
--- Los dos websites propios, con su categoría y descripción ya puestas.
+-- ── Websites propios de Junior Osorio ──────────────────────────────
+-- Los dos ya están publicados y los dominios son suyos: entran activos, con
+-- precio 0 (nadie paga mensualidad) y sin vendedor, para que no generen
+-- comisión.
+
+with cliente_existente as (
+  select id from clients where email = 'juniorosorio36@gmail.com' limit 1
+),
+cliente_nuevo as (
+  insert into clients (full_name, email, profile_id)
+  select
+    'Junior Osorio',
+    'juniorosorio36@gmail.com',
+    (select id from auth.users where email = 'juniorosorio36@gmail.com' limit 1)
+  where not exists (select 1 from cliente_existente)
+  returning id
+)
+insert into sites (name, domain, client_id, seller_id, status, monthly_price)
+select
+  nuevos.nombre,
+  nuevos.dominio,
+  coalesce(
+    (select id from cliente_existente),
+    (select id from cliente_nuevo)
+  ),
+  null,
+  'activo',
+  0
+from (
+  values
+    ('Zanoah', 'zanoah.shop'),
+    ('Delivery Rush Florida', 'deliveryrushflorida.com')
+) as nuevos (nombre, dominio)
+where not exists (
+  select 1 from sites where sites.domain = nuevos.dominio
+);
+
+-- ── Su ficha en el portafolio ──────────────────────────────────────
+
 update sites set
   portfolio_category = 'food',
-  portfolio_desc_es = 'Postres saludables en Miami: donas de proteína, banana bread y carrot cake sin azúcar refinada. Catálogo con pedidos en línea, delivery y pickup.',
+  portfolio_desc_es = 'Postres saludables en Miami: donas de proteína, banana bread y carrot cake sin azúcar refinada. Pedidos en línea, delivery y pickup.',
   portfolio_desc_en = 'Healthy desserts in Miami: protein donuts, banana bread, and carrot cake with no refined sugar. Online ordering, delivery, and pickup.'
 where domain = 'zanoah.shop';
 
 update sites set
   portfolio_category = 'delivery',
-  portfolio_desc_es = 'Mensajería urgente en Miami y Orlando. Cotización según el tipo de vehículo, seguimiento del pedido y entregas en menos de dos horas.',
+  portfolio_desc_es = 'Mensajería urgente en Miami y Orlando. Cotización según el vehículo, seguimiento del pedido y entregas en menos de dos horas.',
   portfolio_desc_en = 'Rush courier service in Miami and Orlando. Quotes by vehicle type, order tracking, and deliveries in under two hours.'
 where domain = 'deliveryrushflorida.com';
+
+-- Para confirmar que quedó todo:
+-- select name, domain, status, portfolio_visible, portfolio_category
+-- from sites order by created_at desc;
