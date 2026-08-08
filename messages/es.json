@@ -62,11 +62,6 @@
       "description": "Aplicaciones móviles nativas para iOS y Android con notificaciones push."
     }
   },
-  "portfolioHome": {
-    "title": "Trabajos que ya están en línea",
-    "subtitle": "No te contamos lo que hacemos: te lo mostramos.",
-    "link": "Ver el showcase completo"
-  },
   "reviews": {
     "title": "Lo que dicen nuestros clientes",
     "items": [

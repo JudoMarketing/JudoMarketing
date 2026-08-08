@@ -81,6 +81,7 @@ type SiteRow = {
   portfolio_category: string | null;
   portfolio_desc_es: string | null;
   portfolio_desc_en: string | null;
+  portfolio_image: string | null;
   client_id: string | null;
   currency: string | null;
   billing_day: number | null;
@@ -212,7 +213,7 @@ export default function AdminPortal() {
       supabase
         .from("sites")
         .select(
-          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,kit_api_key,domain_expires_at,portfolio_visible,portfolio_category,portfolio_desc_es,portfolio_desc_en,client_id,currency,billing_day,payment_method,grace_days,timezone,repo_url,vercel_project,registrar,domain_holder,dns_provider,email_provider,db_provider,ga4_property_id,gsc_property,gbp_location,meta_pixel_id,meta_page,notes,clients(full_name,business_name)"
+          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,kit_api_key,domain_expires_at,portfolio_visible,portfolio_category,portfolio_desc_es,portfolio_desc_en,portfolio_image,client_id,currency,billing_day,payment_method,grace_days,timezone,repo_url,vercel_project,registrar,domain_holder,dns_provider,email_provider,db_provider,ga4_property_id,gsc_property,gbp_location,meta_pixel_id,meta_page,notes,clients(full_name,business_name)"
         )
         .order("created_at", { ascending: false }),
       supabase
@@ -1349,9 +1350,25 @@ function SitePortfolio({
             placeholder="Description in English (opcional, si no se usa la de arriba)"
             className="resize-none rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
           />
+          <input
+            defaultValue={site.portfolio_image ?? ""}
+            onBlur={async (e) => {
+              const valor = e.target.value.trim() || null;
+              const { error } = await supabase
+                .from("sites")
+                .update({ portfolio_image: valor })
+                .eq("id", site.id);
+              if (error) return flash(`Error: ${error.message}`);
+              flash("Imagen del portafolio actualizada ✓");
+              onSaved();
+            }}
+            placeholder="Imagen propia (opcional): /portfolio/algo.jpg o una dirección"
+            className="rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
+          />
           <p className="text-[11px] text-judo-fog/35">
-            La imagen es una captura del home, se genera sola. El portafolio se
-            refresca a los pocos minutos.
+            Si dejas la imagen vacía se usa una captura del home, que se genera
+            sola. Si esa captura no luce bien, pon aquí una imagen propia y esa
+            manda. El portafolio se refresca a los pocos minutos.
           </p>
         </div>
       )}
