@@ -77,6 +77,7 @@ const box = "rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5";
 const btn = "rounded-full px-3 py-1 text-xs font-semibold transition whitespace-nowrap";
 const btnGhost = `${btn} border border-judo-lilac/30 text-judo-lilac hover:bg-judo-purple/15`;
 const btnGreen = `${btn} bg-emerald-500/90 text-white hover:bg-emerald-500`;
+const btnDanger = `${btn} border border-red-400/40 text-red-300 hover:bg-red-400/10`;
 
 export default function IntakeInbox({
   flash,
@@ -142,6 +143,25 @@ export default function IntakeInbox({
     } else {
       flash("Formulario desvinculado");
     }
+    void cargar();
+    onCambio();
+  };
+
+  /** Borra el formulario. No hay papelera: por eso se pregunta antes. */
+  const borrar = async (ficha: Intake) => {
+    if (
+      !window.confirm(
+        `¿Borrar el formulario de ${ficha.business_name}? Se pierden los datos que dejó el cliente y no se puede deshacer.${
+          ficha.site_id
+            ? " Está vinculado a un website: su expediente se queda sin “Lo que pidió al inicio”."
+            : ""
+        }`
+      )
+    )
+      return;
+    const { error } = await supabase.from("client_intake").delete().eq("id", ficha.id);
+    if (error) return flash(`Error: ${error.message}`);
+    flash("Formulario borrado");
     void cargar();
     onCambio();
   };
@@ -253,6 +273,13 @@ export default function IntakeInbox({
                   Ya es cliente
                 </button>
               )}
+              <button
+                onClick={() => borrar(f)}
+                title="Borrar este formulario"
+                className={btnDanger}
+              >
+                🗑
+              </button>
             </div>
 
             {/* De qué website es este formulario. Puede llegar antes o después

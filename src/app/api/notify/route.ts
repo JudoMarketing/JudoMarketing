@@ -21,15 +21,45 @@ function rateLimited(ip: string): boolean {
   return recent.length > 3;
 }
 
+/**
+ * Los avisos que salen del portal solo los puede disparar Administración.
+ * Devuelve una respuesta de error si quien pide no es admin, o null si sí lo es.
+ */
+async function exigeAdmin(req: NextRequest): Promise<NextResponse | null> {
+  const jwt = req.headers.get("authorization")?.replace("Bearer ", "");
+  if (!jwt) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { global: { headers: { Authorization: `Bearer ${jwt}` } } }
+  );
+  const { data: userData } = await supabase.auth.getUser(jwt);
+  if (!userData.user) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  const { data: prof } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userData.user.id)
+    .single();
+  if (prof?.role !== "admin") {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+  return null;
+}
+
 export async function POST(req: NextRequest) {
   if (!isEmailConfigured()) {
     return NextResponse.json({ sent: false, reason: "smtp_not_configured" });
   }
 
-  const { type, email, name } = (await req.json()) as {
+  const { type, email, name, site, from, to } = (await req.json()) as {
     type?: string;
     email?: string;
     name?: string;
+    site?: string;
+    from?: number;
+    to?: number;
   };
   if (
     !email ||
@@ -87,27 +117,32 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ sent: true });
   }
 
+  // Le subió el precio a un website: el vendedor tiene que enterarse, porque
+  // su comisión se calcula sobre lo que el cliente paga.
+  if (type === "price_up") {
+    const problema = await exigeAdmin(req);
+    if (problema) return problema;
+    if (typeof from !== "number" || typeof to !== "number" || !site) {
+      return NextResponse.json({ error: "bad_request" }, { status: 400 });
+    }
+    const html = brandedEmail({
+      title: "Subió el plan de uno de tus clientes 📈",
+      greeting: `Hola, ${name.split(" ")[0]}`,
+      paragraphs: [
+        `<b>${site}</b> pasó de <b>$${from.toFixed(2)}</b> a <b>$${to.toFixed(2)}</b> al mes.`,
+        "El cliente amplió su servicio. Tu comisión se calcula sobre lo que él paga, así que desde el próximo cobro cuenta con el monto nuevo.",
+        "Lo puedes ver en tu portal, en “Mis websites”.",
+      ],
+      ctaLabel: "Ver mis websites",
+      ctaUrl: "https://www.judomarketing.net/es/portal",
+    });
+    await sendBrandedEmail(email, `Subió el plan de ${site}`, html);
+    return NextResponse.json({ sent: true });
+  }
+
   if (type === "approved") {
-    // Solo un admin autenticado puede disparar este aviso
-    const jwt = req.headers.get("authorization")?.replace("Bearer ", "");
-    if (!jwt) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { global: { headers: { Authorization: `Bearer ${jwt}` } } }
-    );
-    const { data: userData } = await supabase.auth.getUser(jwt);
-    if (!userData.user) {
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    }
-    const { data: prof } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userData.user.id)
-      .single();
-    if (prof?.role !== "admin") {
-      return NextResponse.json({ error: "forbidden" }, { status: 403 });
-    }
+    const problema = await exigeAdmin(req);
+    if (problema) return problema;
 
     const html = brandedEmail({
       title: "¡Fuiste aprobado! 🎉",

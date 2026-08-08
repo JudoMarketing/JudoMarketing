@@ -392,6 +392,9 @@ export default function SellerPortal() {
       {/* Ganancias: totales, gráfica mensual y proyección */}
       {userId && <EarningsPanel sellerId={userId} />}
 
+      {/* Los websites que le tocan, con lo que paga cada cliente al mes */}
+      {userId && <MisWebsites sellerId={userId} />}
+
       {/* Registrar visita */}
       <form
         onSubmit={addVisit}
@@ -580,6 +583,84 @@ export default function SellerPortal() {
           onClose={() => setShowSigner(false)}
           onSigned={(contract) => setContracts((prev) => [contract, ...prev])}
         />
+      )}
+    </div>
+  );
+}
+
+/**
+ * Los websites que este vendedor tiene asignados, con lo que paga el cliente
+ * al mes. Es el número del que sale su comisión: si Administración lo sube
+ * porque el cliente amplió su servicio, aquí se ve al instante y además le
+ * llega un correo.
+ *
+ * La base solo le deja ver los suyos (política "vendedor: sus sitios").
+ */
+function MisWebsites({ sellerId }: { sellerId: string }) {
+  const t = useTranslations("portal");
+  const supabase = getSupabase();
+  const [sitios, setSitios] = useState<
+    { id: string; name: string; domain: string | null; status: string; monthly_price: number }[]
+  >([]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("sites")
+        .select("id,name,domain,status,monthly_price")
+        .eq("seller_id", sellerId)
+        .order("name");
+      setSitios(data ?? []);
+    })();
+  }, [supabase, sellerId]);
+
+  const etiquetaEstado = (estado: string) =>
+    estado === "activo"
+      ? t("sitesStatusActivo")
+      : estado === "deshabilitado"
+        ? t("sitesStatusDeshabilitado")
+        : t("sitesStatusEnDesarrollo");
+
+  return (
+    <div className="mt-6 rounded-2xl border border-judo-lilac/20 bg-judo-surface p-6">
+      <h2 className="font-semibold">🌐 {t("sitesTitle")}</h2>
+      {sitios.length === 0 ? (
+        <p className="mt-3 text-sm text-judo-fog/55">{t("sitesEmpty")}</p>
+      ) : (
+        <>
+          <ul className="mt-4 flex flex-col gap-2">
+            {sitios.map((s) => (
+              <li
+                key={s.id}
+                className="flex flex-wrap items-center gap-3 rounded-xl border border-judo-lilac/15 bg-judo-black/30 px-4 py-3"
+              >
+                <span
+                  aria-hidden
+                  className={`h-2.5 w-2.5 shrink-0 rounded-full ${
+                    s.status === "activo"
+                      ? "bg-emerald-400"
+                      : s.status === "deshabilitado"
+                        ? "bg-red-400"
+                        : "bg-amber-400"
+                  }`}
+                />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold">{s.name}</span>
+                  <span className="block truncate text-xs text-judo-fog/45">
+                    {s.domain ?? "—"} · {etiquetaEstado(s.status)}
+                  </span>
+                </span>
+                <span className="shrink-0 text-sm font-bold text-judo-lilac">
+                  ${Number(s.monthly_price).toFixed(2)}
+                  <span className="ml-1 text-xs font-normal text-judo-fog/45">
+                    {t("sitesMonthly")}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-xs text-judo-fog/45">{t("sitesNote")}</p>
+        </>
       )}
     </div>
   );

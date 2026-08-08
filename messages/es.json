@@ -428,7 +428,14 @@
     "photoNewDesc": "Tu foto quedó desbloqueada. Tómate una selfie nueva y volverá a bloquearse al subirla.",
     "photoLockedNote": "Tu foto de perfil está guardada y bloqueada. Para cambiarla, pídeselo a Administración.",
     "photoLocked": "Tu foto está bloqueada. Pídele a Administración que autorice el cambio.",
-    "photoError": "No se pudo subir la foto, intenta de nuevo."
+    "photoError": "No se pudo subir la foto, intenta de nuevo.",
+    "sitesTitle": "Mis websites",
+    "sitesEmpty": "Todavía no tienes websites asignados. Cuando Administración te asigne uno, aparece aquí con lo que paga el cliente al mes.",
+    "sitesNote": "Tu comisión se calcula sobre lo que el cliente paga al mes. Si amplía su servicio, el monto sube y te llega un correo.",
+    "sitesMonthly": "al mes",
+    "sitesStatusActivo": "activo",
+    "sitesStatusEnDesarrollo": "en desarrollo",
+    "sitesStatusDeshabilitado": "apagado"
   },
   "zelle": {
     "chooseTitle": "¿Cómo prefieres pagar?",

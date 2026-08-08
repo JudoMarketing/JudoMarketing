@@ -428,7 +428,14 @@
     "photoNewDesc": "Your photo is unlocked. Take a new selfie and it will lock again once uploaded.",
     "photoLockedNote": "Your profile photo is saved and locked. To change it, ask Administration.",
     "photoLocked": "Your photo is locked. Ask Administration to authorize the change.",
-    "photoError": "Could not upload the photo, please try again."
+    "photoError": "Could not upload the photo, please try again.",
+    "sitesTitle": "My websites",
+    "sitesEmpty": "You have no websites assigned yet. Once Administration assigns you one, it shows up here with what the client pays monthly.",
+    "sitesNote": "Your commission is based on what the client pays each month. If they expand their service the amount goes up and you get an email.",
+    "sitesMonthly": "per month",
+    "sitesStatusActivo": "live",
+    "sitesStatusEnDesarrollo": "in development",
+    "sitesStatusDeshabilitado": "switched off"
   },
   "zelle": {
     "chooseTitle": "How would you like to pay?",

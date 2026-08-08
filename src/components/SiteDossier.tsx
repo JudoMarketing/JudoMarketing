@@ -207,13 +207,25 @@ function Seccion({
     <div className="border-t border-judo-lilac/10 pt-2">
       <button
         onClick={onToggle}
-        className="flex w-full items-center justify-between text-left text-xs font-semibold text-judo-fog/70 hover:text-judo-lilac"
+        className={`flex w-full items-center justify-between text-left text-xs font-semibold transition ${
+          abierto ? "text-emerald-300" : "text-white hover:text-emerald-300"
+        }`}
       >
         <span>
           {titulo}
-          {resumen && <span className="ml-2 font-normal text-judo-fog/40">{resumen}</span>}
+          {resumen && (
+            <span
+              className={`ml-2 font-normal ${
+                abierto ? "text-emerald-300/60" : "text-judo-fog/40"
+              }`}
+            >
+              {resumen}
+            </span>
+          )}
         </span>
-        <span className="text-judo-lilac">{abierto ? "−" : "+"}</span>
+        <span className={abierto ? "text-emerald-300" : "text-judo-lilac"}>
+          {abierto ? "−" : "+"}
+        </span>
       </button>
       {abierto && <div className="mt-3 mb-2">{children}</div>}
     </div>

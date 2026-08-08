@@ -562,6 +562,82 @@ export default function AdminPortal() {
     void loadAll();
   };
 
+  /**
+   * Cambia lo que el cliente paga al mes. Pasa cuando amplía el servicio.
+   *
+   * Queda escrito en la bitácora del sitio, y si subió y el website tiene
+   * vendedor, se le avisa por correo: su comisión sale de ese monto y no
+   * puede enterarse por casualidad.
+   */
+  const cambiarPrecio = async (site: SiteRow, nuevo: number) => {
+    const anterior = Number(site.monthly_price);
+    if (!Number.isFinite(nuevo) || nuevo < 0 || nuevo === anterior) return;
+
+    const { error } = await supabase
+      .from("sites")
+      .update({ monthly_price: nuevo })
+      .eq("id", site.id);
+    if (error) return flash(`Error: ${error.message}`);
+
+    const { data: user } = await supabase.auth.getUser();
+    await supabase.from("site_events").insert({
+      site_id: site.id,
+      kind: "nota",
+      detail: `Precio mensual: $${anterior.toFixed(2)} → $${nuevo.toFixed(2)}`,
+      actor: user.user?.id ?? null,
+    });
+
+    if (nuevo <= anterior || !site.seller_id) {
+      flash(
+        nuevo > anterior
+          ? `Precio actualizado a $${nuevo.toFixed(2)} ✓ (este website no tiene vendedor)`
+          : `Precio actualizado a $${nuevo.toFixed(2)} ✓`
+      );
+      void loadAll();
+      return;
+    }
+
+    // Subió y hay vendedor: avisarle
+    const [{ data: sess }, { data: prof }] = await Promise.all([
+      supabase.auth.getSession(),
+      supabase
+        .from("profiles")
+        .select("email, full_name")
+        .eq("id", site.seller_id)
+        .single(),
+    ]);
+    let aviso = "sin correo del vendedor";
+    if (sess.session && prof?.email) {
+      try {
+        const res = await fetch("/api/notify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sess.session.access_token}`,
+          },
+          body: JSON.stringify({
+            type: "price_up",
+            email: prof.email,
+            name: prof.full_name,
+            site: site.name,
+            from: anterior,
+            to: nuevo,
+          }),
+        });
+        const data = (await res.json()) as { sent?: boolean; reason?: string };
+        aviso = data.sent
+          ? `avisado ${prof.full_name}`
+          : data.reason === "smtp_not_configured"
+            ? "correo no configurado, no se avisó"
+            : "no se pudo avisar";
+      } catch {
+        aviso = "no se pudo avisar";
+      }
+    }
+    flash(`Precio actualizado a $${nuevo.toFixed(2)} ✓ — ${aviso}`);
+    void loadAll();
+  };
+
   const assignSeller = async (site: SiteRow, sellerId: string) => {
     const { error } = await supabase
       .from("sites")
@@ -678,19 +754,23 @@ export default function AdminPortal() {
             onClick={() => setTab(key)}
             className={`flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold transition ${
               tab === key
-                ? "bg-judo-purple text-white"
-                : "border border-judo-lilac/25 text-judo-fog/60 hover:text-judo-lilac"
+                ? "border border-emerald-300 bg-emerald-400 text-judo-black shadow-[0_0_16px_-2px_rgba(52,211,153,0.75)]"
+                : "border border-judo-lilac/25 text-white hover:border-emerald-400/50 hover:text-emerald-300"
             }`}
           >
             <span aria-hidden>{icono}</span>
             {label}
             {urgente > 0 && (
-              <span className="rounded-full bg-amber-400/90 px-1.5 text-[10px] font-bold text-judo-black">
+              <span
+                className={`rounded-full px-1.5 text-[10px] font-bold ${
+                  tab === key ? "bg-judo-black text-amber-300" : "bg-amber-400/90 text-judo-black"
+                }`}
+              >
                 {urgente}
               </span>
             )}
             {urgente === 0 && total > 0 && (
-              <span className={tab === key ? "text-white/60" : "text-judo-fog/35"}>
+              <span className={tab === key ? "text-judo-black/55" : "text-judo-fog/40"}>
                 {total}
               </span>
             )}
@@ -1321,7 +1401,9 @@ export default function AdminPortal() {
                 <div
                   key={site.id}
                   className={`rounded-2xl border bg-judo-surface transition ${
-                    abierto ? "border-judo-lilac/45" : "border-judo-lilac/15"
+                    abierto
+                      ? "border-emerald-400/70 shadow-[0_0_20px_-6px_rgba(52,211,153,0.55)]"
+                      : "border-judo-lilac/15"
                   }`}
                 >
                   {/* La línea corta */}
@@ -1342,7 +1424,11 @@ export default function AdminPortal() {
                       }`}
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-semibold">
+                      <span
+                        className={`block truncate text-sm font-semibold ${
+                          abierto ? "text-emerald-300" : "text-white"
+                        }`}
+                      >
                         {site.name}
                         {atencion && (
                           <span className="ml-2 text-[11px] font-bold text-amber-300">
@@ -1359,7 +1445,10 @@ export default function AdminPortal() {
                     <span className="shrink-0 text-xs text-judo-fog/55">
                       ${site.monthly_price}/mes
                     </span>
-                    <span aria-hidden className="shrink-0 text-judo-lilac">
+                    <span
+                      aria-hidden
+                      className={`shrink-0 ${abierto ? "text-emerald-300" : "text-judo-lilac"}`}
+                    >
                       {abierto ? "−" : "+"}
                     </span>
                   </button>
@@ -1401,6 +1490,7 @@ export default function AdminPortal() {
                           "📡 sin telemetría aún (kit no conectado)"
                         )}
                       </p>
+                      <SitePrice site={site} onGuardar={cambiarPrecio} />
                       <SiteDates site={site} onSaved={loadAll} flash={flash} />
                       <SitePortfolio site={site} onSaved={loadAll} flash={flash} />
                       <SiteDossier site={site} onSaved={loadAll} flash={flash} />
@@ -1575,6 +1665,50 @@ function SitePortfolio({
             manda. El portafolio se refresca a los pocos minutos.
           </p>
         </div>
+      )}
+    </div>
+  );
+}
+
+// ── Lo que el cliente paga al mes, editable ────────────────────────
+// Cambia cuando el cliente amplía su servicio. Solo se guarda si de verdad
+// cambió, para no disparar avisos de más al vendedor.
+function SitePrice({
+  site,
+  onGuardar,
+}: {
+  site: SiteRow;
+  onGuardar: (site: SiteRow, nuevo: number) => void;
+}) {
+  const [valor, setValor] = useState(String(site.monthly_price));
+  const nuevo = Number(valor);
+  const cambio =
+    valor !== "" && Number.isFinite(nuevo) && nuevo >= 0 && nuevo !== Number(site.monthly_price);
+
+  return (
+    <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-judo-fog/50">
+      <label className="flex items-center gap-1">
+        💲 Paga al mes: $
+        <input
+          type="number"
+          min="0"
+          step="1"
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+          className="w-24 rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
+        />
+      </label>
+      {cambio && (
+        <>
+          <button onClick={() => onGuardar(site, nuevo)} className={btnPurple}>
+            Guardar
+          </button>
+          {nuevo > Number(site.monthly_price) && site.seller_id && (
+            <span className="text-emerald-300">
+              sube: se le avisa por correo al vendedor
+            </span>
+          )}
+        </>
       )}
     </div>
   );

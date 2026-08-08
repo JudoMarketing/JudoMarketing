@@ -359,8 +359,14 @@ export default function IntakeForm() {
       <button
         type="button"
         onClick={() => router.push({ pathname: "/", query: { listo: "1" } })}
-        className="mx-auto text-sm text-judo-fog/45 underline decoration-judo-lilac/30 underline-offset-4 transition hover:text-judo-lilac"
+        className="mx-auto flex items-center gap-2.5 rounded-full border border-emerald-400/35 bg-emerald-400/5 px-5 py-2.5 text-sm text-emerald-200/85 transition hover:border-emerald-400/70 hover:bg-emerald-400/10 hover:text-emerald-100"
       >
+        <span
+          aria-hidden
+          className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-400 text-[11px] font-bold text-judo-black"
+        >
+          ✓
+        </span>
         {t("alreadySent")}
       </button>
     </div>
