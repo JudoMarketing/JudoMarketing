@@ -182,6 +182,7 @@ export default function AdminPortal() {
   const [visitRows, setVisitRows] = useState<VisitRow[]>([]);
   const [contractRows, setContractRows] = useState<ContractRow[]>([]);
   const [visitFilter, setVisitFilter] = useState("");
+  const [visitaEditada, setVisitaEditada] = useState<string | null>(null);
   const [payRows, setPayRows] = useState<PayRow[]>([]);
   const [metrics, setMetrics] = useState<Record<string, SiteMetric>>({});
   const [finance, setFinance] = useState<FinanceRow[]>([]);
@@ -635,6 +636,36 @@ export default function AdminPortal() {
       }
     }
     flash(`Precio actualizado a $${nuevo.toFixed(2)} ✓ — ${aviso}`);
+    void loadAll();
+  };
+
+  /**
+   * Corrige una visita. En la calle se escribe rápido: nombres a medias,
+   * empresas mal puestas. El número de visitas es con lo que se mide a cada
+   * vendedor, así que tiene que poder arreglarse.
+   */
+  const guardarVisita = async (
+    id: string,
+    cambios: { prospect_name: string; company_name: string | null; visited_on: string }
+  ) => {
+    const { error } = await supabase.from("visits").update(cambios).eq("id", id);
+    if (error) return flash(`Error: ${error.message}`);
+    flash("Visita corregida ✓");
+    void loadAll();
+  };
+
+  const borrarVisita = async (v: VisitRow) => {
+    if (
+      !window.confirm(
+        `¿Borrar la visita a ${v.prospect_name}${
+          v.company_name ? ` (${v.company_name})` : ""
+        }? Deja de contar para su vendedor y no se puede deshacer.`
+      )
+    )
+      return;
+    const { error } = await supabase.from("visits").delete().eq("id", v.id);
+    if (error) return flash(`Error: ${error.message}`);
+    flash("Visita borrada");
     void loadAll();
   };
 
@@ -1210,6 +1241,22 @@ export default function AdminPortal() {
                     <tbody className="divide-y divide-judo-lilac/10">
                       {shown.slice(0, 300).map((v) => {
                         const won = converted(v);
+                        if (visitaEditada === v.id) {
+                          return (
+                            <tr key={v.id}>
+                              <td colSpan={6} className="py-3">
+                                <VisitaEditor
+                                  visita={v}
+                                  onGuardar={async (cambios) => {
+                                    await guardarVisita(v.id, cambios);
+                                    setVisitaEditada(null);
+                                  }}
+                                  onCancelar={() => setVisitaEditada(null)}
+                                />
+                              </td>
+                            </tr>
+                          );
+                        }
                         return (
                           <tr key={v.id}>
                             <td className="whitespace-nowrap py-2.5 pr-3 text-judo-fog/60">
@@ -1231,20 +1278,37 @@ export default function AdminPortal() {
                               )}
                             </td>
                             <td className="py-2.5">
-                              {!won && (
+                              <div className="flex flex-wrap gap-2">
+                                {!won && (
+                                  <button
+                                    onClick={() => {
+                                      setSiteClient(v.prospect_name);
+                                      setSiteName(v.company_name || v.prospect_name);
+                                      setSiteSeller(v.seller_id);
+                                      setAltaAbierta(true);
+                                      setTab("sitios");
+                                      flash("Datos cargados en el formulario de nuevo website ✓");
+                                    }}
+                                    className={btnGhost}
+                                  >
+                                    ➕ Crear website
+                                  </button>
+                                )}
                                 <button
-                                  onClick={() => {
-                                    setSiteClient(v.prospect_name);
-                                    setSiteName(v.company_name || v.prospect_name);
-                                    setSiteSeller(v.seller_id);
-                                    setTab("sitios");
-                                    flash("Datos cargados en el formulario de nuevo website ✓");
-                                  }}
+                                  onClick={() => setVisitaEditada(v.id)}
                                   className={btnGhost}
+                                  title="Corregir esta visita"
                                 >
-                                  ➕ Crear website
+                                  ✏️
                                 </button>
-                              )}
+                                <button
+                                  onClick={() => borrarVisita(v)}
+                                  className={btnDanger}
+                                  title="Borrar esta visita"
+                                >
+                                  🗑
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -1667,6 +1731,67 @@ function SitePortfolio({
         </div>
       )}
     </div>
+  );
+}
+
+// ── Corrección de una visita ───────────────────────────────────────
+// Vive fuera del componente: definido adentro, React lo trataría como un
+// componente nuevo en cada tecla y el cursor saltaría fuera de la casilla.
+function VisitaEditor({
+  visita,
+  onGuardar,
+  onCancelar,
+}: {
+  visita: VisitRow;
+  onGuardar: (cambios: {
+    prospect_name: string;
+    company_name: string | null;
+    visited_on: string;
+  }) => void;
+  onCancelar: () => void;
+}) {
+  const [nombre, setNombre] = useState(visita.prospect_name);
+  const [empresa, setEmpresa] = useState(visita.company_name ?? "");
+  const [fecha, setFecha] = useState(visita.visited_on);
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (nombre.trim().length < 2) return;
+        onGuardar({
+          prospect_name: nombre.trim(),
+          company_name: empresa.trim() || null,
+          visited_on: fecha,
+        });
+      }}
+      className="flex flex-wrap items-center gap-2 rounded-xl border border-judo-lilac/30 bg-judo-black/40 p-3"
+    >
+      <input
+        value={nombre}
+        onChange={(e) => setNombre(e.target.value)}
+        placeholder="Prospecto"
+        className={`${fieldSm} min-w-[10rem] flex-1`}
+      />
+      <input
+        value={empresa}
+        onChange={(e) => setEmpresa(e.target.value)}
+        placeholder="Empresa"
+        className={`${fieldSm} min-w-[10rem] flex-1`}
+      />
+      <input
+        type="date"
+        value={fecha}
+        onChange={(e) => setFecha(e.target.value)}
+        className={fieldSm}
+      />
+      <button type="submit" className={btnPurple}>
+        Guardar
+      </button>
+      <button type="button" onClick={onCancelar} className={btnGhost}>
+        Cancelar
+      </button>
+    </form>
   );
 }
 

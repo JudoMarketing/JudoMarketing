@@ -435,7 +435,18 @@
     "sitesMonthly": "al mes",
     "sitesStatusActivo": "activo",
     "sitesStatusEnDesarrollo": "en desarrollo",
-    "sitesStatusDeshabilitado": "apagado"
+    "sitesStatusDeshabilitado": "apagado",
+    "visitEdit": "Editar",
+    "visitDelete": "Borrar",
+    "visitEditing": "Corrigiendo esta visita",
+    "visitCancel": "Cancelar",
+    "visitSaveChanges": "Guardar cambios",
+    "visitUpdated": "Visita corregida",
+    "visitDeleted": "Visita borrada",
+    "visitConfirmDelete": "¿Borrar la visita de {name}? No se puede deshacer.",
+    "visitPendingDelete": "por borrar",
+    "visitsCount": "Tus visitas ({count})",
+    "quickActions": "¿Qué vas a hacer?"
   },
   "zelle": {
     "chooseTitle": "¿Cómo prefieres pagar?",
