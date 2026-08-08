@@ -63,6 +63,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ sent: true });
   }
 
+  // Un cliente llenó el formulario de datos: aviso a Administración
+  if (type === "intake") {
+    if (rateLimited(ip)) {
+      return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+    }
+    const html = brandedEmail({
+      title: "Un cliente llenó sus datos 📋",
+      greeting: name,
+      paragraphs: [
+        `<b>${name}</b> completó el formulario de arranque.`,
+        `Contacto: <a href="mailto:${email}" style="color:#a855f7;">${email}</a>`,
+        "Ábrelo en tu portal, pestaña Formularios, para ver todo lo que dejó y crear su website desde ahí.",
+      ],
+      ctaLabel: "Ver en mi portal",
+      ctaUrl: "https://www.judomarketing.net/es/admin",
+    });
+    await sendBrandedEmail(
+      "admin@judomarketing.net",
+      `Datos recibidos: ${name}`,
+      html
+    );
+    return NextResponse.json({ sent: true });
+  }
+
   if (type === "approved") {
     // Solo un admin autenticado puede disparar este aviso
     const jwt = req.headers.get("authorization")?.replace("Bearer ", "");

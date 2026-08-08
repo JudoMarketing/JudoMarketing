@@ -10,9 +10,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { getSupabase } from "@/lib/supabase";
 import SiteDossier from "./SiteDossier";
+import IntakeInbox from "./IntakeInbox";
 import { inputClass } from "./AuthForms";
 
-type Tab = "resumen" | "vendedores" | "visitas" | "pagos" | "sitios" | "resenas";
+type Tab = "resumen" | "vendedores" | "visitas" | "pagos" | "sitios" | "formularios" | "resenas";
 
 type VisitRow = {
   id: string;
@@ -590,6 +591,7 @@ export default function AdminPortal() {
               })`,
             ],
             ["sitios", `Websites (${sites.length})`],
+            ["formularios", "Formularios"],
             [
               "resenas",
               `Reseñas (${reviews.filter((r) => r.status === "pendiente").length})`,
@@ -1089,6 +1091,8 @@ export default function AdminPortal() {
       })()}
 
       {/* ── RESEÑAS DE VISITANTES ── */}
+      {tab === "formularios" && <IntakeInbox flash={flash} />}
+
       {tab === "resenas" && (
         <div className="mt-6 flex flex-col gap-3">
           {reviews.length === 0 && (

@@ -71,6 +71,7 @@ def build_contract():
         [Paragraph("<b>Precio acordado:</b> $________ /mes", BODY),
          line_cell("Dominio / Proyecto", 26)],
         [line_cell("Vendedor asignado"), line_cell("Fecha de inicio", 30)],
+        [line_cell("Día de cobro"), line_cell("Días de gracia", 30)],
     ]
     t = Table(data, colWidths=[3.4 * inch, 3.4 * inch])
     t.setStyle(TableStyle([
@@ -114,26 +115,71 @@ def build_contract():
             "enlace a www.judomarketing.net, sin publicidad. El cliente autoriza "
             "expresamente esta página. Al ponerse al día, el servicio se reactiva de "
             "inmediato y sin recargos.",
+            "• <b>Antes de suspender siempre hay aviso.</b> El orden es: factura "
+            "enviada, recordatorio, aviso de corte, y solo entonces la suspensión, "
+            "una vez vencidos los días de gracia acordados (7 días si no se pactó "
+            "otro número). Cada paso queda registrado con su fecha y el cliente "
+            "puede pedir ese registro cuando quiera.",
+            "• <b>Crédito en el sitio.</b> Mientras dure el contrato, el website "
+            "lleva en su pie la frase “Website por Judo Marketing” con enlace a "
+            "www.judomarketing.net. Es discreta y no interfiere con la marca del "
+            "cliente.",
             "• <b>Sin reembolsos</b> fuera de la Garantía de Entrega de 30 días.",
         ]),
-        ("4. Compromisos del cliente", [
+        ("4. Accesos que el cliente entrega", [
+            "Para poder medir y mejorar los resultados, el cliente otorga a Judo "
+            "Marketing acceso a las cuentas de su negocio que apliquen: Google Search "
+            "Console, Google Analytics, Perfil de Empresa de Google, Meta Business y "
+            "su pixel, el procesador de pagos (solo lectura) y, cuando corresponda, "
+            "el registrador del dominio y el correo del negocio.",
+            "• Los accesos se otorgan <b>por invitación, nunca compartiendo "
+            "contraseñas</b>. Judo Marketing no solicita ni almacena las claves "
+            "personales del cliente.",
+            "• Las cuentas <b>siguen siendo del cliente</b>. Puede revocar cualquier "
+            "acceso cuando quiera, sin dar explicaciones.",
+            "• Se usan únicamente para medir resultados, optimizar el servicio "
+            "contratado y alimentar el panel del propio cliente. No se usan para "
+            "publicar en su nombre sin autorización, ni para contactar a sus "
+            "clientes, ni se comparten con terceros.",
+            "• Si el cliente no otorga o revoca un acceso, Judo Marketing no podrá "
+            "reportar ni optimizar esa parte del servicio. Eso no interrumpe el "
+            "contrato ni da derecho a reembolso.",
+        ]),
+        ("5. Qué se mide y para qué", [
+            "El website del cliente envía a Judo Marketing información de "
+            "funcionamiento: si el sitio está en línea, visitas, sesiones, órdenes, "
+            "monto vendido, conversiones y errores.",
+            "• <b>Nunca se envían datos personales de los compradores del cliente</b>: "
+            "ni nombres, ni correos, ni teléfonos, ni datos de pago. Solo cifras "
+            "totalizadas.",
+            "• El cliente ve el detalle completo en su propio portal; Judo Marketing "
+            "ve el mismo dato en resumen. Ambos leen la misma fuente, para que nunca "
+            "haya dos versiones de un número.",
+            "• Esta información se usa para operar el servicio, detectar caídas y "
+            "mejorar resultados. Puede usarse de forma anónima y agregada en "
+            "estadísticas internas de la agencia. <b>No se vende ni se cede.</b>",
+        ]),
+        ("6. Compromisos del cliente", [
             "El cliente <b>puede</b>: solicitar las actualizaciones menores incluidas "
             "en su plan, usar su portal de administrador, cancelar cuando lo desee, y "
             "solicitar su código y dominio al cumplir el año.",
+            "El cliente <b>se compromete a</b>: entregar a tiempo los materiales, textos, "
+            "fotos y accesos que el proyecto necesite, y mantener vigentes los "
+            "accesos otorgados mientras dure el contrato.",
             "El cliente <b>no puede</b>: usar el servicio para actividades ilegales, "
             "engañosas o prohibidas (Acceptable Use Policy), publicar testimonios o "
             "reseñas falsas, revender o compartir los accesos de sus portales, ni "
             "retener información necesaria para el proyecto. El cliente es responsable "
             "de la veracidad del contenido, precios y ofertas de su negocio.",
         ]),
-        ("5. Comunicación", [
+        ("7. Comunicación", [
             "El canal directo del cliente es su <b>vendedor asignado</b>. Para hablar "
             "con administración, el cliente puede usar la página de contacto de "
             "<b>www.judomarketing.net</b>. Las solicitudes formales (cancelación, "
             "entrega de código, disputas de facturación) deben enviarse por escrito a "
             "admin@judomarketing.net.",
         ]),
-        ("6. Marco legal", [
+        ("8. Marco legal", [
             "Este acuerdo se complementa con la Política de Servicio y Términos "
             "(Service Policy &amp; Terms) publicada en www.judomarketing.net, que el "
             "cliente declara conocer. Se rige por las leyes del Estado de Florida; "
