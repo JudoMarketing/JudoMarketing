@@ -66,6 +66,34 @@ type Contacto = {
   decides: boolean;
   pays: boolean;
 };
+/** Lo que el cliente llenó en el formulario de arranque, si se vinculó aquí. */
+type Formulario = {
+  id: string;
+  business_name: string;
+  industry: string | null;
+  what_they_do: string | null;
+  who_they_serve: string | null;
+  goal: string | null;
+  current_website: string | null;
+  needs: string[] | null;
+  has_brand: boolean | null;
+  brand_notes: string | null;
+  reference_sites: string | null;
+  domain_wanted: string | null;
+  notes: string | null;
+  created_at: string;
+};
+
+const NECESIDADES: Record<string, string> = {
+  tienda: "Tienda online",
+  citas: "Citas",
+  catalogo: "Catálogo",
+  cotizador: "Cotizador",
+  delivery: "Delivery",
+  donaciones: "Donaciones",
+  reservas: "Reservas",
+  blog: "Contenido",
+};
 
 const ACCESOS_NOMBRE: Record<string, string> = {
   search_console: "Search Console",
@@ -150,6 +178,17 @@ function Campo({
   );
 }
 
+/** Dato de solo lectura: se calla si está vacío. */
+function DatoFijo({ etiqueta, valor }: { etiqueta: string; valor: string | null }) {
+  if (!valor) return null;
+  return (
+    <p className="text-xs">
+      <span className="text-judo-fog/40">{etiqueta}: </span>
+      <span className="text-judo-fog/80">{valor}</span>
+    </p>
+  );
+}
+
 /** Sección plegable. Fuera del componente por la misma razón que Campo. */
 function Seccion({
   titulo,
@@ -196,9 +235,10 @@ export default function SiteDossier({
   const [accesos, setAccesos] = useState<Acceso[]>([]);
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [contactos, setContactos] = useState<Contacto[]>([]);
+  const [formulario, setFormulario] = useState<Formulario | null>(null);
 
   const cargar = useCallback(async () => {
-    const [c, a, e] = await Promise.all([
+    const [c, a, e, f] = await Promise.all([
       supabase.from("site_costs").select("id,concept,kind,amount_cents,period").eq("site_id", site.id),
       supabase.from("site_accesses").select("id,kind,status,account").eq("site_id", site.id),
       supabase
@@ -207,10 +247,20 @@ export default function SiteDossier({
         .eq("site_id", site.id)
         .order("happened_at", { ascending: false })
         .limit(30),
+      // Lo que el cliente pidió al arrancar, si se colgó un formulario de aquí
+      supabase
+        .from("client_intake")
+        .select(
+          "id,business_name,industry,what_they_do,who_they_serve,goal,current_website,needs,has_brand,brand_notes,reference_sites,domain_wanted,notes,created_at"
+        )
+        .eq("site_id", site.id)
+        .order("created_at", { ascending: false })
+        .limit(1),
     ]);
     setCostos((c.data as Costo[]) ?? []);
     setAccesos((a.data as Acceso[]) ?? []);
     setEventos((e.data as Evento[]) ?? []);
+    setFormulario(((f.data as Formulario[]) ?? [])[0] ?? null);
     if (site.client_id) {
       const { data } = await supabase
         .from("client_contacts")
@@ -220,9 +270,11 @@ export default function SiteDossier({
     }
   }, [supabase, site.id, site.client_id]);
 
+  // El expediente solo se monta cuando su website está abierto, así que se
+  // carga entero de una: los resúmenes de cada sección sirven sin abrirlas.
   useEffect(() => {
-    if (abierta) void cargar();
-  }, [abierta, cargar]);
+    void cargar();
+  }, [cargar]);
 
   const guardarCampo = async (campo: string, valor: string | number | null) => {
     const { error } = await supabase
@@ -253,6 +305,69 @@ export default function SiteDossier({
       <p className="text-[11px] font-semibold tracking-wider text-judo-fog/40 uppercase">
         Expediente
       </p>
+
+      {/* Lo que el cliente pidió el día que empezamos. Es historia, no se
+          edita: sirve para saber a qué se comprometió el proyecto. */}
+      <Seccion
+        titulo="📨 Lo que pidió al inicio"
+        resumen={
+          formulario
+            ? new Date(formulario.created_at).toLocaleDateString("es-US", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : "sin formulario vinculado"
+        }
+        abierto={abierta === "formulario"}
+        onToggle={() => setAbierta(abierta === "formulario" ? null : "formulario")}
+      >
+        {formulario ? (
+          <div className="flex flex-col gap-1.5">
+            <DatoFijo etiqueta="Negocio" valor={formulario.business_name} />
+            <DatoFijo etiqueta="Rubro" valor={formulario.industry} />
+            <DatoFijo etiqueta="Qué hacen" valor={formulario.what_they_do} />
+            <DatoFijo etiqueta="Sus clientes" valor={formulario.who_they_serve} />
+            <DatoFijo etiqueta="Meta a un año" valor={formulario.goal} />
+            <DatoFijo etiqueta="Website que tenía" valor={formulario.current_website} />
+            <DatoFijo etiqueta="Dominio que quería" valor={formulario.domain_wanted} />
+            <DatoFijo
+              etiqueta="Marca"
+              valor={
+                formulario.has_brand === null
+                  ? null
+                  : formulario.has_brand
+                    ? "ya tenía"
+                    : "había que crearla"
+              }
+            />
+            <DatoFijo etiqueta="Notas de marca" valor={formulario.brand_notes} />
+            <DatoFijo etiqueta="Referencias" valor={formulario.reference_sites} />
+            <DatoFijo etiqueta="Notas" valor={formulario.notes} />
+            {formulario.needs && formulario.needs.length > 0 && (
+              <div className="mt-1 flex flex-wrap gap-1.5">
+                {formulario.needs.map((n) => (
+                  <span
+                    key={n}
+                    className="rounded-full border border-judo-lilac/25 px-2 py-0.5 text-[11px] text-judo-lilac"
+                  >
+                    {NECESIDADES[n] ?? n}
+                  </span>
+                ))}
+              </div>
+            )}
+            <p className="mt-1 text-[11px] text-judo-fog/35">
+              Esto quedó tal cual lo escribió el cliente. Si hoy pide algo que
+              no está aquí, es trabajo nuevo.
+            </p>
+          </div>
+        ) : (
+          <p className="text-[11px] text-judo-fog/35">
+            Ningún formulario apunta todavía a este website. Se vinculan desde
+            la pestaña Formularios, con el selector “Pertenece a”.
+          </p>
+        )}
+      </Seccion>
 
       {/* Accesos: lo que hay que pedirle al cliente el día 1 */}
       <Seccion titulo="🔑 Accesos"

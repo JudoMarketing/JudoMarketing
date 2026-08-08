@@ -103,7 +103,7 @@ function SiNo({
 
 type Datos = Record<string, string | boolean | string[]>;
 
-export default function IntakeForm({ traePago = false }: { traePago?: boolean }) {
+export default function IntakeForm() {
   const t = useTranslations("intake");
   const locale = useLocale() === "es" ? "es" : "en";
   const supabase = getSupabase();
@@ -353,16 +353,16 @@ export default function IntakeForm({ traePago = false }: { traePago?: boolean })
         )}
       </div>
 
-      {/* Para quien acaba de pagar y ya nos dio sus datos antes */}
-      {traePago && (
-        <button
-          type="button"
-          onClick={() => router.push({ pathname: "/", query: { listo: "1" } })}
-          className="mx-auto text-sm text-judo-fog/45 underline decoration-judo-lilac/30 underline-offset-4 transition hover:text-judo-lilac"
-        >
-          {t("alreadySent")}
-        </button>
-      )}
+      {/* Salida para quien ya nos dio sus datos antes (por correo, en persona o
+          en una llamada). Se ve siempre: quien llega desde el pago no es el
+          único que puede haberlos entregado ya. */}
+      <button
+        type="button"
+        onClick={() => router.push({ pathname: "/", query: { listo: "1" } })}
+        className="mx-auto text-sm text-judo-fog/45 underline decoration-judo-lilac/30 underline-offset-4 transition hover:text-judo-lilac"
+      >
+        {t("alreadySent")}
+      </button>
     </div>
   );
 }

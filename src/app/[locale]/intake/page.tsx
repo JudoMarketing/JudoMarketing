@@ -63,7 +63,7 @@ export default async function IntakePage({
         </div>
 
         <TiltCard className="mt-10 p-6 sm:p-9">
-          <IntakeForm traePago={traePago} />
+          <IntakeForm />
         </TiltCard>
       </section>
     </div>

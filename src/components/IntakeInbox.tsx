@@ -11,8 +11,12 @@ import { getSupabase } from "@/lib/supabase";
  * los accesos que dijeron poder dar y en ámbar los que faltan.
  */
 
+/** Los websites a los que se puede colgar un formulario. */
+export type SitioBreve = { id: string; name: string; domain: string | null };
+
 type Intake = {
   id: string;
+  site_id: string | null;
   business_name: string;
   industry: string | null;
   what_they_do: string | null;
@@ -74,7 +78,20 @@ const btn = "rounded-full px-3 py-1 text-xs font-semibold transition whitespace-
 const btnGhost = `${btn} border border-judo-lilac/30 text-judo-lilac hover:bg-judo-purple/15`;
 const btnGreen = `${btn} bg-emerald-500/90 text-white hover:bg-emerald-500`;
 
-export default function IntakeInbox({ flash }: { flash: (m: string) => void }) {
+export default function IntakeInbox({
+  flash,
+  sitios,
+  onIrASitio,
+  onCambio,
+}: {
+  flash: (m: string) => void;
+  /** Websites existentes, para poder decir de cuál es cada formulario. */
+  sitios: SitioBreve[];
+  /** Abre ese website en la pestaña Websites. */
+  onIrASitio: (id: string) => void;
+  /** Avisa al portal que algo cambió (para refrescar contadores). */
+  onCambio: () => void;
+}) {
   const supabase = getSupabase();
   const [fichas, setFichas] = useState<Intake[]>([]);
   const [abierta, setAbierta] = useState<string | null>(null);
@@ -99,6 +116,34 @@ export default function IntakeInbox({ flash }: { flash: (m: string) => void }) {
       .eq("id", id);
     if (error) return flash(`Error: ${error.message}`);
     void cargar();
+    onCambio();
+  };
+
+  /**
+   * Cuelga (o descuelga) el formulario de un website. A partir de ahí sus
+   * datos salen en el expediente de ese sitio, en “Lo que pidió al inicio”.
+   */
+  const vincular = async (ficha: Intake, siteId: string) => {
+    const { error } = await supabase
+      .from("client_intake")
+      .update({ site_id: siteId || null })
+      .eq("id", ficha.id);
+    if (error) return flash(`Error: ${error.message}`);
+    if (siteId) {
+      // Que quede escrito en la bitácora del sitio, con fecha
+      await supabase.from("site_events").insert({
+        site_id: siteId,
+        kind: "nota",
+        detail: `Formulario de arranque de ${ficha.business_name} vinculado a este website`,
+        actor: (await supabase.auth.getUser()).data.user?.id ?? null,
+      });
+      const sitio = sitios.find((s) => s.id === siteId);
+      flash(`Formulario vinculado a ${sitio?.name ?? "el website"} ✓`);
+    } else {
+      flash("Formulario desvinculado");
+    }
+    void cargar();
+    onCambio();
   };
 
   const Dato = ({ etiqueta, valor }: { etiqueta: string; valor: string | null }) =>
@@ -150,6 +195,7 @@ export default function IntakeInbox({ flash }: { flash: (m: string) => void }) {
 
       {fichas.map((f) => {
         const faltan = ACCESOS.filter(([campo]) => !f[campo]);
+        const sitio = sitios.find((s) => s.id === f.site_id);
         return (
           <div key={f.id} className={box}>
             <div className="flex flex-wrap items-center gap-3">
@@ -206,6 +252,42 @@ export default function IntakeInbox({ flash }: { flash: (m: string) => void }) {
                 <button onClick={() => marcar(f.id, "convertido")} className={btnGreen}>
                   Ya es cliente
                 </button>
+              )}
+            </div>
+
+            {/* De qué website es este formulario. Puede llegar antes o después
+                de tener el sitio armado; al colgarlo aquí queda como historia
+                dentro del expediente de ese website. */}
+            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-judo-lilac/10 pt-3 text-xs text-judo-fog/50">
+              <span>🌐 Pertenece a:</span>
+              <select
+                value={f.site_id ?? ""}
+                onChange={(e) => void vincular(f, e.target.value)}
+                className="max-w-[16rem] rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
+              >
+                <option value="" className="bg-judo-surface">
+                  — ningún website todavía —
+                </option>
+                {sitios.map((s) => (
+                  <option key={s.id} value={s.id} className="bg-judo-surface">
+                    {s.name}
+                    {s.domain ? ` · ${s.domain}` : ""}
+                  </option>
+                ))}
+              </select>
+              {sitio ? (
+                <button
+                  onClick={() => onIrASitio(sitio.id)}
+                  className="text-judo-lilac hover:underline"
+                >
+                  abrir {sitio.name} →
+                </button>
+              ) : (
+                <span className="text-judo-fog/35">
+                  {sitios.length === 0
+                    ? "crea primero el website en la pestaña Websites"
+                    : "sin vincular, sus datos no salen en ningún expediente"}
+                </span>
               )}
             </div>
 

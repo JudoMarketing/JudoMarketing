@@ -13,7 +13,12 @@ import SiteDossier from "./SiteDossier";
 import IntakeInbox from "./IntakeInbox";
 import { inputClass } from "./AuthForms";
 
-type Tab = "resumen" | "vendedores" | "visitas" | "pagos" | "sitios" | "formularios" | "resenas";
+/**
+ * Las pestañas van en el orden en que pasan las cosas de verdad:
+ * llega un formulario → se abre el website → se cobra → se reparte al equipo
+ * → se cuida la reputación. El Resumen manda al frente.
+ */
+type Tab = "resumen" | "formularios" | "sitios" | "pagos" | "vendedores" | "visitas" | "resenas";
 
 type VisitRow = {
   id: string;
@@ -183,6 +188,17 @@ export default function AdminPortal() {
   const [accessGaps, setAccessGaps] = useState(0);
   const [msg, setMsg] = useState("");
 
+  // Formularios: cuántos están sin atender y de qué website es cada uno
+  const [intakeNuevos, setIntakeNuevos] = useState(0);
+  const [intakeSueltos, setIntakeSueltos] = useState(0);
+  const [intakePorSitio, setIntakePorSitio] = useState<Record<string, string>>({});
+
+  // La lista de websites es larga: se muestra plegada y se abre de a uno
+  const [sitioAbierto, setSitioAbierto] = useState<string | null>(null);
+  const [buscarSitio, setBuscarSitio] = useState("");
+  // El alta de un website es cosa de vez en cuando: no debe tapar la lista
+  const [altaAbierta, setAltaAbierta] = useState(false);
+
   // Formulario de nuevo sitio
   const [siteName, setSiteName] = useState("");
   const [siteDomain, setSiteDomain] = useState("");
@@ -196,7 +212,7 @@ export default function AdminPortal() {
   );
 
   const loadAll = useCallback(async () => {
-    const [selRes, proofRes, siteRes, metricsRes, finRes, accRes, comRes, bonusRes, visitRes, contractRes, payRes, revRes] = await Promise.all([
+    const [selRes, proofRes, siteRes, metricsRes, finRes, accRes, comRes, bonusRes, visitRes, contractRes, payRes, revRes, intakeRes] = await Promise.all([
       // profiles va desambiguado: sellers tiene dos caminos a profiles
       // (el perfil propio y el de quien aprobó) y sin esto la base rechaza
       // la consulta entera y las aplicaciones no se ven
@@ -262,6 +278,13 @@ export default function AdminPortal() {
         .select("id,name,place,body,status,created_at")
         .order("created_at", { ascending: false })
         .limit(100),
+      // Lo justo para los avisos: qué formularios faltan por atender y cuáles
+      // ya están colgados de un website
+      supabase
+        .from("client_intake")
+        .select("id,status,site_id,business_name")
+        .order("created_at", { ascending: false })
+        .limit(200),
     ]);
     setSellers((selRes.data as unknown as SellerRow[]) ?? []);
     setProofs((proofRes.data as ProofRow[]) ?? []);
@@ -274,6 +297,20 @@ export default function AdminPortal() {
     setPayRows((payRes.data as unknown as PayRow[]) ?? []);
     setFinance((finRes.data as FinanceRow[]) ?? []);
     setAccessGaps((accRes.data ?? []).length);
+
+    const intakeRows = (intakeRes.data ?? []) as {
+      id: string;
+      status: string;
+      site_id: string | null;
+      business_name: string;
+    }[];
+    setIntakeNuevos(intakeRows.filter((r) => r.status === "nuevo").length);
+    setIntakeSueltos(
+      intakeRows.filter((r) => !r.site_id && r.status !== "descartado").length
+    );
+    const porSitio: Record<string, string> = {};
+    for (const r of intakeRows) if (r.site_id) porSitio[r.site_id] = r.business_name;
+    setIntakePorSitio(porSitio);
 
     // Telemetría del Judo Site Kit: último reporte y ventas acumuladas por sitio
     const metricRows = (metricsRes.data ?? []) as {
@@ -417,6 +454,7 @@ export default function AdminPortal() {
     setSiteClient("");
     setSiteDue("");
     setSiteStatus("en_desarrollo");
+    setAltaAbierta(false);
     flash("Sitio creado ✓");
     void loadAll();
   };
@@ -548,6 +586,38 @@ export default function AdminPortal() {
 
   const approvedSellers = sellers.filter((s) => s.status === "aprobado");
 
+  // Fecha de hoy en la zona del navegador (la tuya), no en UTC: si no, entre
+  // las 8pm y medianoche un cobro de hoy ya saldría marcado como vencido.
+  const hoy = new Date().toLocaleDateString("en-CA");
+  /** Un website pide atención si está activo y ya se le pasó el cobro, o si el kit lo reporta caído. */
+  const necesitaAtencion = (s: SiteRow) =>
+    (s.status === "activo" && !!s.next_payment_due && s.next_payment_due < hoy) ||
+    metrics[s.id]?.is_live === false;
+  const sitiosEnRiesgo = sites.filter(necesitaAtencion).length;
+
+  // Buscador de la lista de websites: nombre, dominio o cliente
+  const consulta = buscarSitio.trim().toLowerCase();
+  const sitiosFiltrados = consulta
+    ? sites.filter((s) =>
+        [s.name, s.domain, s.clients?.full_name, s.clients?.business_name]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(consulta))
+      )
+    : sites;
+
+  const sitiosBreves = sites.map((s) => ({
+    id: s.id,
+    name: s.name,
+    domain: s.domain,
+  }));
+
+  /** Salta a un website y lo deja abierto. Lo usan los formularios. */
+  const irASitio = (id: string) => {
+    setBuscarSitio("");
+    setSitioAbierto(id);
+    setTab("sitios");
+  };
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
       <div className="flex items-center justify-between">
@@ -569,46 +639,61 @@ export default function AdminPortal() {
         </p>
       )}
 
-      {/* Pestañas */}
-      <div className="mt-6 flex gap-2">
+      {/* Pestañas, en el orden del camino de un cliente. El número en ámbar es
+          lo que espera por ti; el gris es solo cuántos hay. */}
+      <div className="mt-6 flex flex-wrap gap-2">
         {(
           [
-            ["resumen", "📊 Resumen"],
-            [
-              "vendedores",
-              `Vendedores (${sellers.length}${
-                sellers.filter((s) => s.status === "pendiente").length > 0
-                  ? `, ${sellers.filter((s) => s.status === "pendiente").length} nuevas`
-                  : ""
-              })`,
-            ],
-            ["visitas", `Visitas (${visitRows.length})`],
+            ["resumen", "📊", "Resumen", 0, 0],
+            ["formularios", "📨", "Formularios", intakeNuevos, intakeSueltos],
+            ["sitios", "🌐", "Websites", sitiosEnRiesgo, sites.length],
             [
               "pagos",
-              `Pagos y comisiones (${
-                proofs.filter((p) => p.status === "pendiente").length +
+              "💵",
+              "Dinero",
+              proofs.filter((p) => p.status === "pendiente").length +
                 commissions.filter((c) => c.status === "pendiente").length +
-                bonuses.filter((b) => b.status === "pendiente").length
-              })`,
+                bonuses.filter((b) => b.status === "pendiente").length,
+              0,
             ],
-            ["sitios", `Websites (${sites.length})`],
-            ["formularios", "Formularios"],
+            [
+              "vendedores",
+              "🧑‍💼",
+              "Vendedores",
+              sellers.filter((s) => s.status === "pendiente").length,
+              sellers.length,
+            ],
+            ["visitas", "📍", "Visitas", 0, visitRows.length],
             [
               "resenas",
-              `Reseñas (${reviews.filter((r) => r.status === "pendiente").length})`,
+              "⭐",
+              "Reseñas",
+              reviews.filter((r) => r.status === "pendiente").length,
+              0,
             ],
-          ] as [Tab, string][]
-        ).map(([key, label]) => (
+          ] as [Tab, string, string, number, number][]
+        ).map(([key, icono, label, urgente, total]) => (
           <button
             key={key}
             onClick={() => setTab(key)}
-            className={`rounded-full px-3.5 py-1 text-xs font-semibold transition ${
+            className={`flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold transition ${
               tab === key
                 ? "bg-judo-purple text-white"
                 : "border border-judo-lilac/25 text-judo-fog/60 hover:text-judo-lilac"
             }`}
           >
+            <span aria-hidden>{icono}</span>
             {label}
+            {urgente > 0 && (
+              <span className="rounded-full bg-amber-400/90 px-1.5 text-[10px] font-bold text-judo-black">
+                {urgente}
+              </span>
+            )}
+            {urgente === 0 && total > 0 && (
+              <span className={tab === key ? "text-white/60" : "text-judo-fog/35"}>
+                {total}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -629,27 +714,31 @@ export default function AdminPortal() {
         const mrr = activos.reduce((t, f) => t + (f.revenue_cents ?? 0), 0) / 100;
         const costos = activos.reduce((t, f) => t + (f.cost_cents ?? 0), 0) / 100;
         const margen = mrr - costos;
+        // Mismo criterio que el aviso ⏰ de la lista de websites, para que los
+        // dos números nunca se contradigan
         const enRiesgo = sites.filter(
           (s) =>
-            s.status === "activo" &&
-            s.next_payment_due &&
-            new Date(s.next_payment_due) < now
+            s.status === "activo" && !!s.next_payment_due && s.next_payment_due < hoy
         ).length;
 
-        const stats: [string, string, string][] = [
-          ["🆕", "Aplicaciones nuevas", String(sellers.filter((s) => s.status === "pendiente").length)],
-          ["🧑‍💼", "Vendedores aprobados", String(approvedSellers.length)],
-          ["🌐", "Websites activos", `${sites.filter((s) => s.status === "activo").length}/${sites.length}`],
-          ["💵", "Ingresos este mes", `$${monthRevenue.toFixed(0)}`],
-          ["📈", "Ingresos totales", `$${totalRevenue.toFixed(0)}`],
-          ["💰", "Comisiones por pagar", `$${pendingCommissions.toFixed(2)}`],
-          ["🧾", "Pagos por verificar", String(proofs.filter((p) => p.status === "pendiente").length)],
-          ["⭐", "Reseñas por moderar", String(reviews.filter((r) => r.status === "pendiente").length)],
-          ["🔁", "Facturación recurrente", `$${mrr.toFixed(0)}/mes`],
-          ["📉", "Costos de los sitios", `$${costos.toFixed(0)}/mes`],
-          ["🟢", "Tu ganancia al mes", `$${margen.toFixed(0)}`],
-          ["🔑", "Accesos por conseguir", String(accessGaps)],
-          ["⏰", "Con el pago vencido", String(enRiesgo)],
+        // Cada tarjeta lleva a la pestaña donde eso se resuelve: el Resumen
+        // dice qué pasa, y el clic dice dónde arreglarlo.
+        const stats: [string, string, string, Tab][] = [
+          ["📨", "Formularios sin atender", String(intakeNuevos), "formularios"],
+          ["🔗", "Formularios sin website", String(intakeSueltos), "formularios"],
+          ["🌐", "Websites activos", `${sites.filter((s) => s.status === "activo").length}/${sites.length}`, "sitios"],
+          ["⏰", "Con el pago vencido", String(enRiesgo), "sitios"],
+          ["🔑", "Accesos por conseguir", String(accessGaps), "sitios"],
+          ["💵", "Ingresos este mes", `$${monthRevenue.toFixed(0)}`, "pagos"],
+          ["📈", "Ingresos totales", `$${totalRevenue.toFixed(0)}`, "pagos"],
+          ["🔁", "Facturación recurrente", `$${mrr.toFixed(0)}/mes`, "sitios"],
+          ["📉", "Costos de los sitios", `$${costos.toFixed(0)}/mes`, "sitios"],
+          ["🟢", "Tu ganancia al mes", `$${margen.toFixed(0)}`, "sitios"],
+          ["🧾", "Pagos por verificar", String(proofs.filter((p) => p.status === "pendiente").length), "pagos"],
+          ["💰", "Comisiones por pagar", `$${pendingCommissions.toFixed(2)}`, "pagos"],
+          ["🆕", "Aplicaciones nuevas", String(sellers.filter((s) => s.status === "pendiente").length), "vendedores"],
+          ["🧑‍💼", "Vendedores aprobados", String(approvedSellers.length), "vendedores"],
+          ["⭐", "Reseñas por moderar", String(reviews.filter((r) => r.status === "pendiente").length), "resenas"],
         ];
 
         // Leaderboard: vendido, visitas y comisiones por vendedor aprobado
@@ -671,11 +760,15 @@ export default function AdminPortal() {
         return (
           <div className="mt-6 flex flex-col gap-5">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {stats.map(([icon, label, value]) => (
-                <div key={label} className={box}>
+              {stats.map(([icon, label, value, destino]) => (
+                <button
+                  key={label}
+                  onClick={() => setTab(destino)}
+                  className={`${box} text-left transition hover:border-judo-lilac/50`}
+                >
                   <p className="text-xs text-judo-fog/50">{icon} {label}</p>
                   <p className="mt-1 text-2xl font-bold text-judo-lilac">{value}</p>
-                </div>
+                </button>
               ))}
             </div>
 
@@ -1091,8 +1184,17 @@ export default function AdminPortal() {
         );
       })()}
 
+      {/* ── FORMULARIOS DE CLIENTES: la entrada de todo ── */}
+      {tab === "formularios" && (
+        <IntakeInbox
+          flash={flash}
+          sitios={sitiosBreves}
+          onIrASitio={irASitio}
+          onCambio={loadAll}
+        />
+      )}
+
       {/* ── RESEÑAS DE VISITANTES ── */}
-      {tab === "formularios" && <IntakeInbox flash={flash} />}
 
       {tab === "resenas" && (
         <div className="mt-6 flex flex-col gap-3">
@@ -1147,7 +1249,29 @@ export default function AdminPortal() {
       {/* ── WEBSITES / CLIENTES ── */}
       {tab === "sitios" && (
         <div className="mt-6 flex flex-col gap-5">
-          <form onSubmit={createSite} className={box}>
+          {/* Barra de acciones: crear y buscar, sin robarle sitio a la lista */}
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setAltaAbierta(!altaAbierta)}
+              className={altaAbierta ? btnGhost : btnPurple}
+            >
+              {altaAbierta ? "Cancelar" : "➕ Nuevo website"}
+            </button>
+            {sites.length > 4 && (
+              <input
+                value={buscarSitio}
+                onChange={(e) => setBuscarSitio(e.target.value)}
+                placeholder="Buscar por nombre, dominio o cliente…"
+                className={`${inputClass} min-w-[14rem] flex-1`}
+              />
+            )}
+          </div>
+
+          <form
+            onSubmit={createSite}
+            className={altaAbierta ? box : "hidden"}
+            aria-hidden={!altaAbierta}
+          >
             <h2 className="font-semibold">➕ Nuevo website</h2>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <input required value={siteName} onChange={(e) => setSiteName(e.target.value)} placeholder="Nombre del proyecto" className={inputClass} />
@@ -1178,77 +1302,157 @@ export default function AdminPortal() {
             <button type="submit" className={`${btnPurple} mt-4`}>Crear website</button>
           </form>
 
-          {sites.map((site) => (
-            <div key={site.id} className={`${box} flex flex-wrap items-center gap-3`}>
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold">
-                  {site.name}
-                  {site.domain && (
-                    <span className="ml-2 text-sm font-normal text-judo-lilac">{site.domain}</span>
-                  )}
-                </p>
-                <p className="text-xs text-judo-fog/50">
-                  {site.clients?.full_name ?? "Sin cliente"} · ${site.monthly_price}/mes ·{" "}
-                  {site.months_paid}/12 pagos ·{" "}
-                  <b className={site.status === "activo" ? "text-emerald-300" : site.status === "deshabilitado" ? "text-red-300" : "text-amber-300"}>
-                    {site.status}
-                  </b>
-                </p>
-                {/* Telemetría del Judo Site Kit */}
-                <p className="text-xs text-judo-fog/50">
-                  {metrics[site.id] ? (
-                    <>
-                      {metrics[site.id].is_live === false ? "🔴 caído" : "🟢 en vivo"} · último
-                      reporte {new Date(metrics[site.id].reported_at).toLocaleString("es-US", { dateStyle: "short", timeStyle: "short" })} ·
-                      ventas reportadas: <b className="text-judo-fog">{metrics[site.id].salesTotal}</b>
-                      {metrics[site.id].traffic != null && <> · tráfico: {metrics[site.id].traffic}</>}
-                    </>
-                  ) : (
-                    "📡 sin telemetría aún (kit no conectado)"
-                  )}
-                </p>
-                <SiteDates site={site} onSaved={loadAll} flash={flash} />
-                <SitePortfolio site={site} onSaved={loadAll} flash={flash} />
-                <SiteDossier site={site} onSaved={loadAll} flash={flash} />
-                <label className="mt-1.5 flex items-center gap-2 text-xs text-judo-fog/50">
-                  👤 Vendedor:
-                  <select
-                    value={site.seller_id ?? ""}
-                    onChange={(e) => void assignSeller(site, e.target.value)}
-                    className="rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
+          {/* La lista va plegada: una línea por website. Se abre el que se
+              necesita y ahí aparece todo su expediente. */}
+          <div className="flex flex-col gap-2">
+            {sitiosFiltrados.length === 0 && (
+              <p className="text-sm text-judo-fog/45">
+                Ningún website coincide con “{buscarSitio}”.
+              </p>
+            )}
+            {sitiosFiltrados.map((site) => {
+              const abierto = sitioAbierto === site.id;
+              const atencion = necesitaAtencion(site);
+              const vencido =
+                site.status === "activo" &&
+                !!site.next_payment_due &&
+                site.next_payment_due < hoy;
+              return (
+                <div
+                  key={site.id}
+                  className={`rounded-2xl border bg-judo-surface transition ${
+                    abierto ? "border-judo-lilac/45" : "border-judo-lilac/15"
+                  }`}
+                >
+                  {/* La línea corta */}
+                  <button
+                    onClick={() => setSitioAbierto(abierto ? null : site.id)}
+                    aria-expanded={abierto}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left"
                   >
-                    <option value="" className="bg-judo-surface">
-                      Yo (Administración)
-                    </option>
-                    {approvedSellers.map((s) => (
-                      <option key={s.id} value={s.id} className="bg-judo-surface">
-                        {s.profiles?.full_name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-              <button
-                onClick={async () => {
-                  await navigator.clipboard.writeText(site.kit_api_key);
-                  flash("Clave del kit copiada ✓ (para conectar el website del cliente)");
-                }}
-                className={btnGhost}
-                title="Copiar la clave del Judo Site Kit"
-              >
-                🔑 Kit
-              </button>
-              <button onClick={() => registerPayment(site)} className={btnGhost}>
-                💵 Registrar pago
-              </button>
-              <button
-                onClick={() => toggleSite(site)}
-                className={site.status === "deshabilitado" ? btnGreen : btnDanger}
-              >
-                {site.status === "deshabilitado" ? "Reactivar" : "Deshabilitar"}
-              </button>
-            </div>
-          ))}
+                    <span
+                      aria-hidden
+                      title={site.status}
+                      className={`h-2.5 w-2.5 shrink-0 rounded-full ${
+                        site.status === "activo"
+                          ? "bg-emerald-400"
+                          : site.status === "deshabilitado"
+                            ? "bg-red-400"
+                            : "bg-amber-400"
+                      }`}
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">
+                        {site.name}
+                        {atencion && (
+                          <span className="ml-2 text-[11px] font-bold text-amber-300">
+                            {vencido ? "⏰ pago vencido" : "🔴 caído"}
+                          </span>
+                        )}
+                      </span>
+                      <span className="block truncate text-xs text-judo-fog/45">
+                        {site.domain ?? "sin dominio"} ·{" "}
+                        {site.clients?.full_name ?? "sin cliente"}
+                        {intakePorSitio[site.id] && " · 📨 con formulario"}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-xs text-judo-fog/55">
+                      ${site.monthly_price}/mes
+                    </span>
+                    <span aria-hidden className="shrink-0 text-judo-lilac">
+                      {abierto ? "−" : "+"}
+                    </span>
+                  </button>
+
+                  {/* Todo lo demás, solo del que está abierto */}
+                  {abierto && (
+                    <div className="border-t border-judo-lilac/10 px-4 pt-3 pb-4">
+                      <p className="text-xs text-judo-fog/50">
+                        {site.months_paid}/12 pagos ·{" "}
+                        <b
+                          className={
+                            site.status === "activo"
+                              ? "text-emerald-300"
+                              : site.status === "deshabilitado"
+                                ? "text-red-300"
+                                : "text-amber-300"
+                          }
+                        >
+                          {site.status}
+                        </b>
+                      </p>
+                      {/* Telemetría del Judo Site Kit */}
+                      <p className="text-xs text-judo-fog/50">
+                        {metrics[site.id] ? (
+                          <>
+                            {metrics[site.id].is_live === false ? "🔴 caído" : "🟢 en vivo"} ·
+                            último reporte{" "}
+                            {new Date(metrics[site.id].reported_at).toLocaleString("es-US", {
+                              dateStyle: "short",
+                              timeStyle: "short",
+                            })}{" "}
+                            · ventas reportadas:{" "}
+                            <b className="text-judo-fog">{metrics[site.id].salesTotal}</b>
+                            {metrics[site.id].traffic != null && (
+                              <> · tráfico: {metrics[site.id].traffic}</>
+                            )}
+                          </>
+                        ) : (
+                          "📡 sin telemetría aún (kit no conectado)"
+                        )}
+                      </p>
+                      <SiteDates site={site} onSaved={loadAll} flash={flash} />
+                      <SitePortfolio site={site} onSaved={loadAll} flash={flash} />
+                      <SiteDossier site={site} onSaved={loadAll} flash={flash} />
+                      <label className="mt-1.5 flex items-center gap-2 text-xs text-judo-fog/50">
+                        👤 Vendedor:
+                        <select
+                          value={site.seller_id ?? ""}
+                          onChange={(e) => void assignSeller(site, e.target.value)}
+                          className="rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
+                        >
+                          <option value="" className="bg-judo-surface">
+                            Yo (Administración)
+                          </option>
+                          {approvedSellers.map((s) => (
+                            <option key={s.id} value={s.id} className="bg-judo-surface">
+                              {s.profiles?.full_name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button
+                          onClick={async () => {
+                            await navigator.clipboard.writeText(site.kit_api_key);
+                            flash(
+                              "Clave del kit copiada ✓ (para conectar el website del cliente)"
+                            );
+                          }}
+                          className={btnGhost}
+                          title="Copiar la clave del Judo Site Kit"
+                        >
+                          🔑 Kit
+                        </button>
+                        <button onClick={() => registerPayment(site)} className={btnGhost}>
+                          💵 Registrar pago
+                        </button>
+                        <button
+                          onClick={() => toggleSite(site)}
+                          className={
+                            site.status === "deshabilitado" ? btnGreen : btnDanger
+                          }
+                        >
+                          {site.status === "deshabilitado" ? "Reactivar" : "Deshabilitar"}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
