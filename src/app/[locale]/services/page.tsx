@@ -27,7 +27,7 @@ export default function ServicesPage({
   setRequestLocale(locale);
   const t = useTranslations("services");
 
-  const plans = ["essential", "complex", "apps"] as const;
+  const plans = ["essential", "complex", "apps", "media"] as const;
   const diffs = t.raw("diff.items") as DiffItem[];
   const faqs = t.raw("faq.items") as FaqItem[];
 
@@ -44,22 +44,31 @@ export default function ServicesPage({
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-10">
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan, i) => {
             const features = t.raw(`${plan}.features`) as string[];
+            // Media Marketing no lleva precio fijo: el presupuesto lo pone el
+            // cliente, así que no se anuncia "desde" ni "/mes" ni pasa por caja.
+            const aPresupuesto = plan === "media";
             return (
               <Reveal key={plan} delay={i * 120}>
                 <TiltCard className="flex h-full flex-col p-8">
                   <h2 className="text-xl font-semibold">{t(`${plan}.name`)}</h2>
-                  <p className="mt-3">
-                    <span className="align-top text-sm text-judo-fog/50">
-                      {locale === "es" ? "desde" : "from"}{" "}
-                    </span>
-                    <span className="text-5xl font-bold text-judo-fog">
+                  {aPresupuesto ? (
+                    <p className="mt-3 text-2xl leading-tight font-bold text-judo-lilac">
                       {t(`${plan}.price`)}
-                    </span>
-                    <span className="text-judo-lilac">{t("perMonth")}</span>
-                  </p>
+                    </p>
+                  ) : (
+                    <p className="mt-3">
+                      <span className="align-top text-sm text-judo-fog/50">
+                        {locale === "es" ? "desde" : "from"}{" "}
+                      </span>
+                      <span className="text-5xl font-bold text-judo-fog">
+                        {t(`${plan}.price`)}
+                      </span>
+                      <span className="text-judo-lilac">{t("perMonth")}</span>
+                    </p>
+                  )}
                   <p className="mt-3 text-sm leading-relaxed text-judo-fog/65">
                     {t(`${plan}.tagline`)}
                   </p>
@@ -70,12 +79,18 @@ export default function ServicesPage({
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    href={{ pathname: "/pay", query: { plan } }}
-                    className="btn-primary mt-8 w-full"
-                  >
-                    {locale === "es" ? "Iniciar" : "Get started"} →
-                  </Link>
+                  {aPresupuesto ? (
+                    <Link href="/contact" className="btn-primary mt-8 w-full">
+                      {locale === "es" ? "Hablemos" : "Let's talk"} →
+                    </Link>
+                  ) : (
+                    <Link
+                      href={{ pathname: "/pay", query: { plan } }}
+                      className="btn-primary mt-8 w-full"
+                    >
+                      {locale === "es" ? "Iniciar" : "Get started"} →
+                    </Link>
+                  )}
                 </TiltCard>
               </Reveal>
             );

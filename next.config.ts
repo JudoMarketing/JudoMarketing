@@ -28,6 +28,7 @@ const nextConfig: NextConfig = {
       { source: "/portfolio", destination: "/showcase", permanent: true },
       { source: "/es/portafolio", destination: "/es/showcase", permanent: true },
       { source: "/es/portfolio", destination: "/es/showcase", permanent: true },
+      { source: "/es/datos", destination: "/es/intake", permanent: true },
     ];
   },
 

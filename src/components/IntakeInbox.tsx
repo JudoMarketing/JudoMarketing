@@ -119,7 +119,7 @@ export default function IntakeInbox({ flash }: { flash: (m: string) => void }) {
         </p>
         <button
           onClick={async () => {
-            await navigator.clipboard.writeText("https://www.judomarketing.net/es/datos");
+            await navigator.clipboard.writeText("https://www.judomarketing.net/intake");
             flash("Enlace copiado ✓");
           }}
           className={`${btnGhost} mt-3`}
@@ -134,25 +134,17 @@ export default function IntakeInbox({ flash }: { flash: (m: string) => void }) {
     <div className="mt-6 flex flex-col gap-4">
       <div className={`${box} flex flex-wrap items-center gap-3`}>
         <p className="flex-1 text-sm text-judo-fog/70">
-          Comparte este enlace con un cliente nuevo y llena sus datos él mismo.
+          Comparte <b className="text-judo-lilac">judomarketing.net/intake</b> con
+          un cliente nuevo y llena sus datos él mismo. Se abre en su idioma solo.
         </p>
         <button
           onClick={async () => {
-            await navigator.clipboard.writeText("https://www.judomarketing.net/es/datos");
-            flash("Enlace copiado ✓ (español)");
-          }}
-          className={btnGhost}
-        >
-          📋 Español
-        </button>
-        <button
-          onClick={async () => {
             await navigator.clipboard.writeText("https://www.judomarketing.net/intake");
-            flash("Enlace copiado ✓ (inglés)");
+            flash("Enlace copiado ✓");
           }}
           className={btnGhost}
         >
-          📋 English
+          📋 Copiar enlace
         </button>
       </div>
 

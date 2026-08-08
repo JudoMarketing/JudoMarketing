@@ -21,7 +21,7 @@ export default function HomePage({
   setRequestLocale(locale);
   const t = useTranslations();
 
-  const plans = ["essential", "complex", "apps"] as const;
+  const plans = ["essential", "complex", "apps", "media"] as const;
   const steps = t.raw("onboarding.steps") as Step[];
   const reviews = t.raw("reviews.items") as Review[];
 
@@ -152,7 +152,7 @@ export default function HomePage({
           <h2 className="text-3xl font-bold sm:text-4xl">{t("plans.title")}</h2>
           <p className="mt-2 text-judo-fog/60">{t("plans.subtitle")}</p>
         </Reveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan, i) => (
             <Reveal key={plan} delay={i * 120}>
               <Link href="/services" className="block h-full">

@@ -12,7 +12,6 @@ export default function robots(): MetadataRoute.Robots {
         "/es/portal",
         "/api/",
         "/suspended-demo",
-        "/datos",
         "/intake",
         "/es/demo-suspension",
       ],

@@ -60,6 +60,11 @@
       "name": "Mobile Apps",
       "price": "from $150/mo",
       "description": "Native iOS & Android mobile apps with push notifications."
+    },
+    "media": {
+      "name": "Media Marketing",
+      "price": "Set your own budget",
+      "description": "Ads on Instagram, Facebook, TikTok and Google so people who don't know you yet can find you."
     }
   },
   "reviews": {
@@ -143,6 +148,19 @@
         "iOS & Android",
         "Push notifications",
         "Support & updates"
+      ]
+    },
+    "media": {
+      "name": "Media Marketing",
+      "price": "Set your own budget",
+      "tagline": "Ads on the networks where your people already are, so they find you without looking for you.",
+      "features": [
+        "Instagram, Facebook, TikTok & Google",
+        "Reach people who aren't looking for you yet",
+        "Attract followers who genuinely care",
+        "Build a community around your brand",
+        "You decide how much to invest each month",
+        "We show you the reach and the results"
       ]
     },
     "perMonth": "/mo",

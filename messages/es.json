@@ -60,6 +60,11 @@
       "name": "Apps para Teléfonos",
       "price": "desde $150/mes",
       "description": "Aplicaciones móviles nativas para iOS y Android con notificaciones push."
+    },
+    "media": {
+      "name": "Media Marketing",
+      "price": "Tú pones el presupuesto",
+      "description": "Anuncios en Instagram, Facebook, TikTok y Google para que te encuentre gente que aún no te conoce."
     }
   },
   "reviews": {
@@ -143,6 +148,19 @@
         "iOS y Android",
         "Notificaciones push",
         "Soporte y actualizaciones"
+      ]
+    },
+    "media": {
+      "name": "Media Marketing",
+      "price": "Tú pones el presupuesto",
+      "tagline": "Anuncios en las redes donde ya está tu gente, para que te encuentren sin estar buscándote.",
+      "features": [
+        "Instagram, Facebook, TikTok y Google",
+        "Llegas a gente que todavía no te busca",
+        "Atraes seguidores interesados de verdad",
+        "Construyes comunidad alrededor de tu marca",
+        "Tú decides cuánto invertir cada mes",
+        "Te mostramos el alcance y los resultados"
       ]
     },
     "perMonth": "/mes",
