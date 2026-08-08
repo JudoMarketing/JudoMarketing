@@ -457,7 +457,10 @@
     "navDocsSub": "Sales script and contracts",
     "navBack": "Back",
     "newVisit": "New visit",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "photoGateTitle": "Your photo first",
+    "photoGateBody": "Without your profile photo you can't log visits or sign contracts. It's what shows a client you're authorized by Judo Marketing.",
+    "photoGateLocked": "Upload your photo to unlock this"
   },
   "zelle": {
     "chooseTitle": "How would you like to pay?",

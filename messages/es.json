@@ -457,7 +457,10 @@
     "navDocsSub": "Guion de ventas y contratos",
     "navBack": "Volver",
     "newVisit": "Nueva visita",
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "photoGateTitle": "Primero tu foto",
+    "photoGateBody": "Sin tu foto de perfil no puedes registrar visitas ni firmar contratos. Es lo que le muestra a un cliente que estás autorizado por Judo Marketing.",
+    "photoGateLocked": "Sube tu foto para desbloquearlo"
   },
   "zelle": {
     "chooseTitle": "¿Cómo prefieres pagar?",

@@ -125,32 +125,53 @@ function BotonMenu({
   titulo,
   detalle,
   insignia,
+  bloqueado = false,
   onClick,
 }: {
   icono: string;
   titulo: string;
   detalle: string;
   insignia?: string;
+  /** Apagado: falta la foto de perfil y sin ella no se trabaja. */
+  bloqueado?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
-      className="flex min-h-[4.75rem] w-full items-center gap-4 rounded-2xl border border-judo-lilac/25 bg-judo-surface px-5 py-4 text-left transition active:scale-[0.98] hover:border-judo-lilac/55"
+      disabled={bloqueado}
+      className={`flex min-h-[4.75rem] w-full items-center gap-4 rounded-2xl border px-5 py-4 text-left transition ${
+        bloqueado
+          ? "cursor-not-allowed border-judo-lilac/10 bg-judo-surface/50 opacity-55"
+          : "border-judo-lilac/25 bg-judo-surface active:scale-[0.98] hover:border-judo-lilac/55"
+      }`}
     >
       <span aria-hidden className="shrink-0 text-3xl">
-        {icono}
+        {bloqueado ? "🔒" : icono}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-lg font-bold text-white">{titulo}</span>
-        <span className="block truncate text-sm text-judo-fog/55">{detalle}</span>
+        <span
+          className={`block text-lg font-bold ${bloqueado ? "text-judo-fog/50" : "text-white"}`}
+        >
+          {titulo}
+        </span>
+        <span
+          className={`block truncate text-sm ${
+            bloqueado ? "text-amber-300/80" : "text-judo-fog/55"
+          }`}
+        >
+          {detalle}
+        </span>
       </span>
       {insignia && (
         <span className="shrink-0 rounded-full bg-amber-400/90 px-2.5 py-1 text-xs font-bold text-judo-black">
           {insignia}
         </span>
       )}
-      <span aria-hidden className="shrink-0 text-2xl text-judo-lilac">
+      <span
+        aria-hidden
+        className={`shrink-0 text-2xl ${bloqueado ? "text-judo-fog/20" : "text-judo-lilac"}`}
+      >
         ›
       </span>
     </button>
@@ -429,6 +450,9 @@ export default function SellerPortal() {
    */
   const guardarVisita = (e: React.FormEvent) => {
     e.preventDefault();
+    // Segundo candado: los botones ya están apagados sin foto, pero esto no
+    // puede depender solo de la pantalla.
+    if (!profile?.photo_url) return;
     const queue = loadQueue();
     let nuevaCola: LocalVisit[];
 
@@ -540,6 +564,9 @@ export default function SellerPortal() {
 
   const pending = seller?.status !== "aprobado";
   const unsyncedCount = visits.filter((v) => !v.synced).length;
+  // Sin foto no se registra ni se firma nada. Que la pidan una vez y ya está;
+  // si la dejamos opcional, la mitad del equipo nunca la sube.
+  const sinFoto = !profile?.photo_url;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
@@ -592,16 +619,29 @@ export default function SellerPortal() {
         </div>
       )}
 
-      {/* Foto de perfil: se puede subir en cualquier momento, antes o
-          después de la aprobación. Una vez subida queda bloqueada hasta
-          que Administración pida una nueva. */}
+      {/* Foto de perfil. Sin ella no se puede trabajar: es lo que le muestra
+          al cliente que quien tocó su puerta está autorizado. Por eso, cuando
+          falta, este bloque manda y las secciones de trabajo quedan cerradas. */}
       {(!profile?.photo_url || profile?.photo_change_requested) && (
-        <div className="mt-6 rounded-2xl border border-judo-lilac/30 bg-judo-surface p-6">
+        <div
+          className={`mt-6 rounded-2xl border bg-judo-surface p-6 ${
+            sinFoto ? "border-amber-400/60" : "border-judo-lilac/30"
+          }`}
+        >
           <h2 className="font-semibold">
-            📷 {profile?.photo_change_requested ? t("photoNewRequested") : t("photoTitle")}
+            📷{" "}
+            {sinFoto
+              ? t("photoGateTitle")
+              : profile?.photo_change_requested
+                ? t("photoNewRequested")
+                : t("photoTitle")}
           </h2>
           <p className="mt-2 text-sm text-judo-fog/70">
-            {profile?.photo_change_requested ? t("photoNewDesc") : t("photoDesc")}
+            {sinFoto
+              ? t("photoGateBody")
+              : profile?.photo_change_requested
+                ? t("photoNewDesc")
+                : t("photoDesc")}
           </p>
           <label className={`${botonPrincipal} mt-4 cursor-pointer`}>
             {uploadingPhoto ? "…" : `🤳 ${t("takeSelfie")}`}
@@ -636,8 +676,9 @@ export default function SellerPortal() {
           <BotonMenu
             icono="📍"
             titulo={t("navVisits")}
-            detalle={t("navVisitsSub", { count: visits.length })}
-            insignia={unsyncedCount > 0 ? `${unsyncedCount} ⏳` : undefined}
+            detalle={sinFoto ? t("photoGateLocked") : t("navVisitsSub", { count: visits.length })}
+            insignia={unsyncedCount > 0 && !sinFoto ? `${unsyncedCount} ⏳` : undefined}
+            bloqueado={sinFoto}
             onClick={() => {
               setVista("visitas");
               void refrescarVisitas();
@@ -647,7 +688,8 @@ export default function SellerPortal() {
             <BotonMenu
               icono="📝"
               titulo={t("navNewContract")}
-              detalle={t("navNewContractSub")}
+              detalle={sinFoto ? t("photoGateLocked") : t("navNewContractSub")}
+              bloqueado={sinFoto}
               onClick={() => setShowSigner(true)}
             />
           )}
@@ -957,7 +999,7 @@ export default function SellerPortal() {
         </div>
       </div>
 
-      {showSigner && userId && profile && (
+      {showSigner && userId && profile?.photo_url && (
         <ContractSigner
           sellerId={userId}
           sellerName={profile.full_name}

@@ -84,6 +84,20 @@ type Formulario = {
   created_at: string;
 };
 
+/** El contrato firmado que quedó colgado de este website. */
+type Contrato = {
+  id: string;
+  code: string;
+  client_name: string;
+  business_name: string | null;
+  client_email: string;
+  plan: string;
+  monthly_price: number;
+  domain: string | null;
+  pdf_path: string;
+  created_at: string;
+};
+
 const NECESIDADES: Record<string, string> = {
   tienda: "Tienda online",
   citas: "Citas",
@@ -248,9 +262,10 @@ export default function SiteDossier({
   const [eventos, setEventos] = useState<Evento[]>([]);
   const [contactos, setContactos] = useState<Contacto[]>([]);
   const [formulario, setFormulario] = useState<Formulario | null>(null);
+  const [contratos, setContratos] = useState<Contrato[]>([]);
 
   const cargar = useCallback(async () => {
-    const [c, a, e, f] = await Promise.all([
+    const [c, a, e, f, k] = await Promise.all([
       supabase.from("site_costs").select("id,concept,kind,amount_cents,period").eq("site_id", site.id),
       supabase.from("site_accesses").select("id,kind,status,account").eq("site_id", site.id),
       supabase
@@ -268,11 +283,20 @@ export default function SiteDossier({
         .eq("site_id", site.id)
         .order("created_at", { ascending: false })
         .limit(1),
+      // Lo que el cliente firmó
+      supabase
+        .from("signed_contracts")
+        .select(
+          "id,code,client_name,business_name,client_email,plan,monthly_price,domain,pdf_path,created_at"
+        )
+        .eq("site_id", site.id)
+        .order("created_at", { ascending: false }),
     ]);
     setCostos((c.data as Costo[]) ?? []);
     setAccesos((a.data as Acceso[]) ?? []);
     setEventos((e.data as Evento[]) ?? []);
     setFormulario(((f.data as Formulario[]) ?? [])[0] ?? null);
+    setContratos((k.data as Contrato[]) ?? []);
     if (site.client_id) {
       const { data } = await supabase
         .from("client_contacts")
@@ -377,6 +401,63 @@ export default function SiteDossier({
           <p className="text-[11px] text-judo-fog/35">
             Ningún formulario apunta todavía a este website. Se vinculan desde
             la pestaña Formularios, con el selector “Pertenece a”.
+          </p>
+        )}
+      </Seccion>
+
+      {/* Lo que el cliente firmó. Es el documento que respalda el cobro y,
+          si toca, el apagado por incumplimiento. */}
+      <Seccion
+        titulo="📑 Contrato firmado"
+        resumen={
+          contratos.length
+            ? contratos.map((k) => k.code).join(", ")
+            : "sin contrato asignado"
+        }
+        abierto={abierta === "contrato"}
+        onToggle={() => setAbierta(abierta === "contrato" ? null : "contrato")}
+      >
+        {contratos.length ? (
+          <div className="flex flex-col gap-3">
+            {contratos.map((k) => (
+              <div key={k.id} className="flex flex-wrap items-center gap-2">
+                <span className="min-w-0 flex-1">
+                  <DatoFijo etiqueta="Código" valor={k.code} />
+                  <DatoFijo etiqueta="Firmó" valor={k.client_name} />
+                  <DatoFijo etiqueta="Correo" valor={k.client_email} />
+                  <DatoFijo etiqueta="Plan" valor={k.plan} />
+                  <DatoFijo
+                    etiqueta="Acordado"
+                    valor={`$${Number(k.monthly_price).toFixed(2)}/mes`}
+                  />
+                  <DatoFijo
+                    etiqueta="Fecha"
+                    valor={new Date(k.created_at).toLocaleDateString("es-US")}
+                  />
+                </span>
+                <button
+                  onClick={async () => {
+                    const { data, error } = await supabase.storage
+                      .from("contracts")
+                      .createSignedUrl(k.pdf_path, 3600);
+                    if (error || !data) return flash(`No se pudo abrir: ${error?.message}`);
+                    window.open(data.signedUrl, "_blank", "noopener");
+                  }}
+                  className={btnGhost}
+                >
+                  📄 Descargar PDF
+                </button>
+              </div>
+            ))}
+            <p className="text-[11px] text-judo-fog/35">
+              Si lo acordado aquí no coincide con lo que paga hoy, alguno de los
+              dos está mal. Revísalo antes de cobrar.
+            </p>
+          </div>
+        ) : (
+          <p className="text-[11px] text-judo-fog/35">
+            Ningún contrato apunta a este website. Se asignan desde la pestaña
+            Contratos.
           </p>
         )}
       </Seccion>

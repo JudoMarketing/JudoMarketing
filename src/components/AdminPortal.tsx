@@ -18,7 +18,15 @@ import { inputClass } from "./AuthForms";
  * llega un formulario → se abre el website → se cobra → se reparte al equipo
  * → se cuida la reputación. El Resumen manda al frente.
  */
-type Tab = "resumen" | "formularios" | "sitios" | "pagos" | "vendedores" | "visitas" | "resenas";
+type Tab =
+  | "resumen"
+  | "formularios"
+  | "contratos"
+  | "sitios"
+  | "pagos"
+  | "vendedores"
+  | "visitas"
+  | "resenas";
 
 type VisitRow = {
   id: string;
@@ -34,7 +42,14 @@ type ContractRow = {
   seller_id: string;
   client_name: string;
   business_name: string | null;
+  client_email: string;
+  plan: string;
+  monthly_price: number;
+  domain: string | null;
+  pdf_path: string;
   code: string;
+  /** Nulo = contrato pendiente: se cerró la venta y su website no existe. */
+  site_id: string | null;
   created_at: string;
 };
 type PayRow = {
@@ -266,7 +281,9 @@ export default function AdminPortal() {
         .limit(2000),
       supabase
         .from("signed_contracts")
-        .select("id,seller_id,client_name,business_name,code,created_at")
+        .select(
+          "id,seller_id,client_name,business_name,client_email,plan,monthly_price,domain,pdf_path,code,site_id,created_at"
+        )
         .order("created_at", { ascending: false })
         .limit(500),
       supabase
@@ -639,6 +656,78 @@ export default function AdminPortal() {
     void loadAll();
   };
 
+  /** Abre el PDF firmado. El bucket es privado: se pide un enlace de una hora. */
+  const abrirContrato = async (c: ContractRow) => {
+    const { data, error } = await supabase.storage
+      .from("contracts")
+      .createSignedUrl(c.pdf_path, 3600);
+    if (error || !data) return flash(`No se pudo abrir el contrato: ${error?.message}`);
+    window.open(data.signedUrl, "_blank", "noopener");
+  };
+
+  /**
+   * Cuelga el contrato de un website. Mientras no tenga uno queda pendiente:
+   * es una venta cerrada cuyo sitio todavía no existe.
+   */
+  const asignarContrato = async (c: ContractRow, siteId: string) => {
+    const { error } = await supabase
+      .from("signed_contracts")
+      .update({ site_id: siteId || null })
+      .eq("id", c.id);
+    if (error) return flash(`Error: ${error.message}`);
+    if (siteId) {
+      await supabase.from("site_events").insert({
+        site_id: siteId,
+        kind: "contrato_firmado",
+        detail: `Contrato ${c.code} de ${c.client_name} — $${Number(c.monthly_price).toFixed(2)}/mes`,
+        actor: (await supabase.auth.getUser()).data.user?.id ?? null,
+      });
+      flash(`Contrato ${c.code} asignado ✓ Ya sale en el expediente del website`);
+    } else {
+      flash(`Contrato ${c.code} sin website: vuelve a quedar pendiente`);
+    }
+    void loadAll();
+  };
+
+  /**
+   * Crea el website que le falta a un contrato y lo deja ya asignado.
+   * Es el camino natural de un contrato pendiente.
+   */
+  const sitioDesdeContrato = async (c: ContractRow) => {
+    const { data: client, error: cErr } = await supabase
+      .from("clients")
+      .insert({ full_name: c.client_name, business_name: c.business_name })
+      .select("id")
+      .single();
+    if (cErr || !client) return flash(`Error: ${cErr?.message}`);
+    const { data: site, error: sErr } = await supabase
+      .from("sites")
+      .insert({
+        name: c.business_name || c.client_name,
+        domain: c.domain || null,
+        monthly_price: Number(c.monthly_price),
+        client_id: client.id,
+        seller_id: c.seller_id,
+        status: "en_desarrollo",
+      })
+      .select("id")
+      .single();
+    if (sErr || !site) return flash(`Error: ${sErr?.message}`);
+    await supabase
+      .from("signed_contracts")
+      .update({ site_id: site.id })
+      .eq("id", c.id);
+    await supabase.from("site_events").insert({
+      site_id: site.id,
+      kind: "contrato_firmado",
+      detail: `Website creado desde el contrato ${c.code} de ${c.client_name}`,
+      actor: (await supabase.auth.getUser()).data.user?.id ?? null,
+    });
+    flash(`Website creado y contrato ${c.code} asignado ✓`);
+    await loadAll();
+    irASitio(site.id);
+  };
+
   /**
    * Corrige una visita. En la calle se escribe rápido: nombres a medias,
    * empresas mal puestas. El número de visitas es con lo que se mide a cada
@@ -753,6 +842,13 @@ export default function AdminPortal() {
           [
             ["resumen", "📊", "Resumen", 0, 0],
             ["formularios", "📨", "Formularios", intakeNuevos, intakeSueltos],
+            [
+              "contratos",
+              "📑",
+              "Contratos",
+              contractRows.filter((c) => !c.site_id).length,
+              contractRows.length,
+            ],
             ["sitios", "🌐", "Websites", sitiosEnRiesgo, sites.length],
             [
               "pagos",
@@ -837,6 +933,12 @@ export default function AdminPortal() {
         const stats: [string, string, string, Tab][] = [
           ["📨", "Formularios sin atender", String(intakeNuevos), "formularios"],
           ["🔗", "Formularios sin website", String(intakeSueltos), "formularios"],
+          [
+            "📑",
+            "Contratos por armar",
+            String(contractRows.filter((c) => !c.site_id).length),
+            "contratos",
+          ],
           ["🌐", "Websites activos", `${sites.filter((s) => s.status === "activo").length}/${sites.length}`, "sitios"],
           ["⏰", "Con el pago vencido", String(enRiesgo), "sitios"],
           ["🔑", "Accesos por conseguir", String(accessGaps), "sitios"],
@@ -1337,6 +1439,126 @@ export default function AdminPortal() {
           onCambio={loadAll}
         />
       )}
+
+      {/* ── CONTRATOS FIRMADOS ─────────────────────────────────────────
+          Un contrato sin website no es papeleo pendiente: es una venta
+          cerrada cuyo sitio todavía no existe. Sale primero y en ámbar. */}
+      {tab === "contratos" && (() => {
+        const nombreVendedor = (id: string) =>
+          sellers.find((s) => s.id === id)?.profiles?.full_name ?? "Administración";
+        const pendientes = contractRows.filter((c) => !c.site_id);
+        const asignados = contractRows.filter((c) => c.site_id);
+
+        const Ficha = ({ c }: { c: ContractRow }) => {
+          const sitio = sites.find((s) => s.id === c.site_id);
+          return (
+            <div
+              className={`rounded-2xl border bg-judo-surface p-5 ${
+                c.site_id ? "border-judo-lilac/20" : "border-amber-400/45"
+              }`}
+            >
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold">
+                    {c.client_name}
+                    {c.business_name && (
+                      <span className="ml-2 text-sm font-normal text-judo-fog/50">
+                        {c.business_name}
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-xs text-judo-fog/50">
+                    <span className="text-judo-lilac">{c.code}</span> · {c.plan} ·{" "}
+                    <b className="text-judo-fog">
+                      ${Number(c.monthly_price).toFixed(2)}/mes
+                    </b>{" "}
+                    · {nombreVendedor(c.seller_id)} ·{" "}
+                    {new Date(c.created_at).toLocaleDateString("es-US")}
+                  </p>
+                  <p className="text-xs text-judo-fog/40">
+                    {c.client_email}
+                    {c.domain && ` · ${c.domain}`}
+                  </p>
+                </div>
+                <button onClick={() => abrirContrato(c)} className={btnGhost}>
+                  📄 Descargar PDF
+                </button>
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-judo-lilac/10 pt-3 text-xs text-judo-fog/50">
+                <span>🌐 Website:</span>
+                <select
+                  value={c.site_id ?? ""}
+                  onChange={(e) => void asignarContrato(c, e.target.value)}
+                  className={`${fieldSm} max-w-[16rem]`}
+                >
+                  <option value="" className="bg-judo-surface">
+                    — sin asignar (pendiente) —
+                  </option>
+                  {sites.map((s) => (
+                    <option key={s.id} value={s.id} className="bg-judo-surface">
+                      {s.name}
+                      {s.domain ? ` · ${s.domain}` : ""}
+                    </option>
+                  ))}
+                </select>
+                {sitio ? (
+                  <button
+                    onClick={() => irASitio(sitio.id)}
+                    className="text-judo-lilac hover:underline"
+                  >
+                    abrir {sitio.name} →
+                  </button>
+                ) : (
+                  <>
+                    <span className="font-semibold text-amber-300">
+                      pendiente: este cliente ya firmó y su website no existe
+                    </span>
+                    <button onClick={() => void sitioDesdeContrato(c)} className={btnPurple}>
+                      ➕ Crear su website
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        };
+
+        return (
+          <div className="mt-6 flex flex-col gap-5">
+            {contractRows.length === 0 && (
+              <p className={`${box} text-sm text-judo-fog/50`}>
+                Todavía no hay contratos firmados. Aparecen aquí en cuanto un
+                vendedor cierre uno desde su portal.
+              </p>
+            )}
+
+            {pendientes.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <h2 className="font-semibold text-amber-300">
+                  ⏳ Por armar ({pendientes.length})
+                </h2>
+                <p className="-mt-2 text-xs text-judo-fog/50">
+                  Cada uno es una venta cerrada esperando su website. Asígnalo a
+                  uno que ya exista, o créalo aquí mismo.
+                </p>
+                {pendientes.map((c) => (
+                  <Ficha key={c.id} c={c} />
+                ))}
+              </div>
+            )}
+
+            {asignados.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <h2 className="font-semibold">✓ Con website ({asignados.length})</h2>
+                {asignados.map((c) => (
+                  <Ficha key={c.id} c={c} />
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── RESEÑAS DE VISITANTES ── */}
 
