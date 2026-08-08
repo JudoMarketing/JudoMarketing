@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { getSupabase } from "@/lib/supabase";
+import SiteDossier from "./SiteDossier";
 import { inputClass } from "./AuthForms";
 
 type Tab = "resumen" | "vendedores" | "visitas" | "pagos" | "sitios" | "resenas";
@@ -79,7 +80,34 @@ type SiteRow = {
   portfolio_category: string | null;
   portfolio_desc_es: string | null;
   portfolio_desc_en: string | null;
+  client_id: string | null;
+  currency: string | null;
+  billing_day: number | null;
+  payment_method: string | null;
+  grace_days: number | null;
+  timezone: string | null;
+  repo_url: string | null;
+  vercel_project: string | null;
+  registrar: string | null;
+  domain_holder: string | null;
+  dns_provider: string | null;
+  email_provider: string | null;
+  db_provider: string | null;
+  ga4_property_id: string | null;
+  gsc_property: string | null;
+  gbp_location: string | null;
+  meta_pixel_id: string | null;
+  meta_page: string | null;
+  notes: string | null;
   clients: { full_name: string; business_name: string | null } | null;
+};
+
+type FinanceRow = {
+  site_id: string;
+  status: string;
+  revenue_cents: number;
+  cost_cents: number;
+  margin_cents: number;
 };
 
 type SiteMetric = {
@@ -149,6 +177,8 @@ export default function AdminPortal() {
   const [visitFilter, setVisitFilter] = useState("");
   const [payRows, setPayRows] = useState<PayRow[]>([]);
   const [metrics, setMetrics] = useState<Record<string, SiteMetric>>({});
+  const [finance, setFinance] = useState<FinanceRow[]>([]);
+  const [accessGaps, setAccessGaps] = useState(0);
   const [msg, setMsg] = useState("");
 
   // Formulario de nuevo sitio
@@ -164,7 +194,7 @@ export default function AdminPortal() {
   );
 
   const loadAll = useCallback(async () => {
-    const [selRes, proofRes, siteRes, metricsRes, comRes, bonusRes, visitRes, contractRes, payRes, revRes] = await Promise.all([
+    const [selRes, proofRes, siteRes, metricsRes, finRes, accRes, comRes, bonusRes, visitRes, contractRes, payRes, revRes] = await Promise.all([
       // profiles va desambiguado: sellers tiene dos caminos a profiles
       // (el perfil propio y el de quien aprobó) y sin esto la base rechaza
       // la consulta entera y las aplicaciones no se ven
@@ -181,7 +211,7 @@ export default function AdminPortal() {
       supabase
         .from("sites")
         .select(
-          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,kit_api_key,domain_expires_at,portfolio_visible,portfolio_category,portfolio_desc_es,portfolio_desc_en,clients(full_name,business_name)"
+          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,kit_api_key,domain_expires_at,portfolio_visible,portfolio_category,portfolio_desc_es,portfolio_desc_en,client_id,currency,billing_day,payment_method,grace_days,timezone,repo_url,vercel_project,registrar,domain_holder,dns_provider,email_provider,db_provider,ga4_property_id,gsc_property,gbp_location,meta_pixel_id,meta_page,notes,clients(full_name,business_name)"
         )
         .order("created_at", { ascending: false }),
       supabase
@@ -189,6 +219,13 @@ export default function AdminPortal() {
         .select("site_id,is_live,sales_count,traffic_count,reported_at")
         .order("reported_at", { ascending: false })
         .limit(400),
+      // Cuánto entra, cuánto cuesta y cuánto queda, por sitio
+      supabase.from("site_finance").select("site_id,status,revenue_cents,cost_cents,margin_cents"),
+      // Accesos del cliente que todavía no están otorgados
+      supabase
+        .from("site_accesses")
+        .select("id,status")
+        .in("status", ["pendiente", "solicitado"]),
       supabase
         .from("commissions")
         .select(
@@ -233,6 +270,8 @@ export default function AdminPortal() {
     setVisitRows((visitRes.data as VisitRow[]) ?? []);
     setContractRows((contractRes.data as ContractRow[]) ?? []);
     setPayRows((payRes.data as unknown as PayRow[]) ?? []);
+    setFinance((finRes.data as FinanceRow[]) ?? []);
+    setAccessGaps((accRes.data ?? []).length);
 
     // Telemetría del Judo Site Kit: último reporte y ventas acumuladas por sitio
     const metricRows = (metricsRes.data ?? []) as {
@@ -582,6 +621,18 @@ export default function AdminPortal() {
         const pendingCommissions =
           commissions.filter((c) => c.status === "pendiente").reduce((s, c) => s + Number(c.amount), 0) +
           bonuses.filter((b) => b.status === "pendiente").reduce((s, b) => s + Number(b.amount), 0);
+        // La cuenta real: solo cuentan los sitios que están activos
+        const activos = finance.filter((f) => f.status === "activo");
+        const mrr = activos.reduce((t, f) => t + (f.revenue_cents ?? 0), 0) / 100;
+        const costos = activos.reduce((t, f) => t + (f.cost_cents ?? 0), 0) / 100;
+        const margen = mrr - costos;
+        const enRiesgo = sites.filter(
+          (s) =>
+            s.status === "activo" &&
+            s.next_payment_due &&
+            new Date(s.next_payment_due) < now
+        ).length;
+
         const stats: [string, string, string][] = [
           ["🆕", "Aplicaciones nuevas", String(sellers.filter((s) => s.status === "pendiente").length)],
           ["🧑‍💼", "Vendedores aprobados", String(approvedSellers.length)],
@@ -591,6 +642,11 @@ export default function AdminPortal() {
           ["💰", "Comisiones por pagar", `$${pendingCommissions.toFixed(2)}`],
           ["🧾", "Pagos por verificar", String(proofs.filter((p) => p.status === "pendiente").length)],
           ["⭐", "Reseñas por moderar", String(reviews.filter((r) => r.status === "pendiente").length)],
+          ["🔁", "Facturación recurrente", `$${mrr.toFixed(0)}/mes`],
+          ["📉", "Costos de los sitios", `$${costos.toFixed(0)}/mes`],
+          ["🟢", "Tu ganancia al mes", `$${margen.toFixed(0)}`],
+          ["🔑", "Accesos por conseguir", String(accessGaps)],
+          ["⏰", "Con el pago vencido", String(enRiesgo)],
         ];
 
         // Leaderboard: vendido, visitas y comisiones por vendedor aprobado
@@ -1148,6 +1204,7 @@ export default function AdminPortal() {
                 </p>
                 <SiteDates site={site} onSaved={loadAll} flash={flash} />
                 <SitePortfolio site={site} onSaved={loadAll} flash={flash} />
+                <SiteDossier site={site} onSaved={loadAll} flash={flash} />
                 <label className="mt-1.5 flex items-center gap-2 text-xs text-judo-fog/50">
                   👤 Vendedor:
                   <select
