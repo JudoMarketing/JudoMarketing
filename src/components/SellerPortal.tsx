@@ -56,6 +56,17 @@ const campoGrande =
 const accionTarjeta =
   "flex min-h-[2.75rem] flex-1 items-center justify-center gap-1.5 rounded-xl border text-sm font-semibold transition active:scale-[0.97]";
 
+type ServerVisit = {
+  client_generated_id: string;
+  prospect_name: string;
+  company_name: string | null;
+  visited_on: string;
+  visit_time: string | null;
+};
+
+/** Cuántas visitas se traen del servidor de una vez. */
+const VISITAS_TOPE = 500;
+
 const QUEUE_KEY = "judo-visit-queue";
 /** Visitas borradas en el teléfono que todavía hay que borrar del servidor. */
 const DELETES_KEY = "judo-visit-deletes";
@@ -105,6 +116,47 @@ function saveDeletes(ids: string[]) {
   safeSet(DELETES_KEY, JSON.stringify(ids));
 }
 
+/**
+ * Botón de la pantalla de inicio. Alto, con su ícono a la izquierda, el
+ * nombre grande y debajo qué hay dentro. Se toca sin apuntar.
+ */
+function BotonMenu({
+  icono,
+  titulo,
+  detalle,
+  insignia,
+  onClick,
+}: {
+  icono: string;
+  titulo: string;
+  detalle: string;
+  insignia?: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex min-h-[4.75rem] w-full items-center gap-4 rounded-2xl border border-judo-lilac/25 bg-judo-surface px-5 py-4 text-left transition active:scale-[0.98] hover:border-judo-lilac/55"
+    >
+      <span aria-hidden className="shrink-0 text-3xl">
+        {icono}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-lg font-bold text-white">{titulo}</span>
+        <span className="block truncate text-sm text-judo-fog/55">{detalle}</span>
+      </span>
+      {insignia && (
+        <span className="shrink-0 rounded-full bg-amber-400/90 px-2.5 py-1 text-xs font-bold text-judo-black">
+          {insignia}
+        </span>
+      )}
+      <span aria-hidden className="shrink-0 text-2xl text-judo-lilac">
+        ›
+      </span>
+    </button>
+  );
+}
+
 export default function SellerPortal() {
   const t = useTranslations("portal");
   const router = useRouter();
@@ -128,9 +180,75 @@ export default function SellerPortal() {
   const [editando, setEditando] = useState<string | null>(null);
   const [aviso, setAviso] = useState("");
   const [showSigner, setShowSigner] = useState(false);
+  // El portal funciona como una app de teléfono: una pantalla de inicio con
+  // botones grandes, y cada sección se abre encima. Nada de un scroll eterno.
+  const [vista, setVista] = useState<"inicio" | "visitas" | "ganancias" | "documentos">(
+    "inicio"
+  );
   const [contracts, setContracts] = useState<SignedContract[]>([]);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [photoError, setPhotoError] = useState("");
+
+  /**
+   * Deja la lista del teléfono igual a la del servidor, sin perder lo que
+   * todavía no ha subido.
+   *
+   * Lo importante es que también QUITA: una visita que ya estaba arriba y
+   * hoy no viene en la respuesta es una que Administración (o el propio
+   * vendedor desde otro teléfono) borró. Sin esto se quedaba pegada aquí
+   * para siempre y las dos listas nunca coincidían.
+   */
+  const fusionarVisitas = useCallback((filas: ServerVisit[] | null) => {
+    const queue = loadQueue();
+    const enServidor = new Set((filas ?? []).map((v) => v.client_generated_id));
+
+    for (const sv of filas ?? []) {
+      const local = queue.find((v) => v.client_generated_id === sv.client_generated_id);
+      if (local) {
+        // Si aquí hay una corrección sin subir, manda la del teléfono
+        if (!local.dirty) {
+          local.prospect_name = sv.prospect_name;
+          local.company_name = sv.company_name ?? "";
+          local.visited_on = sv.visited_on;
+          local.visit_time = sv.visit_time?.slice(0, 5) || undefined;
+          local.synced = true;
+        }
+      } else {
+        queue.push({
+          client_generated_id: sv.client_generated_id,
+          prospect_name: sv.prospect_name,
+          company_name: sv.company_name ?? "",
+          visited_on: sv.visited_on,
+          visit_time: sv.visit_time?.slice(0, 5) || undefined,
+          synced: true,
+        });
+      }
+    }
+
+    // Solo se poda con una respuesta completa del servidor: si la consulta
+    // falló (null) o vino cortada por el tope, borrar sería inventar.
+    const respuestaCompleta = filas !== null && filas.length < VISITAS_TOPE;
+    const limpia = respuestaCompleta
+      ? queue.filter(
+          (v) => enServidor.has(v.client_generated_id) || !v.synced || v.dirty
+        )
+      : queue;
+
+    limpia.sort((a, b) => (a.visited_on < b.visited_on ? 1 : -1));
+    saveQueue(limpia);
+    setVisits(limpia);
+  }, []);
+
+  /** Vuelve a preguntarle al servidor por las visitas y rehace la lista. */
+  const refrescarVisitas = useCallback(async () => {
+    if (!navigator.onLine) return;
+    const { data, error } = await supabase
+      .from("visits")
+      .select("client_generated_id, prospect_name, company_name, visited_on, visit_time")
+      .order("visited_on", { ascending: false })
+      .limit(VISITAS_TOPE);
+    fusionarVisitas(error ? null : ((data as ServerVisit[]) ?? []));
+  }, [supabase, fusionarVisitas]);
 
   // ── Sesión y datos ────────────────────────────────────────────────
   useEffect(() => {
@@ -159,7 +277,7 @@ export default function SellerPortal() {
             .from("visits")
             .select("client_generated_id, prospect_name, company_name, visited_on, visit_time")
             .order("visited_on", { ascending: false })
-            .limit(200),
+            .limit(VISITAS_TOPE),
         ]);
       // El portal de vendedores no es para el admin: a su dashboard
       if ((prof as Profile | null)?.role === "admin") {
@@ -170,36 +288,7 @@ export default function SellerPortal() {
       setSeller(sel as Seller | null);
       setContracts((contractsRes.data as SignedContract[]) ?? []);
 
-      // Fusionar historial del servidor con la cola local del teléfono:
-      // así el vendedor ve todas sus visitas aunque cambie de dispositivo
-      const queue = loadQueue();
-      const known = new Set(queue.map((v) => v.client_generated_id));
-      type ServerVisit = {
-        client_generated_id: string;
-        prospect_name: string;
-        company_name: string | null;
-        visited_on: string;
-        visit_time: string | null;
-      };
-      for (const sv of (serverVisitsRes.data as ServerVisit[]) ?? []) {
-        if (known.has(sv.client_generated_id)) {
-          const local = queue.find(
-            (v) => v.client_generated_id === sv.client_generated_id
-          );
-          if (local) local.synced = true;
-        } else {
-          queue.push({
-            client_generated_id: sv.client_generated_id,
-            prospect_name: sv.prospect_name,
-            company_name: sv.company_name ?? "",
-            visited_on: sv.visited_on,
-            visit_time: sv.visit_time?.slice(0, 5) || undefined,
-            synced: true,
-          });
-        }
-      }
-      saveQueue(queue);
-      setVisits(queue);
+      fusionarVisitas(serverVisitsRes.data as ServerVisit[] | null);
       setChecking(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -285,6 +374,21 @@ export default function SellerPortal() {
     }, 25000);
     return () => clearInterval(interval);
   }, [online, userId, syncQueue]);
+
+  // Al volver a la app (o al recuperar la señal) se vuelve a preguntar por
+  // las visitas. Si Administración borró alguna, aquí también desaparece.
+  useEffect(() => {
+    if (!userId) return;
+    const alVolver = () => {
+      if (document.visibilityState === "visible") void refrescarVisitas();
+    };
+    document.addEventListener("visibilitychange", alVolver);
+    window.addEventListener("online", alVolver);
+    return () => {
+      document.removeEventListener("visibilitychange", alVolver);
+      window.removeEventListener("online", alVolver);
+    };
+  }, [userId, refrescarVisitas]);
 
   // ── Acciones ──────────────────────────────────────────────────────
   const hoy = () => {
@@ -465,8 +569,12 @@ export default function SellerPortal() {
             )}
           </div>
         </div>
-        <button onClick={logout} className="text-sm text-judo-fog/50 hover:text-judo-lilac">
-          {t("logout")} →
+        <button
+          onClick={logout}
+          className="flex min-h-[2.75rem] shrink-0 items-center gap-1.5 rounded-full border border-red-400/45 bg-red-400/10 px-4 text-sm font-semibold text-red-200 transition active:scale-[0.97] hover:bg-red-400/20"
+        >
+          <span aria-hidden>⏻</span>
+          {t("logout")}
         </button>
       </div>
 
@@ -520,25 +628,79 @@ export default function SellerPortal() {
         </p>
       )}
 
-      {/* ── LO QUE SE HACE EN LA CALLE ────────────────────────────────
-          Dos botones grandes arriba de todo. El resto del portal es para
-          revisar en la noche; esto es para el momento. */}
-      <div className="mt-6 flex flex-col gap-3">
-        <button
-          onClick={() => (editando === "" ? setEditando(null) : nuevaVisita())}
-          className={editando === "" ? botonSecundario : botonPrincipal}
-        >
-          {editando === "" ? `✕ ${t("visitCancel")}` : `📍 ${t("visitsTitle")}`}
-        </button>
-        {!pending && (
-          <button onClick={() => setShowSigner(true)} className={botonSecundario}>
-            📝 {t("newContract")}
+      {/* ══ PANTALLA DE INICIO ═════════════════════════════════════════
+          Un menú de botones grandes, como una app. Cada uno abre su
+          sección; nadie tiene que bajar buscando nada. */}
+      {vista === "inicio" && (
+        <div className="mt-6 flex flex-col gap-3">
+          <BotonMenu
+            icono="📍"
+            titulo={t("navVisits")}
+            detalle={t("navVisitsSub", { count: visits.length })}
+            insignia={unsyncedCount > 0 ? `${unsyncedCount} ⏳` : undefined}
+            onClick={() => {
+              setVista("visitas");
+              void refrescarVisitas();
+            }}
+          />
+          {!pending && (
+            <BotonMenu
+              icono="📝"
+              titulo={t("navNewContract")}
+              detalle={t("navNewContractSub")}
+              onClick={() => setShowSigner(true)}
+            />
+          )}
+          <BotonMenu
+            icono="📈"
+            titulo={t("navEarnings")}
+            detalle={t("navEarningsSub")}
+            onClick={() => setVista("ganancias")}
+          />
+          <BotonMenu
+            icono="📄"
+            titulo={t("navDocs")}
+            detalle={t("navDocsSub")}
+            onClick={() => setVista("documentos")}
+          />
+        </div>
+      )}
+
+      {/* ══ VISITAS ════════════════════════════════════════════════════ */}
+      {vista === "visitas" && (
+        <>
+          <div className="mt-6 flex items-center gap-3">
+            <button
+              onClick={() => {
+                setVista("inicio");
+                setEditando(null);
+              }}
+              className="flex min-h-[2.75rem] items-center gap-1.5 rounded-full border border-judo-lilac/30 px-4 text-sm font-semibold text-judo-lilac"
+            >
+              ← {t("navBack")}
+            </button>
+            <h2 className="flex-1 text-lg font-bold">📍 {t("navVisits")}</h2>
+            <button
+              onClick={() => void refrescarVisitas()}
+              title={t("refresh")}
+              className="flex min-h-[2.75rem] min-w-[2.75rem] items-center justify-center rounded-full border border-judo-lilac/25 text-judo-lilac"
+            >
+              ⟳
+            </button>
+          </div>
+
+          {/* Lo primero de la sección: registrar una visita nueva */}
+          <button
+            onClick={() => (editando === "" ? setEditando(null) : nuevaVisita())}
+            className={`mt-4 ${editando === "" ? botonSecundario : botonPrincipal}`}
+          >
+            {editando === "" ? `✕ ${t("visitCancel")}` : `➕ ${t("newVisit")}`}
           </button>
-        )}
-      </div>
+        </>
+      )}
 
       {/* El formulario, plegado hasta que se necesita */}
-      {editando !== null && (
+      {vista === "visitas" && editando !== null && (
         <form
           onSubmit={guardarVisita}
           className="mt-3 flex flex-col gap-3 rounded-2xl border border-judo-lilac/35 bg-judo-surface p-5"
@@ -598,14 +760,14 @@ export default function SellerPortal() {
         </form>
       )}
 
-      {(justSaved || aviso) && (
+      {vista === "visitas" && (justSaved || aviso) && (
         <p className="mt-3 rounded-2xl border border-emerald-400/35 bg-emerald-400/10 px-4 py-3 text-center text-sm font-semibold text-emerald-200">
           ✓ {aviso || t("savedOffline")}
         </p>
       )}
 
       {/* ── TUS VISITAS: tarjetas, no renglones ───────────────────────── */}
-      <div className="mt-6">
+      <div className={vista === "visitas" ? "mt-6" : "hidden"}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-base font-semibold">
             📍 {t("visitsCount", { count: visits.length })}
@@ -681,15 +843,32 @@ export default function SellerPortal() {
         )}
       </div>
 
-      {/* Ganancias: totales, gráfica mensual y proyección */}
-      {userId && <EarningsPanel sellerId={userId} />}
+      {/* ══ GANANCIAS Y CONTRATOS ══════════════════════════════════════
+          Los números y lo firmado van juntos: es lo mismo visto de dos
+          maneras — lo que se cerró y lo que eso paga. */}
+      {vista === "ganancias" && (
+        <>
+          <div className="mt-6 flex items-center gap-3">
+            <button
+              onClick={() => setVista("inicio")}
+              className="flex min-h-[2.75rem] items-center gap-1.5 rounded-full border border-judo-lilac/30 px-4 text-sm font-semibold text-judo-lilac"
+            >
+              ← {t("navBack")}
+            </button>
+            <h2 className="flex-1 text-lg font-bold">📈 {t("navEarnings")}</h2>
+          </div>
 
-      {/* Los websites que le tocan, con lo que paga cada cliente al mes */}
-      {userId && <MisWebsites sellerId={userId} />}
+          {/* Ganancias: totales, gráfica mensual y proyección */}
+          {userId && <EarningsPanel sellerId={userId} />}
 
-      {/* Contratos ya firmados. El botón de firmar uno nuevo vive arriba,
-          junto al de registrar visita: son las dos cosas de la calle. */}
-      {!pending && (
+          {/* Los websites que le tocan, con lo que paga cada cliente al mes */}
+          {userId && <MisWebsites sellerId={userId} />}
+        </>
+      )}
+
+      {/* Contratos ya firmados. Firmar uno nuevo se hace desde el inicio:
+          eso es de la calle, esto es de repasar. */}
+      {vista === "ganancias" && !pending && (
         <div className="mt-6 rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5">
           <h2 className="text-base font-semibold">📑 {t("contractsTitle")}</h2>
           {contracts.length === 0 ? (
@@ -718,7 +897,7 @@ export default function SellerPortal() {
                       if (data?.signedUrl)
                         window.open(data.signedUrl, "_blank", "noopener");
                     }}
-                    className={`${accionTarjeta} mt-3 border-judo-lilac/30 text-judo-lilac`}
+                    className={`${accionTarjeta} mt-3 w-full border-judo-lilac/30 text-judo-lilac`}
                   >
                     📄 {t("viewPdf")}
                   </button>
@@ -729,11 +908,29 @@ export default function SellerPortal() {
         </div>
       )}
 
-      {/* Documentos: se bajan al teléfono antes de salir, así que también
-          tienen que ser tocables sin apuntar */}
-      <div className="mt-6 rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5">
-        <h2 className="text-base font-semibold">📄 {t("docsTitle")}</h2>
-        <div className="mt-3 flex flex-col gap-2">
+      {/* ══ DOCUMENTOS ═════════════════════════════════════════════════
+          Se bajan al teléfono antes de salir, así que también tienen que
+          ser tocables sin apuntar. */}
+      {vista === "documentos" && (
+        <div className="mt-6 flex items-center gap-3">
+          <button
+            onClick={() => setVista("inicio")}
+            className="flex min-h-[2.75rem] items-center gap-1.5 rounded-full border border-judo-lilac/30 px-4 text-sm font-semibold text-judo-lilac"
+          >
+            ← {t("navBack")}
+          </button>
+          <h2 className="flex-1 text-lg font-bold">📄 {t("navDocs")}</h2>
+        </div>
+      )}
+
+      <div
+        className={
+          vista === "documentos"
+            ? "mt-4 rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5"
+            : "hidden"
+        }
+      >
+        <div className="flex flex-col gap-2">
           {(
             [
               ["/legal/Guion_de_Ventas.pdf", t("docScript"), true],

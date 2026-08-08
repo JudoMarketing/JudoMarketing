@@ -446,7 +446,18 @@
     "visitConfirmDelete": "¿Borrar la visita de {name}? No se puede deshacer.",
     "visitPendingDelete": "por borrar",
     "visitsCount": "Tus visitas ({count})",
-    "quickActions": "¿Qué vas a hacer?"
+    "quickActions": "¿Qué vas a hacer?",
+    "navVisits": "Visitas",
+    "navVisitsSub": "{count} registradas",
+    "navNewContract": "Nuevo contrato",
+    "navNewContractSub": "Fírmalo con tu cliente ahora",
+    "navEarnings": "Ganancias y contratos",
+    "navEarningsSub": "Tus números y lo firmado",
+    "navDocs": "Documentos",
+    "navDocsSub": "Guion de ventas y contratos",
+    "navBack": "Volver",
+    "newVisit": "Nueva visita",
+    "refresh": "Actualizar"
   },
   "zelle": {
     "chooseTitle": "¿Cómo prefieres pagar?",

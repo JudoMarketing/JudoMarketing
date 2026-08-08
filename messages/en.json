@@ -446,7 +446,18 @@
     "visitConfirmDelete": "Delete the visit to {name}? This can't be undone.",
     "visitPendingDelete": "to delete",
     "visitsCount": "Your visits ({count})",
-    "quickActions": "What are you doing?"
+    "quickActions": "What are you doing?",
+    "navVisits": "Visits",
+    "navVisitsSub": "{count} logged",
+    "navNewContract": "New contract",
+    "navNewContractSub": "Sign it with your client now",
+    "navEarnings": "Earnings & contracts",
+    "navEarningsSub": "Your numbers and what's signed",
+    "navDocs": "Documents",
+    "navDocsSub": "Sales script and contracts",
+    "navBack": "Back",
+    "newVisit": "New visit",
+    "refresh": "Refresh"
   },
   "zelle": {
     "chooseTitle": "How would you like to pay?",
