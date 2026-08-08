@@ -528,6 +528,13 @@
     "back": "Back",
     "okTitle": "Got it! We can start now",
     "okBody": "We'll review your info and write to you today to agree on next steps. If anything's missing, we'll ask by email — no rush.",
-    "error": "We couldn't send the form. Try again or message us on WhatsApp."
+    "error": "We couldn't send the form. Try again or message us on WhatsApp.",
+    "alreadySent": "I already sent this information",
+    "paidTitle": "✅ We got your payment",
+    "paidBody": "Last step: tell us about your business so we can start building."
+  },
+  "listo": {
+    "title": "All set!",
+    "body": "We're on it. We'll write to you today."
   }
 }

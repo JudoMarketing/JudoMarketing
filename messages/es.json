@@ -528,6 +528,13 @@
     "back": "Atrás",
     "okTitle": "¡Recibido! Ya podemos empezar",
     "okBody": "Revisamos tus datos y te escribimos hoy mismo para acordar los siguientes pasos. Si algo faltó, te lo pedimos por correo sin apuro.",
-    "error": "No pudimos enviar el formulario. Inténtalo de nuevo o escríbenos por WhatsApp."
+    "error": "No pudimos enviar el formulario. Inténtalo de nuevo o escríbenos por WhatsApp.",
+    "alreadySent": "Esta información ya la di",
+    "paidTitle": "✅ Recibimos tu pago",
+    "paidBody": "Último paso: cuéntanos de tu negocio para empezar a construir."
+  },
+  "listo": {
+    "title": "¡Todo listo!",
+    "body": "Nos ponemos a trabajar. Te escribimos hoy mismo."
   }
 }

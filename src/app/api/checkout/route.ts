@@ -100,8 +100,10 @@ export async function POST(req: NextRequest) {
       },
     ],
     // Inglés vive sin prefijo; solo el español lleva /es
+    // Al pagar, lo llevamos a entregar los datos de su negocio: es el
+    // momento en que más dispuesto está a hacerlo.
     success_url:
-      loc === "es" ? `${origin}/es?checkout=success` : `${origin}/?checkout=success`,
+      loc === "es" ? `${origin}/es/datos?pagado=1` : `${origin}/intake?pagado=1`,
     cancel_url: loc === "es" ? `${origin}/es/servicios` : `${origin}/services`,
     });
   } catch (e) {

@@ -25,16 +25,27 @@ export async function generateMetadata({
 
 export default async function IntakePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ pagado?: string }>;
 }) {
   const { locale } = await params;
+  const { pagado } = await searchParams;
+  const traePago = pagado === "1";
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "intake" });
 
   return (
     <div className="judo-glow">
       <section className="mx-auto max-w-3xl px-6 pt-20 pb-24">
+        {traePago && (
+          <div className="mx-auto mb-8 max-w-xl rounded-2xl border border-emerald-400/30 bg-emerald-400/5 px-6 py-4 text-center">
+            <p className="font-semibold text-emerald-300">{t("paidTitle")}</p>
+            <p className="mt-1 text-sm text-judo-fog/65">{t("paidBody")}</p>
+          </div>
+        )}
+
         <div className="text-center">
           <h1 className="hero-in text-4xl font-bold sm:text-5xl">{t("title")}</h1>
           <p
@@ -52,7 +63,7 @@ export default async function IntakePage({
         </div>
 
         <TiltCard className="mt-10 p-6 sm:p-9">
-          <IntakeForm />
+          <IntakeForm traePago={traePago} />
         </TiltCard>
       </section>
     </div>

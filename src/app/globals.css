@@ -297,3 +297,32 @@ body {
     opacity: 1;
   }
 }
+
+/* ── Pantalla de "todo listo": el visto se dibuja solo ─────────────── */
+.listo-circulo {
+  stroke-dasharray: 365;
+  stroke-dashoffset: 365;
+  transform: rotate(-90deg);
+  transform-origin: 66px 66px;
+  animation: listo-trazo 0.7s ease-out forwards;
+}
+
+.listo-visto {
+  stroke-dasharray: 80;
+  stroke-dashoffset: 80;
+  animation: listo-trazo 0.45s 0.5s ease-out forwards;
+}
+
+@keyframes listo-trazo {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .listo-circulo,
+  .listo-visto {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

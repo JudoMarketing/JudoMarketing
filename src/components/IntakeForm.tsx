@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { getSupabase } from "@/lib/supabase";
 
 /**
@@ -11,6 +12,10 @@ import { getSupabase } from "@/lib/supabase";
  * Va por pasos a propósito. Una sola pantalla con cuarenta campos espanta;
  * cuatro pantallas cortas se llenan. Solo el primer paso es obligatorio, así
  * que si alguien no sabe algo puede seguir y dejarlo para después.
+ *
+ * Los campos viven FUERA del componente. Definirlos adentro hacía que React
+ * los tratara como componentes nuevos en cada render: se desmontaban y se
+ * volvían a montar con cada tecla, y el cursor saltaba fuera de la casilla.
  */
 
 const NECESIDADES = [
@@ -24,72 +29,96 @@ const NECESIDADES = [
   { id: "blog", es: "Publicar contenido o noticias", en: "Publish content or news" },
 ];
 
-const input =
+const inputClase =
   "w-full rounded-xl border border-judo-lilac/25 bg-judo-black/60 px-4 py-3 text-sm text-judo-fog outline-none transition focus:border-judo-lilac focus:ring-1 focus:ring-judo-lilac";
-const label = "flex flex-col gap-1.5 text-sm text-judo-fog/70";
+const labelClase = "flex flex-col gap-1.5 text-sm text-judo-fog/70";
 
-export default function IntakeForm() {
-  const t = useTranslations("intake");
-  const locale = useLocale() === "es" ? "es" : "en";
-  const supabase = getSupabase();
-
-  const [paso, setPaso] = useState(1);
-  const [enviando, setEnviando] = useState(false);
-  const [listo, setListo] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [datos, setDatos] = useState<Record<string, string | boolean | string[]>>({
-    language: locale,
-    needs: [],
-  });
-
-  const set = (campo: string, valor: string | boolean | string[]) =>
-    setDatos((prev) => ({ ...prev, [campo]: valor }));
-
-  const Texto = ({
-    campo,
-    etiqueta,
-    tipo = "text",
-    ancho = "",
-  }: {
-    campo: string;
-    etiqueta: string;
-    tipo?: string;
-    ancho?: string;
-  }) => (
-    <label className={`${label} ${ancho}`}>
+function Texto({
+  etiqueta,
+  valor,
+  onChange,
+  tipo = "text",
+}: {
+  etiqueta: string;
+  valor: string;
+  onChange: (v: string) => void;
+  tipo?: string;
+}) {
+  return (
+    <label className={labelClase}>
       {etiqueta}
       <input
         type={tipo}
-        value={String(datos[campo] ?? "")}
-        onChange={(e) => set(campo, e.target.value)}
-        className={input}
+        value={valor}
+        onChange={(e) => onChange(e.target.value)}
+        className={inputClase}
       />
     </label>
   );
+}
 
-  const Area = ({ campo, etiqueta }: { campo: string; etiqueta: string }) => (
-    <label className={label}>
+function Area({
+  etiqueta,
+  valor,
+  onChange,
+}: {
+  etiqueta: string;
+  valor: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className={labelClase}>
       {etiqueta}
       <textarea
         rows={3}
-        value={String(datos[campo] ?? "")}
-        onChange={(e) => set(campo, e.target.value)}
-        className={`${input} resize-none`}
+        value={valor}
+        onChange={(e) => onChange(e.target.value)}
+        className={`${inputClase} resize-none`}
       />
     </label>
   );
+}
 
-  const SiNo = ({ campo, etiqueta }: { campo: string; etiqueta: string }) => (
+function SiNo({
+  etiqueta,
+  valor,
+  onChange,
+}: {
+  etiqueta: string;
+  valor: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
     <label className="flex items-start gap-3 text-sm text-judo-fog/70">
       <input
         type="checkbox"
-        checked={Boolean(datos[campo])}
-        onChange={(e) => set(campo, e.target.checked)}
+        checked={valor}
+        onChange={(e) => onChange(e.target.checked)}
         className="mt-1 h-4 w-4 shrink-0 accent-[#7b2dff]"
       />
       <span>{etiqueta}</span>
     </label>
   );
+}
+
+type Datos = Record<string, string | boolean | string[]>;
+
+export default function IntakeForm({ traePago = false }: { traePago?: boolean }) {
+  const t = useTranslations("intake");
+  const locale = useLocale() === "es" ? "es" : "en";
+  const supabase = getSupabase();
+  const router = useRouter();
+
+  const [paso, setPaso] = useState(1);
+  const [enviando, setEnviando] = useState(false);
+  const [listo, setListo] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [datos, setDatos] = useState<Datos>({ needs: [] });
+
+  const texto = (campo: string) => String(datos[campo] ?? "");
+  const marca = (campo: string) => Boolean(datos[campo]);
+  const set = (campo: string) => (valor: string | boolean | string[]) =>
+    setDatos((prev) => ({ ...prev, [campo]: valor }));
 
   const enviar = async () => {
     if (enviando) return;
@@ -97,40 +126,40 @@ export default function IntakeForm() {
     setError(null);
     try {
       const { error: err } = await supabase.from("client_intake").insert({
-        business_name: String(datos.business_name ?? "").trim(),
-        industry: String(datos.industry ?? "").trim() || null,
-        what_they_do: String(datos.what_they_do ?? "").trim() || null,
-        who_they_serve: String(datos.who_they_serve ?? "").trim() || null,
-        current_website: String(datos.current_website ?? "").trim() || null,
-        goal: String(datos.goal ?? "").trim() || null,
-        contact_name: String(datos.contact_name ?? "").trim(),
-        contact_role: String(datos.contact_role ?? "").trim() || null,
-        contact_email: String(datos.contact_email ?? "").trim().toLowerCase(),
-        contact_phone: String(datos.contact_phone ?? "").trim() || null,
-        contact_whatsapp: String(datos.contact_whatsapp ?? "").trim() || null,
+        business_name: texto("business_name").trim(),
+        industry: texto("industry").trim() || null,
+        what_they_do: texto("what_they_do").trim() || null,
+        who_they_serve: texto("who_they_serve").trim() || null,
+        current_website: texto("current_website").trim() || null,
+        goal: texto("goal").trim() || null,
+        contact_name: texto("contact_name").trim(),
+        contact_role: texto("contact_role").trim() || null,
+        contact_email: texto("contact_email").trim().toLowerCase(),
+        contact_phone: texto("contact_phone").trim() || null,
+        contact_whatsapp: texto("contact_whatsapp").trim() || null,
         language: locale,
-        timezone: String(datos.timezone ?? "").trim() || null,
-        decision_maker: String(datos.decision_maker ?? "").trim() || null,
-        billing_contact: String(datos.billing_contact ?? "").trim() || null,
-        billing_email: String(datos.billing_email ?? "").trim() || null,
+        timezone: texto("timezone").trim() || null,
+        decision_maker: texto("decision_maker").trim() || null,
+        billing_contact: texto("billing_contact").trim() || null,
+        billing_email: texto("billing_email").trim() || null,
         needs: (datos.needs as string[]) ?? [],
-        has_brand: Boolean(datos.has_brand),
-        brand_notes: String(datos.brand_notes ?? "").trim() || null,
-        reference_sites: String(datos.reference_sites ?? "").trim() || null,
-        domain_wanted: String(datos.domain_wanted ?? "").trim() || null,
-        domain_owned: Boolean(datos.domain_owned),
-        registrar: String(datos.registrar ?? "").trim() || null,
-        google_business: String(datos.google_business ?? "").trim() || null,
-        instagram: String(datos.instagram ?? "").trim() || null,
-        facebook: String(datos.facebook ?? "").trim() || null,
-        other_social: String(datos.other_social ?? "").trim() || null,
-        can_grant_search_console: Boolean(datos.can_grant_search_console),
-        can_grant_analytics: Boolean(datos.can_grant_analytics),
-        can_grant_google_business: Boolean(datos.can_grant_google_business),
-        can_grant_meta: Boolean(datos.can_grant_meta),
-        can_grant_payments: Boolean(datos.can_grant_payments),
-        payments_processor: String(datos.payments_processor ?? "").trim() || null,
-        notes: String(datos.notes ?? "").trim() || null,
+        has_brand: marca("has_brand"),
+        brand_notes: texto("brand_notes").trim() || null,
+        reference_sites: texto("reference_sites").trim() || null,
+        domain_wanted: texto("domain_wanted").trim() || null,
+        domain_owned: marca("domain_owned"),
+        registrar: texto("registrar").trim() || null,
+        google_business: texto("google_business").trim() || null,
+        instagram: texto("instagram").trim() || null,
+        facebook: texto("facebook").trim() || null,
+        other_social: texto("other_social").trim() || null,
+        can_grant_search_console: marca("can_grant_search_console"),
+        can_grant_analytics: marca("can_grant_analytics"),
+        can_grant_google_business: marca("can_grant_google_business"),
+        can_grant_meta: marca("can_grant_meta"),
+        can_grant_payments: marca("can_grant_payments"),
+        payments_processor: texto("payments_processor").trim() || null,
+        notes: texto("notes").trim() || null,
       });
       if (err) throw err;
 
@@ -140,8 +169,8 @@ export default function IntakeForm() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           type: "intake",
-          name: String(datos.business_name ?? ""),
-          email: String(datos.contact_email ?? ""),
+          name: texto("business_name"),
+          email: texto("contact_email"),
         }),
       }).catch(() => {});
 
@@ -164,9 +193,9 @@ export default function IntakeForm() {
   }
 
   const puedeSeguir =
-    String(datos.business_name ?? "").trim().length >= 2 &&
-    String(datos.contact_name ?? "").trim().length >= 2 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(datos.contact_email ?? ""));
+    texto("business_name").trim().length >= 2 &&
+    texto("contact_name").trim().length >= 2 &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(texto("contact_email"));
 
   const pasos = [t("step1"), t("step2"), t("step3"), t("step4")];
 
@@ -194,19 +223,17 @@ export default function IntakeForm() {
       {/* 1 · Quién eres */}
       {paso === 1 && (
         <div className="flex flex-col gap-4">
-          <Texto campo="business_name" etiqueta={t("businessName")} />
-          <Texto campo="industry" etiqueta={t("industry")} />
-          <Area campo="what_they_do" etiqueta={t("whatTheyDo")} />
-          <Area campo="who_they_serve" etiqueta={t("whoTheyServe")} />
+          <Texto etiqueta={t("businessName")} valor={texto("business_name")} onChange={set("business_name")} />
+          <Texto etiqueta={t("industry")} valor={texto("industry")} onChange={set("industry")} />
+          <Area etiqueta={t("whatTheyDo")} valor={texto("what_they_do")} onChange={set("what_they_do")} />
+          <Area etiqueta={t("whoTheyServe")} valor={texto("who_they_serve")} onChange={set("who_they_serve")} />
           <div className="grid gap-4 sm:grid-cols-2">
-            <Texto campo="contact_name" etiqueta={t("contactName")} />
-            <Texto campo="contact_role" etiqueta={t("contactRole")} />
-            <Texto campo="contact_email" etiqueta={t("contactEmail")} tipo="email" />
-            <Texto campo="contact_whatsapp" etiqueta={t("contactWhatsapp")} />
+            <Texto etiqueta={t("contactName")} valor={texto("contact_name")} onChange={set("contact_name")} />
+            <Texto etiqueta={t("contactRole")} valor={texto("contact_role")} onChange={set("contact_role")} />
+            <Texto etiqueta={t("contactEmail")} valor={texto("contact_email")} onChange={set("contact_email")} tipo="email" />
+            <Texto etiqueta={t("contactWhatsapp")} valor={texto("contact_whatsapp")} onChange={set("contact_whatsapp")} />
           </div>
-          {!puedeSeguir && (
-            <p className="text-xs text-judo-fog/45">{t("requiredHint")}</p>
-          )}
+          {!puedeSeguir && <p className="text-xs text-judo-fog/45">{t("requiredHint")}</p>}
         </div>
       )}
 
@@ -224,11 +251,8 @@ export default function IntakeForm() {
                     key={n.id}
                     type="button"
                     onClick={() =>
-                      set(
-                        "needs",
-                        activa
-                          ? elegidas.filter((x) => x !== n.id)
-                          : [...elegidas, n.id]
+                      set("needs")(
+                        activa ? elegidas.filter((x) => x !== n.id) : [...elegidas, n.id]
                       )
                     }
                     className={`rounded-xl border px-4 py-2.5 text-left text-sm transition ${
@@ -244,10 +268,10 @@ export default function IntakeForm() {
               })}
             </div>
           </div>
-          <Area campo="goal" etiqueta={t("goal")} />
-          <SiNo campo="has_brand" etiqueta={t("hasBrand")} />
-          <Area campo="brand_notes" etiqueta={t("brandNotes")} />
-          <Area campo="reference_sites" etiqueta={t("referenceSites")} />
+          <Area etiqueta={t("goal")} valor={texto("goal")} onChange={set("goal")} />
+          <SiNo etiqueta={t("hasBrand")} valor={marca("has_brand")} onChange={set("has_brand")} />
+          <Area etiqueta={t("brandNotes")} valor={texto("brand_notes")} onChange={set("brand_notes")} />
+          <Area etiqueta={t("referenceSites")} valor={texto("reference_sites")} onChange={set("reference_sites")} />
         </div>
       )}
 
@@ -255,22 +279,22 @@ export default function IntakeForm() {
       {paso === 3 && (
         <div className="flex flex-col gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Texto campo="current_website" etiqueta={t("currentWebsite")} />
-            <Texto campo="domain_wanted" etiqueta={t("domainWanted")} />
+            <Texto etiqueta={t("currentWebsite")} valor={texto("current_website")} onChange={set("current_website")} />
+            <Texto etiqueta={t("domainWanted")} valor={texto("domain_wanted")} onChange={set("domain_wanted")} />
           </div>
-          <SiNo campo="domain_owned" etiqueta={t("domainOwned")} />
-          <Texto campo="registrar" etiqueta={t("registrar")} />
+          <SiNo etiqueta={t("domainOwned")} valor={marca("domain_owned")} onChange={set("domain_owned")} />
+          <Texto etiqueta={t("registrar")} valor={texto("registrar")} onChange={set("registrar")} />
           <div className="grid gap-4 sm:grid-cols-2">
-            <Texto campo="google_business" etiqueta={t("googleBusiness")} />
-            <Texto campo="instagram" etiqueta="Instagram" />
-            <Texto campo="facebook" etiqueta="Facebook" />
-            <Texto campo="other_social" etiqueta={t("otherSocial")} />
+            <Texto etiqueta={t("googleBusiness")} valor={texto("google_business")} onChange={set("google_business")} />
+            <Texto etiqueta="Instagram" valor={texto("instagram")} onChange={set("instagram")} />
+            <Texto etiqueta="Facebook" valor={texto("facebook")} onChange={set("facebook")} />
+            <Texto etiqueta={t("otherSocial")} valor={texto("other_social")} onChange={set("other_social")} />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Texto campo="decision_maker" etiqueta={t("decisionMaker")} />
-            <Texto campo="billing_contact" etiqueta={t("billingContact")} />
-            <Texto campo="billing_email" etiqueta={t("billingEmail")} tipo="email" />
-            <Texto campo="timezone" etiqueta={t("timezone")} />
+            <Texto etiqueta={t("decisionMaker")} valor={texto("decision_maker")} onChange={set("decision_maker")} />
+            <Texto etiqueta={t("billingContact")} valor={texto("billing_contact")} onChange={set("billing_contact")} />
+            <Texto etiqueta={t("billingEmail")} valor={texto("billing_email")} onChange={set("billing_email")} tipo="email" />
+            <Texto etiqueta={t("timezone")} valor={texto("timezone")} onChange={set("timezone")} />
           </div>
         </div>
       )}
@@ -279,19 +303,17 @@ export default function IntakeForm() {
       {paso === 4 && (
         <div className="flex flex-col gap-4">
           <div className="rounded-xl border border-judo-lilac/20 bg-judo-purple/5 p-4">
-            <p className="text-sm leading-relaxed text-judo-fog/70">
-              {t("accessIntro")}
-            </p>
+            <p className="text-sm leading-relaxed text-judo-fog/70">{t("accessIntro")}</p>
           </div>
           <div className="flex flex-col gap-3">
-            <SiNo campo="can_grant_search_console" etiqueta={t("accSearchConsole")} />
-            <SiNo campo="can_grant_analytics" etiqueta={t("accAnalytics")} />
-            <SiNo campo="can_grant_google_business" etiqueta={t("accGoogleBusiness")} />
-            <SiNo campo="can_grant_meta" etiqueta={t("accMeta")} />
-            <SiNo campo="can_grant_payments" etiqueta={t("accPayments")} />
+            <SiNo etiqueta={t("accSearchConsole")} valor={marca("can_grant_search_console")} onChange={set("can_grant_search_console")} />
+            <SiNo etiqueta={t("accAnalytics")} valor={marca("can_grant_analytics")} onChange={set("can_grant_analytics")} />
+            <SiNo etiqueta={t("accGoogleBusiness")} valor={marca("can_grant_google_business")} onChange={set("can_grant_google_business")} />
+            <SiNo etiqueta={t("accMeta")} valor={marca("can_grant_meta")} onChange={set("can_grant_meta")} />
+            <SiNo etiqueta={t("accPayments")} valor={marca("can_grant_payments")} onChange={set("can_grant_payments")} />
           </div>
-          <Texto campo="payments_processor" etiqueta={t("paymentsProcessor")} />
-          <Area campo="notes" etiqueta={t("notes")} />
+          <Texto etiqueta={t("paymentsProcessor")} valor={texto("payments_processor")} onChange={set("payments_processor")} />
+          <Area etiqueta={t("notes")} valor={texto("notes")} onChange={set("notes")} />
           {error && (
             <p className="rounded-xl border border-red-400/40 bg-red-400/10 px-4 py-2 text-sm text-red-300">
               {error}
@@ -330,6 +352,17 @@ export default function IntakeForm() {
           </button>
         )}
       </div>
+
+      {/* Para quien acaba de pagar y ya nos dio sus datos antes */}
+      {traePago && (
+        <button
+          type="button"
+          onClick={() => router.push({ pathname: "/", query: { listo: "1" } })}
+          className="mx-auto text-sm text-judo-fog/45 underline decoration-judo-lilac/30 underline-offset-4 transition hover:text-judo-lilac"
+        >
+          {t("alreadySent")}
+        </button>
+      )}
     </div>
   );
 }

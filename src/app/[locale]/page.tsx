@@ -1,15 +1,13 @@
 import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
-import { use } from "react";
+import { Suspense, use } from "react";
 import { Link } from "@/i18n/navigation";
 import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
 import CommunityReviews from "@/components/CommunityReviews";
-import PortfolioTeaser from "@/components/PortfolioTeaser";
 import { PERFIL_GOOGLE } from "@/components/SocialLinks";
+import ListoOverlay from "@/components/ListoOverlay";
 
-// El adelanto del portafolio se refresca solo cada dos minutos
-export const revalidate = 120;
 
 type Step = { title: string; description: string };
 type Review = { text: string; name: string; place: string };
@@ -29,6 +27,11 @@ export default function HomePage({
 
   return (
     <div className="judo-glow overflow-hidden">
+      {/* Cierre para quien acaba de pagar y confirmar sus datos */}
+      <Suspense fallback={null}>
+        <ListoOverlay />
+      </Suspense>
+
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative mx-auto flex max-w-5xl flex-col items-center px-6 pt-24 pb-20 text-center">
         {/* Elementos 3D flotantes */}
@@ -170,9 +173,6 @@ export default function HomePage({
           ))}
         </div>
       </section>
-
-      {/* ── PORTAFOLIO (adelanto) ────────────────────────────────── */}
-      <PortfolioTeaser locale={locale} />
 
       {/* ── RESEÑAS ──────────────────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-6 py-20">

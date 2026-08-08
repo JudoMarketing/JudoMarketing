@@ -113,6 +113,74 @@ const btnPurple = `${btn} bg-judo-purple text-white hover:bg-judo-lilac`;
 const btnGhost = `${btn} border border-judo-lilac/30 text-judo-lilac hover:bg-judo-purple/15`;
 const btnDanger = `${btn} border border-red-400/40 text-red-300 hover:bg-red-400/10`;
 
+/**
+ * Campo de texto que se guarda solo al salir de él.
+ *
+ * Vive fuera del componente a propósito. Definido adentro, React lo trataba
+ * como un componente distinto en cada render: desmontaba el input y el cursor
+ * saltaba fuera de la casilla con cada tecla.
+ */
+function Campo({
+  etiqueta,
+  inicial,
+  tipo = "text",
+  onGuardar,
+}: {
+  etiqueta: string;
+  inicial: string;
+  tipo?: string;
+  onGuardar: (valor: string | number | null) => void;
+}) {
+  const [valor, setValor] = useState(inicial);
+  return (
+    <label className="flex flex-col gap-1 text-[11px] text-judo-fog/50">
+      {etiqueta}
+      <input
+        type={tipo}
+        value={valor}
+        onChange={(e) => setValor(e.target.value)}
+        onBlur={() => {
+          if (valor !== inicial) {
+            onGuardar(tipo === "number" ? (valor === "" ? null : Number(valor)) : valor);
+          }
+        }}
+        className={input}
+      />
+    </label>
+  );
+}
+
+/** Sección plegable. Fuera del componente por la misma razón que Campo. */
+function Seccion({
+  titulo,
+  resumen,
+  abierto,
+  onToggle,
+  children,
+}: {
+  titulo: string;
+  resumen?: string;
+  abierto: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="border-t border-judo-lilac/10 pt-2">
+      <button
+        onClick={onToggle}
+        className="flex w-full items-center justify-between text-left text-xs font-semibold text-judo-fog/70 hover:text-judo-lilac"
+      >
+        <span>
+          {titulo}
+          {resumen && <span className="ml-2 font-normal text-judo-fog/40">{resumen}</span>}
+        </span>
+        <span className="text-judo-lilac">{abierto ? "−" : "+"}</span>
+      </button>
+      {abierto && <div className="mt-3 mb-2">{children}</div>}
+    </div>
+  );
+}
+
 export default function SiteDossier({
   site,
   flash,
@@ -165,66 +233,6 @@ export default function SiteDossier({
     onSaved();
   };
 
-  /** Campo de texto que se guarda solo al salir de él. */
-  const Campo = ({
-    campo,
-    etiqueta,
-    tipo = "text",
-  }: {
-    campo: keyof SitioExpediente;
-    etiqueta: string;
-    tipo?: string;
-  }) => {
-    const [valor, setValor] = useState(String(site[campo] ?? ""));
-    return (
-      <label className="flex flex-col gap-1 text-[11px] text-judo-fog/50">
-        {etiqueta}
-        <input
-          type={tipo}
-          value={valor}
-          onChange={(e) => setValor(e.target.value)}
-          onBlur={() => {
-            if (valor !== String(site[campo] ?? "")) {
-              void guardarCampo(
-                campo,
-                tipo === "number" ? (valor === "" ? null : Number(valor)) : valor
-              );
-            }
-          }}
-          className={input}
-        />
-      </label>
-    );
-  };
-
-  const Seccion = ({
-    id,
-    titulo,
-    resumen,
-    children,
-  }: {
-    id: string;
-    titulo: string;
-    resumen?: string;
-    children: React.ReactNode;
-  }) => (
-    <div className="border-t border-judo-lilac/10 pt-2">
-      <button
-        onClick={() => setAbierta(abierta === id ? null : id)}
-        className="flex w-full items-center justify-between text-left text-xs font-semibold text-judo-fog/70 hover:text-judo-lilac"
-      >
-        <span>
-          {titulo}
-          {resumen && (
-            <span className="ml-2 font-normal text-judo-fog/40">{resumen}</span>
-          )}
-        </span>
-        <span className="text-judo-lilac">{abierta === id ? "−" : "+"}</span>
-      </button>
-      {abierta === id && <div className="mt-3 mb-2">{children}</div>}
-    </div>
-  );
-
   const otorgados = accesos.filter((a) => a.status === "otorgado").length;
   const pendientes = accesos.filter(
     (a) => a.status === "pendiente" || a.status === "solicitado"
@@ -247,15 +255,12 @@ export default function SiteDossier({
       </p>
 
       {/* Accesos: lo que hay que pedirle al cliente el día 1 */}
-      <Seccion
-        id="accesos"
-        titulo="🔑 Accesos"
+      <Seccion titulo="🔑 Accesos"
         resumen={
           accesos.length
             ? `${otorgados} de ${accesos.length} · ${pendientes} por pedir`
             : undefined
-        }
-      >
+        } abierto={abierta === "accesos"} onToggle={() => setAbierta(abierta === "accesos" ? null : "accesos")}>
         <div className="flex flex-col gap-2">
           {accesos.map((acceso) => (
             <div key={acceso.id} className="flex flex-wrap items-center gap-2">
@@ -306,13 +311,10 @@ export default function SiteDossier({
       </Seccion>
 
       {/* Costos: sin esto no hay ganancia, hay facturación */}
-      <Seccion
-        id="costos"
-        titulo="💵 Costos"
+      <Seccion titulo="💵 Costos"
         resumen={
           costos.length ? `$${(costoMensual / 100).toFixed(2)}/mes` : "sin cargar"
-        }
-      >
+        } abierto={abierta === "costos"} onToggle={() => setAbierta(abierta === "costos" ? null : "costos")}>
         <div className="flex flex-col gap-2">
           {costos.map((costo) => (
             <div key={costo.id} className="flex flex-wrap items-center gap-2 text-xs">
@@ -340,46 +342,43 @@ export default function SiteDossier({
       </Seccion>
 
       {/* Dónde vive cada cosa */}
-      <Seccion id="tecnico" titulo="🛠️ Dónde vive cada cosa">
+      <Seccion titulo="🛠️ Dónde vive cada cosa" abierto={abierta === "tecnico"} onToggle={() => setAbierta(abierta === "tecnico" ? null : "tecnico")}>
         <div className="grid gap-2 sm:grid-cols-2">
-          <Campo campo="repo_url" etiqueta="Repositorio" />
-          <Campo campo="vercel_project" etiqueta="Proyecto en Vercel" />
-          <Campo campo="registrar" etiqueta="Registrar del dominio" />
-          <Campo campo="domain_holder" etiqueta="Dominio a nombre de" />
-          <Campo campo="dns_provider" etiqueta="DNS" />
-          <Campo campo="email_provider" etiqueta="Correo transaccional" />
-          <Campo campo="db_provider" etiqueta="Base de datos" />
+          <Campo etiqueta="Repositorio" inicial={String(site.repo_url ?? "")} onGuardar={(v) => guardarCampo("repo_url", v)} />
+          <Campo etiqueta="Proyecto en Vercel" inicial={String(site.vercel_project ?? "")} onGuardar={(v) => guardarCampo("vercel_project", v)} />
+          <Campo etiqueta="Registrar del dominio" inicial={String(site.registrar ?? "")} onGuardar={(v) => guardarCampo("registrar", v)} />
+          <Campo etiqueta="Dominio a nombre de" inicial={String(site.domain_holder ?? "")} onGuardar={(v) => guardarCampo("domain_holder", v)} />
+          <Campo etiqueta="DNS" inicial={String(site.dns_provider ?? "")} onGuardar={(v) => guardarCampo("dns_provider", v)} />
+          <Campo etiqueta="Correo transaccional" inicial={String(site.email_provider ?? "")} onGuardar={(v) => guardarCampo("email_provider", v)} />
+          <Campo etiqueta="Base de datos" inicial={String(site.db_provider ?? "")} onGuardar={(v) => guardarCampo("db_provider", v)} />
         </div>
       </Seccion>
 
       {/* Medición */}
-      <Seccion id="medicion" titulo="📊 Medición">
+      <Seccion titulo="📊 Medición" abierto={abierta === "medicion"} onToggle={() => setAbierta(abierta === "medicion" ? null : "medicion")}>
         <div className="grid gap-2 sm:grid-cols-2">
-          <Campo campo="gsc_property" etiqueta="Search Console (propiedad)" />
-          <Campo campo="ga4_property_id" etiqueta="Analytics (ID de propiedad)" />
-          <Campo campo="gbp_location" etiqueta="Perfil de Empresa (ficha)" />
-          <Campo campo="meta_pixel_id" etiqueta="Pixel de Meta" />
-          <Campo campo="meta_page" etiqueta="Página de Facebook" />
+          <Campo etiqueta="Search Console (propiedad)" inicial={String(site.gsc_property ?? "")} onGuardar={(v) => guardarCampo("gsc_property", v)} />
+          <Campo etiqueta="Analytics (ID de propiedad)" inicial={String(site.ga4_property_id ?? "")} onGuardar={(v) => guardarCampo("ga4_property_id", v)} />
+          <Campo etiqueta="Perfil de Empresa (ficha)" inicial={String(site.gbp_location ?? "")} onGuardar={(v) => guardarCampo("gbp_location", v)} />
+          <Campo etiqueta="Pixel de Meta" inicial={String(site.meta_pixel_id ?? "")} onGuardar={(v) => guardarCampo("meta_pixel_id", v)} />
+          <Campo etiqueta="Página de Facebook" inicial={String(site.meta_page ?? "")} onGuardar={(v) => guardarCampo("meta_page", v)} />
         </div>
       </Seccion>
 
       {/* Cobro */}
-      <Seccion id="cobro" titulo="🧾 Cobro">
+      <Seccion titulo="🧾 Cobro" abierto={abierta === "cobro"} onToggle={() => setAbierta(abierta === "cobro" ? null : "cobro")}>
         <div className="grid gap-2 sm:grid-cols-2">
-          <Campo campo="currency" etiqueta="Moneda" />
-          <Campo campo="billing_day" etiqueta="Día de cobro (1 a 28)" tipo="number" />
-          <Campo campo="payment_method" etiqueta="Método de pago" />
-          <Campo campo="grace_days" etiqueta="Días de gracia antes de apagar" tipo="number" />
-          <Campo campo="timezone" etiqueta="Zona horaria" />
+          <Campo etiqueta="Moneda" inicial={String(site.currency ?? "")} onGuardar={(v) => guardarCampo("currency", v)} />
+          <Campo etiqueta="Día de cobro (1 a 28)" inicial={String(site.billing_day ?? "")} tipo="number" onGuardar={(v) => guardarCampo("billing_day", v)} />
+          <Campo etiqueta="Método de pago" inicial={String(site.payment_method ?? "")} onGuardar={(v) => guardarCampo("payment_method", v)} />
+          <Campo etiqueta="Días de gracia antes de apagar" inicial={String(site.grace_days ?? "")} tipo="number" onGuardar={(v) => guardarCampo("grace_days", v)} />
+          <Campo etiqueta="Zona horaria" inicial={String(site.timezone ?? "")} onGuardar={(v) => guardarCampo("timezone", v)} />
         </div>
       </Seccion>
 
       {/* Contactos */}
-      <Seccion
-        id="contactos"
-        titulo="👥 Contactos"
-        resumen={contactos.length ? `${contactos.length}` : "ninguno"}
-      >
+      <Seccion titulo="👥 Contactos"
+        resumen={contactos.length ? `${contactos.length}` : "ninguno"} abierto={abierta === "contactos"} onToggle={() => setAbierta(abierta === "contactos" ? null : "contactos")}>
         <div className="flex flex-col gap-2">
           {contactos.map((c) => (
             <div key={c.id} className="flex flex-wrap items-center gap-2 text-xs">
@@ -413,11 +412,8 @@ export default function SiteDossier({
       </Seccion>
 
       {/* Bitácora */}
-      <Seccion
-        id="bitacora"
-        titulo="📓 Bitácora"
-        resumen={eventos.length ? `${eventos.length} registros` : "vacía"}
-      >
+      <Seccion titulo="📓 Bitácora"
+        resumen={eventos.length ? `${eventos.length} registros` : "vacía"} abierto={abierta === "bitacora"} onToggle={() => setAbierta(abierta === "bitacora" ? null : "bitacora")}>
         <div className="flex flex-col gap-2">
           <NuevoEvento siteId={site.id} onHecho={cargar} flash={flash} />
           {eventos.map((e) => (
@@ -443,7 +439,7 @@ export default function SiteDossier({
       </Seccion>
 
       {/* Clave del kit */}
-      <Seccion id="kit" titulo="🔐 Clave del kit">
+      <Seccion titulo="🔐 Clave del kit" abierto={abierta === "kit"} onToggle={() => setAbierta(abierta === "kit" ? null : "kit")}>
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={async () => {
@@ -483,7 +479,7 @@ export default function SiteDossier({
       </Seccion>
 
       {/* Notas */}
-      <Seccion id="notas" titulo="📝 Notas">
+      <Seccion titulo="📝 Notas" abierto={abierta === "notas"} onToggle={() => setAbierta(abierta === "notas" ? null : "notas")}>
         <textarea
           rows={3}
           defaultValue={site.notes ?? ""}
