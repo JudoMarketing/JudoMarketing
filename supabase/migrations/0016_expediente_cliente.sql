@@ -16,6 +16,17 @@
 --   6. Métricas con forma fija → mismo dato en todos los sitios
 -- ============================================================
 
+-- Aviso claro si esto se corre en el proyecto equivocado. Ahora hay varios
+-- proyectos de Supabase (uno por cliente) y el editor recuerda el ultimo que
+-- se abrio, asi que es facil equivocarse.
+do $$
+begin
+  if to_regclass('public.sites') is null then
+    raise exception
+      'Proyecto equivocado: aqui no existe la tabla "sites". Esta migracion va en el proyecto de judomarketing.net (ajsuskyeatgatbubctzl). Cambia de proyecto arriba a la izquierda y vuelve a correrla.';
+  end if;
+end $$;
+
 -- ── 1. Inventario técnico, accesos y cobro ─────────────────────────
 
 alter table sites

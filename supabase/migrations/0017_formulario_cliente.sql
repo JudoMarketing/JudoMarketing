@@ -11,7 +11,18 @@
 -- consultarse con la llave pública.
 -- ============================================================
 
-create table if not exists client_intake (
+-- Aviso claro si esto se corre en el proyecto equivocado. Ahora hay varios
+-- proyectos de Supabase (uno por cliente) y el editor recuerda el último que
+-- se abrió, así que es fácil equivocarse.
+do $$
+begin
+  if to_regclass('public.sites') is null then
+    raise exception
+      'Proyecto equivocado: aquí no existe la tabla "sites". Esta migración va en el proyecto de judomarketing.net (ajsuskyeatgatbubctzl). Cambia de proyecto arriba a la izquierda y vuelve a correrla.';
+  end if;
+end $$;
+
+create table if not exists public.client_intake (
   id uuid primary key default gen_random_uuid(),
 
   -- El negocio
@@ -63,23 +74,23 @@ create table if not exists client_intake (
   notes text,
   status text not null default 'nuevo'
     check (status in ('nuevo', 'revisado', 'convertido', 'descartado')),
-  site_id uuid references sites (id) on delete set null,
+  site_id uuid references public.sites (id) on delete set null,
   created_at timestamptz not null default now()
 );
 
 create index if not exists client_intake_por_fecha
-  on client_intake (created_at desc);
+  on public.client_intake (created_at desc);
 
-alter table client_intake enable row level security;
+alter table public.client_intake enable row level security;
 
 -- El público SOLO puede insertar, y siempre como 'nuevo'. No puede leer nada,
 -- ni suyo ni de nadie.
-drop policy if exists "público: enviar formulario" on client_intake;
-create policy "público: enviar formulario" on client_intake
+drop policy if exists "público: enviar formulario" on public.client_intake;
+create policy "público: enviar formulario" on public.client_intake
   for insert to anon, authenticated
   with check (status = 'nuevo' and site_id is null);
 
-drop policy if exists "admin: formularios" on client_intake;
-create policy "admin: formularios" on client_intake
+drop policy if exists "admin: formularios" on public.client_intake;
+create policy "admin: formularios" on public.client_intake
   for all to authenticated
   using (public.is_admin()) with check (public.is_admin());
