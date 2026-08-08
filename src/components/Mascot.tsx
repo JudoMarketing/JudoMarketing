@@ -14,6 +14,12 @@ import { safeGet, safeSet } from "@/lib/safe";
 
 const LANG_KEY = "judo-lang-chosen";
 
+/**
+ * Pantallas de trabajo, sin mascota. Van sin el prefijo del idioma porque
+ * usePathname de next-intl ya lo quita.
+ */
+const PORTALES = ["/admin", "/portal"];
+
 export default function Mascot() {
   const t = useTranslations("mascot");
   const locale = useLocale();
@@ -115,6 +121,13 @@ export default function Mascot() {
     if (bubble === "lang") return;
     setChatOpen((open) => !open);
   };
+
+  // Dentro de los portales no aparece. Ahí no hay nada que venderle a nadie:
+  // se está trabajando, y el robot tapa tarjetas y botones — en el teléfono
+  // del vendedor, de lleno.
+  if (PORTALES.some((ruta) => pathname === ruta || pathname.startsWith(`${ruta}/`))) {
+    return null;
+  }
 
   return (
     <>

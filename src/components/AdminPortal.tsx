@@ -690,6 +690,52 @@ export default function AdminPortal() {
   };
 
   /**
+   * Borra un contrato que nunca se volvió cliente: firmó y no pagó, o se
+   * arrepintió. Se lleva también el PDF, para no dejar archivos huérfanos.
+   *
+   * Un contrato es evidencia, así que pregunta dos veces cuando el website al
+   * que pertenece está activo — ese cliente sí está pagando y ese documento
+   * es lo que respalda el cobro.
+   */
+  const borrarContrato = async (c: ContractRow) => {
+    const sitio = sites.find((s) => s.id === c.site_id);
+    if (
+      !window.confirm(
+        `¿Borrar el contrato ${c.code} de ${c.client_name}? Se borra el PDF firmado y no se puede deshacer.`
+      )
+    )
+      return;
+    if (
+      sitio?.status === "activo" &&
+      !window.confirm(
+        `Ojo: ${sitio.name} está ACTIVO y este es el documento que respalda su cobro. Si lo borras te quedas sin con qué sustentar el pago ni una suspensión. ¿Aun así lo borras?`
+      )
+    )
+      return;
+
+    const { error } = await supabase.from("signed_contracts").delete().eq("id", c.id);
+    if (error) return flash(`Error: ${error.message}`);
+
+    // El archivo va después: si falla, al menos la fila ya no cuenta como venta
+    const { error: archivoErr } = await supabase.storage
+      .from("contracts")
+      .remove([c.pdf_path]);
+
+    await supabase.from("audit_log").insert({
+      actor: (await supabase.auth.getUser()).data.user?.id,
+      action: "contract_deleted",
+      target: `${c.code} · ${c.client_name}${sitio ? ` · ${sitio.name}` : ""}`,
+    });
+
+    flash(
+      archivoErr
+        ? `Contrato ${c.code} borrado, pero el PDF quedó guardado (${archivoErr.message})`
+        : `Contrato ${c.code} borrado ✓`
+    );
+    void loadAll();
+  };
+
+  /**
    * Crea el website que le falta a un contrato y lo deja ya asignado.
    * Es el camino natural de un contrato pendiente.
    */
@@ -1482,6 +1528,13 @@ export default function AdminPortal() {
                 </div>
                 <button onClick={() => abrirContrato(c)} className={btnGhost}>
                   📄 Descargar PDF
+                </button>
+                <button
+                  onClick={() => void borrarContrato(c)}
+                  title="Borrar este contrato y su PDF"
+                  className={btnDanger}
+                >
+                  🗑
                 </button>
               </div>
 
