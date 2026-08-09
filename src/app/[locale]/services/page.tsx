@@ -72,20 +72,12 @@ export default function ServicesPage({
             const features = t.raw(`${plan}.features`) as string[];
             return (
               <Reveal key={plan} delay={i * 120}>
-                <TiltCard className="relative flex h-full flex-col overflow-hidden p-8">
-                  {/* Número del escalón: da orden sin inventar jerarquías */}
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute -top-3 right-4 text-7xl font-black text-judo-lilac/10 select-none"
-                  >
-                    0{i + 1}
-                  </span>
-
-                  {/* El descuento y su fecha. Desaparece solo el 1 de sep. */}
+                <TiltCard className="flex h-full flex-col p-8">
+                  {/* La fecha sola, que es lo que tiene que quedar grabado.
+                      Desaparece sola el 1 de septiembre. */}
                   {enOferta && (
-                    <p className="inline-flex max-w-full items-center gap-1.5 self-start rounded-full bg-gradient-to-r from-red-500 to-judo-purple py-1.5 pr-3.5 pl-3 text-[11px] whitespace-nowrap text-white shadow-[0_6px_18px_-6px_rgba(239,68,68,0.75)]">
-                      <span className="font-extrabold tracking-wide">{t("offLabel")}</span>
-                      <span className="font-medium text-white/85">{t("offUntil")}</span>
+                    <p className="inline-flex self-start rounded-full bg-gradient-to-r from-red-500 to-judo-purple px-3.5 py-1.5 text-[11px] font-extrabold tracking-wide text-white uppercase shadow-[0_6px_18px_-6px_rgba(239,68,68,0.75)]">
+                      {t("offLabel")}
                     </p>
                   )}
 
@@ -105,6 +97,11 @@ export default function ServicesPage({
                   <p className="mt-1.5 text-xs font-semibold text-judo-fog/55">
                     {t("flatFee")}
                   </p>
+                  {enOferta && (
+                    <p className="mt-1 text-xs font-semibold text-amber-300/90">
+                      {t("offUntil")}
+                    </p>
+                  )}
 
                   <p className="mt-4 text-sm leading-relaxed text-judo-fog/65">
                     {t(`${plan}.tagline`)}
