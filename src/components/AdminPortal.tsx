@@ -1931,7 +1931,9 @@ export default function AdminPortal() {
 }
 
 // ── Portafolio público: qué se muestra de este sitio en el website ──
-// Las mismas que filtran el showcase (src/content/portfolio.ts)
+// Estas cuatro listas tienen que decir lo mismo: aquí, en
+// src/content/portfolio.ts, en src/lib/portfolio.ts y en el candado de la
+// base (migración 0022). Si se agrega una categoría, se agrega en las cuatro.
 const CATEGORIAS_PORTAFOLIO = [
   { id: "food", nombre: "Comida y restaurantes" },
   { id: "delivery", nombre: "Apps de delivery" },
@@ -1961,7 +1963,17 @@ function SitePortfolio({
 
   const guardar = async (cambios: Record<string, unknown>) => {
     const { error } = await supabase.from("sites").update(cambios).eq("id", site.id);
-    if (error) return flash(`Error: ${error.message}`);
+    if (error) {
+      // Si la base rechaza el cambio, la pantalla vuelve a lo que hay guardado:
+      // que no diga una cosa mientras la base guarda otra.
+      setVisible(site.portfolio_visible ?? true);
+      setCategoria(site.portfolio_category ?? "");
+      return flash(
+        error.message.includes("portfolio_category")
+          ? "Esa categoría todavía no está permitida en la base. Corre la migración 0022 y vuelve a intentarlo."
+          : `No se guardó: ${error.message}`
+      );
+    }
     flash("Portafolio actualizado ✓");
     onSaved();
   };

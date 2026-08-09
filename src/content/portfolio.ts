@@ -27,6 +27,8 @@ export type Trabajo = {
   descripcion: { es: string; en: string };
 };
 
+// Misma lista que el selector del portal y que el candado de la base
+// (migración 0022). Si se agrega una categoría, va en las cuatro.
 export const CATEGORIAS: { id: Categoria; es: string; en: string }[] = [
   { id: "food", es: "Comida y restaurantes", en: "Food & Restaurants" },
   { id: "delivery", es: "Apps de delivery", en: "Delivery apps" },

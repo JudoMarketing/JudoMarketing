@@ -24,6 +24,8 @@ type Fila = {
   portfolio_image: string | null;
 };
 
+// Misma lista que el selector del portal y que el candado de la base
+// (migración 0022). Si se agrega una categoría, va en las cuatro.
 const CATEGORIAS_VALIDAS = [
   "food",
   "delivery",
