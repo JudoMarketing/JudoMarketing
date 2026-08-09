@@ -388,43 +388,83 @@ export default function AdminPortal() {
     kind: string | null,
     value: string
   ) => {
+    // Cómo estaba antes: es lo que decide qué aviso corresponde. Sin esto,
+    // guardar un cambio de comisión mandaba el correo de bienvenida otra vez.
+    const antes = sellers.find((s) => s.id === id);
+    const estadoAntes = antes?.status;
+    const valorAntes = antes?.commission_value ?? null;
+    const tipoAntes = antes?.commission_kind ?? null;
+    const valorNuevo = value ? Number(value) : null;
+    const tipoNuevo = kind || null;
+
     const { error } = await supabase
       .from("sellers")
       .update({
         status,
-        commission_kind: kind || null,
-        commission_value: value ? Number(value) : null,
+        commission_kind: tipoNuevo,
+        commission_value: valorNuevo,
         approved_at: status === "aprobado" ? new Date().toISOString() : null,
       })
       .eq("id", id);
     if (error) return flash(`Error: ${error.message}`);
-    flash("Vendedor actualizado ✓");
 
-    // Email bonito de "fuiste aprobado" (si SMTP está configurado)
-    if (status === "aprobado") {
-      try {
-        const [{ data: sess }, { data: prof }] = await Promise.all([
-          supabase.auth.getSession(),
-          supabase.from("profiles").select("email, full_name").eq("id", id).single(),
-        ]);
-        if (sess.session && prof?.email) {
-          void fetch("/api/notify", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${sess.session.access_token}`,
-            },
-            body: JSON.stringify({
-              type: "approved",
-              email: prof.email,
-              name: prof.full_name,
-            }),
-          }).catch(() => {});
-        }
-      } catch {
-        // sin columna email todavía (migración 0005 pendiente): se omite
-      }
+    const cambioEstado = estadoAntes !== status;
+    const cambioComision = tipoAntes !== tipoNuevo || valorAntes !== valorNuevo;
+
+    /**
+     * Qué aviso le toca:
+     *  · entró al equipo (de pendiente o rechazado a aprobado) → bienvenida
+     *  · volvió (de suspendido a aprobado) o lo suspendieron → aviso de estado
+     *  · solo le cambió el trato → aviso de comisión
+     * Y si nada cambió, no se manda nada.
+     */
+    let aviso: Record<string, unknown> | null = null;
+    if (status === "aprobado" && cambioEstado && estadoAntes !== "suspendido") {
+      aviso = { type: "approved" };
+    } else if (cambioEstado) {
+      aviso = { type: "seller_status", status, previousStatus: estadoAntes };
+    } else if (cambioComision) {
+      aviso = {
+        type: "commission",
+        kind: tipoNuevo,
+        value: valorNuevo,
+        previousKind: tipoAntes,
+        previousValue: valorAntes,
+      };
     }
+
+    if (!aviso) {
+      flash("Vendedor actualizado ✓ (sin cambios que avisar)");
+      void loadAll();
+      return;
+    }
+
+    let resultado = "sin correo del vendedor";
+    try {
+      const [{ data: sess }, { data: prof }] = await Promise.all([
+        supabase.auth.getSession(),
+        supabase.from("profiles").select("email, full_name").eq("id", id).single(),
+      ]);
+      if (sess.session && prof?.email) {
+        const res = await fetch("/api/notify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sess.session.access_token}`,
+          },
+          body: JSON.stringify({ ...aviso, email: prof.email, name: prof.full_name }),
+        });
+        const data = (await res.json()) as { sent?: boolean; reason?: string };
+        resultado = data.sent
+          ? `avisado ${prof.full_name}`
+          : data.reason === "smtp_not_configured"
+            ? "correo no configurado, no se avisó"
+            : "no se pudo avisar";
+      }
+    } catch {
+      resultado = "no se pudo avisar";
+    }
+    flash(`Vendedor actualizado ✓ — ${resultado}`);
     void loadAll();
   };
 

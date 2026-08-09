@@ -22,6 +22,16 @@ function rateLimited(ip: string): boolean {
 }
 
 /**
+ * El acuerdo de comisión, en palabras. Es el mismo texto que ve en su portal,
+ * para que el correo y la pantalla no digan cosas distintas.
+ */
+function describirComision(kind?: string | null, value?: number | null): string {
+  if (value == null) return "sin acuerdo definido";
+  if (kind === "porcentaje") return `${value}% de cada venta`;
+  return `$${value} por cada $50 vendidos`;
+}
+
+/**
  * Los avisos que salen del portal solo los puede disparar Administración.
  * Devuelve una respuesta de error si quien pide no es admin, o null si sí lo es.
  */
@@ -53,14 +63,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ sent: false, reason: "smtp_not_configured" });
   }
 
-  const { type, email, name, site, from, to } = (await req.json()) as {
+  const cuerpo = (await req.json()) as {
     type?: string;
     email?: string;
     name?: string;
     site?: string;
     from?: number;
     to?: number;
+    // Cambios en la ficha del vendedor
+    kind?: string | null;
+    value?: number | null;
+    previousKind?: string | null;
+    previousValue?: number | null;
+    status?: string;
+    previousStatus?: string;
   };
+  const { type, email, name, site, from, to } = cuerpo;
   if (
     !email ||
     !name ||
@@ -137,6 +155,75 @@ export async function POST(req: NextRequest) {
       ctaUrl: "https://www.judomarketing.net/es/portal",
     });
     await sendBrandedEmail(email, `Subió el plan de ${site}`, html);
+    return NextResponse.json({ sent: true });
+  }
+
+  // Le cambiaron el trato de comisión. Es su dinero: se entera por correo,
+  // no cuando abra el portal por casualidad.
+  if (type === "commission") {
+    const problema = await exigeAdmin(req);
+    if (problema) return problema;
+
+    const html = brandedEmail({
+      title: "Cambió tu acuerdo de comisión",
+      greeting: `Hola, ${name.split(" ")[0]}`,
+      paragraphs: [
+        `Administración actualizó tu acuerdo. Desde ahora ganas <b>${describirComision(cuerpo.kind, cuerpo.value)}</b>.`,
+        cuerpo.previousKind || cuerpo.previousValue != null
+          ? `Antes era: ${describirComision(cuerpo.previousKind, cuerpo.previousValue)}.`
+          : "",
+        "Las comisiones que ya estaban registradas no cambian: el acuerdo nuevo aplica a lo que vendas desde hoy.",
+        "Lo puedes ver en tu portal, en Ganancias y contratos. Si algo no te cuadra, escríbenos y lo revisamos.",
+      ].filter(Boolean),
+      ctaLabel: "Ver mi portal",
+      ctaUrl: "https://www.judomarketing.net/es/portal",
+    });
+    await sendBrandedEmail(email, "Cambió tu acuerdo de comisión", html);
+    return NextResponse.json({ sent: true });
+  }
+
+  // Cambió el estado de su cuenta: suspendida, reactivada o rechazada.
+  if (type === "seller_status") {
+    const problema = await exigeAdmin(req);
+    if (problema) return problema;
+
+    const nuevo = cuerpo.status;
+    const reactivado = nuevo === "aprobado";
+    const suspendido = nuevo === "suspendido";
+    const html = brandedEmail({
+      title: reactivado
+        ? "Tu cuenta está activa otra vez 🎉"
+        : suspendido
+          ? "Tu cuenta quedó suspendida"
+          : "Novedad con tu cuenta de vendedor",
+      greeting: `Hola, ${name.split(" ")[0]}`,
+      paragraphs: reactivado
+        ? [
+            "Administración reactivó tu cuenta de vendedor. Ya puedes volver a registrar visitas y firmar contratos desde tu portal.",
+            "Tu código de referido y tu historial siguen intactos.",
+          ]
+        : suspendido
+          ? [
+              "Administración suspendió tu cuenta de vendedor. Por ahora no puedes registrar visitas ni firmar contratos nuevos.",
+              "Tu historial y tus comisiones ya registradas se conservan.",
+              "Si crees que es un error o quieres saber qué hace falta para volver, escríbenos y lo hablamos.",
+            ]
+          : [
+              "Administración actualizó el estado de tu cuenta de vendedor.",
+              "Entra a tu portal para ver cómo quedó. Si tienes dudas, escríbenos.",
+            ],
+      ctaLabel: "Ver mi portal",
+      ctaUrl: "https://www.judomarketing.net/es/portal",
+    });
+    await sendBrandedEmail(
+      email,
+      reactivado
+        ? "Tu cuenta de vendedor está activa otra vez"
+        : suspendido
+          ? "Tu cuenta de vendedor quedó suspendida"
+          : "Novedad con tu cuenta de vendedor",
+      html
+    );
     return NextResponse.json({ sent: true });
   }
 
