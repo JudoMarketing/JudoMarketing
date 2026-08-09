@@ -1,6 +1,7 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import PaymentOptions from "@/components/PaymentOptions";
+import { precioTexto } from "@/lib/pricing";
 
 const PLAN_KEYS = ["essential", "complex", "apps"] as const;
 type PlanKey = (typeof PLAN_KEYS)[number];
@@ -43,11 +44,17 @@ export default async function PayPage({
             </p>
             <p className="mt-4 inline-block rounded-full border border-judo-lilac/40 bg-judo-surface/70 px-4 py-1.5 text-sm">
               {t("planLabel")}: <b className="text-judo-lilac">{tPlans(`${plan}.name`)}</b>{" "}
-              · {tPlans(`${plan}.price`)}
+              · {tPlans("from")} {precioTexto(plan)}
+              {tPlans("perMonth")}
             </p>
           </div>
           <div className="mt-8">
-            <PaymentOptions plan={plan} stripeReady={stripeReady} paypalMe={paypalMe} />
+            <PaymentOptions
+              plan={plan}
+              amount={precioTexto(plan)}
+              stripeReady={stripeReady}
+              paypalMe={paypalMe}
+            />
           </div>
           <p className="mt-6 text-center">
             <Link href="/services" className="text-sm text-judo-lilac hover:underline">

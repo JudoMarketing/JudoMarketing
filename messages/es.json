@@ -65,7 +65,9 @@
       "name": "Media Marketing",
       "price": "Tú pones el presupuesto",
       "description": "Anuncios en Instagram, Facebook, TikTok y Google para que te encuentre gente que aún no te conoce."
-    }
+    },
+    "from": "desde",
+    "perMonth": "/mes"
   },
   "reviews": {
     "title": "Lo que dicen nuestros clientes",
@@ -164,7 +166,10 @@
       ],
       "eyebrow": "¿Y quién trae a la gente?",
       "body": "Tu website convence a quien llega. La publicidad pagada es lo que hace que llegue más gente. Ponemos tus anuncios a correr en Instagram, Facebook, TikTok y Google, frente a personas que todavía no te conocen. Tú decides cuánto invertir cada mes; nosotros nos encargamos del anuncio, de a quién se le muestra y de irlo ajustando.",
-      "cta": "Hablemos de tu presupuesto"
+      "cta": "Hablemos de tu presupuesto",
+      "recommended": "Recomendado para crecer sostenido",
+      "recommendedRange": "$500 – $700 al mes",
+      "recommendedNote": "Es el rango con el que se ve movimiento parejo mes a mes. Puedes empezar con menos y subir cuando veas que funciona."
     },
     "perMonth": "/mes",
     "diff": {

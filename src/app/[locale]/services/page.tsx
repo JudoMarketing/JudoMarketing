@@ -5,6 +5,13 @@ import { Link } from "@/i18n/navigation";
 import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
 import { pageMetadata } from "@/lib/seo";
+import { ofertaVigente, precioTexto } from "@/lib/pricing";
+
+/**
+ * Se regenera cada hora. Es lo que hace que el 1 de septiembre los precios
+ * suban solos y la etiqueta de oferta desaparezca, sin tocar nada.
+ */
+export const revalidate = 3600;
 
 export async function generateMetadata({
   params,
@@ -34,6 +41,7 @@ export default function ServicesPage({
   const faqs = t.raw("faq.items") as FaqItem[];
   const mediaFeatures = t.raw("media.features") as string[];
   const es = locale === "es";
+  const enOferta = ofertaVigente();
 
   return (
     <div className="judo-glow">
@@ -65,20 +73,24 @@ export default function ServicesPage({
                     0{i + 1}
                   </span>
 
-                  {/* El descuento y su fecha, en la tarjeta misma */}
-                  <p className="inline-flex max-w-full items-center gap-1.5 self-start rounded-full bg-gradient-to-r from-red-500 to-judo-purple py-1.5 pr-3.5 pl-3 text-[11px] whitespace-nowrap text-white shadow-[0_6px_18px_-6px_rgba(239,68,68,0.75)]">
-                    <span className="font-extrabold tracking-wide">{t("offLabel")}</span>
-                    <span className="font-medium text-white/85">{t("offUntil")}</span>
-                  </p>
+                  {/* El descuento y su fecha. Desaparece solo el 1 de sep. */}
+                  {enOferta && (
+                    <p className="inline-flex max-w-full items-center gap-1.5 self-start rounded-full bg-gradient-to-r from-red-500 to-judo-purple py-1.5 pr-3.5 pl-3 text-[11px] whitespace-nowrap text-white shadow-[0_6px_18px_-6px_rgba(239,68,68,0.75)]">
+                      <span className="font-extrabold tracking-wide">{t("offLabel")}</span>
+                      <span className="font-medium text-white/85">{t("offUntil")}</span>
+                    </p>
+                  )}
 
-                  <h2 className="mt-4 text-xl font-semibold">{t(`${plan}.name`)}</h2>
+                  <h2 className={`text-xl font-semibold ${enOferta ? "mt-4" : ""}`}>
+                    {t(`${plan}.name`)}
+                  </h2>
 
                   <p className="mt-3">
                     <span className="align-top text-sm text-judo-fog/50">
                       {es ? "desde" : "from"}{" "}
                     </span>
                     <span className="text-5xl font-bold text-judo-fog">
-                      {t(`${plan}.price`)}
+                      {precioTexto(plan)}
                     </span>
                     <span className="text-judo-lilac">{t("perMonth")}</span>
                   </p>
@@ -144,10 +156,24 @@ export default function ServicesPage({
                   ))}
                 </div>
 
-                <p className="mt-7 text-2xl font-bold text-judo-lilac">
+                {/* El presupuesto lo pone el cliente, pero sin una cifra de
+                    referencia no sabe por dónde empezar. */}
+                <div className="mt-7 rounded-2xl border border-judo-lilac/30 bg-judo-black/40 p-5">
+                  <p className="text-xs font-semibold tracking-wide text-judo-lilac uppercase">
+                    ★ {t("media.recommended")}
+                  </p>
+                  <p className="mt-1 text-3xl font-bold text-judo-fog">
+                    {t("media.recommendedRange")}
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-judo-fog/60">
+                    {t("media.recommendedNote")}
+                  </p>
+                </div>
+
+                <p className="mt-5 text-lg font-semibold text-judo-lilac">
                   {t("media.price")}
                 </p>
-                <Link href="/contact" className="btn-primary mt-5 inline-flex">
+                <Link href="/contact" className="btn-primary mt-4 inline-flex">
                   {t("media.cta")} →
                 </Link>
               </div>

@@ -1,5 +1,6 @@
 import { SITE_URL } from "@/lib/seo";
 import { PERFIL_GOOGLE } from "./SocialLinks";
+import { precioDesde, precioTexto } from "@/lib/pricing";
 
 /**
  * Datos estructurados (schema.org) para Google.
@@ -24,8 +25,8 @@ export default function JsonLd({ locale }: { locale: string }) {
       email: "admin@judomarketing.net",
       slogan: "Build Trust, Create Value",
       description: es
-        ? "Agencia de diseño de páginas web, apps móviles y marketing con inteligencia artificial en Miami. Websites por suscripción desde $50 al mes para negocios pequeños y medianos."
-        : "Website design, mobile app, and AI-powered marketing agency in Miami. Subscription websites from $50 a month for small and medium businesses.",
+        ? `Agencia de diseño de páginas web, apps móviles y marketing con inteligencia artificial en Miami. Websites por suscripción desde ${precioDesde()} al mes para negocios pequeños y medianos.`
+        : `Website design, mobile app, and AI-powered marketing agency in Miami. Subscription websites from ${precioDesde()} a month for small and medium businesses.`,
       address: {
         "@type": "PostalAddress",
         streetAddress: "66 W Flagler St Suite 900 PMB 11674",
@@ -35,7 +36,7 @@ export default function JsonLd({ locale }: { locale: string }) {
         addressCountry: "US",
       },
       geo: { "@type": "GeoCoordinates", latitude: 25.7743, longitude: -80.1937 },
-      priceRange: "$50 - $150",
+      priceRange: `${precioTexto("essential")} - ${precioTexto("apps")}`,
       currenciesAccepted: "USD",
       // Mismo negocio en Google, Instagram y Facebook (amarra la identidad)
       sameAs: [

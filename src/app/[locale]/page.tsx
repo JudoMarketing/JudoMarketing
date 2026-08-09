@@ -7,6 +7,10 @@ import Reveal from "@/components/Reveal";
 import CommunityReviews from "@/components/CommunityReviews";
 import { PERFIL_GOOGLE } from "@/components/SocialLinks";
 import ListoOverlay from "@/components/ListoOverlay";
+import { ofertaVigente, precioTexto } from "@/lib/pricing";
+
+/** Se regenera cada hora: el 1 de septiembre los precios suben solos. */
+export const revalidate = 3600;
 
 
 type Step = { title: string; description: string };
@@ -22,6 +26,7 @@ export default function HomePage({
   const t = useTranslations();
 
   const plans = ["essential", "complex", "apps", "media"] as const;
+  const enOferta = ofertaVigente();
   const steps = t.raw("onboarding.steps") as Step[];
   const reviews = t.raw("reviews.items") as Review[];
 
@@ -151,11 +156,14 @@ export default function HomePage({
         <Reveal className="text-center">
           <h2 className="text-3xl font-bold sm:text-4xl">{t("plans.title")}</h2>
           <p className="mt-2 text-judo-fog/60">{t("plans.subtitle")}</p>
-          {/* El plazo también aquí: es donde llega casi todo el mundo */}
-          <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-400/45 bg-amber-400/10 px-4 py-1.5 text-sm font-semibold text-amber-200">
-            <span aria-hidden>⏳</span>
-            {t("services.promoBadge")}
-          </p>
+          {/* La oferta también aquí, que es donde llega casi todo el mundo.
+              Se apaga sola el 1 de septiembre. */}
+          {enOferta && (
+            <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-500 to-judo-purple px-4 py-1.5 text-sm text-white shadow-[0_6px_18px_-6px_rgba(239,68,68,0.75)]">
+              <span className="font-extrabold tracking-wide">{t("services.offLabel")}</span>
+              <span className="font-medium text-white/85">{t("services.offUntil")}</span>
+            </p>
+          )}
         </Reveal>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan, i) => (
@@ -164,7 +172,9 @@ export default function HomePage({
                 <TiltCard className="h-full p-7">
                   <h3 className="text-xl font-semibold">{t(`plans.${plan}.name`)}</h3>
                   <p className="mt-1 text-2xl font-bold text-judo-lilac">
-                    {t(`plans.${plan}.price`)}
+                    {plan === "media"
+                      ? t("plans.media.price")
+                      : `${t("plans.from")} ${precioTexto(plan)}${t("plans.perMonth")}`}
                   </p>
                   <p className="mt-3 text-sm leading-relaxed text-judo-fog/65">
                     {t(`plans.${plan}.description`)}

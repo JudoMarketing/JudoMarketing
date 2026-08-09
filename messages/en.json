@@ -65,7 +65,9 @@
       "name": "Media Marketing",
       "price": "Set your own budget",
       "description": "Ads on Instagram, Facebook, TikTok and Google so people who don't know you yet can find you."
-    }
+    },
+    "from": "from",
+    "perMonth": "/mo"
   },
   "reviews": {
     "title": "What our clients say",
@@ -164,7 +166,10 @@
       ],
       "eyebrow": "And who brings the people in?",
       "body": "Your website convinces whoever lands on it. Paid advertising is what gets more people there. We run your ads on Instagram, Facebook, TikTok and Google, in front of people who don't know you yet. You decide how much to spend each month; we handle the ad, who sees it, and the tuning along the way.",
-      "cta": "Let's talk about your budget"
+      "cta": "Let's talk about your budget",
+      "recommended": "Recommended for steady growth",
+      "recommendedRange": "$500 – $700 per month",
+      "recommendedNote": "That's the range where you see steady month-to-month movement. You can start lower and scale up once it works."
     },
     "perMonth": "/mo",
     "diff": {

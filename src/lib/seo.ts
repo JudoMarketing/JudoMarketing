@@ -1,3 +1,4 @@
+import { precioDesde } from "./pricing";
 import type { Metadata } from "next";
 
 /**
@@ -22,14 +23,14 @@ const PATHS: Record<PageKey, { en: string; es: string }> = {
 const COPY: Record<PageKey, Record<"en" | "es", { title: string; description: string }>> = {
   services: {
     es: {
-      title: "Precios: Páginas Web desde $50/mes, Apps y Tiendas Online | Judo Marketing",
+      title: `Precios: Páginas Web desde ${precioDesde()}/mes, Apps y Tiendas Online | Judo Marketing`,
       description:
-        "Diseño de páginas web para negocios en Miami y toda Latinoamérica: tiendas online, páginas de citas y apps móviles desde $50 al mes con soporte, seguridad y tu propio panel de control.",
+        `Diseño de páginas web para negocios en Miami y toda Latinoamérica: tiendas online, páginas de citas y apps móviles desde ${precioDesde()} al mes con soporte, seguridad y tu propio panel de control.`,
     },
     en: {
-      title: "Pricing: Websites from $50/month, Apps & Online Stores | Judo Marketing",
+      title: `Pricing: Websites from ${precioDesde()}/month, Apps & Online Stores | Judo Marketing`,
       description:
-        "Website design for small businesses in Miami and beyond: online stores, booking pages, and mobile apps from $50 a month with support, security, and your own admin panel.",
+        `Website design for small businesses in Miami and beyond: online stores, booking pages, and mobile apps from ${precioDesde()} a month with support, security, and your own admin panel.`,
     },
   },
   showcase: {

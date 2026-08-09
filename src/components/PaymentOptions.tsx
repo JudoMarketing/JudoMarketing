@@ -13,11 +13,6 @@ import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./AuthForms";
 import { safeUuid } from "@/lib/safe";
 
-const AMOUNTS: Record<string, string> = {
-  essential: "$50",
-  complex: "$100",
-  apps: "$150",
-};
 
 const ZELLE_EMAIL = "admin@judomarketing.net";
 // USDT ERC-20 (red Ethereum), billetera de Judo Marketing
@@ -25,10 +20,13 @@ const USDT_ADDRESS = "0x1848289C74282b1b2F58CfEf43019A9f9d180086";
 
 export default function PaymentOptions({
   plan,
+  amount,
   stripeReady,
   paypalMe,
 }: {
   plan: "essential" | "complex" | "apps";
+  /** Lo calcula el servidor: el reloj del visitante no decide cuánto paga. */
+  amount: string;
   stripeReady: boolean;
   paypalMe: string | null;
 }) {
@@ -50,7 +48,6 @@ export default function PaymentOptions({
   const [txHash, setTxHash] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const amount = AMOUNTS[plan];
 
   const goStripe = async () => {
     setLoading(true);
@@ -281,7 +278,7 @@ export default function PaymentOptions({
         <form onSubmit={submitCrypto} className="flex flex-col gap-3 rounded-2xl border border-judo-lilac/20 bg-judo-surface p-5">
           <p className="text-sm font-semibold">{tc("panelTitle")}</p>
           <p className="rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
-            ⚠️ {tc("warning")} ({AMOUNTS[plan].replace("$", "")} USDT)
+            ⚠️ {tc("warning")} ({amount.replace("$", "")} USDT)
           </p>
           <p className="text-xs text-judo-fog/60">{tc("network")}</p>
           <div className="flex flex-col items-center gap-2 rounded-xl border border-judo-lilac/25 bg-judo-black/50 p-4">
