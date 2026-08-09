@@ -1830,6 +1830,7 @@ export default function AdminPortal() {
                           "📡 sin telemetría aún (kit no conectado)"
                         )}
                       </p>
+                      <SiteIdentidad site={site} onSaved={loadAll} flash={flash} />
                       <SitePrice site={site} onGuardar={cambiarPrecio} />
                       <SiteDates site={site} onSaved={loadAll} flash={flash} />
                       <SitePortfolio site={site} onSaved={loadAll} flash={flash} />
@@ -2080,6 +2081,165 @@ function VisitaEditor({
         Cancelar
       </button>
     </form>
+  );
+}
+
+// ── Lo básico del website, editable ────────────────────────────────
+// Nombre, dominio, cliente y estado. Un dominio cambia (se compra el bueno,
+// se pasa de la vista previa de Vercel al real) y un nombre se escribe mal el
+// día del alta: no tiene sentido que queden congelados.
+const ESTADOS_SITIO = [
+  { id: "en_desarrollo", nombre: "En desarrollo" },
+  { id: "activo", nombre: "Activo" },
+  { id: "deshabilitado", nombre: "Deshabilitado (apagado)" },
+];
+
+function SiteIdentidad({
+  site,
+  onSaved,
+  flash,
+}: {
+  site: SiteRow;
+  onSaved: () => void;
+  flash: (m: string) => void;
+}) {
+  const supabase = getSupabase();
+  const [abierto, setAbierto] = useState(false);
+  const [nombre, setNombre] = useState(site.name);
+  const [dominio, setDominio] = useState(site.domain ?? "");
+  const [cliente, setCliente] = useState(site.clients?.full_name ?? "");
+  const [empresa, setEmpresa] = useState(site.clients?.business_name ?? "");
+  const [guardando, setGuardando] = useState(false);
+
+  const cambio =
+    nombre.trim() !== site.name ||
+    dominio.trim() !== (site.domain ?? "") ||
+    cliente.trim() !== (site.clients?.full_name ?? "") ||
+    empresa.trim() !== (site.clients?.business_name ?? "");
+
+  const guardar = async () => {
+    if (nombre.trim().length < 2) return flash("El nombre no puede quedar vacío");
+    setGuardando(true);
+    try {
+      // El dominio se guarda limpio: sin https:// ni barra final, que es como
+      // lo espera el showcase para armar la captura.
+      const limpio = dominio.trim().replace(/^https?:\/\//, "").replace(/\/+$/, "");
+      const { error } = await supabase
+        .from("sites")
+        .update({ name: nombre.trim(), domain: limpio || null })
+        .eq("id", site.id);
+      if (error) return flash(`Error: ${error.message}`);
+
+      if (site.client_id && (cliente.trim() || empresa.trim())) {
+        const { error: cErr } = await supabase
+          .from("clients")
+          .update({
+            full_name: cliente.trim() || site.clients?.full_name || "",
+            business_name: empresa.trim() || null,
+          })
+          .eq("id", site.client_id);
+        if (cErr) return flash(`Website guardado, pero el cliente no: ${cErr.message}`);
+      }
+      setDominio(limpio);
+      flash("Datos del website actualizados ✓");
+      onSaved();
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  const cambiarEstado = async (estado: string) => {
+    if (
+      estado === "deshabilitado" &&
+      !window.confirm(`¿Apagar ${site.name}? Sus visitantes verán la página de suspensión.`)
+    )
+      return;
+    const { error } = await supabase
+      .from("sites")
+      .update({ status: estado })
+      .eq("id", site.id);
+    if (error) return flash(`Error: ${error.message}`);
+    flash(`Estado: ${ESTADOS_SITIO.find((e) => e.id === estado)?.nombre} ✓`);
+    onSaved();
+  };
+
+  return (
+    <div className="mt-2 text-xs text-judo-fog/50">
+      <div className="flex flex-wrap items-center gap-2">
+        <span>✏️ Datos del website:</span>
+        <button
+          onClick={() => setAbierto(!abierto)}
+          className={abierto ? "text-emerald-300 hover:underline" : "text-judo-lilac hover:underline"}
+        >
+          {abierto ? "cerrar" : "editar nombre, dominio, cliente y estado"}
+        </button>
+      </div>
+
+      {abierto && (
+        <div className="mt-2 grid gap-2 rounded-xl border border-judo-lilac/20 bg-judo-black/40 p-3 sm:grid-cols-2">
+          <label className="flex flex-col gap-1 text-[11px]">
+            Nombre del website
+            <input value={nombre} onChange={(e) => setNombre(e.target.value)} className={fieldSm} />
+          </label>
+          <label className="flex flex-col gap-1 text-[11px]">
+            Dominio (o vista previa de Vercel)
+            <input
+              value={dominio}
+              onChange={(e) => setDominio(e.target.value)}
+              placeholder="cliente.com"
+              className={fieldSm}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-[11px]">
+            Cliente
+            <input
+              value={cliente}
+              onChange={(e) => setCliente(e.target.value)}
+              disabled={!site.client_id}
+              placeholder={site.client_id ? "" : "este website no tiene cliente"}
+              className={`${fieldSm} disabled:opacity-40`}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-[11px]">
+            Empresa del cliente
+            <input
+              value={empresa}
+              onChange={(e) => setEmpresa(e.target.value)}
+              disabled={!site.client_id}
+              className={`${fieldSm} disabled:opacity-40`}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-[11px]">
+            Estado
+            <select
+              value={site.status}
+              onChange={(e) => void cambiarEstado(e.target.value)}
+              className={fieldSm}
+            >
+              {ESTADOS_SITIO.map((e) => (
+                <option key={e.id} value={e.id} className="bg-judo-surface">
+                  {e.nombre}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className="flex items-end">
+            {cambio && (
+              <button onClick={guardar} disabled={guardando} className={btnPurple}>
+                {guardando ? "Guardando…" : "Guardar cambios"}
+              </button>
+            )}
+          </div>
+
+          <p className="text-[11px] text-judo-fog/35 sm:col-span-2">
+            Si cambias el dominio, la captura del showcase se rehace sola con el
+            nuevo. El estado se guarda al instante; lo demás, con el botón.
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
 
