@@ -151,6 +151,11 @@ export default function HomePage({
         <Reveal className="text-center">
           <h2 className="text-3xl font-bold sm:text-4xl">{t("plans.title")}</h2>
           <p className="mt-2 text-judo-fog/60">{t("plans.subtitle")}</p>
+          {/* El plazo también aquí: es donde llega casi todo el mundo */}
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-400/45 bg-amber-400/10 px-4 py-1.5 text-sm font-semibold text-amber-200">
+            <span aria-hidden>⏳</span>
+            {t("services.promoBadge")}
+          </p>
         </Reveal>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {plans.map((plan, i) => (

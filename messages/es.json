@@ -122,7 +122,8 @@
         "Diseño moderno y responsivo",
         "Panel fácil de usar",
         "Soporte y mantenimiento"
-      ]
+      ],
+      "priceAfter": "$100"
     },
     "complex": {
       "name": "Websites Complejos",
@@ -135,7 +136,8 @@
         "Sistemas avanzados",
         "Integraciones personalizadas",
         "Escalables y seguras"
-      ]
+      ],
+      "priceAfter": "$200"
     },
     "apps": {
       "name": "Apps para Teléfonos",
@@ -148,20 +150,24 @@
         "iOS y Android",
         "Notificaciones push",
         "Soporte y actualizaciones"
-      ]
+      ],
+      "priceAfter": "$300"
     },
     "media": {
       "name": "Media Marketing",
       "price": "Tú pones el presupuesto",
-      "tagline": "Anuncios en las redes donde ya está tu gente, para que te encuentren sin estar buscándote.",
+      "tagline": "Publicidad pagada, manejada por nosotros. Sin cuota fija: inviertes lo que quieras.",
       "features": [
-        "Instagram, Facebook, TikTok y Google",
-        "Llegas a gente que todavía no te busca",
-        "Atraes seguidores interesados de verdad",
-        "Construyes comunidad alrededor de tu marca",
         "Tú decides cuánto invertir cada mes",
-        "Te mostramos el alcance y los resultados"
-      ]
+        "Nosotros armamos el anuncio y elegimos a quién se le muestra",
+        "Instagram, Facebook, TikTok y Google",
+        "Llega gente que todavía no te conoce",
+        "Empiezas con poco y subes cuando veas que funciona",
+        "Cada mes te contamos qué pasó y qué vamos a ajustar"
+      ],
+      "eyebrow": "¿Y quién trae a la gente?",
+      "body": "Tu website convence a quien llega. La publicidad pagada es lo que hace que llegue más gente. Ponemos tus anuncios a correr en Instagram, Facebook, TikTok y Google, frente a personas que todavía no te conocen. Tú decides cuánto invertir cada mes; nosotros nos encargamos del anuncio, de a quién se le muestra y de irlo ajustando.",
+      "cta": "Hablemos de tu presupuesto"
     },
     "perMonth": "/mes",
     "diff": {
@@ -217,7 +223,10 @@
           "a": "Hosting, mantenimiento, seguridad y respaldos diarios, soporte, y tu portal de administrador para controlar tu contenido, usuarios y ventas desde un solo lugar."
         }
       ]
-    }
+    },
+    "promoBadge": "Estos precios son válidos hasta el 1 de septiembre",
+    "promoAfter": "después",
+    "promoNote": "El precio que tomes antes del 1 de septiembre es el que mantienes mientras sigas con nosotros."
   },
   "login": {
     "title": "Portales",

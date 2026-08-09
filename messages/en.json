@@ -122,7 +122,8 @@
         "Modern, responsive design",
         "Easy-to-use panel",
         "Support & maintenance"
-      ]
+      ],
+      "priceAfter": "$100"
     },
     "complex": {
       "name": "Complex Websites",
@@ -135,7 +136,8 @@
         "Advanced systems",
         "Custom integrations",
         "Scalable & secure"
-      ]
+      ],
+      "priceAfter": "$200"
     },
     "apps": {
       "name": "Mobile Apps",
@@ -148,20 +150,24 @@
         "iOS & Android",
         "Push notifications",
         "Support & updates"
-      ]
+      ],
+      "priceAfter": "$300"
     },
     "media": {
       "name": "Media Marketing",
-      "price": "Set your own budget",
-      "tagline": "Ads on the networks where your people already are, so they find you without looking for you.",
+      "price": "You set the budget",
+      "tagline": "Paid advertising, run by us. No fixed fee: you spend what you want.",
       "features": [
-        "Instagram, Facebook, TikTok & Google",
-        "Reach people who aren't looking for you yet",
-        "Attract followers who genuinely care",
-        "Build a community around your brand",
-        "You decide how much to invest each month",
-        "We show you the reach and the results"
-      ]
+        "You decide how much to spend each month",
+        "We build the ad and choose who sees it",
+        "Instagram, Facebook, TikTok and Google",
+        "Reaches people who don't know you yet",
+        "Start small and scale up once it works",
+        "Every month we tell you what happened and what we're adjusting"
+      ],
+      "eyebrow": "And who brings the people in?",
+      "body": "Your website convinces whoever lands on it. Paid advertising is what gets more people there. We run your ads on Instagram, Facebook, TikTok and Google, in front of people who don't know you yet. You decide how much to spend each month; we handle the ad, who sees it, and the tuning along the way.",
+      "cta": "Let's talk about your budget"
     },
     "perMonth": "/mo",
     "diff": {
@@ -217,7 +223,10 @@
           "a": "Hosting, maintenance, security and daily backups, support, and your admin portal to control your content, users, and sales from one place."
         }
       ]
-    }
+    },
+    "promoBadge": "These prices are valid until September 1st",
+    "promoAfter": "after that",
+    "promoNote": "Lock in a price before September 1st and it stays yours for as long as you're with us."
   },
   "login": {
     "title": "Portals",
