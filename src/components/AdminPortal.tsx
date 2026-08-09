@@ -1898,6 +1898,8 @@ const CATEGORIAS_PORTAFOLIO = [
   { id: "servicios", nombre: "Servicios" },
   { id: "fundaciones", nombre: "Fundaciones y ONG" },
   { id: "equipos", nombre: "Equipos e industria" },
+  { id: "educacion", nombre: "Educación y cursos" },
+  { id: "automotriz", nombre: "Automotriz" },
 ];
 
 function SitePortfolio({

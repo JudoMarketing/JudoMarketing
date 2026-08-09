@@ -12,7 +12,9 @@ export type Categoria =
   | "tiendas"
   | "servicios"
   | "fundaciones"
-  | "equipos";
+  | "equipos"
+  | "educacion"
+  | "automotriz";
 
 export type Trabajo = {
   nombre: string;
@@ -32,6 +34,8 @@ export const CATEGORIAS: { id: Categoria; es: string; en: string }[] = [
   { id: "servicios", es: "Servicios", en: "Services" },
   { id: "fundaciones", es: "Fundaciones y ONG", en: "Nonprofits" },
   { id: "equipos", es: "Equipos e industria", en: "Equipment & industrial" },
+  { id: "educacion", es: "Educación y cursos", en: "Education & courses" },
+  { id: "automotriz", es: "Automotriz", en: "Automotive" },
 ];
 
 /**

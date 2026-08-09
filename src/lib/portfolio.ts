@@ -31,6 +31,8 @@ const CATEGORIAS_VALIDAS = [
   "servicios",
   "fundaciones",
   "equipos",
+  "educacion",
+  "automotriz",
 ];
 
 export async function trabajosPublicados(): Promise<Trabajo[]> {
