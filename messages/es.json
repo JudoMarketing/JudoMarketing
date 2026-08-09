@@ -122,8 +122,7 @@
         "Diseño moderno y responsivo",
         "Panel fácil de usar",
         "Soporte y mantenimiento"
-      ],
-      "priceAfter": "$100"
+      ]
     },
     "complex": {
       "name": "Websites Complejos",
@@ -136,8 +135,7 @@
         "Sistemas avanzados",
         "Integraciones personalizadas",
         "Escalables y seguras"
-      ],
-      "priceAfter": "$200"
+      ]
     },
     "apps": {
       "name": "Apps para Teléfonos",
@@ -150,8 +148,7 @@
         "iOS y Android",
         "Notificaciones push",
         "Soporte y actualizaciones"
-      ],
-      "priceAfter": "$300"
+      ]
     },
     "media": {
       "name": "Media Marketing",
@@ -225,8 +222,9 @@
       ]
     },
     "promoBadge": "Estos precios son válidos hasta el 1 de septiembre",
-    "promoAfter": "después",
-    "promoNote": "El precio que tomes antes del 1 de septiembre es el que mantienes mientras sigas con nosotros."
+    "flatFee": "Precio final. Sin costo de instalación.",
+    "offLabel": "50% OFF",
+    "offUntil": "válido hasta el 1 de septiembre"
   },
   "login": {
     "title": "Portales",

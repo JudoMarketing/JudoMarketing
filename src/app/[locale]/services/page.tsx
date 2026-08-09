@@ -37,17 +37,10 @@ export default function ServicesPage({
 
   return (
     <div className="judo-glow">
+      {/* El plazo no va aquí arriba: lo lleva cada tarjeta en su etiqueta, que
+          es donde el precio se está mirando. */}
       <section className="mx-auto max-w-6xl px-6 pt-20 pb-6 text-center">
-        {/* El plazo, arriba de todo: es lo primero que hay que saber */}
-        <p
-          className="hero-in inline-flex items-center gap-2 rounded-full border border-amber-400/45 bg-amber-400/10 px-5 py-2 text-sm font-semibold text-amber-200"
-        >
-          <span aria-hidden>⏳</span>
-          {t("promoBadge")}
-        </p>
-        <h1 className="hero-in mt-6 text-4xl font-bold sm:text-6xl" style={{ animationDelay: "0.1s" }}>
-          {t("title")}
-        </h1>
+        <h1 className="hero-in text-4xl font-bold sm:text-6xl">{t("title")}</h1>
         <p
           className="hero-in mx-auto mt-4 max-w-2xl text-judo-fog/70"
           style={{ animationDelay: "0.2s" }}
@@ -72,23 +65,25 @@ export default function ServicesPage({
                     0{i + 1}
                   </span>
 
-                  <h2 className="text-xl font-semibold">{t(`${plan}.name`)}</h2>
+                  {/* El descuento y su fecha, en la tarjeta misma */}
+                  <p className="inline-flex max-w-full items-center gap-1.5 self-start rounded-full bg-gradient-to-r from-red-500 to-judo-purple py-1.5 pr-3.5 pl-3 text-[11px] whitespace-nowrap text-white shadow-[0_6px_18px_-6px_rgba(239,68,68,0.75)]">
+                    <span className="font-extrabold tracking-wide">{t("offLabel")}</span>
+                    <span className="font-medium text-white/85">{t("offUntil")}</span>
+                  </p>
 
-                  {/* Precio de ahora, grande; el de después, tachado al lado */}
-                  <div className="mt-4 flex items-end gap-3">
-                    <p className="leading-none">
-                      <span className="text-5xl font-bold text-judo-fog">
-                        {t(`${plan}.price`)}
-                      </span>
-                      <span className="text-judo-lilac">{t("perMonth")}</span>
-                    </p>
-                    <p className="pb-1 text-lg font-semibold text-judo-fog/35 line-through decoration-amber-400/70 decoration-2">
-                      {t(`${plan}.priceAfter`)}
-                    </p>
-                  </div>
-                  <p className="mt-1.5 text-xs font-semibold text-amber-300/90">
-                    {t("promoAfter")} {t(`${plan}.priceAfter`)}
-                    {t("perMonth")}
+                  <h2 className="mt-4 text-xl font-semibold">{t(`${plan}.name`)}</h2>
+
+                  <p className="mt-3">
+                    <span className="align-top text-sm text-judo-fog/50">
+                      {es ? "desde" : "from"}{" "}
+                    </span>
+                    <span className="text-5xl font-bold text-judo-fog">
+                      {t(`${plan}.price`)}
+                    </span>
+                    <span className="text-judo-lilac">{t("perMonth")}</span>
+                  </p>
+                  <p className="mt-1.5 text-xs font-semibold text-judo-fog/55">
+                    {t("flatFee")}
                   </p>
 
                   <p className="mt-4 text-sm leading-relaxed text-judo-fog/65">
@@ -112,10 +107,7 @@ export default function ServicesPage({
             );
           })}
         </div>
-        <p className="mt-6 text-center text-sm font-semibold text-amber-200/85">
-          {t("promoNote")}
-        </p>
-        <p className="mt-2 text-center text-xs text-judo-fog/45">{t("note")}</p>
+        <p className="mt-6 text-center text-xs text-judo-fog/45">{t("note")}</p>
       </section>
 
       {/* ── MEDIA MARKETING: aparte, después de los websites ─────────── */}
