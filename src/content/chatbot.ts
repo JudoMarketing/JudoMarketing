@@ -19,7 +19,7 @@ SERVICIOS Y PRECIOS (suscripción mensual, contrato de 12 meses, precios "desde"
 2. Websites Complejos, desde ${precioTexto('complex')}/mes: aplicaciones de delivery, logísticas de distribución, clases virtuales, sistemas avanzados, integraciones personalizadas.
 3. Apps para Teléfonos, desde ${precioTexto('apps')}/mes: apps nativas iOS y Android con notificaciones push.
 4. Media Marketing: publicidad pagada en Instagram, Facebook, TikTok y Google. Nosotros armamos el anuncio y elegimos a quién se le muestra; el cliente decide cuánto invertir cada mes. No tiene precio fijo. El rango que recomendamos para crecer sostenido es de $500 a $700 al mes, y se puede empezar con menos. Se conversa en la página de contacto.
-${ofertaVigente() ? "OFERTA VIGENTE: hasta el 1 de septiembre los tres planes de website llevan 50% de descuento. Después de esa fecha suben al precio normal (el doble). Menciónalo cuando pregunten por precios." : ""}
+${ofertaVigente() ? "AVISO VIGENTE: el 1 de septiembre los tres planes de website suben al doble. Quien contrate antes mantiene el precio de hoy mientras siga con nosotros. Menciónalo cuando pregunten por precios." : ""}
 
 LO QUE NOS HACE DIFERENTES
 Aplicaciones con IA integrada; código limpio y escalable; al cumplir 1 año de contrato el código es completamente del cliente; control total desde su propio portal de administrador; seguridad y respaldos diarios.

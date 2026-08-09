@@ -71,9 +71,8 @@ p("<b>La frase de oro:</b>")
 say(f"Websites y apps profesionales por suscripción mensual, desde ${OFERTA['essential']} al mes, "
     "con todo incluido: diseño, mantenimiento, seguridad y su propio panel de control.")
 p(f"<b>OJO CON LA FECHA:</b> los precios de abajo suben al doble el {CAMBIO}. "
-  "Hasta ese día llevan 50% de descuento, y el precio que el cliente firme antes "
-  "es el que mantiene mientras siga con nosotros. Úsalo: es tu mejor razón para "
-  "que decida hoy y no la otra semana.")
+  "El precio que el cliente firme antes es el que mantiene mientras siga con "
+  "nosotros. Úsalo: es tu mejor razón para que decida hoy y no la otra semana.")
 sub("Los 3 planes")
 b(f"<b>Websites Esenciales, {dos_precios('essential')}:</b> tiendas online, páginas de citas, "
   "venta de servicios. Diseño moderno, panel fácil, soporte y mantenimiento.")
