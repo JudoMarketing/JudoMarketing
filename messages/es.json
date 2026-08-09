@@ -531,7 +531,8 @@
     "ctaTitle": "¿El próximo es el tuyo?",
     "ctaText": "Cuéntanos qué necesita tu negocio y te decimos con honestidad si podemos hacerlo, cuánto cuesta y en cuánto tiempo.",
     "ctaButton": "Hablemos de tu proyecto",
-    "empty": "Todavía no hay trabajos publicados."
+    "empty": "Todavía no hay trabajos publicados.",
+    "wip": "en desarrollo"
   },
   "intake": {
     "title": "Cuéntanos de tu negocio",

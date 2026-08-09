@@ -92,6 +92,12 @@ export default function PortfolioGrid({
                   sizes="(max-width: 640px) 33vw, 300px"
                   className="object-cover object-top transition duration-500 group-hover:scale-[1.04]"
                 />
+                {/* Un borrador se puede enseñar, pero se dice que lo es */}
+                {trabajo.enDesarrollo && (
+                  <span className="absolute top-1.5 left-1.5 rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-bold tracking-wide text-judo-black uppercase sm:top-2.5 sm:left-2.5 sm:text-[10px]">
+                    {t("wip")}
+                  </span>
+                )}
               </div>
 
               <div className="flex flex-1 flex-col gap-1 p-2.5 sm:gap-1.5 sm:p-4">

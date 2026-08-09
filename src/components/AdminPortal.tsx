@@ -1890,11 +1890,14 @@ export default function AdminPortal() {
 }
 
 // ── Portafolio público: qué se muestra de este sitio en el website ──
+// Las mismas que filtran el showcase (src/content/portfolio.ts)
 const CATEGORIAS_PORTAFOLIO = [
   { id: "food", nombre: "Comida y restaurantes" },
   { id: "delivery", nombre: "Apps de delivery" },
   { id: "tiendas", nombre: "Tiendas online" },
   { id: "servicios", nombre: "Servicios" },
+  { id: "fundaciones", nombre: "Fundaciones y ONG" },
+  { id: "equipos", nombre: "Equipos e industria" },
 ];
 
 function SitePortfolio({
@@ -1920,8 +1923,9 @@ function SitePortfolio({
     onSaved();
   };
 
-  // Solo los sitios activos salen publicados; el resto no aparece igual.
-  const publicado = visible && site.status === "activo";
+  // Sale publicado si está visible y no está apagado. Los que están en
+  // desarrollo también aparecen, marcados como vista previa.
+  const publicado = visible && site.status !== "deshabilitado";
 
   return (
     <div className="mt-1.5 text-xs text-judo-fog/50">
@@ -1939,7 +1943,13 @@ function SitePortfolio({
               : "rounded-full border border-judo-lilac/30 px-2 py-0.5 text-[11px] text-judo-fog/60"
           }
         >
-          {publicado ? "publicado" : visible ? "listo (sitio no activo)" : "oculto"}
+          {publicado
+            ? site.status === "activo"
+              ? "publicado"
+              : "publicado (vista previa)"
+            : visible
+              ? "listo (sitio apagado)"
+              : "oculto"}
         </button>
         <button
           onClick={() => setAbierto(!abierto)}

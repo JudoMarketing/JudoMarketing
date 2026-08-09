@@ -6,7 +6,13 @@
  * desaparece.
  */
 
-export type Categoria = "food" | "delivery" | "tiendas" | "servicios";
+export type Categoria =
+  | "food"
+  | "delivery"
+  | "tiendas"
+  | "servicios"
+  | "fundaciones"
+  | "equipos";
 
 export type Trabajo = {
   nombre: string;
@@ -14,6 +20,8 @@ export type Trabajo = {
   url: string;
   imagen: string;
   categoria: Categoria | null;
+  /** Un borrador se puede mostrar, pero se avisa que todavía no está entregado. */
+  enDesarrollo: boolean;
   descripcion: { es: string; en: string };
 };
 
@@ -22,6 +30,8 @@ export const CATEGORIAS: { id: Categoria; es: string; en: string }[] = [
   { id: "delivery", es: "Apps de delivery", en: "Delivery apps" },
   { id: "tiendas", es: "Tiendas online", en: "Online stores" },
   { id: "servicios", es: "Servicios", en: "Services" },
+  { id: "fundaciones", es: "Fundaciones y ONG", en: "Nonprofits" },
+  { id: "equipos", es: "Equipos e industria", en: "Equipment & industrial" },
 ];
 
 /**

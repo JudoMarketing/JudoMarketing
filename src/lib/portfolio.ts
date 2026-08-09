@@ -8,12 +8,15 @@ import { capturaDelHome, type Categoria, type Trabajo } from "@/content/portfoli
  * pueden ser públicas: la tabla sites guarda además la clave del Judo Site
  * Kit, que nunca debe salir de aquí.
  *
- * Aparece un website cuando está activo y marcado como visible; desaparece en
- * cuanto Administración lo deshabilita.
+ * Aparece un website cuando está marcado como visible y no está deshabilitado;
+ * desaparece en cuanto Administración lo apaga. Los que todavía están en
+ * desarrollo también entran: son trabajo que vale la pena enseñar, y salen
+ * marcados como vista previa para que nadie los confunda con algo entregado.
  */
 
 type Fila = {
   name: string;
+  status: string;
   domain: string | null;
   portfolio_category: string | null;
   portfolio_desc_es: string | null;
@@ -21,7 +24,14 @@ type Fila = {
   portfolio_image: string | null;
 };
 
-const CATEGORIAS_VALIDAS = ["food", "delivery", "tiendas", "servicios"];
+const CATEGORIAS_VALIDAS = [
+  "food",
+  "delivery",
+  "tiendas",
+  "servicios",
+  "fundaciones",
+  "equipos",
+];
 
 export async function trabajosPublicados(): Promise<Trabajo[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -33,9 +43,9 @@ export async function trabajosPublicados(): Promise<Trabajo[]> {
     const { data, error } = await supabase
       .from("sites")
       .select(
-        "name,domain,portfolio_category,portfolio_desc_es,portfolio_desc_en,portfolio_image"
+        "name,status,domain,portfolio_category,portfolio_desc_es,portfolio_desc_en,portfolio_image"
       )
-      .eq("status", "activo")
+      .in("status", ["activo", "en_desarrollo"])
       .eq("portfolio_visible", true)
       .not("domain", "is", null)
       .order("created_at", { ascending: false });
@@ -55,6 +65,7 @@ export async function trabajosPublicados(): Promise<Trabajo[]> {
           url: `https://${dominio}`,
           imagen: capturaDelHome(dominio, fila.portfolio_image),
           categoria,
+          enDesarrollo: fila.status === "en_desarrollo",
           descripcion: {
             es: fila.portfolio_desc_es ?? "",
             en: fila.portfolio_desc_en ?? fila.portfolio_desc_es ?? "",

@@ -531,7 +531,8 @@
     "ctaTitle": "Is yours next?",
     "ctaText": "Tell us what your business needs and we'll tell you honestly whether we can build it, what it costs, and how long it takes.",
     "ctaButton": "Let's talk about your project",
-    "empty": "No published work yet."
+    "empty": "No published work yet.",
+    "wip": "in progress"
   },
   "intake": {
     "title": "Tell us about your business",
