@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Judo Marketing | Website Design, Apps & AI-Powered Marketing in Miami",
-    "description": "Miami agency: subscription websites from $50 a month, online stores, booking pages, and mobile apps for small and medium businesses. Serving the US and Latin America in English and Spanish."
+    "description": "Miami agency: subscription websites from {price} a month, online stores, booking pages, and mobile apps for small and medium businesses. Serving the US and Latin America in English and Spanish."
   },
   "nav": {
     "home": "Home",
@@ -48,17 +48,14 @@
     "more": "See full details",
     "essential": {
       "name": "Essential Websites",
-      "price": "from $50/mo",
       "description": "Professional, functional online presence: stores, bookings, services."
     },
     "complex": {
       "name": "Complex Websites",
-      "price": "from $100/mo",
       "description": "Bigger operations: delivery, logistics, virtual classes, integrations."
     },
     "apps": {
       "name": "Mobile Apps",
-      "price": "from $150/mo",
       "description": "Native iOS & Android mobile apps with push notifications."
     },
     "media": {
@@ -115,7 +112,6 @@
     "cta": "Let's talk about your project",
     "essential": {
       "name": "Essential Websites",
-      "price": "$50",
       "tagline": "Ideal for businesses that need a professional, functional online presence.",
       "features": [
         "Online stores",
@@ -128,7 +124,6 @@
     },
     "complex": {
       "name": "Complex Websites",
-      "price": "$100",
       "tagline": "Advanced solutions for bigger operations and complex processes.",
       "features": [
         "Delivery applications",
@@ -141,7 +136,6 @@
     },
     "apps": {
       "name": "Mobile Apps",
-      "price": "$150",
       "tagline": "Take your business to the next level with native mobile apps.",
       "features": [
         "Fitness apps",
@@ -202,7 +196,7 @@
       "items": [
         {
           "q": "How much does a website cost with Judo Marketing?",
-          "a": "Our websites work as a monthly subscription: Essential Websites from $50 a month (online stores, bookings, services), Complex Websites from $100 (delivery, logistics, integrations), and Mobile Apps from $150. Everything includes design, support, maintenance, and your own admin panel."
+          "a": "Our websites work as a monthly subscription: Essential Websites from {essential} a month (online stores, bookings, services), Complex Websites from {complex} (delivery, logistics, integrations), and Mobile Apps from {apps}. Everything includes design, support, maintenance, and your own admin panel."
         },
         {
           "q": "How long does it take to deliver my website?",

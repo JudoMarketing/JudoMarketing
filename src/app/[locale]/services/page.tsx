@@ -38,7 +38,15 @@ export default function ServicesPage({
   // más abajo: no es un plan de website, es lo que trae a la gente hasta él.
   const plans = ["essential", "complex", "apps"] as const;
   const diffs = t.raw("diff.items") as DiffItem[];
-  const faqs = t.raw("faq.items") as FaqItem[];
+  // La respuesta de precios del FAQ se arma con el precio vigente; el resto
+  // pasa tal cual.
+  const faqs = (t.raw("faq.items") as FaqItem[]).map((faq) => ({
+    q: faq.q,
+    a: faq.a
+      .replace("{essential}", precioTexto("essential"))
+      .replace("{complex}", precioTexto("complex"))
+      .replace("{apps}", precioTexto("apps")),
+  }));
   const mediaFeatures = t.raw("media.features") as string[];
   const es = locale === "es";
   const enOferta = ofertaVigente();

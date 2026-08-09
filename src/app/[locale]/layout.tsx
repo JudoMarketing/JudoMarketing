@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { precioDesde } from "@/lib/pricing";
 import { Poppins } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -32,11 +33,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
+  const descripcion = t("description", { price: precioDesde() });
 
   return {
     metadataBase: new URL("https://www.judomarketing.net"),
     title: t("title"),
-    description: t("description"),
+    description: descripcion,
     alternates: {
       canonical: locale === "es" ? "/es" : "/",
       languages: { en: "/", es: "/es", "x-default": "/" },
@@ -44,7 +46,7 @@ export async function generateMetadata({
     icons: { icon: "/brand/logo-black.jpg" },
     openGraph: {
       title: t("title"),
-      description: t("description"),
+      description: descripcion,
       url: "https://www.judomarketing.net",
       siteName: "Judo Marketing",
       images: [{ url: "/brand/og-thumbnail.jpg", width: 1200, height: 800 }],

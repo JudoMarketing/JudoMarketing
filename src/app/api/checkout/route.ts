@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { precio, type Plan } from "@/lib/pricing";
 
 const PLAN_ENV: Record<string, string | undefined> = {
   essential: process.env.STRIPE_PRICE_ESSENTIAL,
@@ -57,11 +58,39 @@ export async function POST(req: NextRequest) {
   const origin = req.nextUrl.origin;
   const loc = locale === "en" ? "en" : "es";
 
+  /**
+   * Lo que la página promete y lo que Stripe cobra tienen que ser el mismo
+   * número. Si el precio guardado en Stripe quedó viejo (por ejemplo el 1 de
+   * septiembre, cuando la tarifa sube sola), se arma el cobro con el monto
+   * correcto en vez de cobrar de menos sin que nadie se entere.
+   */
+  const esperado = precio(plan as Plan) * 100; // centavos
+  let linea: Stripe.Checkout.SessionCreateParams.LineItem = { price, quantity: 1 };
+  try {
+    const guardado = await stripe.prices.retrieve(price);
+    if (guardado.unit_amount !== esperado) {
+      console.warn(
+        `[checkout] El precio de Stripe para "${plan}" dice ${guardado.unit_amount} y la tarifa vigente es ${esperado}. Se cobra la vigente; actualiza el precio en Stripe.`
+      );
+      linea = {
+        quantity: 1,
+        price_data: {
+          currency: guardado.currency || "usd",
+          product: typeof guardado.product === "string" ? guardado.product : guardado.product.id,
+          unit_amount: esperado,
+          recurring: { interval: "month" },
+        },
+      };
+    }
+  } catch {
+    // Si Stripe no deja consultarlo, se sigue con el precio configurado
+  }
+
   let session: Stripe.Checkout.Session;
   try {
     session = await stripe.checkout.sessions.create({
     mode: "subscription",
-    line_items: [{ price, quantity: 1 }],
+    line_items: [linea],
     locale: loc,
     // Código de referido (nombre del vendedor) y origen del cliente —
     // se leen luego por webhook para asignar comisiones (fase de pagos)

@@ -64,9 +64,9 @@ def build_contract():
     data = [
         [line_cell("Cliente"), line_cell("Empresa", 30)],
         [line_cell("Email"), line_cell("Teléfono", 30)],
-        [Paragraph("<b>Plan:</b> [&nbsp;&nbsp;] Website Esencial $50/mes &nbsp;&nbsp; "
-                   "[&nbsp;&nbsp;] Website Complejo $100/mes &nbsp;&nbsp; "
-                   "[&nbsp;&nbsp;] App $150/mes &nbsp;&nbsp; [&nbsp;&nbsp;] Otro", BODY),
+        [Paragraph("<b>Plan:</b> [&nbsp;&nbsp;] Website Esencial &nbsp;&nbsp; "
+                   "[&nbsp;&nbsp;] Website Complejo &nbsp;&nbsp; "
+                   "[&nbsp;&nbsp;] App &nbsp;&nbsp; [&nbsp;&nbsp;] Otro: ______________", BODY),
          ""],
         [Paragraph("<b>Precio acordado:</b> $________ /mes", BODY),
          line_cell("Dominio / Proyecto", 26)],

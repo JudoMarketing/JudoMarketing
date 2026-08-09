@@ -12,6 +12,7 @@ import { getSupabase } from "@/lib/supabase";
 import SiteDossier from "./SiteDossier";
 import IntakeInbox from "./IntakeInbox";
 import { inputClass } from "./AuthForms";
+import { precio } from "@/lib/pricing";
 
 /**
  * Las pestañas van en el orden en que pasan las cosas de verdad:
@@ -218,7 +219,7 @@ export default function AdminPortal() {
   // Formulario de nuevo sitio
   const [siteName, setSiteName] = useState("");
   const [siteDomain, setSiteDomain] = useState("");
-  const [sitePrice, setSitePrice] = useState("50");
+  const [sitePrice, setSitePrice] = useState(String(precio("essential")));
   const [siteClient, setSiteClient] = useState("");
   const [siteSeller, setSiteSeller] = useState("");
   const [siteDue, setSiteDue] = useState("");
@@ -460,7 +461,7 @@ export default function AdminPortal() {
       domain: siteDomain.trim() || null,
       // Un sitio propio puede ir en 0: Number("0") es 0, así que no lo
       // pisamos con el default de 50.
-      monthly_price: sitePrice === "" ? 50 : Number(sitePrice),
+      monthly_price: sitePrice === "" ? precio("essential") : Number(sitePrice),
       client_id: client.id,
       seller_id: siteSeller || null,
       next_payment_due: siteDue || null,

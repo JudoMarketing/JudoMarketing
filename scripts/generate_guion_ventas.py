@@ -2,6 +2,8 @@
 """Genera el Guion de Ventas de Judo Marketing en PDF (material interno
 para vendedores). Salida: public/legal/Guion_de_Ventas.pdf"""
 
+import json
+
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.lib.colors import HexColor
@@ -17,6 +19,19 @@ DARK = HexColor("#1a1a24")
 GRAY = HexColor("#555566")
 
 OUT = "public/legal/Guion_de_Ventas.pdf"
+
+# Los precios salen del mismo archivo que usa el website, para que el guion
+# nunca quede diciendo una cifra que la página ya no cobra.
+with open("src/content/pricing.json", encoding="utf-8") as f:
+    TARIFA = json.load(f)
+OFERTA, NORMAL = TARIFA["oferta"], TARIFA["normal"]
+CAMBIO = TARIFA["cambioTexto"]["es"]
+
+
+def dos_precios(plan: str) -> str:
+    """"$50/mes hasta el 1 de septiembre de 2026, $100/mes despues"." """
+    return (f"${OFERTA[plan]}/mes hasta el {CAMBIO}, "
+            f"${NORMAL[plan]}/mes despu\u00e9s")
 
 title_s = ParagraphStyle("t", fontName="Helvetica-Bold", fontSize=22, textColor=PURPLE, alignment=TA_CENTER, spaceAfter=4)
 subtitle_s = ParagraphStyle("st", fontName="Helvetica", fontSize=11, textColor=GRAY, alignment=TA_CENTER, spaceAfter=2)
@@ -53,16 +68,23 @@ p("Este guion es tu herramienta de trabajo. Léelo hasta que te salga natural, c
 # ── 1. Lo que vendemos ───────────────────────────────────────────
 sec("1. LO QUE VENDEMOS (apréndetelo de memoria)")
 p("<b>La frase de oro:</b>")
-say("Websites y apps profesionales por suscripción mensual, desde $50 al mes, con todo incluido: "
-    "diseño, mantenimiento, seguridad y su propio panel de control.")
+say(f"Websites y apps profesionales por suscripción mensual, desde ${OFERTA['essential']} al mes, "
+    "con todo incluido: diseño, mantenimiento, seguridad y su propio panel de control.")
+p(f"<b>OJO CON LA FECHA:</b> los precios de abajo suben al doble el {CAMBIO}. "
+  "Hasta ese día llevan 50% de descuento, y el precio que el cliente firme antes "
+  "es el que mantiene mientras siga con nosotros. Úsalo: es tu mejor razón para "
+  "que decida hoy y no la otra semana.")
 sub("Los 3 planes")
-b("<b>Websites Esenciales, desde $50/mes:</b> tiendas online, páginas de citas, venta de servicios. "
-  "Diseño moderno, panel fácil, soporte y mantenimiento.")
-b("<b>Websites Complejos, desde $100/mes:</b> delivery, logística, clases virtuales, sistemas avanzados, "
-  "integraciones a la medida.")
-b("<b>Apps para Teléfonos, desde $150/mes:</b> aplicaciones nativas iPhone y Android con notificaciones push.")
-b("<b>Extra, marketing en redes sociales:</b> con 20% de incremento de tráfico asegurado. El presupuesto de "
-  "publicidad lo decide el cliente. Este paquete se conversa con la agencia en la página de Contacto.")
+b(f"<b>Websites Esenciales, {dos_precios('essential')}:</b> tiendas online, páginas de citas, "
+  "venta de servicios. Diseño moderno, panel fácil, soporte y mantenimiento.")
+b(f"<b>Websites Complejos, {dos_precios('complex')}:</b> delivery, logística, clases virtuales, "
+  "sistemas avanzados, integraciones a la medida.")
+b(f"<b>Apps para Teléfonos, {dos_precios('apps')}:</b> aplicaciones nativas iPhone y Android "
+  "con notificaciones push.")
+b("<b>Media Marketing (publicidad pagada):</b> anuncios en Instagram, Facebook, TikTok y Google. "
+  "Nosotros armamos el anuncio y elegimos a quién se le muestra; el cliente decide cuánto invertir "
+  "cada mes. No tiene precio fijo. El rango que recomendamos para crecer sostenido es de $500 a $700 "
+  "al mes, y se puede empezar con menos. Se conversa con la agencia en la página de Contacto.")
 sub("Datos fijos que debes saber sin pensar")
 b("Página: <b>www.judomarketing.net</b> (en español y en inglés)")
 b("Teléfono y WhatsApp de la agencia: <b>+1 305 934 9981</b>")
@@ -152,8 +174,9 @@ qa("“No tengo tiempo para eso ahorita”",
 
 # ── 5. FAQ ───────────────────────────────────────────────────────
 sec("5. PREGUNTAS FRECUENTES DEL CLIENTE (tu chuleta)")
-qa("¿Cuánto cuesta?", "Websites Esenciales desde $50/mes, Websites Complejos desde $100/mes, Apps desde $150/mes. "
-   "Son precios “desde”: si el proyecto es más grande, la agencia cotiza en la entrevista.")
+qa("¿Cuánto cuesta?", f"Websites Esenciales {dos_precios('essential')}; Websites Complejos "
+   f"{dos_precios('complex')}; Apps {dos_precios('apps')}. Son precios “desde”: si el proyecto es "
+   "más grande, la agencia cotiza en la entrevista.")
 qa("¿Qué incluye la mensualidad?", "Diseño, hosting, mantenimiento, seguridad y respaldos diarios, soporte, y su "
    "panel de administrador para controlar contenido, usuarios y ventas.")
 qa("¿En cuánto tiempo está lista?", "Menos de un mes. Con garantía: si no se entrega en menos de un mes, se devuelve "

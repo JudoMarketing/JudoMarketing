@@ -1,0 +1,7 @@
+{
+  "_comentario": "Fuente única de los precios. La leen src/lib/pricing.ts (el website) y los scripts de Python que arman los PDF. Si cambia un precio, se cambia aquí y en ningún otro lado.",
+  "cambio": "2026-09-01T04:00:00Z",
+  "cambioTexto": { "es": "1 de septiembre de 2026", "en": "September 1, 2026" },
+  "oferta": { "essential": 50, "complex": 100, "apps": 150 },
+  "normal": { "essential": 100, "complex": 200, "apps": 300 }
+}

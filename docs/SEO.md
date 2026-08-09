@@ -51,7 +51,7 @@ nosotros por un vendedor o un anuncio.
 ### Inglés (páginas: inicio y servicios en /)
 - affordable website design miami
 - small business website monthly subscription
-- website design for small business $50
+- website design for small business (precio vigente, ver src/content/pricing.json)
 - booking website for barbershop / salon
 - online store design miami
 - bilingual marketing agency miami

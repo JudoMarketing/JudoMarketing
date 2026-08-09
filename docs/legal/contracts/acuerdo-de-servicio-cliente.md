@@ -15,7 +15,7 @@
 | Cliente (nombre y apellido) | ________________________ |
 | Empresa | ________________________ |
 | Email / Teléfono | ________________________ |
-| Plan contratado | ☐ Website Esencial ($50/mes) ☐ Website Complejo ($100/mes) ☐ App ($150/mes) ☐ Otro: ____ |
+| Plan contratado | ☐ Website Esencial ☐ Website Complejo ☐ App ☐ Otro: ____________ |
 | Precio mensual acordado | $________ /mes |
 | Dominio / Proyecto | ________________________ |
 | Vendedor asignado | ________________________ |

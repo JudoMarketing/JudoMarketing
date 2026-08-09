@@ -23,7 +23,7 @@ en el mismo correo del contrato.
 
 ### Del contrato y el dinero
 
-5. **Plan y precio acordado** ($50 / $100 / $150 o personalizado)
+5. **Plan y precio acordado** (el vigente en judomarketing.net/servicios, o personalizado)
 6. **Moneda** y **día de cobro** (1 al 28)
 7. **Método de pago** (Stripe, Zelle, transferencia, cripto)
 8. **Días de gracia** antes de apagar por falta de pago (por defecto 7)

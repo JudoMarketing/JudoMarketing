@@ -14,6 +14,7 @@ import { useState } from "react";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./AuthForms";
+import { precio } from "@/lib/pricing";
 import SignaturePad from "./SignaturePad";
 import {
   ADMIN_SIGNER_NAME,
@@ -33,10 +34,12 @@ export type NewSignedContract = {
   created_at: string;
 };
 
+// El precio sale del calendario: sube solo el 1 de septiembre. El vendedor
+// lo puede cambiar a mano si acordó otra cosa con el cliente.
 const PLANS: Record<string, { name: string; price: number }> = {
-  essential: { name: "Website Esencial", price: 50 },
-  complex: { name: "Website Complejo", price: 100 },
-  apps: { name: "App para Teléfonos", price: 150 },
+  essential: { name: "Website Esencial", price: precio("essential") },
+  complex: { name: "Website Complejo", price: precio("complex") },
+  apps: { name: "App para Teléfonos", price: precio("apps") },
 };
 
 function makeCode(): string {
@@ -69,7 +72,7 @@ export default function ContractSigner({
   const [businessName, setBusinessName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [plan, setPlan] = useState("essential");
-  const [price, setPrice] = useState("50");
+  const [price, setPrice] = useState(String(precio("essential")));
   const [domain, setDomain] = useState("");
 
   const [clientSig, setClientSig] = useState<string | null>(null);

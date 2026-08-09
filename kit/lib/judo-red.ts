@@ -26,8 +26,8 @@ export const RED_PROPIA: SitioDeLaRed[] = [
     nombre: "Judo Marketing",
     url: "https://www.judomarketing.net",
     que: {
-      es: "Páginas web y apps para negocios, desde $50 al mes",
-      en: "Websites and apps for small businesses, from $50 a month",
+      es: "Páginas web y apps para negocios pequeños y medianos",
+      en: "Websites and apps for small and medium businesses",
     },
   },
   {

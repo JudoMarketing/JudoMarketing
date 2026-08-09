@@ -1,6 +1,6 @@
 import { SITE_URL } from "@/lib/seo";
 import { PERFIL_GOOGLE } from "./SocialLinks";
-import { precioDesde, precioTexto } from "@/lib/pricing";
+import { precio, precioDesde, precioTexto } from "@/lib/pricing";
 
 /**
  * Datos estructurados (schema.org) para Google.
@@ -53,7 +53,7 @@ export default function JsonLd({ locale }: { locale: string }) {
           description: es
             ? "Tiendas online, páginas de citas y venta de servicios con diseño moderno y panel propio."
             : "Online stores, booking pages, and service sales with modern design and your own panel.",
-          price: "50",
+          price: String(precio("essential")),
           priceCurrency: "USD",
         },
         {
@@ -62,7 +62,7 @@ export default function JsonLd({ locale }: { locale: string }) {
           description: es
             ? "Delivery, logística, clases virtuales e integraciones personalizadas."
             : "Delivery, logistics, virtual classes, and custom integrations.",
-          price: "100",
+          price: String(precio("complex")),
           priceCurrency: "USD",
         },
         {
@@ -71,7 +71,7 @@ export default function JsonLd({ locale }: { locale: string }) {
           description: es
             ? "Aplicaciones nativas iOS y Android con notificaciones push."
             : "Native iOS and Android apps with push notifications.",
-          price: "150",
+          price: String(precio("apps")),
           priceCurrency: "USD",
         },
       ],

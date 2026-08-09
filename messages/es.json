@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Judo Marketing | Diseño de Páginas Web, Apps y Marketing con IA en Miami",
-    "description": "Agencia en Miami: páginas web por suscripción desde $50 al mes, tiendas online, páginas de citas y apps móviles para negocios pequeños y medianos. Atendemos en español e inglés a todo Estados Unidos y Latinoamérica."
+    "description": "Agencia en Miami: páginas web por suscripción desde {price} al mes, tiendas online, páginas de citas y apps móviles para negocios pequeños y medianos. Atendemos en español e inglés a todo Estados Unidos y Latinoamérica."
   },
   "nav": {
     "home": "Inicio",
@@ -48,17 +48,14 @@
     "more": "Ver todos los detalles",
     "essential": {
       "name": "Websites Esenciales",
-      "price": "desde $50/mes",
       "description": "Presencia online profesional y funcional: tiendas, citas, servicios."
     },
     "complex": {
       "name": "Websites Complejos",
-      "price": "desde $100/mes",
       "description": "Operaciones grandes: delivery, logística, clases virtuales, integraciones."
     },
     "apps": {
       "name": "Apps para Teléfonos",
-      "price": "desde $150/mes",
       "description": "Aplicaciones móviles nativas para iOS y Android con notificaciones push."
     },
     "media": {
@@ -115,7 +112,6 @@
     "cta": "Hablemos de tu proyecto",
     "essential": {
       "name": "Websites Esenciales",
-      "price": "$50",
       "tagline": "Ideales para negocios que necesitan presencia online profesional y funcional.",
       "features": [
         "Tiendas virtuales",
@@ -128,7 +124,6 @@
     },
     "complex": {
       "name": "Websites Complejos",
-      "price": "$100",
       "tagline": "Soluciones avanzadas para operaciones más grandes y procesos complejos.",
       "features": [
         "Aplicaciones de delivery",
@@ -141,7 +136,6 @@
     },
     "apps": {
       "name": "Apps para Teléfonos",
-      "price": "$150",
       "tagline": "Lleva tu negocio al siguiente nivel con aplicaciones móviles nativas.",
       "features": [
         "Apps de fitness",
@@ -202,7 +196,7 @@
       "items": [
         {
           "q": "¿Cuánto cuesta una página web con Judo Marketing?",
-          "a": "Nuestros websites funcionan por suscripción mensual: Websites Esenciales desde $50 al mes (tiendas online, citas, servicios), Websites Complejos desde $100 (delivery, logística, integraciones) y Apps para Teléfonos desde $150. Todo incluye diseño, soporte, mantenimiento y tu propio panel de control."
+          "a": "Nuestros websites funcionan por suscripción mensual: Websites Esenciales desde {essential} al mes (tiendas online, citas, servicios), Websites Complejos desde {complex} (delivery, logística, integraciones) y Apps para Teléfonos desde {apps}. Todo incluye diseño, soporte, mantenimiento y tu propio panel de control."
         },
         {
           "q": "¿Cuánto tardan en entregar mi website?",

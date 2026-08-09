@@ -9,28 +9,22 @@
  * que el cambio entra a más tardar una hora después de medianoche.
  */
 
+import tabla from "@/content/pricing.json";
+
 export const PLANES = ["essential", "complex", "apps"] as const;
 export type Plan = (typeof PLANES)[number];
 
 /** Precio de oferta (el que está corriendo ahora). */
-const OFERTA: Record<Plan, number> = {
-  essential: 50,
-  complex: 100,
-  apps: 150,
-};
+const OFERTA = tabla.oferta as Record<Plan, number>;
 
-/** Precio normal: el doble. Entra solo el 1 de septiembre. */
-const NORMAL: Record<Plan, number> = {
-  essential: 100,
-  complex: 200,
-  apps: 300,
-};
+/** Precio normal: el doble. Entra solo en la fecha de cambio. */
+const NORMAL = tabla.normal as Record<Plan, number>;
 
 /**
- * 1 de septiembre de 2026, 00:00 en Miami. Septiembre cae en horario de
- * verano (EDT, UTC−4), por eso las 04:00 UTC.
+ * El momento del cambio: 1 de septiembre de 2026, 00:00 en Miami. Septiembre
+ * cae en horario de verano (EDT, UTC−4), por eso las 04:00 UTC.
  */
-export const FIN_DE_OFERTA = Date.parse("2026-09-01T04:00:00Z");
+export const FIN_DE_OFERTA = Date.parse(tabla.cambio);
 
 /** ¿Sigue viva la oferta de 50%? */
 export function ofertaVigente(ahora: number = Date.now()): boolean {
