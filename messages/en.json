@@ -223,7 +223,26 @@
     "promoBadge": "These prices are valid until September 1st",
     "flatFee": "Flat fee. No set-up fee.",
     "offLabel": "SEPTEMBER 1: PRICES DOUBLE",
-    "offUntil": "lock in today's price"
+    "offUntil": "lock in today's price",
+    "pairTitle": "And once you're out there…",
+    "pairNote": "These two go together: one brings the people in, the other takes care of them.",
+    "assistant": {
+      "name": "AI Assistant",
+      "eyebrow": "And who takes care of them?",
+      "price": "$20/mo",
+      "body": "An assistant trained on your business: it knows what you sell, your prices and your hours. It answers on your social media and lives on your website as a mascot that greets whoever arrives, clears up the question and walks them to the sale. You handle the serious ones; it handles the curious.",
+      "features": [
+        "Answers on Instagram, Facebook and your website",
+        "Knows your prices, hours and what you sell",
+        "Greets every visitor and guides them",
+        "Replies at any hour, middle of the night included",
+        "Hands the conversation to you once they're ready",
+        "Less of your time on repeat questions"
+      ],
+      "cta": "I want one for my business",
+      "demo": "See it right here",
+      "demoNote": "The robot on this page is one of them. Message it and try it before you decide."
+    }
   },
   "login": {
     "title": "Portals",

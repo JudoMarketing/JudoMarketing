@@ -223,7 +223,26 @@
     "promoBadge": "Estos precios son válidos hasta el 1 de septiembre",
     "flatFee": "Precio final. Sin costo de instalación.",
     "offLabel": "1 DE SEPTIEMBRE: SUBE AL DOBLE",
-    "offUntil": "asegura tu precio hoy"
+    "offUntil": "asegura tu precio hoy",
+    "pairTitle": "Y cuando ya está en línea…",
+    "pairNote": "Estos dos van juntos: uno trae la gente, el otro la atiende.",
+    "assistant": {
+      "name": "Asistente con IA",
+      "eyebrow": "¿Y quién los atiende?",
+      "price": "$20/mes",
+      "body": "Un asistente entrenado con tu negocio: sabe qué vendes, tus precios y tus horarios. Responde en tus redes y vive en tu website como una mascota que recibe a quien llega, le resuelve la duda y lo acompaña hasta la compra. Tú atiendes a los que van en serio; él se encarga de los curiosos.",
+      "features": [
+        "Responde en Instagram, Facebook y tu website",
+        "Sabe tus precios, horarios y lo que vendes",
+        "Recibe a cada visitante y lo guía",
+        "Contesta a toda hora, también de madrugada",
+        "Te pasa la conversación cuando el cliente ya está listo",
+        "Menos tiempo tuyo en preguntas repetidas"
+      ],
+      "cta": "Quiero uno para mi negocio",
+      "demo": "Míralo aquí mismo",
+      "demoNote": "El robot que ves en esta página es uno de estos. Escríbele y pruébalo antes de decidir."
+    }
   },
   "login": {
     "title": "Portales",
