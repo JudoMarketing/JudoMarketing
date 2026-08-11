@@ -744,6 +744,13 @@ export default function AdminPortal() {
   /**
    * Cuelga el contrato de un website. Mientras no tenga uno queda pendiente:
    * es una venta cerrada cuyo sitio todavía no existe.
+   *
+   * Casi siempre el website nace antes que el contrato: primero se le hace el
+   * borrador al cliente y solo cuando lo aprueba se firma y se paga. Eso quiere
+   * decir que el website se creó con el precio de arranque y sin vendedor, y
+   * que el contrato es el que trae los números de verdad. Al colgarlo se
+   * ofrece copiarlos: si no, el sitio se queda cobrando lo que se tecleó al
+   * abrirlo y la comisión del vendedor no se genera nunca.
    */
   const asignarContrato = async (c: ContractRow, siteId: string) => {
     const { error } = await supabase
@@ -751,17 +758,66 @@ export default function AdminPortal() {
       .update({ site_id: siteId || null })
       .eq("id", c.id);
     if (error) return flash(`Error: ${error.message}`);
-    if (siteId) {
-      await supabase.from("site_events").insert({
-        site_id: siteId,
-        kind: "contrato_firmado",
-        detail: `Contrato ${c.code} de ${c.client_name} — $${Number(c.monthly_price).toFixed(2)}/mes`,
-        actor: (await supabase.auth.getUser()).data.user?.id ?? null,
-      });
-      flash(`Contrato ${c.code} asignado ✓ Ya sale en el expediente del website`);
-    } else {
+    if (!siteId) {
       flash(`Contrato ${c.code} sin website: vuelve a quedar pendiente`);
+      return void loadAll();
     }
+
+    const actor = (await supabase.auth.getUser()).data.user?.id ?? null;
+    await supabase.from("site_events").insert({
+      site_id: siteId,
+      kind: "contrato_firmado",
+      detail: `Contrato ${c.code} de ${c.client_name} — $${Number(c.monthly_price).toFixed(2)}/mes`,
+      actor,
+    });
+
+    // Lo que dice el contrato firmado contra lo que tiene puesto el website
+    const sitio = sites.find((s) => s.id === siteId);
+    const quien = (id: string | null) =>
+      id ? (sellers.find((s) => s.id === id)?.profiles?.full_name ?? "Administración") : "ninguno";
+    const precioContrato = Number(c.monthly_price);
+    const cambios: Record<string, unknown> = {};
+    const lista: string[] = [];
+    if (sitio && precioContrato > 0 && Number(sitio.monthly_price) !== precioContrato) {
+      cambios.monthly_price = precioContrato;
+      lista.push(
+        `Precio: $${Number(sitio.monthly_price).toFixed(2)} → $${precioContrato.toFixed(2)}`
+      );
+    }
+    if (sitio && c.seller_id && sitio.seller_id !== c.seller_id) {
+      cambios.seller_id = c.seller_id;
+      lista.push(`Vendedor: ${quien(sitio.seller_id)} → ${quien(c.seller_id)}`);
+    }
+
+    if (lista.length === 0) {
+      flash(`Contrato ${c.code} asignado ✓ Ya sale en el expediente del website`);
+      return void loadAll();
+    }
+
+    if (
+      !window.confirm(
+        `El contrato firmado no dice lo mismo que ${sitio!.name}:\n\n${lista.join(
+          "\n"
+        )}\n\n¿Dejo el website igual que el contrato? (Cancelar deja el website como está.)`
+      )
+    ) {
+      flash(`Contrato ${c.code} asignado ✓ El website quedó como estaba`);
+      return void loadAll();
+    }
+
+    const { error: sErr } = await supabase.from("sites").update(cambios).eq("id", siteId);
+    if (sErr) {
+      flash(`Contrato asignado, pero no se pudo copiar: ${sErr.message}`);
+      return void loadAll();
+    }
+    await supabase.from("site_events").insert({
+      site_id: siteId,
+      // La bitácora solo acepta los tipos de la migración 0016; esto es una nota
+      kind: "nota",
+      detail: `Copiado del contrato ${c.code} — ${lista.join(" · ")}`,
+      actor,
+    });
+    flash(`Contrato ${c.code} asignado y website actualizado ✓`);
     void loadAll();
   };
 
