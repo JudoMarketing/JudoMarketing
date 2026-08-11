@@ -25,7 +25,7 @@ type Fila = {
 };
 
 // Misma lista que el selector del portal y que el candado de la base
-// (migración 0022). Si se agrega una categoría, va en las cuatro.
+// (migración 0023). Si se agrega una categoría, va en las cuatro.
 const CATEGORIAS_VALIDAS = [
   "food",
   "delivery",
@@ -35,6 +35,7 @@ const CATEGORIAS_VALIDAS = [
   "equipos",
   "educacion",
   "automotriz",
+  "construccion",
 ];
 
 export async function trabajosPublicados(): Promise<Trabajo[]> {

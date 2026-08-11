@@ -2039,7 +2039,7 @@ export default function AdminPortal() {
 // ── Portafolio público: qué se muestra de este sitio en el website ──
 // Estas cuatro listas tienen que decir lo mismo: aquí, en
 // src/content/portfolio.ts, en src/lib/portfolio.ts y en el candado de la
-// base (migración 0022). Si se agrega una categoría, se agrega en las cuatro.
+// base (migración 0023). Si se agrega una categoría, se agrega en las cuatro.
 const CATEGORIAS_PORTAFOLIO = [
   { id: "food", nombre: "Comida y restaurantes" },
   { id: "delivery", nombre: "Apps de delivery" },
@@ -2049,6 +2049,7 @@ const CATEGORIAS_PORTAFOLIO = [
   { id: "equipos", nombre: "Equipos e industria" },
   { id: "educacion", nombre: "Educación y cursos" },
   { id: "automotriz", nombre: "Automotriz" },
+  { id: "construccion", nombre: "Construcción" },
 ];
 
 function SitePortfolio({

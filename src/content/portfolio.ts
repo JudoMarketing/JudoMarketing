@@ -14,7 +14,8 @@ export type Categoria =
   | "fundaciones"
   | "equipos"
   | "educacion"
-  | "automotriz";
+  | "automotriz"
+  | "construccion";
 
 export type Trabajo = {
   nombre: string;
@@ -28,7 +29,7 @@ export type Trabajo = {
 };
 
 // Misma lista que el selector del portal y que el candado de la base
-// (migración 0022). Si se agrega una categoría, va en las cuatro.
+// (migración 0023). Si se agrega una categoría, va en las cuatro.
 export const CATEGORIAS: { id: Categoria; es: string; en: string }[] = [
   { id: "food", es: "Comida y restaurantes", en: "Food & Restaurants" },
   { id: "delivery", es: "Apps de delivery", en: "Delivery apps" },
@@ -38,6 +39,7 @@ export const CATEGORIAS: { id: Categoria; es: string; en: string }[] = [
   { id: "equipos", es: "Equipos e industria", en: "Equipment & industrial" },
   { id: "educacion", es: "Educación y cursos", en: "Education & courses" },
   { id: "automotriz", es: "Automotriz", en: "Automotive" },
+  { id: "construccion", es: "Construcción", en: "Construction" },
 ];
 
 /**
