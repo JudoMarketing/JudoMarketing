@@ -4,7 +4,12 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import Reveal from "./Reveal";
-import { CATEGORIAS, type Categoria, type Trabajo } from "@/content/portfolio";
+import {
+  CATEGORIAS,
+  RELACION_CAPTURA,
+  type Categoria,
+  type Trabajo,
+} from "@/content/portfolio";
 
 /**
  * Los trabajos, en fichas chicas de tres por fila tanto en teléfono como en
@@ -84,7 +89,13 @@ export default function PortfolioGrid({
               rel="noopener noreferrer"
               className="work-card group flex h-full flex-col overflow-hidden rounded-xl hover:-translate-y-1"
             >
-              <div className="relative aspect-[900/560] overflow-hidden bg-judo-black">
+              {/* La proporción sale de la captura misma: si el hueco fuera más
+                  alto que la imagen, el navegador la agrandaría para taparlo y
+                  el sitio saldría recortado por los lados. */}
+              <div
+                className="relative overflow-hidden bg-judo-black"
+                style={{ aspectRatio: RELACION_CAPTURA }}
+              >
                 <Image
                   src={trabajo.imagen}
                   alt={trabajo.nombre}

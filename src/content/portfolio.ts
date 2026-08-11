@@ -44,9 +44,21 @@ export const CATEGORIAS: { id: Categoria; es: string; en: string }[] = [
  * Captura del home. Se genera sola a partir del dominio, así que un website
  * nuevo ya trae su imagen sin que nadie suba nada. Si algún día hace falta
  * una imagen distinta, se guarda en el campo portfolio_image y esa manda.
+ *
+ * El servicio dibuja la página en una pantalla de 1200 de ancho y después la
+ * achica a los 900 que pedimos, así que el recorte también se achica: pedir
+ * crop/750 devuelve una imagen de 900x562. Ese número no es decorativo — tiene
+ * que dar la misma proporción que la ficha del showcase (RELACION_CAPTURA),
+ * porque si no coinciden el navegador agranda la captura para llenar el hueco
+ * y se come los bordes del sitio.
  */
+const ANCHO_CAPTURA = 900;
+const RECORTE_CAPTURA = 750; // 750 x 0.75 = 562 de alto
+/** La misma proporción, para la ficha que muestra la captura. */
+export const RELACION_CAPTURA = "900/562";
+
 export function capturaDelHome(dominio: string, propia?: string | null): string {
   if (propia?.trim()) return propia.trim();
   const limpio = dominio.replace(/^https?:\/\//, "").replace(/\/+$/, "");
-  return `https://image.thum.io/get/width/900/crop/560/noanimate/https://${limpio}`;
+  return `https://image.thum.io/get/width/${ANCHO_CAPTURA}/crop/${RECORTE_CAPTURA}/noanimate/https://${limpio}`;
 }
