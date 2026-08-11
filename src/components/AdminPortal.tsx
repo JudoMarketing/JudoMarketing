@@ -697,6 +697,41 @@ export default function AdminPortal() {
     void loadAll();
   };
 
+  /**
+   * Le avisa a los buscadores que no son Google que hay contenido nuevo.
+   * Google ya se entera solo por Search Console; el resto necesitan que se
+   * les diga.
+   */
+  const avisarBuscadores = async () => {
+    const { data: sess } = await supabase.auth.getSession();
+    if (!sess.session) return flash("Sesión vencida, vuelve a entrar");
+    flash("Avisando a los buscadores…");
+    try {
+      const res = await fetch("/api/indexnow", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${sess.session.access_token}` },
+      });
+      const data = (await res.json()) as {
+        urls?: number;
+        resultados?: { motor: string; estado: number | string }[];
+        error?: string;
+      };
+      if (data.error) return flash(`No se pudo avisar: ${data.error}`);
+      const ok = (data.resultados ?? []).filter(
+        (r) => r.estado === 200 || r.estado === 202
+      );
+      flash(
+        ok.length
+          ? `${data.urls} páginas avisadas ✓ — ${ok.map((r) => r.motor).join(", ")}`
+          : `Ningún buscador confirmó: ${(data.resultados ?? [])
+              .map((r) => `${r.motor} ${r.estado}`)
+              .join(" · ")}`
+      );
+    } catch {
+      flash("No se pudo avisar a los buscadores");
+    }
+  };
+
   /** Abre el PDF firmado. El bucket es privado: se pide un enlace de una hora. */
   const abrirContrato = async (c: ContractRow) => {
     const { data, error } = await supabase.storage
@@ -1070,6 +1105,21 @@ export default function AdminPortal() {
                   <p className="mt-1 text-2xl font-bold text-judo-lilac">{value}</p>
                 </button>
               ))}
+            </div>
+
+            {/* Aviso a los buscadores que no son Google */}
+            <div className={`${box} flex flex-wrap items-center gap-3`}>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-semibold">🔎 Avisar a los buscadores</h2>
+                <p className="mt-1 text-xs text-judo-fog/55">
+                  Le dice a Bing, Yahoo, DuckDuckGo, Yandex y Ecosia que hay
+                  contenido nuevo. Úsalo cuando cambies textos o publiques un
+                  website en el showcase; no hace falta más de una vez al día.
+                </p>
+              </div>
+              <button onClick={avisarBuscadores} className={btnPurple}>
+                📡 Avisar ahora
+              </button>
             </div>
 
             <div className={box}>

@@ -44,6 +44,15 @@ export async function generateMetadata({
       languages: { en: "/", es: "/es", "x-default": "/" },
     },
     icons: { icon: "/brand/logo-black.jpg" },
+    // Verificación de cada buscador. Se pegan en Vercel y aparecen solas;
+    // sin ellas el sitio funciona igual, solo que no puedes ver sus reportes.
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION,
+      yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
+      other: process.env.NEXT_PUBLIC_BING_VERIFICATION
+        ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_VERIFICATION }
+        : undefined,
+    },
     openGraph: {
       title: t("title"),
       description: descripcion,
