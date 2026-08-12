@@ -594,6 +594,71 @@ export default function AdminPortal() {
     }
   };
 
+  /**
+   * Barre las aplicaciones que dejan los bots: las que nunca confirmaron su
+   * correo, llevan más de un día así y no tienen nada a su nombre. Primero
+   * muestra la lista; borrar es un segundo paso aparte.
+   */
+  const limpiarBots = async () => {
+    const { data: sess } = await supabase.auth.getSession();
+    if (!sess.session) return flash("Sesión vencida, vuelve a entrar");
+    const llamar = async (soloContar: boolean) => {
+      const res = await fetch("/api/admin/limpiar-bots", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sess.session!.access_token}`,
+        },
+        body: JSON.stringify({ soloContar }),
+      });
+      return (await res.json()) as {
+        candidatos?: { email: string; nombre: string; creada: string }[];
+        borrados?: number;
+        fallidos?: { email: string; motivo: string }[];
+        error?: string;
+        message?: string;
+      };
+    };
+
+    flash("Buscando aplicaciones sin confirmar…");
+    const previo = await llamar(true);
+    if (previo.error) {
+      return flash(
+        previo.error === "not_configured"
+          ? "Falta la SUPABASE_SERVICE_ROLE_KEY en Vercel."
+          : `No se pudo revisar: ${previo.message ?? previo.error}`
+      );
+    }
+    const lista = previo.candidatos ?? [];
+    if (lista.length === 0) {
+      return flash("No hay aplicaciones sin confirmar para borrar ✓");
+    }
+    const muestra = lista
+      .slice(0, 12)
+      .map((c) => `· ${c.nombre} — ${c.email}`)
+      .join("\n");
+    if (
+      !window.confirm(
+        `${lista.length} aplicaciones nunca confirmaron su correo, llevan más de un día así y no tienen ninguna actividad:\n\n${muestra}${
+          lista.length > 12 ? `\n… y ${lista.length - 12} más` : ""
+        }\n\n¿Las borro? No se puede deshacer.`
+      )
+    )
+      return;
+
+    flash(`Borrando ${lista.length}…`);
+    const hecho = await llamar(false);
+    if (hecho.error) return flash(`No se pudo borrar: ${hecho.message ?? hecho.error}`);
+    const fallidos = hecho.fallidos?.length ?? 0;
+    flash(
+      fallidos
+        ? `${hecho.borrados} borradas ✓ ${fallidos} se resistieron (mira la consola)`
+        : `${hecho.borrados} aplicaciones de bots borradas ✓`
+    );
+    if (fallidos) console.error("No se pudieron borrar:", hecho.fallidos);
+    void loadAll();
+  };
+
   const markCommissionPaid = async (id: string) => {
     const { error } = await supabase
       .from("commissions")
@@ -1219,6 +1284,17 @@ export default function AdminPortal() {
       {/* ── VENDEDORES ── */}
       {tab === "vendedores" && (
         <div className="mt-6 flex flex-col gap-4">
+          {/* Los bots registran aplicaciones y nunca confirman el correo.
+              Esto las junta y las borra de una, en vez de una por una. */}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-judo-lilac/15 bg-judo-surface px-4 py-3">
+            <p className="text-xs text-judo-fog/50">
+              ¿Aplicaciones que huelen a bot? Se borran las que nunca confirmaron
+              su correo, llevan más de un día así y no tienen actividad.
+            </p>
+            <button onClick={() => void limpiarBots()} className={btnGhost}>
+              🧹 Limpiar aplicaciones sin confirmar
+            </button>
+          </div>
           {sellers.length === 0 && (
             <p className="text-sm text-judo-fog/50">Aún no hay vendedores registrados.</p>
           )}

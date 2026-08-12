@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import TiltCard from "@/components/TiltCard";
-import { inputClass, localePath } from "@/components/AuthForms";
-import Turnstile, { resetTurnstile, turnstileEnabled } from "@/components/Turnstile";
+import { inputClass, localePath, mensajeDeError } from "@/components/AuthForms";
+import Turnstile, { bloqueaEnvio, resetTurnstile } from "@/components/Turnstile";
 import { getSupabase } from "@/lib/supabase";
 
 export default function ForgotPage() {
@@ -13,6 +13,7 @@ export default function ForgotPage() {
   const locale = useLocale();
   const [email, setEmail] = useState("");
   const [captcha, setCaptcha] = useState("");
+  const [captchaRoto, setCaptchaRoto] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,7 +30,7 @@ export default function ForgotPage() {
     if (err) {
       resetTurnstile();
       setCaptcha("");
-      setError(err.message);
+      setError(mensajeDeError(err.message, locale));
       return;
     }
     setSent(true);
@@ -59,11 +60,11 @@ export default function ForgotPage() {
                 placeholder={t("email")}
                 className={inputClass}
               />
-              <Turnstile onToken={setCaptcha} />
+              <Turnstile onToken={setCaptcha} onFallo={setCaptchaRoto} />
               {error && <p className="text-sm text-red-400">{error}</p>}
               <button
                 type="submit"
-                disabled={loading || (turnstileEnabled() && !captcha)}
+                disabled={loading || bloqueaEnvio(captcha, captchaRoto)}
                 className="btn-3d py-3 disabled:opacity-60"
               >
                 {loading ? "…" : t("forgotSend")}

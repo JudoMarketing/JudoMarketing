@@ -4,9 +4,20 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { getSupabase } from "@/lib/supabase";
-import Turnstile, { resetTurnstile, turnstileEnabled } from "./Turnstile";
+import Turnstile, { bloqueaEnvio, resetTurnstile } from "./Turnstile";
 
 const TERMS_VERSION = "2026-08-05";
+
+/**
+ * Cuando Supabase rechaza por captcha devuelve un texto en inglés que no le
+ * dice nada a nadie. Se traduce a algo accionable.
+ */
+export function mensajeDeError(msg: string, locale: string): string {
+  if (!/captcha/i.test(msg)) return msg;
+  return locale === "es"
+    ? "No se pudo verificar que no eres un robot. Desactiva el bloqueador de anuncios para esta página o intenta en otro navegador."
+    : "We couldn't verify you're not a robot. Disable your ad blocker for this page or try another browser.";
+}
 
 // El inglés vive sin prefijo; solo el español lleva /es
 export const localePath = (locale: string, path: string) =>
@@ -17,10 +28,12 @@ export const inputClass =
 
 export function LoginForm() {
   const t = useTranslations("auth");
+  const locale = useLocale();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [captcha, setCaptcha] = useState("");
+  const [captchaRoto, setCaptchaRoto] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -38,7 +51,11 @@ export function LoginForm() {
     if (err) {
       resetTurnstile();
       setCaptcha("");
-      setError(err.message === "Invalid login credentials" ? t("error") : err.message);
+      setError(
+        err.message === "Invalid login credentials"
+          ? t("error")
+          : mensajeDeError(err.message, locale)
+      );
       return;
     }
     // El admin va directo a su dashboard; los vendedores a su portal
@@ -70,11 +87,11 @@ export function LoginForm() {
         placeholder={t("password")}
         className={inputClass}
       />
-      <Turnstile onToken={setCaptcha} />
+      <Turnstile onToken={setCaptcha} onFallo={setCaptchaRoto} />
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"
-        disabled={loading || (turnstileEnabled() && !captcha)}
+        disabled={loading || bloqueaEnvio(captcha, captchaRoto)}
         className="btn-3d py-3 disabled:opacity-60"
       >
         {loading ? "…" : t("submitLogin")}
@@ -103,6 +120,7 @@ export function RegisterForm() {
   const [refCode, setRefCode] = useState("");
   const [accepted, setAccepted] = useState(false);
   const [captcha, setCaptcha] = useState("");
+  const [captchaRoto, setCaptchaRoto] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -132,7 +150,7 @@ export function RegisterForm() {
     if (err) {
       resetTurnstile();
       setCaptcha("");
-      setError(err.message);
+      setError(mensajeDeError(err.message, locale));
       return;
     }
     setDone(true);
@@ -203,11 +221,11 @@ export function RegisterForm() {
           </a>
         </span>
       </label>
-      <Turnstile onToken={setCaptcha} />
+      <Turnstile onToken={setCaptcha} onFallo={setCaptchaRoto} />
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"
-        disabled={loading || !accepted || (turnstileEnabled() && !captcha)}
+        disabled={loading || !accepted || bloqueaEnvio(captcha, captchaRoto)}
         className="btn-3d py-3 disabled:opacity-60"
       >
         {loading ? "…" : t("submitRegister")}
