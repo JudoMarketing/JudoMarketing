@@ -49,7 +49,7 @@ export default function GlobalError({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#0b0b12",
+          background: "#12111d",
           color: "#f5f5f7",
           fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
           padding: "24px",

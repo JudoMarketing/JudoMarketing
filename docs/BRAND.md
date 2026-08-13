@@ -14,9 +14,13 @@ Fuente: brand sheet oficial (compartido por el dueño, 2026-08-05).
 |---|---|
 | Morado primario (botones, acentos, glow) | `#7B2DFF` |
 | Morado claro (secundario, highlights de texto) | `#A855F7` |
-| Negro base (fondo principal) | `#0B0B12` |
-| Negro elevado (tarjetas, superficies) | `#11111A` |
+| Negro base (fondo principal) | `#12111D` |
+| Negro elevado (tarjetas, superficies) | `#1B1928` |
 | Blanco suave (texto) | `#F5F5F7` |
+
+El fondo y las superficies se aclararon en 08/2026: el negro casi puro
+(`#0B0B12` / `#11111A`) hacía que la página se leyera apagada. Sigue siendo
+noche morada, con algo más de luz.
 
 ## Tipografía
 

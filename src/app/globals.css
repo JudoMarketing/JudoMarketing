@@ -1,11 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  /* Paleta oficial Judo Marketing (docs/BRAND.md) */
+  /* Paleta oficial Judo Marketing (docs/BRAND.md)
+     El fondo y las superficies se aclararon (08/2026): el negro casi puro
+     hacía que la página se leyera apagada y hundía el texto secundario. Sigue
+     siendo noche morada, pero con algo de luz. */
   --color-judo-purple: #7b2dff;
   --color-judo-lilac: #a855f7;
-  --color-judo-black: #0b0b12;
-  --color-judo-surface: #11111a;
+  --color-judo-black: #12111d;
+  --color-judo-surface: #1b1928;
   --color-judo-fog: #f5f5f7;
 
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
@@ -24,15 +27,15 @@ body {
 /* ── Fondo con glow morado ─────────────────────────────────────────── */
 .judo-glow {
   background:
-    radial-gradient(ellipse 60% 40% at 70% 8%, rgba(123, 45, 255, 0.2), transparent 70%),
-    radial-gradient(ellipse 50% 35% at 15% 55%, rgba(109, 91, 255, 0.1), transparent 70%),
-    radial-gradient(ellipse 45% 30% at 85% 90%, rgba(168, 85, 247, 0.12), transparent 70%);
+    radial-gradient(ellipse 60% 40% at 70% 8%, rgba(123, 45, 255, 0.26), transparent 70%),
+    radial-gradient(ellipse 50% 35% at 15% 55%, rgba(109, 91, 255, 0.15), transparent 70%),
+    radial-gradient(ellipse 45% 30% at 85% 90%, rgba(168, 85, 247, 0.17), transparent 70%);
 }
 
 /* ── Tarjetas 3D ───────────────────────────────────────────────────── */
 .tilt-card {
   position: relative;
-  background: linear-gradient(160deg, #171722 0%, #11111a 60%, #0d0d15 100%);
+  background: linear-gradient(160deg, #262338 0%, #1b1928 60%, #171522 100%);
   border: 1px solid rgba(168, 85, 247, 0.18);
   border-radius: 1.25rem;
   transform-style: preserve-3d;
@@ -44,7 +47,7 @@ body {
 /* Tarjeta del portafolio: mismo fondo sólido que las demás, para que las
    líneas de luz del fondo no se transparenten sobre el texto. */
 .work-card {
-  background: linear-gradient(160deg, #171722 0%, #11111a 60%, #0d0d15 100%);
+  background: linear-gradient(160deg, #262338 0%, #1b1928 60%, #171522 100%);
   border: 1px solid rgba(168, 85, 247, 0.16);
   transition:
     transform 0.3s ease,
@@ -251,7 +254,7 @@ body {
   width: 200px;
   padding: 0.8rem 1rem;
   border-radius: 1.2rem;
-  background: rgba(21, 21, 30, 0.96);
+  background: rgba(27, 25, 40, 0.96);
   border: 1px solid rgba(168, 85, 247, 0.45);
   box-shadow: 0 14px 40px -12px rgba(123, 45, 255, 0.5);
   text-align: center;
@@ -261,7 +264,7 @@ body {
 .thought-dot {
   position: absolute;
   border-radius: 9999px;
-  background: rgba(21, 21, 30, 0.96);
+  background: rgba(27, 25, 40, 0.96);
   border: 1px solid rgba(168, 85, 247, 0.45);
 }
 
