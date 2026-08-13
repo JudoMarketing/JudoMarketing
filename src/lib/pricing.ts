@@ -17,7 +17,7 @@ export type Plan = (typeof PLANES)[number];
 /** Precio de oferta (el que está corriendo ahora). */
 const OFERTA = tabla.oferta as Record<Plan, number>;
 
-/** Precio normal: el doble. Entra solo en la fecha de cambio. */
+/** Precio normal, el de lista. Entra solo en la fecha de cambio. */
 const NORMAL = tabla.normal as Record<Plan, number>;
 
 /**

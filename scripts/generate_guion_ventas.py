@@ -70,7 +70,7 @@ sec("1. LO QUE VENDEMOS (apréndetelo de memoria)")
 p("<b>La frase de oro:</b>")
 say(f"Websites y apps profesionales por suscripción mensual, desde ${OFERTA['essential']} al mes, "
     "con todo incluido: diseño, mantenimiento, seguridad y su propio panel de control.")
-p(f"<b>OJO CON LA FECHA:</b> los precios de abajo suben al doble el {CAMBIO}. "
+p(f"<b>OJO CON LA FECHA:</b> los precios de abajo suben el {CAMBIO}. "
   "El precio que el cliente firme antes es el que mantiene mientras siga con "
   "nosotros. Úsalo: es tu mejor razón para que decida hoy y no la otra semana.")
 sub("Los 3 planes")
@@ -97,7 +97,7 @@ sec("2. EL SPEECH DE 30 SEGUNDOS (para abrir en frío)")
 p("Para cuando entras a un negocio o te presentan a alguien. Corto, directo y termina en pregunta:")
 say("Hola, ¿usted es quien lleva el negocio? Mucho gusto, soy [tu nombre], trabajo con Judo Marketing. "
     "Le hago una pregunta rapidita: cuando alguien busca un negocio como el suyo en Google, ¿lo encuentra a usted o "
-    "encuentra a la competencia? ... Mire, nosotros hacemos páginas web profesionales por suscripción: 50 dólares al "
+    f"encuentra a la competencia? ... Mire, nosotros hacemos páginas web profesionales por suscripción: {OFERTA['essential']} dólares al "
     "mes, sin pagar miles de una vez, con tienda o citas online y su propio panel para controlar todo. Y si no se la "
     "entregamos en menos de un mes, le devolvemos su plata. ¿Le muestro en dos minutos cómo quedaría la suya?")
 p("<b>La clave:</b> no vendas la página, vende lo que le duele. Escucha más de lo que hablas.")
@@ -122,7 +122,7 @@ b("<b>Restaurante o comida:</b> “Pedidos directos desde su propia página, sin
 b("<b>Servicios (mecánico, abogado, doctor, entrenador):</b> “Una página seria que dé confianza, con sus "
   "servicios, citas y testimonios, para que cuando lo busquen en Google, usted gane.”")
 sub("Paso 4. El precio, sin miedo y sin rodeos")
-say("Son 50 dólares al mes, el plan de arranque. Menos de 2 dólares al día, menos de lo que cuesta un café. Y ahí va "
+say(f"Son {OFERTA['essential']} dólares al mes, el plan de arranque. Menos de 2 dólares al día, menos de lo que cuesta un café. Y ahí va "
     "todo incluido: el diseño, el mantenimiento, la seguridad, los respaldos y su panel de control. Sin cobros "
     "escondidos.")
 sub("Paso 5. Quítale el riesgo")
@@ -140,7 +140,7 @@ b("<b>Apenas termines, registra la visita en tu portal.</b> Con o sin internet, 
 sec("4. OBJECIONES: QUÉ RESPONDER, PALABRA POR PALABRA")
 qa("“Está caro” / “No tengo presupuesto”",
    "“Le entiendo. Mire, una página web tradicional cuesta 1.500 a 3.000 dólares de una sola vez, y después le "
-   "cobran aparte el mantenimiento. Aquí son 50 al mes con todo incluido: menos de 2 dólares diarios. ¿Cuánto vale "
+   f"cobran aparte el mantenimiento. Aquí son {OFERTA['essential']} al mes con todo incluido: menos de 2 dólares diarios. ¿Cuánto vale "
    "para usted una sola venta que hoy se le está escapando por no estar en línea?”")
 qa("“Ya tengo Instagram y me va bien”",
    "“¡Y qué bueno, siga con Instagram! La página no lo reemplaza, lo multiplica. Instagram es terreno alquilado: "
