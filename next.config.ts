@@ -18,9 +18,12 @@ const nextConfig: NextConfig = {
   images: {
     // Capturas del home de los websites del portafolio
     remotePatterns: [{ protocol: "https", hostname: "image.thum.io" }],
-    // Vercel guarda la captura un día: el visitante nunca espera al servicio
-    // de capturas, y aun así la imagen se refresca si el cliente cambia su sitio.
-    minimumCacheTTL: 86400,
+    // Una hora, no un día. El servicio de capturas contesta con un dibujo de
+    // "cargando" la primera vez que le piden una dirección nueva, y con un día
+    // de guardado ese dibujo se quedaba de portada hasta el otro día. Una hora
+    // deja que se arregle solo, y sigue siendo tiempo de sobra para que el
+    // visitante nunca espere a que saquen la foto.
+    minimumCacheTTL: 3600,
   },
   // Las direcciones viejas del portafolio, por si Google alcanzó a verlas
   async redirects() {

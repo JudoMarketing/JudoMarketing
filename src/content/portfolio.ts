@@ -65,7 +65,7 @@ export const RELACION_CAPTURA = "900/562";
  * blanco. Y esa portada en blanco se queda guardada un día entero, así que la
  * espera sale más barata que el error.
  */
-const ESPERA_CAPTURA = 5;
+const ESPERA_CAPTURA = 8;
 
 /**
  * Captura del home.
