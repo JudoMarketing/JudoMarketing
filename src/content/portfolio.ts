@@ -59,8 +59,34 @@ const RECORTE_CAPTURA = 750; // 750 x 0.75 = 562 de alto
 /** La misma proporción, para la ficha que muestra la captura. */
 export const RELACION_CAPTURA = "900/562";
 
-export function capturaDelHome(dominio: string, propia?: string | null): string {
+/**
+ * Segundos de espera antes de disparar la foto. Sin esto, un sitio pesado
+ * todavía está pintando cuando el servicio dispara y sale una portada en
+ * blanco. Y esa portada en blanco se queda guardada un día entero, así que la
+ * espera sale más barata que el error.
+ */
+const ESPERA_CAPTURA = 5;
+
+/**
+ * Captura del home.
+ *
+ * `sello` sirve para volver a tomarla. El servicio guarda cada captura por 24
+ * horas contra la dirección exacta que se le pidió, buena o mala: si salió en
+ * blanco, pedir lo mismo devuelve el blanco. Cambiar el sello cambia la
+ * dirección y obliga a una foto nueva. Se llena desde el portal con el botón
+ * "Actualizar portada".
+ *
+ * Ojo con la primera vez que se pide una dirección nueva: el servicio contesta
+ * con un dibujo de "cargando" mientras saca la foto de verdad, y la entrega en
+ * la siguiente visita. Por eso el botón avisa que hay que esperar un momento.
+ */
+export function capturaDelHome(
+  dominio: string,
+  propia?: string | null,
+  sello?: string | null
+): string {
   if (propia?.trim()) return propia.trim();
   const limpio = dominio.replace(/^https?:\/\//, "").replace(/\/+$/, "");
-  return `https://image.thum.io/get/width/${ANCHO_CAPTURA}/crop/${RECORTE_CAPTURA}/noanimate/https://${limpio}`;
+  const marca = sello ? `?jm=${Date.parse(sello) || 0}` : "";
+  return `https://image.thum.io/get/width/${ANCHO_CAPTURA}/crop/${RECORTE_CAPTURA}/wait/${ESPERA_CAPTURA}/https://${limpio}${marca}`;
 }

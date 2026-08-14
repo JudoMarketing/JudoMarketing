@@ -103,6 +103,7 @@ type SiteRow = {
   portfolio_desc_es: string | null;
   portfolio_desc_en: string | null;
   portfolio_image: string | null;
+  portfolio_shot_at: string | null;
   client_id: string | null;
   currency: string | null;
   billing_day: number | null;
@@ -246,7 +247,7 @@ export default function AdminPortal() {
       supabase
         .from("sites")
         .select(
-          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,kit_api_key,domain_expires_at,portfolio_visible,portfolio_category,portfolio_desc_es,portfolio_desc_en,portfolio_image,client_id,currency,billing_day,payment_method,grace_days,timezone,repo_url,vercel_project,registrar,domain_holder,dns_provider,email_provider,db_provider,ga4_property_id,gsc_property,gbp_location,meta_pixel_id,meta_page,notes,clients(full_name,business_name)"
+          "id,name,domain,status,monthly_price,months_paid,next_payment_due,seller_id,kit_api_key,domain_expires_at,portfolio_visible,portfolio_category,portfolio_desc_es,portfolio_desc_en,portfolio_image,portfolio_shot_at,client_id,currency,billing_day,payment_method,grace_days,timezone,repo_url,vercel_project,registrar,domain_holder,dns_provider,email_provider,db_provider,ga4_property_id,gsc_property,gbp_location,meta_pixel_id,meta_page,notes,clients(full_name,business_name)"
         )
         .order("created_at", { ascending: false }),
       supabase
@@ -2143,6 +2144,32 @@ function SitePortfolio({
   const [categoria, setCategoria] = useState(site.portfolio_category ?? "");
   const [descEs, setDescEs] = useState(site.portfolio_desc_es ?? "");
   const [descEn, setDescEn] = useState(site.portfolio_desc_en ?? "");
+  const [pidiendoFoto, setPidiendoFoto] = useState(false);
+
+  /**
+   * Manda a tomar la portada de nuevo.
+   *
+   * El servicio de capturas guarda cada foto un día contra la dirección exacta
+   * que se le pidió, aunque haya salido en blanco. Cambiar esta fecha cambia
+   * esa dirección, así que lo obliga a disparar otra vez.
+   */
+  const volverATomarPortada = async () => {
+    setPidiendoFoto(true);
+    const { error } = await supabase
+      .from("sites")
+      .update({ portfolio_shot_at: new Date().toISOString() })
+      .eq("id", site.id);
+    setPidiendoFoto(false);
+    if (error) {
+      return flash(
+        error.message.includes("portfolio_shot_at")
+          ? "Falta la migración 0024 en la base. Córrela y vuelve a intentarlo."
+          : `No se pudo: ${error.message}`
+      );
+    }
+    flash("Portada pedida ✓ Tarda un par de minutos en aparecer");
+    onSaved();
+  };
 
   const guardar = async (cambios: Record<string, unknown>) => {
     const { error } = await supabase.from("sites").update(cambios).eq("id", site.id);
@@ -2153,7 +2180,7 @@ function SitePortfolio({
       setCategoria(site.portfolio_category ?? "");
       return flash(
         error.message.includes("portfolio_category")
-          ? "Esa categoría todavía no está permitida en la base. Corre la migración 0022 y vuelve a intentarlo."
+          ? "Esa categoría todavía no está permitida en la base. Corre la migración 0023 y vuelve a intentarlo."
           : `No se guardó: ${error.message}`
       );
     }
@@ -2247,6 +2274,25 @@ function SitePortfolio({
             placeholder="Imagen propia (opcional): /portfolio/algo.jpg o una dirección"
             className="rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
           />
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => void volverATomarPortada()}
+              disabled={pidiendoFoto || Boolean(site.portfolio_image?.trim())}
+              title={
+                site.portfolio_image?.trim()
+                  ? "Este website usa una imagen propia, no una captura"
+                  : "Toma la captura del home otra vez"
+              }
+              className={`${btnGhost} disabled:opacity-40`}
+            >
+              {pidiendoFoto ? "Pidiendo…" : "🔄 Actualizar portada"}
+            </button>
+            {site.portfolio_shot_at && (
+              <span className="text-[11px] text-judo-fog/35">
+                última: {new Date(site.portfolio_shot_at).toLocaleString("es-US")}
+              </span>
+            )}
+          </div>
           <p className="text-[11px] text-judo-fog/35">
             Si dejas la imagen vacía se usa una captura del home, que se genera
             sola. Si esa captura no luce bien, pon aquí una imagen propia y esa

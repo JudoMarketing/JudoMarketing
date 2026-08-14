@@ -22,6 +22,7 @@ type Fila = {
   portfolio_desc_es: string | null;
   portfolio_desc_en: string | null;
   portfolio_image: string | null;
+  portfolio_shot_at: string | null;
 };
 
 // Misma lista que el selector del portal y que el candado de la base
@@ -38,6 +39,31 @@ const CATEGORIAS_VALIDAS = [
   "construccion",
 ];
 
+/**
+ * Devuelve el dominio que de verdad contesta.
+ *
+ * Muchos dominios solo responden con www y mandan el resto a esa dirección. El
+ * servicio de capturas no sigue esos rebotes: pide melanieosorio.com, le
+ * contestan "ve a www", y devuelve una portada en blanco. Aquí se sigue el
+ * rebote una vez y se guarda a dónde llegó, para pedirle la foto a esa.
+ *
+ * Si algo falla —el sitio está caído, tarda demasiado— se devuelve el dominio
+ * tal como está guardado: peor es quedarse sin portafolio por una consulta.
+ */
+async function dominioQueContesta(dominio: string): Promise<string> {
+  try {
+    const res = await fetch(`https://${dominio}`, {
+      method: "HEAD",
+      redirect: "follow",
+      signal: AbortSignal.timeout(4000),
+    });
+    const destino = new URL(res.url).hostname;
+    return destino || dominio;
+  } catch {
+    return dominio;
+  }
+}
+
 export async function trabajosPublicados(): Promise<Trabajo[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const llave = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -48,7 +74,7 @@ export async function trabajosPublicados(): Promise<Trabajo[]> {
     const { data, error } = await supabase
       .from("sites")
       .select(
-        "name,status,domain,portfolio_category,portfolio_desc_es,portfolio_desc_en,portfolio_image"
+        "name,status,domain,portfolio_category,portfolio_desc_es,portfolio_desc_en,portfolio_image,portfolio_shot_at"
       )
       .in("status", ["activo", "en_desarrollo"])
       .eq("portfolio_visible", true)
@@ -57,26 +83,36 @@ export async function trabajosPublicados(): Promise<Trabajo[]> {
 
     if (error || !data) return [];
 
-    return (data as Fila[])
-      .filter((fila) => Boolean(fila.domain))
-      .map((fila) => {
+    const filas = (data as Fila[]).filter((fila) => Boolean(fila.domain));
+
+    // Se resuelven todos a la vez: la página es ISR, así que esto corre una vez
+    // por revalidación, no en cada visita.
+    const paraLaFoto = await Promise.all(
+      filas.map(async (fila) => {
         const dominio = fila.domain!.replace(/^https?:\/\//, "").replace(/\/+$/, "");
-        const categoria = CATEGORIAS_VALIDAS.includes(fila.portfolio_category ?? "")
-          ? (fila.portfolio_category as Categoria)
-          : null;
-        return {
-          nombre: fila.name,
-          dominio,
-          url: `https://${dominio}`,
-          imagen: capturaDelHome(dominio, fila.portfolio_image),
-          categoria,
-          enDesarrollo: fila.status === "en_desarrollo",
-          descripcion: {
-            es: fila.portfolio_desc_es ?? "",
-            en: fila.portfolio_desc_en ?? fila.portfolio_desc_es ?? "",
-          },
-        };
-      });
+        // Con imagen propia no hace falta averiguar nada
+        return fila.portfolio_image?.trim() ? dominio : dominioQueContesta(dominio);
+      })
+    );
+
+    return filas.map((fila, i) => {
+      const dominio = fila.domain!.replace(/^https?:\/\//, "").replace(/\/+$/, "");
+      const categoria = CATEGORIAS_VALIDAS.includes(fila.portfolio_category ?? "")
+        ? (fila.portfolio_category as Categoria)
+        : null;
+      return {
+        nombre: fila.name,
+        dominio,
+        url: `https://${dominio}`,
+        imagen: capturaDelHome(paraLaFoto[i], fila.portfolio_image, fila.portfolio_shot_at),
+        categoria,
+        enDesarrollo: fila.status === "en_desarrollo",
+        descripcion: {
+          es: fila.portfolio_desc_es ?? "",
+          en: fila.portfolio_desc_en ?? fila.portfolio_desc_es ?? "",
+        },
+      };
+    });
   } catch {
     // Sin portafolio no se rompe nada: la página muestra su mensaje vacío.
     return [];
