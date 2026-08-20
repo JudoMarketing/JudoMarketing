@@ -25,6 +25,19 @@ const nextConfig: NextConfig = {
     // visitante nunca espere a que saquen la foto.
     minimumCacheTTL: 3600,
   },
+  // JuditoADS vive como app aparte (repo Judito-Ads) pero se sirve bajo
+  // judomarketing.net/juditoads. JUDITOADS_URL es la URL del deploy de esa
+  // app en Vercel (ej: https://judito-ads.vercel.app); sin la variable, la
+  // ruta simplemente no existe y el sitio no se ve afectado.
+  async rewrites() {
+    const juditoads = process.env.JUDITOADS_URL;
+    if (!juditoads) return [];
+    return [
+      { source: "/juditoads", destination: `${juditoads}/juditoads` },
+      { source: "/juditoads/:path*", destination: `${juditoads}/juditoads/:path*` },
+    ];
+  },
+
   // Las direcciones viejas del portafolio, por si Google alcanzó a verlas
   async redirects() {
     return [

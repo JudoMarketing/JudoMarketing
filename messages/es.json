@@ -242,6 +242,24 @@
       "cta": "Quiero uno para mi negocio",
       "demo": "Míralo aquí mismo",
       "demoNote": "El robot que ves en esta página es uno de estos. Escríbele y pruébalo antes de decidir."
+    },
+    "juditoads": {
+      "eyebrow": "Nuevo — hazlo tú mismo",
+      "name": "JuditoADS (campañas de redes)",
+      "badge": "Nuevo servicio",
+      "body": "La plataforma self-service de Judo Marketing: conecta tu cuenta de Meta, sube tus imágenes y videos, cuéntanos quién es tu cliente ideal y lanza tu publicidad en Facebook e Instagram tú mismo — con estrategia guiada para que tu campaña llegue a más personas.",
+      "features": [
+        "Conecta tus propias cuentas publicitarias de Meta",
+        "Estrategia guiada: tu país, tu cliente ideal y tu objetivo",
+        "Tú controlas el presupuesto: actívalo o páusalo cuando quieras",
+        "Alcance y resultados en tiempo real",
+        "Reportes profesionales descargables en PDF",
+        "14 días de prueba gratis"
+      ],
+      "price": "$20/mes",
+      "priceNote": "+ tu presupuesto publicitario, que se paga directo a Meta",
+      "vsMedia": "¿Prefieres que lo manejemos por ti? Eso es Media Marketing, aquí arriba.",
+      "cta": "Entrar a JuditoADS"
     }
   },
   "login": {
