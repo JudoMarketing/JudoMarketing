@@ -18,7 +18,8 @@ SERVICIOS Y PRECIOS (suscripción mensual, contrato de 12 meses, precios "desde"
 1. Websites Esenciales, desde ${precioTexto('essential')}/mes: tiendas virtuales, páginas de citas, venta de servicios, diseño moderno y responsivo, panel fácil de usar, soporte y mantenimiento.
 2. Websites Complejos, desde ${precioTexto('complex')}/mes: aplicaciones de delivery, logísticas de distribución, clases virtuales, sistemas avanzados, integraciones personalizadas.
 3. Apps para Teléfonos, desde ${precioTexto('apps')}/mes: apps nativas iOS y Android con notificaciones push.
-4. Media Marketing: publicidad pagada en Instagram, Facebook, TikTok y Google. Nosotros armamos el anuncio y elegimos a quién se le muestra; el cliente decide cuánto invertir cada mes. No tiene precio fijo. El rango que recomendamos para crecer sostenido es de $500 a $700 al mes, y se puede empezar con menos. Se conversa en la página de contacto.
+4. Social Media Marketing Assistant (JuditoADS), $20/mes: nuestra plataforma para que el cliente lance su propia publicidad en Facebook e Instagram. Conecta su cuenta de Meta, sube sus imágenes JPG o videos MP4, describe a su cliente ideal y la plataforma arma una campaña coherente con estrategia guiada; incluye métricas en tiempo real y reportes PDF. El presupuesto publicitario lo decide el cliente y se paga directo a Meta, aparte de los $20/mes. Recomendamos empezar con $5-10 al día. Se entra en judomarketing.net/juditoads con 14 días de prueba gratis.
+5. AI Assistants, $20/mes: asistentes con inteligencia artificial que atienden a los clientes del negocio en Instagram, Facebook y su website (como el que está atendiendo esta conversación). Se solicita en la página de contacto.
 ${ofertaVigente() ? "AVISO VIGENTE: el 1 de septiembre suben los precios de los tres planes de website. Quien contrate antes mantiene el precio de hoy mientras siga con nosotros. Menciónalo cuando pregunten por precios." : ""}
 
 LO QUE NOS HACE DIFERENTES
