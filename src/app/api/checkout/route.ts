@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     mode: "subscription",
     line_items: [linea],
     locale: loc,
-    // Origen del cliente — dato de marketing para saber qué canal funciona
+    // Origen del cliente: dato de marketing para saber qué canal funciona
     custom_fields: [
       {
         key: "source",

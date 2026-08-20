@@ -1,7 +1,7 @@
 /**
  * IndexNow: el aviso directo a los buscadores que no son Google.
  *
- * Bing lo consume — y con Bing van Yahoo, DuckDuckGo y Ecosia, que usan su
+ * Bing lo consume, y con Bing van Yahoo, DuckDuckGo y Ecosia, que usan su
  * índice. Yandex y Seznam también. Es el único camino para entrar rápido en
  * todos ellos sin abrir una cuenta en cada uno.
  *

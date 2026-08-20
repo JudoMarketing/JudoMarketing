@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * JUDITOADS_URL es el ORIGEN del deploy (sin basePath) — es la misma que
+ * JUDITOADS_URL es el ORIGEN del deploy (sin basePath). Es la misma que
  * usa el rewrite de next.config.ts. La app vive bajo /juditoads, así que hay
  * que añadirlo aquí; si no, la ruta cae en el 404 del propio deploy.
  */

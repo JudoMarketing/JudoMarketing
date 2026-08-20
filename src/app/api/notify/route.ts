@@ -3,7 +3,7 @@ import { brandedEmail, isEmailConfigured, sendBrandedEmail } from "@/lib/email";
 
 /**
  * Notificaciones por email con diseño de marca.
- * Único tipo vigente: "intake" — un cliente llenó el formulario de datos y
+ * Único tipo vigente: "intake". Un cliente llenó el formulario de datos y
  * Administración recibe el aviso sin tener que entrar al panel a mirar.
  * (Los avisos del programa de vendedores se retiraron junto con el programa.)
  */

@@ -129,7 +129,7 @@ export default function Mascot() {
   };
 
   // Dentro de los portales no aparece. Ahí no hay nada que venderle a nadie:
-  // se está trabajando, y el robot tapa tarjetas y botones — en el teléfono
+  // se está trabajando, y el robot tapa tarjetas y botones. En el teléfono
   // del vendedor, de lleno.
   if (PORTALES.some((ruta) => pathname === ruta || pathname.startsWith(`${ruta}/`))) {
     return null;
@@ -215,7 +215,7 @@ export default function Mascot() {
             <circle cx="70" cy="122" r="3.2" fill="#c9a2ff" opacity="0.9" />
           </g>
 
-          {/* Cabeza (sigue el cursor) — grande y redonda como el original */}
+          {/* Cabeza (sigue el cursor): grande y redonda como el original */}
           <g ref={headRef} style={{ transformOrigin: "70px 54px" }}>
             {/* Pods circulares de las orejas */}
             <circle cx="13" cy="52" r="12" fill="url(#mBody)" stroke="#5b3aa0" strokeWidth="1" />
@@ -230,7 +230,7 @@ export default function Mascot() {
             {/* Visor / placa de la cara */}
             <rect x="28" y="22" width="84" height="62" rx="30" fill="url(#mFace)" stroke="#2a1f45" strokeWidth="1" />
             <ellipse cx="54" cy="30" rx="22" ry="5" fill="#ffffff" opacity="0.05" />
-            {/* Ojos (siguen el cursor, parpadean) — óvalos verticales con núcleo brillante */}
+            {/* Ojos (siguen el cursor, parpadean): óvalos verticales con núcleo brillante */}
             <g
               ref={eyesRef}
               style={{

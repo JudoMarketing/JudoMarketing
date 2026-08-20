@@ -1,7 +1,7 @@
 /**
  * Texto del Acuerdo de Servicio (ES) para el PDF firmado digitalmente.
  * Fuente de verdad: docs/legal/contracts/acuerdo-de-servicio-cliente.md
- * — si se edita el md, actualizar aquí también.
+ * Si se edita el md, actualizar aquí también.
  */
 
 export const ADMIN_SIGNER_NAME = "Junior Osorio";

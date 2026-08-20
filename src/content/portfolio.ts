@@ -49,7 +49,7 @@ export const CATEGORIAS: { id: Categoria; es: string; en: string }[] = [
  *
  * El servicio dibuja la página en una pantalla de 1200 de ancho y después la
  * achica a los 900 que pedimos, así que el recorte también se achica: pedir
- * crop/750 devuelve una imagen de 900x562. Ese número no es decorativo — tiene
+ * crop/750 devuelve una imagen de 900x562. Ese número no es decorativo: tiene
  * que dar la misma proporción que la ficha del showcase (RELACION_CAPTURA),
  * porque si no coinciden el navegador agranda la captura para llenar el hueco
  * y se come los bordes del sitio.

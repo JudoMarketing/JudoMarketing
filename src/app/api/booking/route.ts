@@ -352,8 +352,8 @@ async function avisarPorCorreo({
             ? `Join on Google Meet: <a href="${meet}" style="color:#a855f7;">${meet}</a>`
             : "We'll send you the Google Meet link before the call.",
           enGoogle
-            ? "Google sent you the calendar invite separately — accept it and you're set."
-            : "The invitation is attached — open it and it goes straight into your calendar.",
+            ? "Google sent you the calendar invite separately. Accept it and you're set."
+            : "The invitation is attached. Open it and it goes straight into your calendar.",
           "Need to change it? Just reply to this email.",
         ]
       : [

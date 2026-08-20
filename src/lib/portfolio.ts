@@ -47,7 +47,7 @@ const CATEGORIAS_VALIDAS = [
  * contestan "ve a www", y devuelve una portada en blanco. Aquí se sigue el
  * rebote una vez y se guarda a dónde llegó, para pedirle la foto a esa.
  *
- * Si algo falla —el sitio está caído, tarda demasiado— se devuelve el dominio
+ * Si algo falla (el sitio está caído, tarda demasiado) se devuelve el dominio
  * tal como está guardado: peor es quedarse sin portafolio por una consulta.
  */
 async function dominioQueContesta(dominio: string): Promise<string> {

@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Portal de Administración (/es/admin) — MVP Fase 4.
+ * Portal de Administración (/es/admin). MVP Fase 4.
  * Solo para la cuenta con role='admin' (admin@judomarketing.net).
  * Texto en español: el admin es el dueño.
  */
@@ -490,7 +490,7 @@ export default function AdminPortal() {
       );
       flash(
         ok.length
-          ? `${data.urls} páginas avisadas ✓ — ${ok.map((r) => r.motor).join(", ")}`
+          ? `${data.urls} páginas avisadas ✓: ${ok.map((r) => r.motor).join(", ")}`
           : `Ningún buscador confirmó: ${(data.resultados ?? [])
               .map((r) => `${r.motor} ${r.estado}`)
               .join(" · ")}`
@@ -534,7 +534,7 @@ export default function AdminPortal() {
     await supabase.from("site_events").insert({
       site_id: siteId,
       kind: "contrato_firmado",
-      detail: `Contrato ${c.code} de ${c.client_name} — $${Number(c.monthly_price).toFixed(2)}/mes`,
+      detail: `Contrato ${c.code} de ${c.client_name}, $${Number(c.monthly_price).toFixed(2)}/mes`,
       actor,
     });
 
@@ -575,7 +575,7 @@ export default function AdminPortal() {
       site_id: siteId,
       // La bitácora solo acepta los tipos de la migración 0016; esto es una nota
       kind: "nota",
-      detail: `Copiado del contrato ${c.code} — ${lista.join(" · ")}`,
+      detail: `Copiado del contrato ${c.code}: ${lista.join(" · ")}`,
       actor,
     });
     flash(`Contrato ${c.code} asignado y website actualizado ✓`);
@@ -587,7 +587,7 @@ export default function AdminPortal() {
    * arrepintió. Se lleva también el PDF, para no dejar archivos huérfanos.
    *
    * Un contrato es evidencia, así que pregunta dos veces cuando el website al
-   * que pertenece está activo — ese cliente sí está pagando y ese documento
+   * que pertenece está activo: ese cliente sí está pagando y ese documento
    * es lo que respalda el cobro.
    */
   const borrarContrato = async (c: ContractRow) => {
@@ -1067,7 +1067,7 @@ export default function AdminPortal() {
                   className={`${fieldSm} max-w-[16rem]`}
                 >
                   <option value="" className="bg-judo-surface">
-                    — sin asignar (pendiente) —
+                    Sin asignar (pendiente)
                   </option>
                   {sites.map((s) => (
                     <option key={s.id} value={s.id} className="bg-judo-surface">

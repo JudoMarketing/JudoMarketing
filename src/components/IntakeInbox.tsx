@@ -7,7 +7,7 @@ import { getSupabase } from "@/lib/supabase";
  * Lo que los clientes llenaron en el formulario de arranque.
  *
  * Sirve de dos maneras: es la bandeja donde llegan sus datos, y es el
- * recordatorio de lo que todavía hay que pedirles — cada ficha marca en verde
+ * recordatorio de lo que todavía hay que pedirles: cada ficha marca en verde
  * los accesos que dijeron poder dar y en ámbar los que faltan.
  */
 
@@ -293,7 +293,7 @@ export default function IntakeInbox({
                 className="max-w-[16rem] rounded-lg border border-judo-lilac/25 bg-judo-black/60 px-2 py-1 text-xs text-judo-fog outline-none focus:border-judo-lilac"
               >
                 <option value="" className="bg-judo-surface">
-                  — ningún website todavía —
+                  Ningún website todavía
                 </option>
                 {sitios.map((s) => (
                   <option key={s.id} value={s.id} className="bg-judo-surface">
