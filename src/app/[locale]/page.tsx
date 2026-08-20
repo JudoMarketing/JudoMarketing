@@ -117,8 +117,10 @@ export default function HomePage({
           </Link>
         </div>
 
-        {/* Tercer camino, más discreto: ver el trabajo ya hecho */}
-        <div className="hero-in mt-5" style={{ animationDelay: "0.6s" }}>
+        {/* Dos caminos más discretos: ver el trabajo ya hecho, o entrar a
+            JuditoADS. JuditoADS va con <a> normal porque es otra app servida
+            bajo /juditoads, fuera del enrutado de idiomas de next-intl. */}
+        <div className="hero-in mt-5 flex flex-wrap justify-center gap-3" style={{ animationDelay: "0.6s" }}>
           <Link
             href="/showcase"
             className="inline-flex items-center gap-2 rounded-full border border-judo-lilac/20 bg-white/5 px-6 py-2.5 text-sm text-judo-fog/70 backdrop-blur-sm transition hover:border-judo-lilac/45 hover:bg-white/10 hover:text-judo-fog"
@@ -126,6 +128,13 @@ export default function HomePage({
             {t("hero.ctaShowcase")}
             <span aria-hidden>→</span>
           </Link>
+          <a
+            href="/juditoads"
+            className="inline-flex items-center gap-2 rounded-full border border-judo-lilac/20 bg-white/5 px-6 py-2.5 text-sm text-judo-fog/70 backdrop-blur-sm transition hover:border-judo-lilac/45 hover:bg-white/10 hover:text-judo-fog"
+          >
+            {t("hero.ctaJudito")}
+            <span aria-hidden>→</span>
+          </a>
         </div>
       </section>
 

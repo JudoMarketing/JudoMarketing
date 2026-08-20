@@ -9,7 +9,7 @@
     "showcase": "Showcase",
     "about": "Nosotros",
     "contact": "Contacto",
-    "login": "Log in"
+    "login": "JuditoADS"
   },
   "hero": {
     "title": "Build Trust,",
@@ -17,7 +17,8 @@
     "subtitle": "Hacemos todo tipo de websites escalables y controlados por el mismo usuario. Soluciones modernas, seguras y diseñadas para hacer crecer tu negocio.",
     "ctaPrimary": "Hablemos de tu proyecto",
     "ctaSecondary": "Ver servicios",
-    "ctaShowcase": "Ver nuestro showcase"
+    "ctaShowcase": "Ver nuestro showcase",
+    "ctaJudito": "Lanza tu publicidad con JuditoADS"
   },
   "onboarding": {
     "title": "Así trabajamos contigo",
@@ -268,17 +269,17 @@
     "back": "Volver al inicio"
   },
   "mascot": {
-    "greeting": "¡Hola! ¿En qué idioma prefieres verme?",
+    "greeting": "¿Quieres traer más clientes? Lanza tu publicidad tú mismo con JuditoADS.",
     "chatSoon": "Muy pronto vas a poder chatear conmigo aquí mismo 💜",
-    "spanish": "Español",
-    "english": "English",
     "chatTitle": "Chatea conmigo",
     "chatIntro": "¡Hola! Soy la mascota de Judo Marketing. Pregúntame lo que quieras sobre nuestros servicios, precios o cómo trabajamos 💜",
     "chatPlaceholder": "Escribe tu pregunta…",
     "chatSend": "Enviar",
     "chatThinking": "Pensando…",
     "chatError": "Ups, algo falló. Intenta de nuevo.",
-    "chatSlow": "Vas muy rápido, dame unos segundos."
+    "chatSlow": "Vas muy rápido, dame unos segundos.",
+    "juditoYes": "Ver JuditoADS",
+    "juditoNo": "Ahora no"
   },
   "footer": {
     "tagline": "Tu negocio merece una plataforma a tu altura.",

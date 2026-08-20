@@ -1,18 +1,25 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { usePathname } from "@/i18n/navigation";
 import MascotChat from "./MascotChat";
 import { safeGet, safeSet } from "@/lib/safe";
 
 /**
  * La mascota de Judo Marketing: el robotsito negro brillante de ojos morados.
  * Observa el cursor/dedo con movimientos suaves, parpadea y piensa con una
- * burbujita estilo anime. Al primer ingreso pregunta el idioma.
+ * burbujita estilo anime.
+ *
+ * En la primera visita ofrece JuditoADS. Antes preguntaba el idioma, pero eso
+ * era gastarle al visitante su único momento de atención en algo que ya
+ * resuelven las banderas del encabezado; ahora lo usa para ofrecer algo.
  */
 
-const LANG_KEY = "judo-lang-chosen";
+// El nombre de la llave se queda como estaba: los visitantes que ya
+// contestaron la pregunta del idioma la tienen guardada y no merecen que la
+// burbuja les vuelva a salir por un cambio de nombre.
+const VISTO_KEY = "judo-lang-chosen";
 
 /**
  * Pantallas de trabajo, sin mascota. Van sin el prefijo del idioma porque
@@ -22,8 +29,6 @@ const PORTALES = ["/admin"];
 
 export default function Mascot() {
   const t = useTranslations("mascot");
-  const locale = useLocale();
-  const router = useRouter();
   const pathname = usePathname();
 
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -32,13 +37,13 @@ export default function Mascot() {
   const target = useRef({ x: 0, y: 0 });
   const current = useRef({ x: 0, y: 0 });
 
-  const [bubble, setBubble] = useState<"lang" | null>(null);
+  const [bubble, setBubble] = useState<"judito" | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [blink, setBlink] = useState(false);
 
-  // Pregunta de idioma en la primera visita
+  // Oferta de JuditoADS en la primera visita
   useEffect(() => {
-    if (!safeGet(LANG_KEY)) setBubble("lang");
+    if (!safeGet(VISTO_KEY)) setBubble("judito");
   }, []);
 
   // Parpadeo natural
@@ -106,19 +111,20 @@ export default function Mascot() {
     };
   }, []);
 
-  const chooseLang = useCallback(
-    (lang: "es" | "en") => {
-      safeSet(LANG_KEY, lang);
-      setBubble(null);
-      if (lang !== locale) {
-        router.replace(pathname, { locale: lang });
-      }
-    },
-    [locale, pathname, router]
-  );
+  /**
+   * Se cierra la burbuja y se anota que ya se ofreció, para no repetirle la
+   * oferta a la misma persona cada vez que abra el sitio.
+   */
+  const cerrarOferta = useCallback((irA?: string) => {
+    safeSet(VISTO_KEY, "1");
+    setBubble(null);
+    // JuditoADS es otra app servida bajo /juditoads: navegación normal, fuera
+    // del enrutado de idiomas de next-intl.
+    if (irA) window.location.href = irA;
+  }, []);
 
   const onRobotClick = () => {
-    if (bubble === "lang") return;
+    if (bubble === "judito") return;
     setChatOpen((open) => !open);
   };
 
@@ -136,21 +142,21 @@ export default function Mascot() {
       ref={wrapRef}
       className="fixed right-1 bottom-1 z-40 origin-bottom-right scale-[0.5] select-none sm:right-6 sm:bottom-6 sm:scale-100"
     >
-      {bubble === "lang" && (
+      {bubble === "judito" && (
         <div className="thought-bubble">
           <p className="text-sm">{t("greeting")}</p>
-          <div className="mt-2 flex justify-center gap-2">
+          <div className="mt-2 flex flex-col items-stretch gap-1.5">
             <button
-              onClick={() => chooseLang("es")}
+              onClick={() => cerrarOferta("/juditoads")}
               className="rounded-full bg-judo-purple px-3 py-1 text-xs font-semibold text-white transition hover:bg-judo-lilac"
             >
-              {t("spanish")}
+              {t("juditoYes")}
             </button>
             <button
-              onClick={() => chooseLang("en")}
+              onClick={() => cerrarOferta()}
               className="rounded-full border border-judo-purple px-3 py-1 text-xs font-semibold text-judo-lilac transition hover:bg-judo-purple/15"
             >
-              {t("english")}
+              {t("juditoNo")}
             </button>
           </div>
           <span className="thought-dot thought-dot-1" />

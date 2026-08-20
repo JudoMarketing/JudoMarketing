@@ -9,7 +9,7 @@
     "showcase": "Showcase",
     "about": "About Us",
     "contact": "Contact",
-    "login": "Log in"
+    "login": "JuditoADS"
   },
   "hero": {
     "title": "Build Trust,",
@@ -17,7 +17,8 @@
     "subtitle": "We build all kinds of scalable websites fully controlled by the owner. Modern, secure solutions designed to grow your business.",
     "ctaPrimary": "Let's talk about your project",
     "ctaSecondary": "View services",
-    "ctaShowcase": "See our showcase"
+    "ctaShowcase": "See our showcase",
+    "ctaJudito": "Run your own ads with JuditoADS"
   },
   "onboarding": {
     "title": "How we work with you",
@@ -268,17 +269,17 @@
     "back": "Back to home"
   },
   "mascot": {
-    "greeting": "Hi! Which language do you prefer?",
+    "greeting": "Want more customers? Run your own ads with JuditoADS.",
     "chatSoon": "Very soon you'll be able to chat with me right here 💜",
-    "spanish": "Español",
-    "english": "English",
     "chatTitle": "Chat with me",
     "chatIntro": "Hi! I'm the Judo Marketing mascot. Ask me anything about our services, pricing, or how we work 💜",
     "chatPlaceholder": "Type your question…",
     "chatSend": "Send",
     "chatThinking": "Thinking…",
     "chatError": "Oops, something went wrong. Try again.",
-    "chatSlow": "You're going fast, give me a few seconds."
+    "chatSlow": "You're going fast, give me a few seconds.",
+    "juditoYes": "See JuditoADS",
+    "juditoNo": "Not now"
   },
   "footer": {
     "tagline": "Your business deserves a platform that matches its ambition.",
