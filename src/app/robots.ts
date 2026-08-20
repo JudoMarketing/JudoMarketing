@@ -7,10 +7,11 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: [
         "/admin",
-        "/portal",
         "/es/admin",
-        "/es/portal",
         "/api/",
+        // El portal de clientes (JuditoADS) es privado: nada que indexar
+        "/juditoads/app",
+        "/juditoads/api/",
         "/suspended-demo",
         "/intake",
         "/es/demo-suspension",

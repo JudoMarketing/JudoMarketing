@@ -41,6 +41,20 @@ const nextConfig: NextConfig = {
   // Las direcciones viejas del portafolio, por si Google alcanzó a verlas
   async redirects() {
     return [
+      // El acceso ahora es de los clientes de JuditoADS; el portal de
+      // vendedores se retiró. Las direcciones viejas llevan al portal nuevo.
+      { source: "/login", destination: "/juditoads/login", permanent: false },
+      { source: "/es/login", destination: "/juditoads/login", permanent: false },
+      { source: "/register", destination: "/juditoads/registro", permanent: false },
+      { source: "/es/registro", destination: "/juditoads/registro", permanent: false },
+      { source: "/es/register", destination: "/juditoads/registro", permanent: false },
+      { source: "/portal", destination: "/juditoads/app", permanent: false },
+      { source: "/es/portal", destination: "/juditoads/app", permanent: false },
+      { source: "/forgot", destination: "/juditoads/login", permanent: false },
+      { source: "/es/recuperar", destination: "/juditoads/login", permanent: false },
+      { source: "/reset", destination: "/juditoads/login", permanent: false },
+      { source: "/es/reset", destination: "/juditoads/login", permanent: false },
+
       { source: "/portfolio", destination: "/showcase", permanent: true },
       { source: "/es/portafolio", destination: "/es/showcase", permanent: true },
       { source: "/es/portfolio", destination: "/es/showcase", permanent: true },

@@ -73,12 +73,12 @@ const COPY: Record<PageKey, Record<"en" | "es", { title: string; description: st
     es: {
       title: "Términos y Política de Servicio | Judo Marketing",
       description:
-        "Política de servicio, acuerdo de clientes y programa de vendedores de Judo Marketing. Transparencia total: garantía del primer mes, propiedad del código y condiciones claras.",
+        "Política de servicio y acuerdo de clientes de Judo Marketing. Transparencia total: garantía del primer mes, propiedad del código y condiciones claras.",
     },
     en: {
       title: "Service Policy & Terms | Judo Marketing",
       description:
-        "Judo Marketing's service policy, client agreement, and seller program. Full transparency: first-month guarantee, code ownership, and clear conditions.",
+        "Judo Marketing's service policy and client agreement. Full transparency: first-month guarantee, code ownership, and clear conditions.",
     },
   },
 };

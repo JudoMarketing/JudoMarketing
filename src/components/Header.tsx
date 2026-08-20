@@ -1,10 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { getSupabase } from "@/lib/supabase";
 import LanguageSwitcher from "./LanguageSwitcher";
 import NavLink from "./NavLink";
 
@@ -19,47 +18,6 @@ const LINKS = [
 export default function Header() {
   const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
-  // Si ya hay sesión, el botón lleva directo al panel que le toca
-  const [dashboard, setDashboard] = useState<"/admin" | "/portal" | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    let supabase;
-    try {
-      supabase = getSupabase();
-    } catch {
-      return; // sin sesión disponible: el botón se queda en Log in
-    }
-
-    const resolve = async (userId: string | undefined) => {
-      if (!userId) {
-        if (alive) setDashboard(null);
-        return;
-      }
-      try {
-        const { data: prof } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", userId)
-          .single();
-        if (alive) setDashboard(prof?.role === "admin" ? "/admin" : "/portal");
-      } catch {
-        if (alive) setDashboard("/portal");
-      }
-    };
-
-    void supabase.auth
-      .getSession()
-      .then(({ data }) => resolve(data.session?.user.id))
-      .catch(() => {});
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      void resolve(session?.user.id);
-    });
-    return () => {
-      alive = false;
-      sub.subscription.unsubscribe();
-    };
-  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-b border-judo-lilac/15 bg-judo-black/85 backdrop-blur">
@@ -87,9 +45,12 @@ export default function Header() {
 
         <div className="flex items-center gap-2.5 sm:gap-3">
           <LanguageSwitcher />
-          <Link href={dashboard ?? "/login"} className="btn-3d text-sm">
-            {dashboard ? t("dashboard") : t("login")}
-          </Link>
+          {/* El acceso es el portal de clientes de JuditoADS (misma web,
+              otra app bajo /juditoads): <a> normal, fuera del enrutado de
+              idiomas. Si ya hay sesión entra directo; si no, pide login. */}
+          <a href="/juditoads/app" className="btn-3d text-sm">
+            {t("login")}
+          </a>
           {/* Hamburguesa (móvil) */}
           <button
             onClick={() => setOpen(!open)}

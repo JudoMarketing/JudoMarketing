@@ -18,7 +18,7 @@ const LANG_KEY = "judo-lang-chosen";
  * Pantallas de trabajo, sin mascota. Van sin el prefijo del idioma porque
  * usePathname de next-intl ya lo quita.
  */
-const PORTALES = ["/admin", "/portal"];
+const PORTALES = ["/admin"];
 
 export default function Mascot() {
   const t = useTranslations("mascot");

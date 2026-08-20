@@ -92,21 +92,8 @@ export async function POST(req: NextRequest) {
     mode: "subscription",
     line_items: [linea],
     locale: loc,
-    // Código de referido (nombre del vendedor) y origen del cliente —
-    // se leen luego por webhook para asignar comisiones (fase de pagos)
+    // Origen del cliente — dato de marketing para saber qué canal funciona
     custom_fields: [
-      {
-        key: "referral_code",
-        label: {
-          type: "custom",
-          custom:
-            loc === "es"
-              ? "Código de referido (nombre de tu vendedor)"
-              : "Referral code (your seller's name)",
-        },
-        type: "text",
-        optional: true,
-      },
       {
         key: "source",
         label: {

@@ -27,7 +27,6 @@ export default function LegalPage({
   const downloads = [
     { label: t("policyPdf"), file: "/legal/Service_Policy_and_Terms.pdf" },
     { label: t("clientPdf"), file: "/legal/Acuerdo_de_Servicio_Cliente.pdf" },
-    { label: t("sellerPdf"), file: "/legal/Acuerdo_Programa_Vendedores.pdf" },
   ];
 
   return (

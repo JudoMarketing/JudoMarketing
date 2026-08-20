@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { inputClass } from "./AuthForms";
+import { inputClass } from "./ui";
 
 /**
  * Ventana de chat de la mascota. Vive fuera del contenedor escalado del

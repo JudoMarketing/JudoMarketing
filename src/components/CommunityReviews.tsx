@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { getSupabase } from "@/lib/supabase";
-import { inputClass } from "./AuthForms";
+import { inputClass } from "./ui";
 import TiltCard from "./TiltCard";
 
 /**
