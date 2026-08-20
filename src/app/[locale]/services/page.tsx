@@ -49,6 +49,7 @@ export default function ServicesPage({
   }));
   const mediaFeatures = t.raw("media.features") as string[];
   const asistenteFeatures = t.raw("assistant.features") as string[];
+  const juditoadsFeatures = t.raw("juditoads.features") as string[];
   const es = locale === "es";
   const enOferta = ofertaVigente();
 
@@ -254,6 +255,60 @@ export default function ServicesPage({
             </div>
           </Reveal>
         </div>
+      </section>
+
+      {/* ── JUDITOADS: LA VERSIÓN SELF-SERVICE ───────────────────────
+          Media Marketing es "nosotros lo manejamos"; JuditoADS es "tú lo
+          manejas con nuestra plataforma". Vive como app aparte bajo
+          /juditoads (rewrite en next.config.ts), por eso el enlace es un
+          <a> normal y no pasa por el enrutado de idiomas. */}
+      <section className="mx-auto max-w-6xl px-6 pb-12">
+        <Reveal>
+          <div className="relative overflow-hidden rounded-3xl border border-judo-lilac/25 bg-gradient-to-r from-judo-purple/25 via-judo-surface to-judo-surface p-7 sm:p-10">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -bottom-24 -right-16 h-72 w-72 rounded-full opacity-60"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 50%, rgba(123,45,255,0.5), transparent 70%)",
+                filter: "blur(8px)",
+              }}
+            />
+            <div className="relative grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+              <div>
+                <p className="inline-flex rounded-full bg-gradient-to-r from-judo-purple to-judo-lilac px-3.5 py-1.5 text-[11px] font-extrabold tracking-wide text-white uppercase">
+                  {t("juditoads.badge")}
+                </p>
+                <p className="mt-4 text-sm font-semibold tracking-wide text-judo-lilac uppercase">
+                  {t("juditoads.eyebrow")}
+                </p>
+                <h3 className="mt-2 text-2xl font-bold sm:text-3xl">
+                  {t("juditoads.name")}
+                </h3>
+                <p className="mt-3 leading-relaxed text-judo-fog/75">
+                  {t("juditoads.body")}
+                </p>
+                <ul className="mt-5 grid gap-2.5 sm:grid-cols-2">
+                  {juditoadsFeatures.map((feature) => (
+                    <li key={feature} className="check-item text-sm text-judo-fog/80">
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-4 text-xs text-judo-fog/50">{t("juditoads.vsMedia")}</p>
+              </div>
+              <div className="rounded-2xl border border-judo-lilac/30 bg-judo-black/40 p-6 text-center sm:p-8">
+                <p className="text-5xl font-bold text-judo-fog">{t("juditoads.price")}</p>
+                <p className="mt-2 text-sm leading-relaxed text-judo-fog/60">
+                  {t("juditoads.priceNote")}
+                </p>
+                <a href="/juditoads" className="btn-primary mt-6 w-full">
+                  {t("juditoads.cta")} →
+                </a>
+              </div>
+            </div>
+          </div>
+        </Reveal>
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-16 pb-28">
