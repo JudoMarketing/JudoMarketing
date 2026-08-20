@@ -159,6 +159,11 @@ export default function AdminPortal() {
   // JuditoADS se consulta aparte y solo al abrir su pestaña: es otra app y
   // no tiene por qué frenar la carga del resto del panel.
   const [juditoUsers, setJuditoUsers] = useState<JuditoUser[] | null>(null);
+  const [juditoEmail, setJuditoEmail] = useState<{
+    configured: boolean;
+    ok: boolean;
+    error: string | null;
+  } | null>(null);
   const [juditoError, setJuditoError] = useState<string | null>(null);
   const [juditoBusy, setJuditoBusy] = useState(false);
 
@@ -686,6 +691,7 @@ export default function AdminPortal() {
         setJuditoUsers(null);
       } else {
         setJuditoUsers(body.usuarios || []);
+        setJuditoEmail(body.email ?? null);
       }
     } catch {
       setJuditoError("No se pudo contactar a JuditoADS.");
@@ -1160,6 +1166,28 @@ export default function AdminPortal() {
             <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
               {juditoError}
             </p>
+          )}
+
+          {/* Envio de correos: la verificacion por codigo depende de esto */}
+          {juditoEmail && (
+            <div
+              className={`mb-4 rounded-xl border px-4 py-3 text-sm ${
+                juditoEmail.ok
+                  ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
+                  : "border-amber-400/40 bg-amber-400/10 text-amber-200"
+              }`}
+            >
+              <p className="font-semibold">
+                {juditoEmail.ok
+                  ? "✓ Envio de correos conectado"
+                  : "⚠ Envio de correos sin funcionar"}
+              </p>
+              <p className="mt-1 text-xs opacity-80">
+                {juditoEmail.ok
+                  ? "La confirmacion de email por codigo esta activa para las cuentas nuevas."
+                  : `${juditoEmail.error ?? "SMTP no respondio"}. Mientras tanto las cuentas nuevas se dan por verificadas.`}
+              </p>
+            </div>
           )}
 
           {!juditoError && juditoUsers && juditoUsers.length > 0 && (
