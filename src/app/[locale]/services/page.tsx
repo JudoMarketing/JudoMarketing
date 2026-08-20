@@ -47,7 +47,6 @@ export default function ServicesPage({
       .replace("{complex}", precioTexto("complex"))
       .replace("{apps}", precioTexto("apps")),
   }));
-  const mediaFeatures = t.raw("media.features") as string[];
   const asistenteFeatures = t.raw("assistant.features") as string[];
   const juditoadsFeatures = t.raw("juditoads.features") as string[];
   const es = locale === "es";
@@ -65,11 +64,41 @@ export default function ServicesPage({
         >
           {t("subtitle")}
         </p>
+        {/* Botones de categorías: los tres tipos de servicio, de un vistazo */}
+        <div
+          className="hero-in mt-8 flex flex-wrap items-center justify-center gap-3"
+          style={{ animationDelay: "0.3s" }}
+        >
+          <a
+            href="#websites"
+            className="rounded-full border border-judo-lilac/30 bg-judo-purple/10 px-5 py-2.5 text-sm font-semibold text-judo-fog transition hover:border-judo-lilac hover:bg-judo-purple/25"
+          >
+            🌐 {t("nav.websites")}
+          </a>
+          <a
+            href="#social-media"
+            className="rounded-full border border-judo-lilac/30 bg-judo-purple/10 px-5 py-2.5 text-sm font-semibold text-judo-fog transition hover:border-judo-lilac hover:bg-judo-purple/25"
+          >
+            📣 {t("nav.social")}
+          </a>
+          <a
+            href="#ai-assistants"
+            className="rounded-full border border-judo-lilac/30 bg-judo-purple/10 px-5 py-2.5 text-sm font-semibold text-judo-fog transition hover:border-judo-lilac hover:bg-judo-purple/25"
+          >
+            🤖 {t("nav.ai")}
+          </a>
+        </div>
       </section>
 
-      {/* ── LOS TRES PRINCIPALES ─────────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-6 pt-6 pb-12">
-        <div className="grid gap-6 md:grid-cols-3">
+      {/* ── WEBSITES ─────────────────────────────────────────────────── */}
+      <section id="websites" className="mx-auto max-w-6xl scroll-mt-24 px-6 pt-6 pb-12">
+        <Reveal className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl">{t("sections.websitesTitle")}</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-judo-fog/60">
+            {t("sections.websitesSub")}
+          </p>
+        </Reveal>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
           {plans.map((plan, i) => {
             const features = t.raw(`${plan}.features`) as string[];
             return (
@@ -129,141 +158,18 @@ export default function ServicesPage({
         <p className="mt-6 text-center text-xs text-judo-fog/45">{t("note")}</p>
       </section>
 
-      {/* ── LO QUE VA DESPUÉS DEL WEBSITE ────────────────────────────
-          Dos servicios que se explican juntos: uno trae la gente, el otro la
-          atiende. Van aparte de los tres planes porque no son un website. */}
-      <section className="mx-auto max-w-6xl px-6 pb-12">
-        <Reveal className="text-center">
-          <h2 className="text-3xl font-bold sm:text-4xl">{t("pairTitle")}</h2>
-          <p className="mx-auto mt-3 inline-flex items-center gap-2 rounded-full border border-judo-lilac/30 bg-judo-purple/10 px-5 py-2 text-sm font-semibold text-judo-lilac">
-            <span aria-hidden>🤝</span>
-            {t("pairNote")}
-          </p>
-        </Reveal>
-
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          {/* Media Marketing: trae la gente */}
-          <Reveal>
-            <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-judo-lilac/25 bg-gradient-to-br from-judo-purple/20 via-judo-surface to-judo-surface p-7 sm:p-9">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full opacity-60"
-                style={{
-                  background:
-                    "radial-gradient(circle at 40% 40%, rgba(168,85,247,0.45), transparent 70%)",
-                  filter: "blur(6px)",
-                }}
-              />
-              <div className="relative flex h-full flex-col">
-                <p className="text-sm font-semibold tracking-wide text-judo-lilac uppercase">
-                  {t("media.eyebrow")}
-                </p>
-                <h3 className="mt-2 text-2xl font-bold sm:text-3xl">{t("media.name")}</h3>
-                <p className="mt-3 leading-relaxed text-judo-fog/75">{t("media.body")}</p>
-
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {["Instagram", "Facebook", "TikTok", "Google"].map((red) => (
-                    <span
-                      key={red}
-                      className="rounded-full border border-judo-lilac/30 bg-judo-black/40 px-3.5 py-1 text-xs text-judo-fog/80"
-                    >
-                      {red}
-                    </span>
-                  ))}
-                </div>
-
-                <ul className="mt-5 flex-1 space-y-2.5">
-                  {mediaFeatures.map((feature) => (
-                    <li key={feature} className="check-item text-sm text-judo-fog/80">
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                {/* El presupuesto lo pone el cliente, pero sin una cifra de
-                    referencia no sabe por dónde empezar. */}
-                <div className="mt-6 rounded-2xl border border-judo-lilac/30 bg-judo-black/40 p-5">
-                  <p className="text-xs font-semibold tracking-wide text-judo-lilac uppercase">
-                    ★ {t("media.recommended")}
-                  </p>
-                  <p className="mt-1 text-2xl font-bold text-judo-fog">
-                    {t("media.recommendedRange")}
-                  </p>
-                  <p className="mt-2 text-sm leading-relaxed text-judo-fog/60">
-                    {t("media.recommendedNote")}
-                  </p>
-                </div>
-
-                <p className="mt-5 text-lg font-semibold text-judo-lilac">
-                  {t("media.price")}
-                </p>
-                <Link href="/contact" className="btn-primary mt-4 inline-flex self-start">
-                  {t("media.cta")} →
-                </Link>
-              </div>
-            </div>
-          </Reveal>
-
-          {/* Asistente con IA: atiende a la gente que llega */}
-          <Reveal delay={120}>
-            <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-judo-lilac/25 bg-gradient-to-bl from-judo-purple/20 via-judo-surface to-judo-surface p-7 sm:p-9">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -top-24 -left-16 h-64 w-64 rounded-full opacity-60"
-                style={{
-                  background:
-                    "radial-gradient(circle at 60% 40%, rgba(123,45,255,0.45), transparent 70%)",
-                  filter: "blur(6px)",
-                }}
-              />
-              <div className="relative flex h-full flex-col">
-                <p className="text-sm font-semibold tracking-wide text-judo-lilac uppercase">
-                  {t("assistant.eyebrow")}
-                </p>
-                <h3 className="mt-2 flex items-center gap-2 text-2xl font-bold sm:text-3xl">
-                  <span aria-hidden>🤖</span>
-                  {t("assistant.name")}
-                </h3>
-                <p className="mt-3 leading-relaxed text-judo-fog/75">{t("assistant.body")}</p>
-
-                <ul className="mt-5 flex-1 space-y-2.5">
-                  {asistenteFeatures.map((feature) => (
-                    <li key={feature} className="check-item text-sm text-judo-fog/80">
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                {/* La mejor prueba del servicio es la que ya está corriendo
-                    en esta misma página. */}
-                <div className="mt-6 rounded-2xl border border-judo-lilac/30 bg-judo-black/40 p-5">
-                  <p className="text-xs font-semibold tracking-wide text-judo-lilac uppercase">
-                    👇 {t("assistant.demo")}
-                  </p>
-                  <p className="mt-2 text-sm leading-relaxed text-judo-fog/60">
-                    {t("assistant.demoNote")}
-                  </p>
-                </div>
-
-                <p className="mt-5 text-4xl font-bold text-judo-fog">
-                  {t("assistant.price")}
-                </p>
-                <Link href="/contact" className="btn-primary mt-4 inline-flex self-start">
-                  {t("assistant.cta")} →
-                </Link>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ── JUDITOADS: LA VERSIÓN SELF-SERVICE ───────────────────────
-          Media Marketing es "nosotros lo manejamos"; JuditoADS es "tú lo
-          manejas con nuestra plataforma". Vive como app aparte bajo
+      {/* ── SOCIAL MEDIA MARKETING ASSISTANT (JUDITOADS) ─────────────
+          La publicidad hazlo-tú-mismo. JuditoADS vive como app aparte bajo
           /juditoads (rewrite en next.config.ts), por eso el enlace es un
           <a> normal y no pasa por el enrutado de idiomas. */}
-      <section className="mx-auto max-w-6xl px-6 pb-12">
-        <Reveal>
+      <section id="social-media" className="mx-auto max-w-6xl scroll-mt-24 px-6 pb-16">
+        <Reveal className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl">{t("sections.socialTitle")}</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-judo-fog/60">
+            {t("sections.socialSub")}
+          </p>
+        </Reveal>
+        <Reveal className="mt-8">
           <div className="relative overflow-hidden rounded-3xl border border-judo-lilac/25 bg-gradient-to-r from-judo-purple/25 via-judo-surface to-judo-surface p-7 sm:p-10">
             <div
               aria-hidden
@@ -305,6 +211,59 @@ export default function ServicesPage({
                 <a href="/juditoads" className="btn-primary mt-6 w-full">
                   {t("juditoads.cta")} →
                 </a>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ── AI ASSISTANTS ────────────────────────────────────────────── */}
+      <section id="ai-assistants" className="mx-auto max-w-6xl scroll-mt-24 px-6 pb-16">
+        <Reveal className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl">{t("sections.aiTitle")}</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-judo-fog/60">{t("sections.aiSub")}</p>
+        </Reveal>
+        <Reveal className="mt-8">
+          <div className="relative overflow-hidden rounded-3xl border border-judo-lilac/25 bg-gradient-to-l from-judo-purple/20 via-judo-surface to-judo-surface p-7 sm:p-10">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -top-24 -left-16 h-64 w-64 rounded-full opacity-60"
+              style={{
+                background:
+                  "radial-gradient(circle at 60% 40%, rgba(123,45,255,0.45), transparent 70%)",
+                filter: "blur(6px)",
+              }}
+            />
+            <div className="relative grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+              <div>
+                <p className="text-sm font-semibold tracking-wide text-judo-lilac uppercase">
+                  {t("assistant.eyebrow")}
+                </p>
+                <h3 className="mt-2 flex items-center gap-2 text-2xl font-bold sm:text-3xl">
+                  <span aria-hidden>🤖</span>
+                  {t("assistant.name")}
+                </h3>
+                <p className="mt-3 leading-relaxed text-judo-fog/75">{t("assistant.body")}</p>
+                <ul className="mt-5 grid gap-2.5 sm:grid-cols-2">
+                  {asistenteFeatures.map((feature) => (
+                    <li key={feature} className="check-item text-sm text-judo-fog/80">
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-2xl border border-judo-lilac/30 bg-judo-black/40 p-6 text-center sm:p-8">
+                <p className="text-5xl font-bold text-judo-fog">{t("assistant.price")}</p>
+                {/* La mejor prueba del servicio es la que ya corre en esta página */}
+                <p className="mt-3 text-xs font-semibold tracking-wide text-judo-lilac uppercase">
+                  👇 {t("assistant.demo")}
+                </p>
+                <p className="mt-1 text-sm leading-relaxed text-judo-fog/60">
+                  {t("assistant.demoNote")}
+                </p>
+                <Link href="/contact" className="btn-primary mt-6 w-full">
+                  {t("assistant.cta")} →
+                </Link>
               </div>
             </div>
           </div>

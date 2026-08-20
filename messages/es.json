@@ -58,10 +58,10 @@
       "name": "Apps para Teléfonos",
       "description": "Aplicaciones móviles nativas para iOS y Android con notificaciones push."
     },
-    "media": {
-      "name": "Media Marketing",
-      "price": "Tú pones el presupuesto",
-      "description": "Anuncios en Instagram, Facebook, TikTok y Google para que te encuentre gente que aún no te conoce."
+    "juditoads": {
+      "name": "Social Media Marketing Assistant",
+      "price": "$20/mes",
+      "description": "JuditoADS: lanza tu publicidad en Facebook e Instagram tú mismo, con estrategia guiada, métricas en tiempo real y reportes PDF."
     },
     "from": "desde",
     "perMonth": "/mes"
@@ -146,25 +146,6 @@
         "Soporte y actualizaciones"
       ]
     },
-    "media": {
-      "name": "Media Marketing",
-      "price": "Tú pones el presupuesto",
-      "tagline": "Publicidad pagada, manejada por nosotros. Sin cuota fija: inviertes lo que quieras.",
-      "features": [
-        "Tú decides cuánto invertir cada mes",
-        "Nosotros armamos el anuncio y elegimos a quién se le muestra",
-        "Instagram, Facebook, TikTok y Google",
-        "Llega gente que todavía no te conoce",
-        "Empiezas con poco y subes cuando veas que funciona",
-        "Cada mes te contamos qué pasó y qué vamos a ajustar"
-      ],
-      "eyebrow": "¿Y quién trae a la gente?",
-      "body": "Tu website convence a quien llega. La publicidad pagada es lo que hace que llegue más gente. Ponemos tus anuncios a correr en Instagram, Facebook, TikTok y Google, frente a personas que todavía no te conocen. Tú decides cuánto invertir cada mes; nosotros nos encargamos del anuncio, de a quién se le muestra y de irlo ajustando.",
-      "cta": "Hablemos de tu presupuesto",
-      "recommended": "Recomendado para crecer sostenido",
-      "recommendedRange": "$500 – $700 al mes",
-      "recommendedNote": "Es el rango con el que se ve movimiento parejo mes a mes. Puedes empezar con menos y subir cuando veas que funciona."
-    },
     "perMonth": "/mes",
     "diff": {
       "title": "Lo que nos hace diferentes",
@@ -224,8 +205,6 @@
     "flatFee": "Precio final. Sin costo de instalación.",
     "offLabel": "1 DE SEPTIEMBRE: SUBEN LOS PRECIOS",
     "offUntil": "asegura tu precio hoy",
-    "pairTitle": "Y cuando ya está en línea…",
-    "pairNote": "Estos dos van juntos: uno trae la gente, el otro la atiende.",
     "assistant": {
       "name": "Asistente con IA",
       "eyebrow": "¿Y quién los atiende?",
@@ -258,8 +237,21 @@
       ],
       "price": "$20/mes",
       "priceNote": "+ tu presupuesto publicitario, que se paga directo a Meta",
-      "vsMedia": "¿Prefieres que lo manejemos por ti? Eso es Media Marketing, aquí arriba.",
+      "vsMedia": "¿Prefieres que la manejemos por ti? Escríbenos y armamos tu campaña contigo.",
       "cta": "Entrar a JuditoADS"
+    },
+    "nav": {
+      "websites": "Websites",
+      "social": "Social Media Marketing Assistant",
+      "ai": "AI Assistants"
+    },
+    "sections": {
+      "websitesTitle": "Websites",
+      "websitesSub": "Tu casa digital: tienda, reservas o servicios. Elige el punto de partida; todo crece contigo.",
+      "socialTitle": "Social Media Marketing Assistant",
+      "socialSub": "Tu publicidad en Facebook e Instagram, hecha por ti con Judito como guía.",
+      "aiTitle": "AI Assistants",
+      "aiSub": "Asistentes con inteligencia artificial que atienden a tus clientes por ti."
     }
   },
   "login": {

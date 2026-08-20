@@ -25,7 +25,8 @@ export default function HomePage({
   setRequestLocale(locale);
   const t = useTranslations();
 
-  const plans = ["essential", "complex", "apps", "media"] as const;
+  // media desapareció: JuditoADS (Social Media Marketing Assistant) hace eso
+  const plans = ["essential", "complex", "apps", "juditoads"] as const;
   const enOferta = ofertaVigente();
   const steps = t.raw("onboarding.steps") as Step[];
   const reviews = t.raw("reviews.items") as Review[];
@@ -166,26 +167,38 @@ export default function HomePage({
           )}
         </Reveal>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {plans.map((plan, i) => (
-            <Reveal key={plan} delay={i * 120}>
-              <Link href="/services" className="block h-full">
-                <TiltCard className="h-full p-7">
-                  <h3 className="text-xl font-semibold">{t(`plans.${plan}.name`)}</h3>
-                  <p className="mt-1 text-2xl font-bold text-judo-lilac">
-                    {plan === "media"
-                      ? t("plans.media.price")
-                      : `${t("plans.from")} ${precioTexto(plan)}${t("plans.perMonth")}`}
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-judo-fog/65">
-                    {t(`plans.${plan}.description`)}
-                  </p>
-                  <p className="mt-5 text-sm font-semibold text-judo-lilac">
-                    {t("plans.more")} →
-                  </p>
-                </TiltCard>
-              </Link>
-            </Reveal>
-          ))}
+          {plans.map((plan, i) => {
+            const card = (
+              <TiltCard className="h-full p-7">
+                <h3 className="text-xl font-semibold">{t(`plans.${plan}.name`)}</h3>
+                <p className="mt-1 text-2xl font-bold text-judo-lilac">
+                  {plan === "juditoads"
+                    ? t("plans.juditoads.price")
+                    : `${t("plans.from")} ${precioTexto(plan)}${t("plans.perMonth")}`}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-judo-fog/65">
+                  {t(`plans.${plan}.description`)}
+                </p>
+                <p className="mt-5 text-sm font-semibold text-judo-lilac">
+                  {t("plans.more")} →
+                </p>
+              </TiltCard>
+            );
+            return (
+              <Reveal key={plan} delay={i * 120}>
+                {plan === "juditoads" ? (
+                  /* JuditoADS es otra app (/juditoads via rewrite): <a> normal */
+                  <a href="/juditoads" className="block h-full">
+                    {card}
+                  </a>
+                ) : (
+                  <Link href="/services" className="block h-full">
+                    {card}
+                  </Link>
+                )}
+              </Reveal>
+            );
+          })}
         </div>
       </section>
 

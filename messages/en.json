@@ -58,10 +58,10 @@
       "name": "Mobile Apps",
       "description": "Native iOS & Android mobile apps with push notifications."
     },
-    "media": {
-      "name": "Media Marketing",
-      "price": "Set your own budget",
-      "description": "Ads on Instagram, Facebook, TikTok and Google so people who don't know you yet can find you."
+    "juditoads": {
+      "name": "Social Media Marketing Assistant",
+      "price": "$20/month",
+      "description": "JuditoADS: launch your own Facebook & Instagram ads with guided strategy, real-time metrics and PDF reports."
     },
     "from": "from",
     "perMonth": "/mo"
@@ -146,25 +146,6 @@
         "Support & updates"
       ]
     },
-    "media": {
-      "name": "Media Marketing",
-      "price": "You set the budget",
-      "tagline": "Paid advertising, run by us. No fixed fee: you spend what you want.",
-      "features": [
-        "You decide how much to spend each month",
-        "We build the ad and choose who sees it",
-        "Instagram, Facebook, TikTok and Google",
-        "Reaches people who don't know you yet",
-        "Start small and scale up once it works",
-        "Every month we tell you what happened and what we're adjusting"
-      ],
-      "eyebrow": "And who brings the people in?",
-      "body": "Your website convinces whoever lands on it. Paid advertising is what gets more people there. We run your ads on Instagram, Facebook, TikTok and Google, in front of people who don't know you yet. You decide how much to spend each month; we handle the ad, who sees it, and the tuning along the way.",
-      "cta": "Let's talk about your budget",
-      "recommended": "Recommended for steady growth",
-      "recommendedRange": "$500 – $700 per month",
-      "recommendedNote": "That's the range where you see steady month-to-month movement. You can start lower and scale up once it works."
-    },
     "perMonth": "/mo",
     "diff": {
       "title": "What makes us different",
@@ -224,8 +205,6 @@
     "flatFee": "Flat fee. No set-up fee.",
     "offLabel": "SEPTEMBER 1: PRICES GO UP",
     "offUntil": "lock in today's price",
-    "pairTitle": "And once you're out there…",
-    "pairNote": "These two go together: one brings the people in, the other takes care of them.",
     "assistant": {
       "name": "AI Assistant",
       "eyebrow": "And who takes care of them?",
@@ -258,8 +237,21 @@
       ],
       "price": "$20/month",
       "priceNote": "+ your ad budget, paid directly to Meta",
-      "vsMedia": "Prefer us to run it for you? That's Media Marketing, right above.",
+      "vsMedia": "Prefer us to run it for you? Contact us and we'll build your campaign together.",
       "cta": "Open JuditoADS"
+    },
+    "nav": {
+      "websites": "Websites",
+      "social": "Social Media Marketing Assistant",
+      "ai": "AI Assistants"
+    },
+    "sections": {
+      "websitesTitle": "Websites",
+      "websitesSub": "Your digital home: store, bookings or services. Pick a starting point; everything grows with you.",
+      "socialTitle": "Social Media Marketing Assistant",
+      "socialSub": "Your Facebook & Instagram ads, built by you with Judito as your guide.",
+      "aiTitle": "AI Assistants",
+      "aiSub": "AI assistants that take care of your customers for you."
     }
   },
   "login": {
