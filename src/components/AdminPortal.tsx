@@ -27,7 +27,24 @@ type Tab =
   | "contratos"
   | "sitios"
   | "pagos"
-  | "resenas";
+  | "resenas"
+  | "juditoads";
+
+/** Una cuenta del portal de JuditoADS (vive en otra base de datos). */
+type JuditoUser = {
+  id: string;
+  email: string;
+  nombre: string;
+  negocio: string | null;
+  telefono: string | null;
+  creada: string;
+  emailVerificado: boolean;
+  suscripcion: string;
+  pruebaHasta: string | null;
+  whitelabel: boolean;
+  campanas: number;
+  cuentasMeta: number;
+};
 
 type ContractRow = {
   id: string;
@@ -139,6 +156,11 @@ export default function AdminPortal() {
   const [ready, setReady] = useState(false);
   const [denied, setDenied] = useState(false);
   const [tab, setTab] = useState<Tab>("resumen");
+  // JuditoADS se consulta aparte y solo al abrir su pestaña: es otra app y
+  // no tiene por qué frenar la carga del resto del panel.
+  const [juditoUsers, setJuditoUsers] = useState<JuditoUser[] | null>(null);
+  const [juditoError, setJuditoError] = useState<string | null>(null);
+  const [juditoBusy, setJuditoBusy] = useState(false);
 
   // Acceso propio del panel: sin sesión se muestra el formulario de entrada
   const [needsLogin, setNeedsLogin] = useState(false);
@@ -644,6 +666,33 @@ export default function AdminPortal() {
     irASitio(site.id);
   };
 
+  const cargarJuditoads = async () => {
+    setJuditoBusy(true);
+    setJuditoError(null);
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) {
+      setJuditoBusy(false);
+      setJuditoError("Sesión vencida, vuelve a entrar.");
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/juditoads", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setJuditoError(body.error || `Error ${res.status}`);
+        setJuditoUsers(null);
+      } else {
+        setJuditoUsers(body.usuarios || []);
+      }
+    } catch {
+      setJuditoError("No se pudo contactar a JuditoADS.");
+    }
+    setJuditoBusy(false);
+  };
+
   // ── Render ─────────────────────────────────────────────────────────
   if (needsLogin) {
     return (
@@ -774,11 +823,15 @@ export default function AdminPortal() {
               reviews.filter((r) => r.status === "pendiente").length,
               0,
             ],
+            ["juditoads", "🚀", "JuditoADS", 0, juditoUsers?.length ?? 0],
           ] as [Tab, string, string, number, number][]
         ).map(([key, icono, label, urgente, total]) => (
           <button
             key={key}
-            onClick={() => setTab(key)}
+            onClick={() => {
+              setTab(key);
+              if (key === "juditoads" && !juditoUsers && !juditoBusy) cargarJuditoads();
+            }}
             className={`flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold transition ${
               tab === key
                 ? "border border-emerald-300 bg-emerald-400 text-judo-black shadow-[0_0_16px_-2px_rgba(52,211,153,0.75)]"
@@ -1082,6 +1135,129 @@ export default function AdminPortal() {
       })()}
 
       {/* ── RESEÑAS DE VISITANTES ── */}
+
+      {/* ── JUDITOADS: cuentas del portal de publicidad ── */}
+      {tab === "juditoads" && (
+        <section className="mt-6">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">Cuentas de JuditoADS</h2>
+              <p className="text-sm text-judo-fog/60">
+                Clientes con portal de publicidad ($20/mes). Vive en otra base de
+                datos, por eso se consulta aparte.
+              </p>
+            </div>
+            <button
+              onClick={cargarJuditoads}
+              disabled={juditoBusy}
+              className="rounded-full border border-judo-lilac/25 px-4 py-1.5 text-xs font-semibold text-white transition hover:border-emerald-400/50 hover:text-emerald-300 disabled:opacity-50"
+            >
+              {juditoBusy ? "Cargando…" : "↻ Actualizar"}
+            </button>
+          </div>
+
+          {juditoError && (
+            <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {juditoError}
+            </p>
+          )}
+
+          {!juditoError && juditoUsers && juditoUsers.length > 0 && (
+            <>
+              <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {[
+                  ["Cuentas", juditoUsers.length],
+                  [
+                    "Suscritas",
+                    juditoUsers.filter((u) => u.suscripcion === "active").length,
+                  ],
+                  [
+                    "En prueba",
+                    juditoUsers.filter((u) => u.suscripcion === "trial").length,
+                  ],
+                  [
+                    "Campañas",
+                    juditoUsers.reduce((n, u) => n + u.campanas, 0),
+                  ],
+                ].map(([label, value]) => (
+                  <div
+                    key={String(label)}
+                    className="rounded-xl border border-judo-lilac/20 bg-white/[0.03] px-4 py-3"
+                  >
+                    <p className="text-xs text-judo-fog/50">{label}</p>
+                    <p className="text-2xl font-bold text-white">{value}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="overflow-x-auto rounded-xl border border-judo-lilac/20">
+                <table className="w-full min-w-[720px] text-left text-sm">
+                  <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-judo-fog/50">
+                    <tr>
+                      <th className="px-4 py-3">Cliente</th>
+                      <th className="px-4 py-3">Suscripción</th>
+                      <th className="px-4 py-3">Campañas</th>
+                      <th className="px-4 py-3">Cuentas Meta</th>
+                      <th className="px-4 py-3">Alta</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-judo-lilac/10">
+                    {juditoUsers.map((u) => (
+                      <tr key={u.id} className="align-top">
+                        <td className="px-4 py-3">
+                          <p className="font-semibold text-white">
+                            {u.negocio || u.nombre}
+                          </p>
+                          <p className="text-xs text-judo-fog/60">{u.email}</p>
+                          {!u.emailVerificado && (
+                            <span className="mt-1 inline-block rounded-full bg-amber-400/90 px-2 py-0.5 text-[10px] font-bold text-judo-black">
+                              email sin confirmar
+                            </span>
+                          )}
+                          {u.whitelabel && (
+                            <span className="ml-1 mt-1 inline-block rounded-full bg-judo-purple px-2 py-0.5 text-[10px] font-bold text-white">
+                              whitelabel
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                              u.suscripcion === "active"
+                                ? "bg-emerald-400 text-judo-black"
+                                : u.suscripcion === "trial"
+                                  ? "bg-amber-400/90 text-judo-black"
+                                  : "bg-white/10 text-judo-fog/70"
+                            }`}
+                          >
+                            {u.suscripcion}
+                          </span>
+                          {u.suscripcion === "trial" && u.pruebaHasta && (
+                            <p className="mt-1 text-[11px] text-judo-fog/50">
+                              hasta {u.pruebaHasta.slice(0, 10)}
+                            </p>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-white">{u.campanas}</td>
+                        <td className="px-4 py-3 text-white">{u.cuentasMeta}</td>
+                        <td className="px-4 py-3 text-judo-fog/60">
+                          {u.creada.slice(0, 10)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          {!juditoError && juditoUsers && juditoUsers.length === 0 && (
+            <p className="py-12 text-center text-judo-fog/50">
+              Todavía no hay cuentas creadas en JuditoADS.
+            </p>
+          )}
+        </section>
+      )}
 
       {tab === "resenas" && (
         <div className="mt-6 flex flex-col gap-3">
