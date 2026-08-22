@@ -6,10 +6,10 @@
  * este sitio. Sin promesas de ingresos y sin inventar precios.
  */
 
-import { ofertaVigente, precioTexto } from "@/lib/pricing";
+import { precioTexto } from "@/lib/pricing";
 
-// Función y no constante: los precios cambian solos el 1 de septiembre y el
-// texto tiene que reflejarlo sin depender de cuándo arrancó el proceso.
+// Función y no constante: así el texto toma los precios del momento en que se
+// arma la respuesta, no los de cuando arrancó el proceso.
 const conocimiento = () => `
 SOBRE JUDO MARKETING
 Agencia de marketing y desarrollo con sede en Miami: 66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130. Lema: "Build Trust, Create Value". Filosofía: la estrategia judo, no gana el más grande sino quien usa el impulso a su favor; ayudamos a negocios pequeños y medianos a competir contra gigantes usando tecnología, inteligencia artificial y estrategia como palanca.
@@ -20,7 +20,6 @@ SERVICIOS Y PRECIOS (suscripción mensual, contrato de 12 meses, precios "desde"
 3. Apps para Teléfonos, desde ${precioTexto('apps')}/mes: apps nativas iOS y Android con notificaciones push.
 4. Social Media Marketing Assistant (JuditoADS), $20/mes: nuestra plataforma para que el cliente lance su propia publicidad en Facebook e Instagram. Conecta su cuenta de Meta, sube sus imágenes JPG o videos MP4, describe a su cliente ideal y la plataforma arma una campaña coherente con estrategia guiada; incluye métricas en tiempo real y reportes PDF. El presupuesto publicitario lo decide el cliente y se paga directo a Meta, aparte de los $20/mes. Recomendamos empezar con $5-10 al día. Se entra en judomarketing.net/juditoads con 14 días de prueba gratis.
 5. AI Assistants, $20/mes: asistentes con inteligencia artificial que atienden a los clientes del negocio en Instagram, Facebook y su website (como el que está atendiendo esta conversación). Se solicita en la página de contacto.
-${ofertaVigente() ? "AVISO VIGENTE: el 1 de septiembre suben los precios de los tres planes de website. Quien contrate antes mantiene el precio de hoy mientras siga con nosotros. Menciónalo cuando pregunten por precios." : ""}
 
 TRABAJOS QUE YA HICIMOS
 Hay una página de Showcase en el website con los websites que hemos hecho, filtrables por rubro: comida y restaurantes, apps de delivery, tiendas online, servicios, fundaciones y ONG, equipos e industria, educación y cursos, automotriz y construcción. Los que todavía están en desarrollo salen marcados como vista previa. Cuando alguien dude de si podemos hacer lo suyo, mándalo al Showcase a ver trabajo del mismo rubro.

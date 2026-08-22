@@ -7,11 +7,19 @@ import Reveal from "@/components/Reveal";
 import CommunityReviews from "@/components/CommunityReviews";
 import { PERFIL_GOOGLE } from "@/components/SocialLinks";
 import ListoOverlay from "@/components/ListoOverlay";
-import { ofertaVigente, precioTexto } from "@/lib/pricing";
+import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
+import { precioDesde } from "@/lib/pricing";
 
-/** Se regenera cada hora: el 1 de septiembre los precios suben solos. */
+/** Se regenera cada hora, para que un cambio de precio o de copia salga solo. */
 export const revalidate = 3600;
 
+
+/** Los tres servicios, en el orden en que el cliente los necesita. */
+const SERVICIOS = [
+  { id: "websites", clase: "svc-websites", arte: ArteWebsites, href: "/services", externo: false },
+  { id: "juditoads", clase: "svc-ads", arte: ArteAds, href: "/juditoads", externo: true },
+  { id: "ai", clase: "svc-ai", arte: ArteAi, href: "/services", hash: "ai-assistants", externo: false },
+] as const;
 
 type Step = { title: string; description: string };
 type Review = { text: string; name: string; place: string };
@@ -25,9 +33,6 @@ export default function HomePage({
   setRequestLocale(locale);
   const t = useTranslations();
 
-  // media desapareció: JuditoADS (Social Media Marketing Assistant) hace eso
-  const plans = ["essential", "complex", "apps", "juditoads"] as const;
-  const enOferta = ofertaVigente();
   const steps = t.raw("onboarding.steps") as Step[];
   const reviews = t.raw("reviews.items") as Review[];
 
@@ -161,48 +166,70 @@ export default function HomePage({
         </div>
       </section>
 
-      {/* ── SERVICIOS (VITRINA) ──────────────────────────────────── */}
+      {/* ── LOS TRES SERVICIOS ───────────────────────────────────────
+          Es la sección que tiene que dejar claro qué vendemos. Cada familia
+          con su color, su dibujo y una frase de dos palabras: el visitante
+          entiende la oferta completa sin leer un párrafo. Los colores y las
+          clases .svc-* salen de globals.css, los mismos de /services. */}
       <section className="mx-auto max-w-6xl px-6 py-20">
         <Reveal className="text-center">
           <h2 className="text-3xl font-bold sm:text-4xl">{t("plans.title")}</h2>
           <p className="mt-2 text-judo-fog/60">{t("plans.subtitle")}</p>
-          {/* La oferta también aquí, que es donde llega casi todo el mundo.
-              Se apaga sola el 1 de septiembre. */}
-          {enOferta && (
-            <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-red-500 to-judo-purple px-4 py-1.5 text-sm text-white shadow-[0_6px_18px_-6px_rgba(239,68,68,0.75)]">
-              <span className="font-extrabold tracking-wide">{t("services.offLabel")}</span>
-              <span className="font-medium text-white/85">{t("services.offUntil")}</span>
-            </p>
-          )}
         </Reveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {plans.map((plan, i) => {
-            const card = (
-              <TiltCard className="h-full p-7">
-                <h3 className="text-xl font-semibold">{t(`plans.${plan}.name`)}</h3>
-                <p className="mt-1 text-2xl font-bold text-judo-lilac">
-                  {plan === "juditoads"
-                    ? t("plans.juditoads.price")
-                    : `${t("plans.from")} ${precioTexto(plan)}${t("plans.perMonth")}`}
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {SERVICIOS.map((servicio, i) => {
+            const Arte = servicio.arte;
+            const ficha = (
+              <div className={`svc ${servicio.clase} svc-card flex h-full flex-col p-7`}>
+                <div className="relative">
+                  <div
+                    aria-hidden
+                    className="svc-halo pointer-events-none absolute inset-0 opacity-45 blur-xl"
+                  />
+                  <Arte className="relative mx-auto h-28 w-full" />
+                </div>
+                <p
+                  className="mt-5 text-xs font-bold tracking-wide uppercase"
+                  style={{ color: "var(--svc-luz)" }}
+                >
+                  {t(`plans.${servicio.id}.kicker`)}
                 </p>
-                <p className="mt-3 text-sm leading-relaxed text-judo-fog/65">
-                  {t(`plans.${plan}.description`)}
+                <h3 className="mt-1 text-2xl font-bold">
+                  {t(`plans.${servicio.id}.name`)}
+                </h3>
+                <p className="mt-1 text-lg font-bold" style={{ color: "var(--svc-luz)" }}>
+                  {servicio.id === "websites"
+                    ? `${t("plans.from")} ${precioDesde()}${t("plans.perMonth")}`
+                    : t(`plans.${servicio.id}.price`)}
                 </p>
-                <p className="mt-5 text-sm font-semibold text-judo-lilac">
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-judo-fog/65">
+                  {t(`plans.${servicio.id}.description`)}
+                </p>
+                <p
+                  className="mt-6 text-sm font-semibold"
+                  style={{ color: "var(--svc-luz)" }}
+                >
                   {t("plans.more")} →
                 </p>
-              </TiltCard>
+              </div>
             );
             return (
-              <Reveal key={plan} delay={i * 120}>
-                {plan === "juditoads" ? (
+              <Reveal key={servicio.id} delay={i * 120}>
+                {servicio.externo ? (
                   /* JuditoADS es otra app (/juditoads via rewrite): <a> normal */
-                  <a href="/juditoads" className="block h-full">
-                    {card}
+                  <a href={servicio.href} className="block h-full">
+                    {ficha}
                   </a>
                 ) : (
-                  <Link href="/services" className="block h-full">
-                    {card}
+                  <Link
+                    href={
+                      "hash" in servicio
+                        ? { pathname: servicio.href, hash: servicio.hash }
+                        : servicio.href
+                    }
+                    className="block h-full"
+                  >
+                    {ficha}
                   </Link>
                 )}
               </Reveal>

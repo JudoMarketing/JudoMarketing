@@ -14,11 +14,11 @@
   "hero": {
     "title": "Build Trust,",
     "titleAccent": "Create Value",
-    "subtitle": "We build all kinds of scalable websites fully controlled by the owner. Modern, secure solutions designed to grow your business.",
+    "subtitle": "Websites, ads, and an assistant that answers. All under your control.",
     "ctaPrimary": "Let's talk about your project",
     "ctaSecondary": "View services",
-    "ctaShowcase": "See our showcase",
-    "ctaJudito": "Run your own ads with JuditoADS"
+    "ctaShowcase": "See our work",
+    "ctaJudito": "Launch your ads"
   },
   "onboarding": {
     "title": "How we work with you",
@@ -43,28 +43,28 @@
     ]
   },
   "plans": {
-    "title": "Our services",
-    "subtitle": "Pick your starting point; everything grows with you.",
-    "more": "See full details",
-    "essential": {
-      "name": "Essential Websites",
-      "description": "Professional, functional online presence: stores, bookings, services."
-    },
-    "complex": {
-      "name": "Complex Websites",
-      "description": "Bigger operations: delivery, logistics, virtual classes, integrations."
-    },
-    "apps": {
-      "name": "Mobile Apps",
-      "description": "Native iOS & Android mobile apps with push notifications."
+    "title": "Three services",
+    "subtitle": "One puts you online, one brings people in, one answers them.",
+    "more": "See details",
+    "from": "from",
+    "perMonth": "/mo",
+    "websites": {
+      "name": "Websites",
+      "kicker": "They find you",
+      "description": "Store, bookings or app. With your own admin panel."
     },
     "juditoads": {
-      "name": "Social Media Marketing Assistant",
-      "price": "$20/month",
-      "description": "JuditoADS: launch your own Facebook & Instagram ads with guided strategy, real-time metrics and PDF reports."
+      "name": "JuditoADS",
+      "kicker": "They see you",
+      "price": "$20/mo",
+      "description": "Launch your own Facebook and Instagram ads."
     },
-    "from": "from",
-    "perMonth": "/mo"
+    "ai": {
+      "name": "AI Assistants",
+      "kicker": "They get answers",
+      "price": "$20/mo",
+      "description": "An assistant that answers your customers around the clock."
+    }
   },
   "reviews": {
     "title": "What our clients say",
@@ -107,46 +107,87 @@
   },
   "services": {
     "title": "Services",
-    "subtitle": "Everything we build includes modern design, security, and your own control panel.",
-    "note": "\"From\" pricing, monthly total with a 12-month agreement.",
+    "subtitle": "We do three things. Pick the one you need.",
+    "note": "Final price, no setup fee. 12-month agreement.",
     "cta": "Let's talk about your project",
+    "perMonth": "/mo",
+    "from": "from",
+    "start": "Get started",
+    "sections": {
+      "websitesTitle": "Websites",
+      "websitesSub": "Your business online, with your own admin panel.",
+      "socialTitle": "JuditoADS",
+      "socialSub": "Your Facebook and Instagram ads, launched by you.",
+      "aiTitle": "AI Assistants",
+      "aiSub": "An assistant that answers your customers around the clock."
+    },
+    "nav": {
+      "websites": "Websites",
+      "social": "JuditoADS",
+      "ai": "AI Assistants"
+    },
+    "kicker": {
+      "websites": "They find you",
+      "social": "They see you",
+      "ai": "They get answers"
+    },
     "essential": {
-      "name": "Essential Websites",
-      "tagline": "Ideal for businesses that need a professional, functional online presence.",
+      "name": "Essential",
+      "tagline": "To sell and take bookings.",
       "features": [
-        "Online stores",
-        "Booking pages",
-        "Service sales",
-        "Modern, responsive design",
-        "Easy-to-use panel",
-        "Support & maintenance"
+        "Online store",
+        "Booking page",
+        "Admin panel",
+        "Support included"
       ]
     },
     "complex": {
-      "name": "Complex Websites",
-      "tagline": "Advanced solutions for bigger operations and complex processes.",
+      "name": "Complex",
+      "tagline": "For operations with moving parts.",
       "features": [
-        "Delivery applications",
-        "Distribution logistics",
-        "Virtual class pages",
-        "Advanced systems",
+        "Delivery and logistics",
+        "Virtual classes",
         "Custom integrations",
-        "Scalable & secure"
+        "Scalable and secure"
       ]
     },
     "apps": {
-      "name": "Mobile Apps",
-      "tagline": "Take your business to the next level with native mobile apps.",
+      "name": "Phone apps",
+      "tagline": "Your business in your customer's pocket.",
       "features": [
-        "Fitness apps",
-        "Food & nutrition apps",
-        "Intuitive, modern design",
-        "iOS & Android",
+        "iOS and Android",
         "Push notifications",
-        "Support & updates"
+        "Native design",
+        "Updates included"
       ]
     },
-    "perMonth": "/mo",
+    "juditoads": {
+      "name": "JuditoADS",
+      "badge": "14 days free",
+      "body": "Connect your Meta account, upload your photos and launch. Judito walks you through it.",
+      "features": [
+        "You set the budget",
+        "Live results",
+        "PDF reports",
+        "Pause anytime"
+      ],
+      "priceNote": "+ whatever you spend on Meta, paid straight to them",
+      "cta": "Open JuditoADS"
+    },
+    "assistant": {
+      "name": "AI Assistants",
+      "body": "It knows what you sell, your prices and your hours. It handles the browsers; you handle the buyers.",
+      "features": [
+        "Instagram, Facebook and your site",
+        "Answers at 3am",
+        "Hands you the ready ones",
+        "Trained on your business"
+      ],
+      "demo": "Try it right here",
+      "demoNote": "The robot on this page is one of them.",
+      "cta": "I want one"
+    },
+    "diffTitle": "Why us",
     "diff": {
       "title": "What makes us different",
       "items": [
@@ -200,58 +241,6 @@
           "a": "Hosting, maintenance, security and daily backups, support, and your admin portal to control your content, users, and sales from one place."
         }
       ]
-    },
-    "promoBadge": "These prices are valid until September 1st",
-    "flatFee": "Flat fee. No set-up fee.",
-    "offLabel": "SEPTEMBER 1: PRICES GO UP",
-    "offUntil": "lock in today's price",
-    "assistant": {
-      "name": "AI Assistant",
-      "eyebrow": "And who takes care of them?",
-      "price": "$20/mo",
-      "body": "An assistant trained on your business: it knows what you sell, your prices and your hours. It answers on your social media and lives on your website as a mascot that greets whoever arrives, clears up the question and walks them to the sale. You handle the serious ones; it handles the curious.",
-      "features": [
-        "Answers on Instagram, Facebook and your website",
-        "Knows your prices, hours and what you sell",
-        "Greets every visitor and guides them",
-        "Replies at any hour, middle of the night included",
-        "Hands the conversation to you once they're ready",
-        "Less of your time on repeat questions"
-      ],
-      "cta": "I want one for my business",
-      "demo": "See it right here",
-      "demoNote": "The robot on this page is one of them. Message it and try it before you decide."
-    },
-    "juditoads": {
-      "eyebrow": "New: do it yourself",
-      "name": "JuditoADS (social campaigns)",
-      "badge": "New service",
-      "body": "Judo Marketing's self-service platform: connect your Meta account, upload your images and videos, tell us who your ideal customer is and launch your Facebook & Instagram ads yourself, with guided strategy so your campaign reaches more people.",
-      "features": [
-        "Connect your own Meta ad accounts",
-        "Guided strategy: your country, your ideal customer, your goal",
-        "You control the budget: activate or pause anytime",
-        "Reach and results in real time",
-        "Professional downloadable PDF reports",
-        "14-day free trial"
-      ],
-      "price": "$20/month",
-      "priceNote": "+ your ad budget, paid directly to Meta",
-      "vsMedia": "Prefer us to run it for you? Contact us and we'll build your campaign together.",
-      "cta": "Open JuditoADS"
-    },
-    "nav": {
-      "websites": "Websites",
-      "social": "Social Media Marketing Assistant",
-      "ai": "AI Assistants"
-    },
-    "sections": {
-      "websitesTitle": "Websites",
-      "websitesSub": "Your digital home: store, bookings or services. Pick a starting point; everything grows with you.",
-      "socialTitle": "Social Media Marketing Assistant",
-      "socialSub": "Your Facebook & Instagram ads, built by you with Judito as your guide.",
-      "aiTitle": "AI Assistants",
-      "aiSub": "AI assistants that take care of your customers for you."
     }
   },
   "login": {

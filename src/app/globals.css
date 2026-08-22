@@ -329,3 +329,113 @@ body {
     stroke-dashoffset: 0;
   }
 }
+
+/* ── Un color por familia de servicio ──────────────────────────────────
+   Tres servicios que no se distinguían entre sí: todo era morado y el
+   visitante no sabía dónde terminaba uno y empezaba el otro. Cada familia
+   tiene ahora su color, y todo lo que la representa (etiqueta, borde, ícono,
+   botón, resplandor) lo toma de la misma variable, así que se ve como un
+   sistema y no como tres decisiones sueltas.
+
+   Los tres viven en la misma vecindad fría-a-cálida del morado de la marca,
+   por eso conviven sin pelearse:
+     websites  violeta, el color de la casa
+     ads       magenta, el de las redes donde corren los anuncios
+     ai        cian, el del asistente
+   -------------------------------------------------------------------- */
+.svc {
+  --svc: var(--color-judo-purple);
+  --svc-luz: var(--color-judo-lilac);
+}
+.svc-websites {
+  --svc: #7b2dff;
+  --svc-luz: #b98cff;
+}
+.svc-ads {
+  --svc: #e0399b;
+  --svc-luz: #ff8ecb;
+}
+.svc-ai {
+  --svc: #12a8c8;
+  --svc-luz: #6fe3f5;
+}
+
+/* Tarjeta de servicio: hereda el color de la sección que la contiene */
+.svc-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background: linear-gradient(160deg, #262338 0%, #1b1928 60%, #171522 100%);
+  border: 1px solid color-mix(in srgb, var(--svc) 30%, transparent);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* El filo de color arriba: lo que hace que se lean como familia de un vistazo */
+.svc-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--svc), var(--svc-luz));
+}
+
+.svc-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--svc) 65%, transparent);
+  box-shadow: 0 22px 55px -24px color-mix(in srgb, var(--svc) 70%, transparent);
+}
+
+/* Etiqueta con el nombre de la familia */
+.svc-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 9999px;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--svc-luz);
+  background: color-mix(in srgb, var(--svc) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--svc) 40%, transparent);
+}
+
+/* Botón del color de la familia */
+.svc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  border-radius: 9999px;
+  padding: 0.8rem 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(120deg, var(--svc), var(--svc-luz));
+  box-shadow: 0 12px 30px -12px color-mix(in srgb, var(--svc) 85%, transparent);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.svc-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.07);
+  box-shadow: 0 18px 40px -12px color-mix(in srgb, var(--svc) 95%, transparent);
+}
+
+/* Los vistos de las listas, también del color de la familia */
+.svc-check::before {
+  content: "✓";
+  margin-right: 0.55rem;
+  font-weight: 700;
+  color: var(--svc-luz);
+}
+
+/* Resplandor detrás del dibujo de cada servicio */
+.svc-halo {
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in srgb, var(--svc) 45%, transparent),
+    transparent 70%
+  );
+}

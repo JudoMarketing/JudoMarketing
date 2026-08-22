@@ -60,9 +60,8 @@ export async function POST(req: NextRequest) {
 
   /**
    * Lo que la página promete y lo que Stripe cobra tienen que ser el mismo
-   * número. Si el precio guardado en Stripe quedó viejo (por ejemplo el 1 de
-   * septiembre, cuando la tarifa sube sola), se arma el cobro con el monto
-   * correcto en vez de cobrar de menos sin que nadie se entere.
+   * número. Si el precio guardado en Stripe quedó viejo, se arma el cobro con
+   * el monto correcto en vez de cobrar de menos sin que nadie se entere.
    */
   const esperado = precio(plan as Plan) * 100; // centavos
   let linea: Stripe.Checkout.SessionCreateParams.LineItem = { price, quantity: 1 };

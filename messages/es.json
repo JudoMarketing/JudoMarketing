@@ -6,19 +6,19 @@
   "nav": {
     "home": "Inicio",
     "services": "Servicios",
-    "showcase": "Showcase",
+    "showcase": "Portafolio",
     "about": "Nosotros",
     "contact": "Contacto",
     "login": "JuditoADS"
   },
   "hero": {
-    "title": "Build Trust,",
-    "titleAccent": "Create Value",
-    "subtitle": "Hacemos todo tipo de websites escalables y controlados por el mismo usuario. Soluciones modernas, seguras y diseñadas para hacer crecer tu negocio.",
+    "title": "Construye confianza,",
+    "titleAccent": "Crea valor",
+    "subtitle": "Websites, publicidad y un asistente que atiende. Todo bajo tu control.",
     "ctaPrimary": "Hablemos de tu proyecto",
     "ctaSecondary": "Ver servicios",
-    "ctaShowcase": "Ver nuestro showcase",
-    "ctaJudito": "Lanza tu publicidad con JuditoADS"
+    "ctaShowcase": "Ver nuestro portafolio",
+    "ctaJudito": "Lanza tu publicidad"
   },
   "onboarding": {
     "title": "Así trabajamos contigo",
@@ -43,28 +43,28 @@
     ]
   },
   "plans": {
-    "title": "Nuestros servicios",
-    "subtitle": "Elige el punto de partida; todo crece contigo.",
-    "more": "Ver todos los detalles",
-    "essential": {
-      "name": "Websites Esenciales",
-      "description": "Presencia online profesional y funcional: tiendas, citas, servicios."
-    },
-    "complex": {
-      "name": "Websites Complejos",
-      "description": "Operaciones grandes: delivery, logística, clases virtuales, integraciones."
-    },
-    "apps": {
-      "name": "Apps para Teléfonos",
-      "description": "Aplicaciones móviles nativas para iOS y Android con notificaciones push."
+    "title": "Tres servicios",
+    "subtitle": "Uno te pone en línea, otro te trae gente, el tercero la atiende.",
+    "more": "Ver detalles",
+    "from": "desde",
+    "perMonth": "/mes",
+    "websites": {
+      "name": "Websites",
+      "kicker": "Te encuentran",
+      "description": "Tienda, citas o app. Con tu propio panel de control."
     },
     "juditoads": {
-      "name": "Social Media Marketing Assistant",
+      "name": "JuditoADS",
+      "kicker": "Te ven",
       "price": "$20/mes",
-      "description": "JuditoADS: lanza tu publicidad en Facebook e Instagram tú mismo, con estrategia guiada, métricas en tiempo real y reportes PDF."
+      "description": "Lanza tu publicidad en Facebook e Instagram tú mismo."
     },
-    "from": "desde",
-    "perMonth": "/mes"
+    "ai": {
+      "name": "AI Assistants",
+      "kicker": "Te contestan",
+      "price": "$20/mes",
+      "description": "Un asistente que responde a tus clientes a toda hora."
+    }
   },
   "reviews": {
     "title": "Lo que dicen nuestros clientes",
@@ -107,46 +107,87 @@
   },
   "services": {
     "title": "Servicios",
-    "subtitle": "Todo lo que construimos incluye diseño moderno, seguridad y tu propio panel de control.",
-    "note": "Precios «desde», total mensual con contrato de 12 meses.",
+    "subtitle": "Tres cosas hacemos. Elige la que necesitas.",
+    "note": "Precio final, sin costo de instalación. Contrato de 12 meses.",
     "cta": "Hablemos de tu proyecto",
+    "perMonth": "/mes",
+    "from": "desde",
+    "start": "Iniciar",
+    "sections": {
+      "websitesTitle": "Websites",
+      "websitesSub": "Tu negocio en línea, con tu propio panel de control.",
+      "socialTitle": "JuditoADS",
+      "socialSub": "Tu publicidad en Facebook e Instagram, lanzada por ti.",
+      "aiTitle": "AI Assistants",
+      "aiSub": "Un asistente que atiende a tus clientes a toda hora."
+    },
+    "nav": {
+      "websites": "Websites",
+      "social": "JuditoADS",
+      "ai": "AI Assistants"
+    },
+    "kicker": {
+      "websites": "Te encuentran",
+      "social": "Te ven",
+      "ai": "Te contestan"
+    },
     "essential": {
-      "name": "Websites Esenciales",
-      "tagline": "Ideales para negocios que necesitan presencia online profesional y funcional.",
+      "name": "Esenciales",
+      "tagline": "Para vender y que te reserven.",
       "features": [
-        "Tiendas virtuales",
-        "Páginas de citas",
-        "Ventas de servicios",
-        "Diseño moderno y responsivo",
-        "Panel fácil de usar",
-        "Soporte y mantenimiento"
+        "Tienda online",
+        "Página de citas",
+        "Panel de control",
+        "Soporte incluido"
       ]
     },
     "complex": {
-      "name": "Websites Complejos",
-      "tagline": "Soluciones avanzadas para operaciones más grandes y procesos complejos.",
+      "name": "Complejos",
+      "tagline": "Para operaciones con muchas partes.",
       "features": [
-        "Aplicaciones de delivery",
-        "Logísticas de distribución",
-        "Páginas de clases virtuales",
-        "Sistemas avanzados",
-        "Integraciones personalizadas",
-        "Escalables y seguras"
+        "Delivery y logística",
+        "Clases virtuales",
+        "Integraciones a tu medida",
+        "Escalable y seguro"
       ]
     },
     "apps": {
-      "name": "Apps para Teléfonos",
-      "tagline": "Lleva tu negocio al siguiente nivel con aplicaciones móviles nativas.",
+      "name": "Apps de teléfono",
+      "tagline": "Tu negocio en el bolsillo del cliente.",
       "features": [
-        "Apps de fitness",
-        "Apps de alimentación",
-        "Diseño intuitivo y moderno",
         "iOS y Android",
         "Notificaciones push",
-        "Soporte y actualizaciones"
+        "Diseño nativo",
+        "Actualizaciones incluidas"
       ]
     },
-    "perMonth": "/mes",
+    "juditoads": {
+      "name": "JuditoADS",
+      "badge": "14 días gratis",
+      "body": "Conecta tu cuenta de Meta, sube tus fotos y lanza. Judito te guía en cada paso.",
+      "features": [
+        "Tú pones el presupuesto",
+        "Resultados en vivo",
+        "Reportes en PDF",
+        "Pausa cuando quieras"
+      ],
+      "priceNote": "+ lo que inviertas en Meta, que le pagas directo a ellos",
+      "cta": "Entrar a JuditoADS"
+    },
+    "assistant": {
+      "name": "AI Assistants",
+      "body": "Sabe qué vendes, tus precios y tus horarios. Atiende a los curiosos; tú atiendes a los que compran.",
+      "features": [
+        "Instagram, Facebook y tu web",
+        "Responde de madrugada",
+        "Te pasa al cliente listo",
+        "Entrenado con tu negocio"
+      ],
+      "demo": "Pruébalo aquí mismo",
+      "demoNote": "El robot de esta página es uno de estos.",
+      "cta": "Quiero uno"
+    },
+    "diffTitle": "Por qué con nosotros",
     "diff": {
       "title": "Lo que nos hace diferentes",
       "items": [
@@ -200,58 +241,6 @@
           "a": "Hosting, mantenimiento, seguridad y respaldos diarios, soporte, y tu portal de administrador para controlar tu contenido, usuarios y ventas desde un solo lugar."
         }
       ]
-    },
-    "promoBadge": "Estos precios son válidos hasta el 1 de septiembre",
-    "flatFee": "Precio final. Sin costo de instalación.",
-    "offLabel": "1 DE SEPTIEMBRE: SUBEN LOS PRECIOS",
-    "offUntil": "asegura tu precio hoy",
-    "assistant": {
-      "name": "Asistente con IA",
-      "eyebrow": "¿Y quién los atiende?",
-      "price": "$20/mes",
-      "body": "Un asistente entrenado con tu negocio: sabe qué vendes, tus precios y tus horarios. Responde en tus redes y vive en tu website como una mascota que recibe a quien llega, le resuelve la duda y lo acompaña hasta la compra. Tú atiendes a los que van en serio; él se encarga de los curiosos.",
-      "features": [
-        "Responde en Instagram, Facebook y tu website",
-        "Sabe tus precios, horarios y lo que vendes",
-        "Recibe a cada visitante y lo guía",
-        "Contesta a toda hora, también de madrugada",
-        "Te pasa la conversación cuando el cliente ya está listo",
-        "Menos tiempo tuyo en preguntas repetidas"
-      ],
-      "cta": "Quiero uno para mi negocio",
-      "demo": "Míralo aquí mismo",
-      "demoNote": "El robot que ves en esta página es uno de estos. Escríbele y pruébalo antes de decidir."
-    },
-    "juditoads": {
-      "eyebrow": "Nuevo: hazlo tú mismo",
-      "name": "JuditoADS (campañas de redes)",
-      "badge": "Nuevo servicio",
-      "body": "La plataforma self-service de Judo Marketing: conecta tu cuenta de Meta, sube tus imágenes y videos, cuéntanos quién es tu cliente ideal y lanza tu publicidad en Facebook e Instagram tú mismo, con estrategia guiada para que tu campaña llegue a más personas.",
-      "features": [
-        "Conecta tus propias cuentas publicitarias de Meta",
-        "Estrategia guiada: tu país, tu cliente ideal y tu objetivo",
-        "Tú controlas el presupuesto: actívalo o páusalo cuando quieras",
-        "Alcance y resultados en tiempo real",
-        "Reportes profesionales descargables en PDF",
-        "14 días de prueba gratis"
-      ],
-      "price": "$20/mes",
-      "priceNote": "+ tu presupuesto publicitario, que se paga directo a Meta",
-      "vsMedia": "¿Prefieres que la manejemos por ti? Escríbenos y armamos tu campaña contigo.",
-      "cta": "Entrar a JuditoADS"
-    },
-    "nav": {
-      "websites": "Websites",
-      "social": "Social Media Marketing Assistant",
-      "ai": "AI Assistants"
-    },
-    "sections": {
-      "websitesTitle": "Websites",
-      "websitesSub": "Tu casa digital: tienda, reservas o servicios. Elige el punto de partida; todo crece contigo.",
-      "socialTitle": "Social Media Marketing Assistant",
-      "socialSub": "Tu publicidad en Facebook e Instagram, hecha por ti con Judito como guía.",
-      "aiTitle": "AI Assistants",
-      "aiSub": "Asistentes con inteligencia artificial que atienden a tus clientes por ti."
     }
   },
   "login": {
@@ -427,7 +416,7 @@
     "scanHint": "Escanéalo con tu billetera si estás en la computadora"
   },
   "portfolio": {
-    "title": "Showcase",
+    "title": "Portafolio",
     "subtitle": "Websites reales que hemos construido. Entra a cualquiera y compruébalo tú mismo.",
     "all": "Todos",
     "visit": "Ver el sitio",

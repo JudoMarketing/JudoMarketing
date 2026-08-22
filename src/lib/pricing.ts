@@ -1,47 +1,33 @@
-/**
- * Los precios de los tres planes, en un solo lugar.
- *
- * Hasta el 1 de septiembre de 2026 rige la oferta de 50%. A partir de esa
- * fecha el precio pasa solo al normal y la etiqueta de descuento desaparece
- * de todo el sitio: no hay que acordarse de tocar nada ese día.
- *
- * Las páginas que muestran precio se regeneran cada hora (`revalidate`), así
- * que el cambio entra a más tardar una hora después de medianoche.
- */
-
 import tabla from "@/content/pricing.json";
+
+/**
+ * Los precios, en un solo lugar.
+ *
+ * Hubo una oferta de arranque que iba a vencer el 1 de septiembre de 2026. El
+ * dueño la cerró antes y dejó los precios de lista corriendo, así que ya no
+ * hay dos tablas ni fecha de corte: hay un precio y ya. Los clientes que
+ * entraron con la oferta conservan el suyo, pero eso vive en cada website
+ * (sites.monthly_price), no aquí.
+ */
 
 export const PLANES = ["essential", "complex", "apps"] as const;
 export type Plan = (typeof PLANES)[number];
 
-/** Precio de oferta (el que está corriendo ahora). */
-const OFERTA = tabla.oferta as Record<Plan, number>;
+const PRECIOS = tabla.precios as Record<Plan, number>;
 
-/** Precio normal, el de lista. Entra solo en la fecha de cambio. */
-const NORMAL = tabla.normal as Record<Plan, number>;
+/** Los dos servicios que se suman al website y cuestan igual. */
+export const PRECIO_JUDITOADS = tabla.extras.juditoads;
+export const PRECIO_ASISTENTE = tabla.extras.asistente;
 
-/**
- * El momento del cambio: 1 de septiembre de 2026, 00:00 en Miami. Septiembre
- * cae en horario de verano (EDT, UTC−4), por eso las 04:00 UTC.
- */
-export const FIN_DE_OFERTA = Date.parse(tabla.cambio);
-
-/** ¿Sigue viva la oferta de 50%? */
-export function ofertaVigente(ahora: number = Date.now()): boolean {
-  return ahora < FIN_DE_OFERTA;
+export function precio(plan: Plan): number {
+  return PRECIOS[plan];
 }
 
-/** Lo que cuesta hoy este plan, en dólares. */
-export function precio(plan: Plan, ahora: number = Date.now()): number {
-  return ofertaVigente(ahora) ? OFERTA[plan] : NORMAL[plan];
+export function precioTexto(plan: Plan): string {
+  return `$${precio(plan)}`;
 }
 
-/** Lo mismo, listo para pintar: "$50". */
-export function precioTexto(plan: Plan, ahora: number = Date.now()): string {
-  return `$${precio(plan, ahora)}`;
-}
-
-/** El más barato de todos, para los textos de "desde $X". */
-export function precioDesde(ahora: number = Date.now()): string {
-  return precioTexto("essential", ahora);
+/** El más barato, para los textos de tipo "desde $X". */
+export function precioDesde(): string {
+  return precioTexto("essential");
 }
