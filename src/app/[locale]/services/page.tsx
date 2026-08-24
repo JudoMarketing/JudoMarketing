@@ -183,7 +183,7 @@ export default function ServicesPage({
               </div>
 
               <div>
-                <ArteAds className="mx-auto w-full max-w-sm" />
+                <ArteAds className="mx-auto w-full max-w-md" />
                 <div className="mt-6 rounded-2xl border border-judo-lilac/15 bg-judo-black/40 p-6 text-center">
                   <p className="text-5xl font-bold">
                     ${PRECIO_JUDITOADS}

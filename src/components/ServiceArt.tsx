@@ -6,25 +6,40 @@ import Image from "next/image";
  * Cada uno tiene un trabajo: explicar el servicio sin que haya que leer. Un
  * párrafo menos por cada dibujo que se entienda.
  *
- * Websites usa la ilustración de la mascota (public/servicios/websites.png),
- * que es arte de la marca. Publicidad y asistentes son SVG hechos a mano:
- * pesan nada, se ven nítidos en cualquier pantalla y toman el color de su
- * familia desde `var(--svc)`, así que cambiar el color los cambia solos.
+ * Se están reemplazando uno a uno por las ilustraciones de la marca, que viven
+ * en public/servicios. El que todavía no tiene la suya sigue siendo un SVG
+ * hecho a mano que toma el color de su familia desde `var(--svc)`.
  */
 
 const trazo = { strokeLinecap: "round", strokeLinejoin: "round" } as const;
 
-/** Websites: la mascota con el panel de control en la mano. */
-export function ArteWebsites({ className = "" }: { className?: string }) {
+/**
+ * Una ilustración de servicio. Todas se guardan recortadas al contenido y a
+ * 1200 de ancho, que es de sobra para el tamaño más grande en que se muestran;
+ * Next/Image se encarga de servir la medida que haga falta.
+ *
+ * `prioridad` va solo en la que aparece antes de bajar la página: si se le
+ * pone a todas, compiten entre sí y no acelera ninguna.
+ */
+function Ilustracion({
+  src,
+  alto,
+  className,
+  prioridad = false,
+}: {
+  src: string;
+  alto: number;
+  className: string;
+  prioridad?: boolean;
+}) {
   return (
     <div className={`relative ${className}`}>
       <Image
-        src="/servicios/websites.png"
+        src={src}
         alt=""
         width={1200}
-        height={686}
-        // Aparece arriba en /services, así que se carga con prioridad
-        priority
+        height={alto}
+        priority={prioridad}
         sizes="(max-width: 768px) 90vw, 560px"
         className="h-full w-full object-contain"
       />
@@ -32,45 +47,16 @@ export function ArteWebsites({ className = "" }: { className?: string }) {
   );
 }
 
-/** JuditoADS: un anuncio saliendo al mundo y los números subiendo. */
-export function ArteAds({ className = "" }: { className?: string }) {
+/** Websites: la mascota con el panel de control en la mano. */
+export function ArteWebsites({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 240 150" className={className} fill="none" aria-hidden>
-      {/* El anuncio, en el teléfono del dueño */}
-      <rect
-        x="10" y="16" width="72" height="118" rx="12"
-        fill="rgba(255,255,255,0.03)" stroke="var(--svc-luz)" strokeWidth="2"
-      />
-      <circle cx="24" cy="32" r="6" fill="var(--svc)" opacity="0.7" />
-      <rect x="35" y="28" width="28" height="4" rx="2" fill="var(--svc-luz)" opacity="0.5" />
-      <rect x="35" y="36" width="18" height="3" rx="1.5" fill="var(--svc-luz)" opacity="0.3" />
-      <rect x="20" y="46" width="52" height="40" rx="6" fill="var(--svc)" opacity="0.45" />
-      {/* Botoncito de "me gusta" y el llamado a la acción */}
-      <path
-        d="M32 96c0-3 2.4-5 5-5 1.7 0 3 .9 3.7 2 .7-1.1 2-2 3.7-2 2.6 0 5 2 5 5 0 4.2-8.7 9-8.7 9S32 100.2 32 96z"
-        fill="var(--svc-luz)" opacity="0.85"
-      />
-      <rect x="20" y="114" width="52" height="12" rx="6" fill="var(--svc)" />
-      {/* Hacia dónde sale: las plataformas */}
-      <path
-        d="M88 62c18-10 30-10 44-6M88 78c18 4 30 10 44 22"
-        stroke="var(--svc-luz)" strokeWidth="2" strokeDasharray="4 5" opacity="0.7" {...trazo}
-      />
-      <circle cx="140" cy="52" r="14" fill="var(--svc)" opacity="0.2" stroke="var(--svc-luz)" strokeWidth="1.5" />
-      <rect x="133" y="45" width="14" height="14" rx="4.5" stroke="var(--svc-luz)" strokeWidth="1.8" />
-      <circle cx="140" cy="52" r="3" fill="var(--svc-luz)" />
-      <circle cx="140" cy="108" r="14" fill="var(--svc)" opacity="0.2" stroke="var(--svc-luz)" strokeWidth="1.5" />
-      <path
-        d="M142 101h3v-5h-4c-3.3 0-5 2-5 5v3h-3v5h3v11h5v-11h4l1-5h-5v-2c0-.7.3-1 1-1z"
-        fill="var(--svc-luz)"
-      />
-      {/* El resultado: la gente que llega */}
-      <path d="M170 124V96M188 124V78M206 124V58M224 124V36" stroke="var(--svc)" strokeWidth="9" {...trazo} />
-      <path d="M166 128h62" stroke="var(--svc-luz)" strokeWidth="2" opacity="0.5" {...trazo} />
-      <path d="M168 90l18-18 18-20 18-22" stroke="var(--svc-luz)" strokeWidth="2.5" opacity="0.9" {...trazo} />
-      <path d="M216 14h12v12" stroke="var(--svc-luz)" strokeWidth="2.5" {...trazo} />
-    </svg>
+    <Ilustracion src="/servicios/websites.png" alto={686} className={className} prioridad />
   );
+}
+
+/** JuditoADS: el anuncio saliendo a las redes y los números subiendo. */
+export function ArteAds({ className = "" }: { className?: string }) {
+  return <Ilustracion src="/servicios/juditoads.png" alto={699} className={className} />;
 }
 
 /** AI Assistants: el robot contestando mientras el dueño duerme. */
