@@ -219,7 +219,7 @@ export default function ServicesPage({
           <div className="svc-card p-7 sm:p-10">
             <div className="grid gap-10 lg:grid-cols-[1fr_1.05fr] lg:items-center">
               <div className="order-2 lg:order-1">
-                <ArteAi className="mx-auto w-full max-w-sm" />
+                <ArteAi className="mx-auto w-full max-w-md" />
                 <div className="mt-6 rounded-2xl border border-judo-lilac/15 bg-judo-black/40 p-6 text-center">
                   <p className="text-5xl font-bold">
                     ${PRECIO_ASISTENTE}
