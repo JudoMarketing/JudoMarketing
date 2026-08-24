@@ -58,7 +58,7 @@
       "kicker": "Te ven",
       "price": "$20/mes",
       "description": "Lanza tu publicidad en Facebook e Instagram tú mismo.",
-      "free": "Pruébalo gratis. Sin tarjeta."
+      "free": "Pruébalo gratis."
     },
     "ai": {
       "name": "AI Assistants",
@@ -173,7 +173,7 @@
       ],
       "priceNote": "+ lo que inviertas en Meta, que le pagas directo a ellos",
       "cta": "Entrar a JuditoADS",
-      "free": "Pruébalo gratis. Sin tarjeta."
+      "free": "Pruébalo gratis."
     },
     "assistant": {
       "name": "AI Assistants",
@@ -259,7 +259,7 @@
     "back": "Volver al inicio"
   },
   "mascot": {
-    "greeting": "¿Quieres traer más clientes? Lanza tu publicidad con JuditoADS. Gratis, sin tarjeta.",
+    "greeting": "¿Quieres traer más clientes? Lanza tu publicidad con JuditoADS. Pruébalo gratis.",
     "chatSoon": "Muy pronto vas a poder chatear conmigo aquí mismo 💜",
     "chatTitle": "Chatea conmigo",
     "chatIntro": "¡Hola! Soy la mascota de Judo Marketing. Pregúntame lo que quieras sobre nuestros servicios, precios o cómo trabajamos 💜",
