@@ -183,14 +183,19 @@ export default function ServicesPage({
               <div>
                 <ArteAds className="mx-auto w-full max-w-sm" />
                 <div className="mt-6 rounded-2xl border border-judo-lilac/15 bg-judo-black/40 p-6 text-center">
-                  <span className="svc-tag">{t("juditoads.badge")}</span>
-                  <p className="mt-3 text-5xl font-bold">
+                  <p className="text-5xl font-bold">
                     ${PRECIO_JUDITOADS}
                     <span className="text-2xl" style={{ color: "var(--svc-luz)" }}>
                       {t("perMonth")}
                     </span>
                   </p>
-                  <p className="mt-2 text-xs text-judo-fog/55">
+                  <p
+                    className="mt-2 text-sm font-bold"
+                    style={{ color: "var(--svc-luz)" }}
+                  >
+                    {t("juditoads.free")}
+                  </p>
+                  <p className="mt-1.5 text-xs text-judo-fog/55">
                     {t("juditoads.priceNote")}
                   </p>
                   <a href="/juditoads" className="svc-btn mt-5">

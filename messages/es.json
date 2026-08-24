@@ -57,7 +57,8 @@
       "name": "JuditoADS",
       "kicker": "Te ven",
       "price": "$20/mes",
-      "description": "Lanza tu publicidad en Facebook e Instagram tú mismo."
+      "description": "Lanza tu publicidad en Facebook e Instagram tú mismo.",
+      "free": "Pruébalo gratis. Sin tarjeta."
     },
     "ai": {
       "name": "AI Assistants",
@@ -163,7 +164,6 @@
     },
     "juditoads": {
       "name": "JuditoADS",
-      "badge": "14 días gratis",
       "body": "Conecta tu cuenta de Meta, sube tus fotos y lanza. Judito te guía en cada paso.",
       "features": [
         "Tú pones el presupuesto",
@@ -172,7 +172,8 @@
         "Pausa cuando quieras"
       ],
       "priceNote": "+ lo que inviertas en Meta, que le pagas directo a ellos",
-      "cta": "Entrar a JuditoADS"
+      "cta": "Entrar a JuditoADS",
+      "free": "Pruébalo gratis. Sin tarjeta."
     },
     "assistant": {
       "name": "AI Assistants",
@@ -258,7 +259,7 @@
     "back": "Volver al inicio"
   },
   "mascot": {
-    "greeting": "¿Quieres traer más clientes? Lanza tu publicidad tú mismo con JuditoADS.",
+    "greeting": "¿Quieres traer más clientes? Lanza tu publicidad con JuditoADS. Gratis, sin tarjeta.",
     "chatSoon": "Muy pronto vas a poder chatear conmigo aquí mismo 💜",
     "chatTitle": "Chatea conmigo",
     "chatIntro": "¡Hola! Soy la mascota de Judo Marketing. Pregúntame lo que quieras sobre nuestros servicios, precios o cómo trabajamos 💜",

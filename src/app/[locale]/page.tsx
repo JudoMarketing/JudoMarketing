@@ -133,11 +133,20 @@ export default function HomePage({
             {t("hero.ctaShowcase")}
             <span aria-hidden>→</span>
           </Link>
+          {/* JuditoADS se prueba sin pagar: lo dice el propio botón, porque
+              es lo que quita el miedo a hacer clic. */}
           <a
             href="/juditoads"
-            className="inline-flex items-center gap-2 rounded-full border border-judo-lilac/20 bg-white/5 px-6 py-2.5 text-sm text-judo-fog/70 backdrop-blur-sm transition hover:border-judo-lilac/45 hover:bg-white/10 hover:text-judo-fog"
+            className="svc svc-ads inline-flex items-center gap-2 rounded-full border px-6 py-2.5 text-sm backdrop-blur-sm transition"
+            style={{
+              borderColor: "color-mix(in srgb, var(--svc) 45%, transparent)",
+              backgroundColor: "color-mix(in srgb, var(--svc) 14%, transparent)",
+              color: "var(--svc-luz)",
+            }}
           >
             {t("hero.ctaJudito")}
+            <span className="text-judo-fog/55">·</span>
+            <span className="font-semibold">{t("plans.juditoads.free")}</span>
             <span aria-hidden>→</span>
           </a>
         </div>
@@ -202,6 +211,14 @@ export default function HomePage({
                     ? `${t("plans.from")} ${precioDesde()}${t("plans.perMonth")}`
                     : t(`plans.${servicio.id}.price`)}
                 </p>
+                {servicio.id === "juditoads" && (
+                  <p
+                    className="mt-1 text-sm font-bold"
+                    style={{ color: "var(--svc-luz)" }}
+                  >
+                    {t("plans.juditoads.free")}
+                  </p>
+                )}
                 <p className="mt-3 flex-1 text-sm leading-relaxed text-judo-fog/65">
                   {t(`plans.${servicio.id}.description`)}
                 </p>

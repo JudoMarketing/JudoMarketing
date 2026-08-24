@@ -57,7 +57,8 @@
       "name": "JuditoADS",
       "kicker": "They see you",
       "price": "$20/mo",
-      "description": "Launch your own Facebook and Instagram ads."
+      "description": "Launch your own Facebook and Instagram ads.",
+      "free": "Try for free. No card needed."
     },
     "ai": {
       "name": "AI Assistants",
@@ -163,7 +164,6 @@
     },
     "juditoads": {
       "name": "JuditoADS",
-      "badge": "14 days free",
       "body": "Connect your Meta account, upload your photos and launch. Judito walks you through it.",
       "features": [
         "You set the budget",
@@ -172,7 +172,8 @@
         "Pause anytime"
       ],
       "priceNote": "+ whatever you spend on Meta, paid straight to them",
-      "cta": "Open JuditoADS"
+      "cta": "Open JuditoADS",
+      "free": "Try for free. No card needed."
     },
     "assistant": {
       "name": "AI Assistants",
@@ -258,7 +259,7 @@
     "back": "Back to home"
   },
   "mascot": {
-    "greeting": "Want more customers? Run your own ads with JuditoADS.",
+    "greeting": "Want more customers? Run your own ads with JuditoADS. Free, no card needed.",
     "chatSoon": "Very soon you'll be able to chat with me right here 💜",
     "chatTitle": "Chat with me",
     "chatIntro": "Hi! I'm the Judo Marketing mascot. Ask me anything about our services, pricing, or how we work 💜",
