@@ -102,7 +102,7 @@ export default function ServicesPage({
         className="svc svc-websites mx-auto max-w-6xl scroll-mt-24 px-6 pt-16 pb-12"
       >
         <Reveal>
-          <div className="grid items-center gap-8 lg:grid-cols-[1fr_1.1fr]">
+          <div className="grid items-center gap-6 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
               <span className="svc-tag">🌐 {t("kicker.websites")}</span>
               <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
@@ -112,7 +112,9 @@ export default function ServicesPage({
                 {t("sections.websitesSub")}
               </p>
             </div>
-            <ArteWebsites className="w-full max-w-md justify-self-center lg:justify-self-end" />
+            {/* La ilustración es el argumento de esta sección: se le da el
+                espacio, no las sobras. */}
+            <ArteWebsites className="w-full max-w-2xl justify-self-center lg:justify-self-end" />
           </div>
         </Reveal>
 

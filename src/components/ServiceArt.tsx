@@ -1,51 +1,34 @@
+import Image from "next/image";
+
 /**
- * Los tres dibujos de la página de servicios.
- *
- * Son SVG hechos a mano, no fotos ni imágenes generadas: pesan nada, se ven
- * nítidos en cualquier pantalla y toman el color de su familia desde
- * `var(--svc)`, así que cambiar el color de un servicio los cambia solos.
+ * Los tres dibujos de los servicios.
  *
  * Cada uno tiene un trabajo: explicar el servicio sin que haya que leer. Un
  * párrafo menos por cada dibujo que se entienda.
+ *
+ * Websites usa la ilustración de la mascota (public/servicios/websites.png),
+ * que es arte de la marca. Publicidad y asistentes son SVG hechos a mano:
+ * pesan nada, se ven nítidos en cualquier pantalla y toman el color de su
+ * familia desde `var(--svc)`, así que cambiar el color los cambia solos.
  */
 
 const trazo = { strokeLinecap: "round", strokeLinejoin: "round" } as const;
 
-/** Websites: la misma página, vista en computadora y en teléfono. */
+/** Websites: la mascota con el panel de control en la mano. */
 export function ArteWebsites({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 240 150" className={className} fill="none" aria-hidden>
-      {/* Monitor */}
-      <rect
-        x="8" y="14" width="164" height="106" rx="10"
-        fill="rgba(255,255,255,0.03)" stroke="var(--svc-luz)" strokeWidth="2" opacity="0.9"
+    <div className={`relative ${className}`}>
+      <Image
+        src="/servicios/websites.png"
+        alt=""
+        width={1200}
+        height={686}
+        // Aparece arriba en /services, así que se carga con prioridad
+        priority
+        sizes="(max-width: 768px) 90vw, 560px"
+        className="h-full w-full object-contain"
       />
-      {/* Barra del navegador */}
-      <path d="M8 34h164" stroke="var(--svc-luz)" strokeWidth="2" opacity="0.55" />
-      <circle cx="22" cy="24" r="3" fill="var(--svc-luz)" opacity="0.8" />
-      <circle cx="33" cy="24" r="3" fill="var(--svc-luz)" opacity="0.5" />
-      <circle cx="44" cy="24" r="3" fill="var(--svc-luz)" opacity="0.3" />
-      {/* Contenido: un titular, texto y una galería */}
-      <rect x="24" y="48" width="72" height="9" rx="4.5" fill="var(--svc)" />
-      <rect x="24" y="64" width="118" height="5" rx="2.5" fill="var(--svc-luz)" opacity="0.35" />
-      <rect x="24" y="75" width="96" height="5" rx="2.5" fill="var(--svc-luz)" opacity="0.35" />
-      <rect x="24" y="92" width="34" height="22" rx="5" fill="var(--svc)" opacity="0.55" />
-      <rect x="64" y="92" width="34" height="22" rx="5" fill="var(--svc)" opacity="0.35" />
-      <rect x="104" y="92" width="34" height="22" rx="5" fill="var(--svc)" opacity="0.2" />
-      {/* Base del monitor */}
-      <path d="M74 120v10h32v-10M62 132h56" stroke="var(--svc-luz)" strokeWidth="2" opacity="0.55" {...trazo} />
-      {/* Teléfono con lo mismo, para que se lea "se ve bien en todos lados" */}
-      <rect
-        x="182" y="42" width="50" height="92" rx="10"
-        fill="rgba(255,255,255,0.03)" stroke="var(--svc-luz)" strokeWidth="2"
-      />
-      <rect x="198" y="49" width="18" height="3" rx="1.5" fill="var(--svc-luz)" opacity="0.6" />
-      <rect x="190" y="62" width="30" height="7" rx="3.5" fill="var(--svc)" />
-      <rect x="190" y="76" width="34" height="4" rx="2" fill="var(--svc-luz)" opacity="0.35" />
-      <rect x="190" y="86" width="24" height="4" rx="2" fill="var(--svc-luz)" opacity="0.35" />
-      <rect x="190" y="98" width="34" height="16" rx="4" fill="var(--svc)" opacity="0.45" />
-      <rect x="190" y="120" width="34" height="7" rx="3.5" fill="var(--svc)" />
-    </svg>
+    </div>
   );
 }
 
