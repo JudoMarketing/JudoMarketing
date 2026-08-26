@@ -139,3 +139,51 @@ mano y es lo que respalda la decisión el día que alguien reclame.
 Rotarla desde el expediente (🔐 → Rotar clave) y pegar la nueva en la
 variable `JUDO_KIT_KEY` del Vercel de ese sitio. El sitio sigue funcionando
 mientras tanto: solo deja de reportar hasta que se actualice.
+
+
+---
+
+## Publicar: siempre el último en producción
+
+Instrucción permanente del dueño. Después de empujar, se promueve. Tres cosas
+que no son obvias y cuestan un rato la primera vez:
+
+**1. Un preview no se promueve.** `POST /v10/projects/{id}/promote/{dpl}`
+devuelve **422** si el despliegue se construyó como preview: lleva las
+variables de preview, no las de producción. Hay que crear uno nuevo:
+
+```bash
+POST /v13/deployments?teamId=<team>
+{
+  "name": "<proyecto>",
+  "project": "<prj_...>",
+  "target": "production",
+  "gitSource": { "type": "github", "repoId": <id>, "ref": "<rama>", "sha": "<sha>" }
+}
+```
+
+Esto construye producción **desde la rama de trabajo sin tocar `main`**, que
+es lo que hace falta cuando la rama de producción del proyecto es `main` pero
+el trabajo vive en otra.
+
+**2. El despliegue por fases engaña.** Si el proyecto tiene *rolling release*
+(p. ej. 10% durante 5 min y luego 100%), en cuanto el build termina el
+proyecto ya reporta `targets.production` con el commit nuevo — **y el dominio
+sigue sirviendo el anterior**. El nuevo entra como `canaryDeployment`. Se
+consulta con:
+
+```
+GET /v1/projects/{id}/rolling-release?teamId=<team>
+```
+
+Si la fase tiene `requireApproval: false`, avanza sola al terminar su
+duración. Si no, hay que aprobarla.
+
+**3. Se verifica sobre el HTML público, no sobre el estado del proyecto.**
+
+```bash
+curl -s https://<dominio>/es | grep -c "<algo que sólo esté en la versión nueva>"
+```
+
+Que el proyecto diga que producción es el commit nuevo **no significa** que el
+visitante lo esté viendo.

@@ -53,6 +53,19 @@ esperar a que lo escriba él: se le ofrece anotarlo y se anota.
    qué, y se entrega el resto completo. Nunca datos inventados, testimonios
    sin permiso ni fotos de banco de imágenes fingiendo ser el cliente.
 
+## Despliegue: siempre el último en producción
+
+Instrucción permanente del dueño: **lo último que se empuja va a producción.**
+No hay que preguntar cada vez.
+
+Mecánica y trampas en [kit/NUEVO-SITIO.md](kit/NUEVO-SITIO.md) — resumidas:
+un despliegue de *preview* **no se puede promover** (se construyó con otras
+variables; la API devuelve 422), así que se crea uno nuevo con
+`target: "production"`; y si el proyecto tiene despliegue por fases, producción
+apunta al commit nuevo mientras el dominio **sigue sirviendo el anterior**
+hasta que el canario llega al 100%. Verificar siempre sobre el HTML público,
+no sobre el estado del proyecto.
+
 ## Sitios de cliente
 
 El protocolo de alta (datos que pedir, kill switch, telemetría, cobro) está en
