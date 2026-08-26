@@ -137,6 +137,38 @@ por otra — no agrandes el icono.
 
 ---
 
+## 7 · Después de cambiar la maquetación
+
+El que habría evitado el fallo más caro de la lista de errores.
+
+```
+Acabas de cambiar <QUÉ CAMBIÓ: p. ej. el hero de una caja de 3:2 a todo el
+ancho>. Revisa ahora los recursos que viven dentro de ese bloque, porque las
+decisiones que se tomaron para la maquetación anterior ya no valen:
+
+- Video e imágenes: ¿a qué tamaño se muestran HOY? Mide la calidad al tamaño
+  real con SSIM contra el máster, no a ojo.
+- ¿Hay algún efecto (paralaje, zoom, escala) ampliando ese material?
+- Recortes y object-position: ¿sigue viéndose lo que importa?
+- Tamaños de tipografía y de icono en el bloque.
+
+Dime qué encontraste con números, y qué tuviste que rehacer.
+```
+
+## 8 · Qué esconde el panel
+
+```
+El hero lleva un panel de texto sobre <imagen | video>. Píntame el contorno
+del panel sobre el plano SIN velo y sin el texto, y dime exactamente qué está
+tapando.
+
+Si tapa algo que importa, renderiza 3 alternativas de encuadre o de
+composición y enséñamelas antes de elegir. No decidas sobre el papel.
+```
+
+
+---
+
 ## Lo que no hay que pedir
 
 No hace falta pedir "que quede bonito" ni "moderno" a secas: eso devuelve la

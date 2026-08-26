@@ -11,8 +11,12 @@ logo, hay que rehacerla cuando llegue el logo.
 ## 0 · Antes de abrir el editor
 
 Hace falta el logo en su archivo original (no una captura de la web vieja),
-saber a qué se dedica el negocio, y **quién es el visitante y en qué estado
-llega**.
+**el material audiovisual en su máxima resolución**, saber a qué se dedica el
+negocio, y **quién es el visitante y en qué estado llega**.
+
+Lo de la resolución no es un detalle técnico: es un techo. Un clip de 720p se
+deshace en un hero a todo el ancho y eso no se arregla codificando mejor. Se
+pide el día 1, con el resto de los accesos.
 
 Lo tercero es lo que decide casi todo lo demás y es lo que más se salta.
 
@@ -153,7 +157,21 @@ lee quien usa lector de pantalla.
 
 ---
 
-## 6 · Verificar antes de entregar
+## 6 · Al cambiar la maquetación, revisar los recursos
+
+La regla que más caro ha salido, y la más fácil de olvidar:
+
+> **Un cambio de maquetación invalida las decisiones de recurso tomadas bajo
+> la maquetación anterior.**
+
+Mover un video de una caja de 600px a un hero a sangre no es sólo CSS: el peso,
+la resolución, el recorte y hasta el efecto de paralaje que lo amplía dejan de
+estar bien calculados. Lo mismo con imágenes, iconos y tamaños de tipografía.
+
+Y un panel de texto sobre imagen **esconde algo**: hay que ver qué, pintando su
+contorno sobre el plano limpio. Ver `VERIFICACION.md`.
+
+## 7 · Verificar antes de entregar
 
 No es un paso opcional del final: es parte del trabajo.
 Ver [VERIFICACION.md](VERIFICACION.md).
@@ -170,5 +188,7 @@ Ver [VERIFICACION.md](VERIFICACION.md).
 4. Iconos SVG propios, juzgados a su tamaño real.
 5. Lienzo neutro frío si la marca depende de colores vivos.
 6. Arriba lo que decide la llamada. El material real del cliente manda.
-7. Medir contraste, barrer las rutas, comprobar sin JS y con reduced-motion.
+7. Si cambia la maquetación, revisar los recursos que vivían dentro.
+8. Medir contraste, fidelidad del material, y qué tapa cada panel. Barrer las
+   rutas; comprobar sin JS y con reduced-motion.
 ```

@@ -275,7 +275,84 @@ del propio clip**, así no hay salto visual al arrancar.
 Solo MP4: el VP9 equivalente pesaba más con este material, y H.264 lo
 reproduce cualquier navegador.
 
+### Dos calidades, elegidas por el ancho al que se va a ver
+
+Un solo archivo no sirve para un hero a sangre y para una franja de 390px. La
+versión ligera se deshace en bloques ampliada; la buena son megas que un móvil
+con datos no tiene por qué pagar.
+
+```ts
+function variante(nombre: string) {
+  // el mismo punto de corte que usa la maquetación para pasar a todo el ancho
+  return window.matchMedia("(min-width: 900px)").matches ? `${nombre}-hd` : nombre;
+}
+```
+
+El corte se ata al breakpoint de la maquetación, no a un número inventado: si
+el hero cambia de forma a 900px, la calidad tiene que cambiar ahí también.
+
 Y el componente **no descarga el video hasta que la página terminó de
 cargar**, y lo omite por completo si el visitante tiene ahorro de datos, va
 por conexión lenta o pidió menos movimiento. En esos casos se queda el póster.
 Un cliente en el móvil con datos limitados no paga por nuestra decoración.
+
+
+---
+
+## 7 · La miniatura al compartir el enlace
+
+Lo que sale en WhatsApp, iMessage, Facebook y LinkedIn. Se olvida siempre y es
+lo primero que ve quien recibe el enlace.
+
+**Tres errores que se cometen a la vez:**
+
+1. **Poner el logo completo.** Un logo apaisado 2,5:1 dentro de un lienzo de
+   1200×630 sale diminuto en una franja. La miniatura quiere **un solo motivo,
+   centrado y grande** — la mascota, el símbolo, no el wordmark.
+2. **Fondo transparente.** Un PNG con alfa sale **negro** en casi todos los
+   clientes de chat. La miniatura y el icono de iOS van sobre fondo opaco. El
+   favicon sí puede ser transparente: se adapta a pestaña clara u oscura.
+3. **Declararla en el metadata.** En Next, `app/opengraph-image.png` es una
+   convención de archivo: la detecta sola y emite además `og:image:width`,
+   `height` y `type`, que es lo que WhatsApp y Facebook necesitan para no
+   recortar mal. Una entrada en `metadata.openGraph.images` **gana** y deja el
+   archivo sin usar.
+
+```
+app/icon.png             512x512   transparente   favicon
+app/apple-icon.png       180x180   opaco          pantalla de inicio de iOS
+app/opengraph-image.png  1200x630  opaco          al compartir el enlace
+```
+
+Se comprueba en el HTML servido, no en el código:
+
+```bash
+curl -s http://localhost:3000/ | grep -oE '<meta property="og:[^>]*>'
+```
+
+### Recortar un motivo de un logo
+
+Rara vez sale limpio. En el logo de la agencia de terapia, el trazo de la
+manuscrita pasaba por detrás del oso y **lo tocaba**: la imagen entera era una
+sola pieza conexa, así que ni el recorte por caja ni las componentes conexas
+lo separaban.
+
+Lo que sí funciona es separar **por color**, que es lo que de verdad los
+distingue:
+
+```python
+def es_manuscrita(r, g, b, a):
+    mx, mn = max(r, g, b), min(r, g, b)
+    return a >= 40 and mx < 80 and (mx - mn) < 26   # oscuro y sin color
+```
+
+Con dos cautelas: aplicarlo **sólo en la franja donde no puede haber nada del
+motivo** (aplicado a todo borraría las pupilas y la nariz, igual de oscuras), y
+localizar el límite del motivo **contando píxeles por columna**, no mirando:
+
+```python
+for x in range(inicio, fin, paso):
+    motivo = sum(1 for y in range(alto) if es_motivo(*px[x, y]))
+```
+
+Y después mirar el favicon a 16, 24 y 32px, que es donde de verdad se usa.

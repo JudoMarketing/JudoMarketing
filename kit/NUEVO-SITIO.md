@@ -18,8 +18,15 @@ en el mismo correo del contrato.
 1. **Nombre del proyecto** (ej. "Barbería El Patrón")
 2. **A qué se dedica** y quiénes son sus clientes
 3. **Qué debe hacer el sitio**: tienda, citas, catálogo, cotizador, delivery…
-4. **Marca**: logo, colores, tipografía. El diseño va con la identidad DEL
+4. **Marca**: logo, colores, tipografía. El **archivo original** del logo, no
+   una captura de su web vieja: hace falta para muestrear la paleta y para
+   recortar el motivo de la miniatura. El diseño va con la identidad DEL
    CLIENTE, no con el morado de Judo.
+4b. **Material audiovisual en su MÁXIMA resolución** (fotos y video). Un clip
+   de 720p se ve bien en una caja pequeña y se deshace en un hero a todo el
+   ancho, y eso no se arregla codificando: es el techo del máster. Pedir 1440p
+   o 4K cuando exista. Es de las cosas que "no se consiguen baratas después":
+   a los tres meses el video ya no está o nadie sabe dónde.
 
 ### Del contrato y el dinero
 
@@ -64,7 +71,11 @@ en el mismo correo del contrato.
    accesos, costos, dónde vive cada cosa, medición, cobro, contactos.
 3. **Copiar la clave del kit** (🔐 Clave del kit → Copiar).
 4. **Crear el repositorio** del cliente bajo el dueño `JudoMarketing` y el
-   proyecto en Vercel. Anotar ambos en el expediente.
+   proyecto en Vercel. Anotar ambos en el expediente. Las variables que el
+   build necesita van en `production` **y en `preview`**: si sólo están en
+   production, la primera rama de trabajo que se abra rompe el despliegue con
+   un error que no tiene nada que ver con el código (ver
+   `cerebro/ERRORES.md` §13).
 5. **Construir el sitio** con la base de Judo (Next.js + Tailwind), estética
    de la marca del cliente. El cómo está en [`cerebro/`](cerebro/README.md):
    `METODO.md` antes de la primera decisión de diseño, `VERIFICACION.md` antes

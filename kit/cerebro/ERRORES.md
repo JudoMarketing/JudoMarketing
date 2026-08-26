@@ -155,6 +155,94 @@ No son errores del sitio, sino de la forma de comprobarlo. Cuestan igual.
 
 ---
 
+## 10 · El video comprimido para un hueco que ya no existía
+
+**Qué pasó.** El hero se comprimió (CRF 30, 0,92 Mbps desde un máster de 4,95)
+cuando era una caja de 3:2 de unos 600px. Después el hero pasó **a sangre y a
+todo el ancho** y nadie volvió a tocar el archivo. En escritorio se veía a
+bloques. Lo detectó el cliente, no la verificación.
+
+**Por qué se coló.** El cambio de maquetación y la decisión de compresión
+estaban separados por semanas y por archivo. Nada en el proceso conectaba
+"cambio el tamaño al que se muestra esto" con "las decisiones de calidad que
+tomé para el tamaño anterior ya no valen".
+
+**La regla — la más transferible de esta lista.** **Un cambio de maquetación
+invalida las decisiones de recurso tomadas bajo la maquetación anterior.** Al
+mover algo de una caja a pantalla completa, hay que revisar el peso, la
+resolución y el recorte de todo lo que hay dentro. Vale para video, imágenes,
+iconos y tipografías.
+
+**Corolario que salió a la vez:** el paralaje ampliaba el clip un 14% sobre un
+720p que el navegador ya estaba escalando. Un efecto decorativo puede
+degradar el material que decora — hay que mirarlo, no sólo activarlo.
+
+**Y un techo que no se arregla codificando:** el máster era 1280×720. En un
+monitor de 2560px se amplía al doble por mucho bitrate que se le ponga. Eso se
+pide el día 1, no después (ver `NUEVO-SITIO.md`, Parte 1).
+
+---
+
+## 11 · La verificación era exhaustiva en todo menos en lo que falló
+
+**Qué pasó.** La lista de comprobación cubría contraste, desbordamiento
+horizontal, errores de consola, sin-JavaScript y `prefers-reduced-motion`, en
+14 rutas y tres anchos. Todo pasaba. Y el sitio tenía el video a bloques y el
+panel de texto tapando a las dos terapeutas del plano.
+
+**Por qué se coló.** La lista comprobaba **las dimensiones en las que se había
+pensado**. La fidelidad del material y qué tapa cada elemento no estaban en
+ella, así que no fallaron: ni se miraron.
+
+**La regla.** Una lista de comprobación da confianza en proporción a su
+cobertura, no a su longitud. Cuando el cliente encuentre algo, la pregunta no
+es sólo "cómo lo arreglo" sino **"qué otra dimensión no estoy mirando"**. Las
+dos que faltaban están ahora en `VERIFICACION.md`.
+
+---
+
+## 12 · Tres mediciones falsas seguidas, todas por recortar mal
+
+En una sola sesión, midiendo contraste sobre lo renderizado:
+
+1. **Texto oculto a medias.** `.a-hero-copy > * { visibility: hidden }` oculta
+   los hijos, pero no los nodos de texto sueltos ni los pseudo-elementos del
+   propio contenedor. Dos superficies dieron "BAJO" por sus propios glifos.
+2. **Cabecera translúcida dentro del recorte.** Una captura *por elemento*
+   incluye lo que se le superpone. La cabecera casi blanca metía un píxel de
+   luminancia 1,0 y el resultado bajó a 1,00:1. Se repite ocultando cabecera y
+   barras fijas.
+3. **Solape que no existía.** Por lo mismo, la captura por elemento hacía
+   creer que el antetítulo quedaba debajo de la cabecera. Medido en la página
+   real: 86px de holgura.
+
+**La regla.** Un resultado extremo —1,00:1, 0 píxeles, 100% de fallos— casi
+nunca es el sitio: es el instrumento. **Antes de arreglar un número
+sospechoso, hay que mirar lo que se midió.** Guardar el recorte en un archivo
+y abrirlo cuesta treinta segundos y ha ahorrado tres arreglos innecesarios.
+
+---
+
+## 13 · Un preview que nunca había existido
+
+**Qué pasó.** Empujar una rama nueva a un proyecto de Vercel puso el
+despliegue en rojo: `Error: supabaseUrl is required`. La rama base llevaba
+ocho builds verdes seguidos.
+
+**Por qué se coló.** Las variables de Supabase estaban puestas **sólo en
+`production`**. La rama base *era* la rama de producción del proyecto, así que
+sus builds eran `target=production` y sí las recibían. La rama nueva fue el
+primer preview real del proyecto — y el primero que falló.
+
+**La regla.** Al crear un proyecto en Vercel, las variables que el build
+necesita van en `production` **y** en `preview`. Y cuando la rama de
+producción es una rama de trabajo, conviene abrir una rama de prueba antes de
+darlo por listo: hasta entonces el entorno de preview no se ha ejercitado
+nunca.
+
+
+---
+
 ## Cómo añadir uno
 
 En el mismo commit del trabajo que lo enseñó. Con el número o el caso

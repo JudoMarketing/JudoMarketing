@@ -21,6 +21,9 @@ y solo hace falta `npm i playwright pngjs` en una carpeta temporal.
 [ ] Con JavaScript desactivado no desaparece ningún contenido
 [ ] Con prefers-reduced-motion no se mueve nada
 [ ] Los iconos se han mirado a su tamaño real de uso
+[ ] Fidelidad del material: cada imagen y video, medido al tamaño al que
+    de verdad se muestra hoy (no al que se muestraba cuando se preparó)
+[ ] Qué tapa cada panel: contorno del panel pintado sobre el plano sin velo
 [ ] Los TODO / datos de relleno que queden, dichos en la entrega
 ```
 
@@ -117,11 +120,23 @@ const L = (r,g,b) => 0.2126*lin(r) + 0.7152*lin(g) + 0.0722*lin(b);
 URL=http://localhost:3000/es SEL=.a-hero-copy node medir.js
 ```
 
-**Cuidado al recortar:** si el selector deja dentro píxeles de texto o un
-pseudo-elemento decorativo, el mínimo sale falso. Pasó en una revisión: dos
-superficies dieron "BAJO" y era que `.a-chip > *` ocultaba el `<svg>` pero no
-el nodo de texto suelto, y `.a-quote::before` (la comilla grande) no es hijo,
-así que sobrevivía. **Un resultado sospechoso se comprueba antes de creerlo.**
+**Cuidado al recortar.** Tres mediciones falsas seguidas salieron de aquí:
+
+1. `.panel > * { visibility: hidden }` oculta los hijos, pero **no** los nodos
+   de texto sueltos ni los pseudo-elementos del propio contenedor. Dos
+   superficies dieron "BAJO" por sus propios glifos.
+2. Una captura **por elemento** incluye lo que se le superpone. Una cabecera
+   translúcida casi blanca metió un píxel de luminancia 1,0 y el resultado
+   cayó a 1,00:1. Hay que ocultar cabecera y barras fijas al medir:
+   `.a-header, .a-callbar { display: none !important; }`
+3. Por lo mismo, la captura por elemento hizo creer que un antetítulo quedaba
+   debajo de la cabecera. Medido en la página real con `getBoundingClientRect`:
+   86px de holgura.
+
+**Un resultado extremo —1,00:1, cero píxeles, todo fallando— casi nunca es el
+sitio: es el instrumento.** Antes de arreglar un número sospechoso, guarda el
+recorte en un archivo y ábrelo. Treinta segundos, tres arreglos innecesarios
+ahorrados.
 
 ---
 
@@ -213,6 +228,72 @@ celdas += `<figure>${svg(72)}${svg(27)}<figcaption>${nombre}</figcaption></figur
 
 Así se detectaron una pieza de puzle que a 27px era una mancha dentada y un
 apretón de manos que era un garabato.
+
+---
+
+## Fidelidad del material, y qué tapa cada panel
+
+Estas dos comprobaciones se añadieron después de que un cliente encontrara lo
+que la lista no miraba (ver `ERRORES.md` §10 y §11). Son las que más rinden
+cuando el sitio ya pasa todo lo demás.
+
+### El material, al tamaño al que se muestra HOY
+
+Un clip comprimido para una caja de 600px se deshace en bloques cuando esa
+caja pasa a ocupar 1440. **Un cambio de maquetación invalida las decisiones de
+recurso tomadas bajo la maquetación anterior.**
+
+Se mide con SSIM contra el máster, no con el ojo:
+
+```bash
+ffmpeg -i servido.mp4 -i master.mp4 \
+  -lavfi "[0:v]fps=24,scale=1280:720[a];[1:v]fps=24,scale=1280:720[b];[a][b]ssim" -f null -
+```
+
+Referencia útil de una escalera real (clip de sala, 1280×720):
+
+| | peso | SSIM |
+| --- | --- | --- |
+| CRF 30 | 1,3 MB | 0,967 |
+| CRF 22 | 3,6 MB | 0,987 |
+| CRF 18 | 6,2 MB | 0,992 |
+
+De 30 a 22 se elimina más de la mitad del error; después decae. Y la
+comparación que de verdad convence al cliente es un recorte del mismo
+fotograma, ampliado como lo amplía el navegador:
+
+```bash
+ffmpeg -ss 4 -i clip.mp4 -frames:v 1 -vf "crop=420:236:640:300,scale=1260:708:flags=neighbor" antes.png
+```
+
+`flags=neighbor` a propósito: amplía sin suavizar, así se ve el bloque tal
+cual está en el archivo.
+
+Y si hay paralaje o zoom sobre ese material, cuenta: ampliar un 14% un 720p
+que el navegador ya está escalando se nota. El efecto decorativo puede
+degradar lo que decora.
+
+### Qué tapa cada panel
+
+Un panel de texto sobre una foto o un video **esconde algo**. Hay que ver qué,
+no suponerlo. Se pinta su contorno sobre el plano limpio:
+
+```js
+await p.addStyleTag({ content: `
+  .panel > * { visibility: hidden !important; }
+  .panel { background: rgba(255,0,0,.18) !important; border: 3px solid red !important;
+           backdrop-filter: none !important; }
+  .media::after { background: none !important; }` });
+```
+
+En el sitio de terapia, esto reveló que el panel tapaba exactamente a las dos
+terapeutas trabajando con una niña — o sea, la prueba del servicio — y dejaba
+a la vista pared y suelo.
+
+Cuando haya que reencuadrar, **renderiza las alternativas y míralas**, no
+elijas sobre el papel. Inyectando CSS sobre la página en marcha cuesta un
+minuto por opción.
+
 
 ---
 
