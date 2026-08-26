@@ -6,6 +6,7 @@ supervisados desde un panel central.
 
 - **Plan maestro y fases:** [PLAN.md](PLAN.md)
 - **Guía de marca:** [docs/BRAND.md](docs/BRAND.md)
+- **Cerebro (cómo se construyen los sitios):** [kit/cerebro/](kit/cerebro/README.md)
 - **Documentos legales:** [docs/legal/](docs/legal/README.md)
 
 ## Stack

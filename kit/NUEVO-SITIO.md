@@ -66,7 +66,10 @@ en el mismo correo del contrato.
 4. **Crear el repositorio** del cliente bajo el dueño `JudoMarketing` y el
    proyecto en Vercel. Anotar ambos en el expediente.
 5. **Construir el sitio** con la base de Judo (Next.js + Tailwind), estética
-   de la marca del cliente.
+   de la marca del cliente. El cómo está en [`cerebro/`](cerebro/README.md):
+   `METODO.md` antes de la primera decisión de diseño, `VERIFICACION.md` antes
+   de darlo por terminado. No se maqueta sin haber decidido —y justificado—
+   qué mitad del logo manda y cuál es el material que prueba el servicio.
 6. **Copiar los archivos de `kit/`** (middleware, página judo-suspendido, lib,
    componente JudoFooter) y configurar las variables (ver `kit/README.md`).
    `JUDO_KIT_KEY` va SIN el prefijo `NEXT_PUBLIC`: si la clave llega al

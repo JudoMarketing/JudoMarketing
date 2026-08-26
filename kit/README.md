@@ -1,5 +1,9 @@
 # Judo Site Kit
 
+> **Cómo se construye un sitio:** [`cerebro/`](cerebro/README.md) — el método
+> de diseño, las técnicas, cómo se verifica y los errores que ya se cometieron.
+> Este README cubre solo la conexión al panel central.
+
 Archivos que se incluyen en **cada website de cliente** de Judo Marketing (Next.js
 App Router). Conectan el sitio al panel central de judomarketing.net:
 
