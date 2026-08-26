@@ -157,6 +157,67 @@ lee quien usa lector de pantalla.
 
 ---
 
+## 5b · La escala: lo que hace que "todo encaje"
+
+Cuando un cliente dice que algo se ve **rústico** y no sabe señalar qué, casi
+siempre es esto: los espacios no comparten serie.
+
+En el sitio de terapia, la hoja no tenía **ni un solo token de espaciado**.
+Cada hueco era un `clamp()` inventado para ese elemento: 20, 30, 26, 16, 10,
+22, 8. Doce clamps distintos, ninguno relacionado con otro. Nada estaba mal
+por separado y el conjunto parecía improvisado, porque lo estaba.
+
+**Una serie, y el paso crece con la importancia del corte.**
+
+```css
+--s-1: 4px;   --s-2: 8px;   --s-3: 12px;
+--s-4: 16px;  --s-5: 24px;  --s-6: 32px;
+--s-7: 48px;  --s-8: 64px;  --s-9: 96px;
+```
+
+Y se reparten por jerarquía, no por lo que "queda bien":
+
+| Entre | Paso | Por qué |
+| --- | --- | --- |
+| cinta y antetítulo | `--s-2` | Son **una** pieza |
+| antetítulo y titular | `--s-4` | Misma unidad |
+| titular y entradilla | `--s-5` | Cambio de nivel |
+| entradilla y acción | `--s-6` | **El corte mayor**: de informar a actuar |
+
+El error concreto que había: el hueco tras el titular (20px) era **menor** que
+el hueco tras la entradilla (30px). Es decir, el espaciado decía que el
+titular y la entradilla estaban menos relacionados que la entradilla y el
+botón. Justo al revés.
+
+### Y una forma por función
+
+Tres rectángulos iguales seguidos —dos "pastillas" de dato y un botón— y el
+ojo no sabe cuál pulsar. Un dato se ve como dato (texto), una acción se ve
+como acción (botón). Si la acción principal vive en una barra fija, el botón
+que quede en el bloque va **de contorno**: dos botones macizos en la misma
+pantalla es ninguno.
+
+### Nada muere bajo la interfaz fija
+
+Si hay barra fija de llamada, el bloque reserva su alto
+(`padding-bottom: calc(... + var(--callbar))`). Contenido cortado por debajo
+de una barra es la señal más clara de algo mal montado.
+
+### El enemigo silencioso: media queries que se pisan
+
+El ritmo montado sobre la escala se veía pisado y no se entendía por qué. La
+causa: un `@media (max-width: 640px)` **posterior** redeclaraba los mismos
+márgenes y rellenos con valores a mano, y por orden de aparición ganaba.
+
+> Cada media query lleva **sólo lo que de verdad cambia en ese ancho**. Una
+> segunda copia de lo que ya resuelve el bloque anterior es una trampa que se
+> descubre midiendo el estilo computado, no leyendo el archivo.
+
+```js
+// lo que lo delató
+getComputedStyle(li).padding   // "8px 15px" cuando la regla decía 0
+```
+
 ## 6 · Al cambiar la maquetación, revisar los recursos
 
 La regla que más caro ha salido, y la más fácil de olvidar:
@@ -188,7 +249,9 @@ Ver [VERIFICACION.md](VERIFICACION.md).
 4. Iconos SVG propios, juzgados a su tamaño real.
 5. Lienzo neutro frío si la marca depende de colores vivos.
 6. Arriba lo que decide la llamada. El material real del cliente manda.
-7. Si cambia la maquetación, revisar los recursos que vivían dentro.
-8. Medir contraste, fidelidad del material, y qué tapa cada panel. Barrer las
+7. Espaciado de UNA escala, repartido por jerarquía. Una forma por función.
+   Nada debajo de la barra fija. Media queries sin copias que se pisen.
+8. Si cambia la maquetación, revisar los recursos que vivían dentro.
+9. Medir contraste, fidelidad del material, y qué tapa cada panel. Barrer las
    rutas; comprobar sin JS y con reduced-motion.
 ```

@@ -243,6 +243,61 @@ nunca.
 
 ---
 
+## 14 · "Rústico": doce clamps y ninguna serie
+
+**Qué pasó.** El cliente dijo que el sitio se veía **rústico** y que quería que
+"todo pareciera estar donde debe". No supo señalar qué, y no hacía falta: la
+hoja de estilos no tenía **ni un solo token de espaciado**. Cada hueco era un
+`clamp()` inventado para ese elemento — 20, 30, 26, 16, 10, 22, 8. Doce
+distintos, ninguno relacionado.
+
+Y los saltos contradecían la jerarquía: el hueco tras el titular (20px) era
+**menor** que el tras la entradilla (30px). El espaciado decía que titular y
+entradilla estaban menos relacionados que entradilla y botón.
+
+**Por qué se coló.** Cada valor se eligió mirando **ese** elemento, y cada uno
+por separado se veía bien. El desorden sólo existe en el conjunto, y el
+conjunto no se mira nunca de golpe.
+
+**La regla.** Una serie para todo el sitio, y el paso **crece con la
+importancia del corte**. Cuando alguien dice "rústico" sin poder señalar qué,
+la primera sospecha es siempre el espaciado. Detalle en
+[METODO.md §5b](METODO.md).
+
+**Y tres síntomas que iban con lo mismo:**
+
+- Una cinta decorativa flotando suelta sobre el antetítulo: dos elementos que
+  son uno solo tienen que ir pegados.
+- Dos "pastillas" de dato apiladas justo encima del botón: tres rectángulos
+  iguales seguidos y el ojo sin saber cuál pulsar. Un dato se ve como dato.
+- Un botón blanco macizo en el bloque mientras la acción principal vivía en la
+  barra fija naranja: dos "botón principal" en la misma pantalla, y ninguno
+  manda.
+
+---
+
+## 15 · La media query que pisaba a la anterior
+
+**Qué pasó.** Después de montar el ritmo sobre la escala, seguía sin
+aplicarse. La regla decía `padding: 0` y el navegador reportaba `8px 15px`.
+
+**Por qué.** Un `@media (max-width: 640px)` **posterior** redeclaraba los
+mismos márgenes y rellenos con valores puestos a mano. Ambas coinciden a
+390px, así que ganaba la de después. Leyendo el archivo no se ve: hay que
+mirar el estilo computado.
+
+```js
+getComputedStyle(el).padding   // "8px 15px" cuando la regla decía 0
+```
+
+**La regla.** Cada media query lleva **sólo lo que de verdad cambia en ese
+ancho**. Una segunda copia de lo que ya resuelve el bloque anterior es deuda
+que se cobra sola. Y cuando un estilo "no se aplica", se comprueba el
+computado antes de tocar nada más.
+
+
+---
+
 ## Cómo añadir uno
 
 En el mismo commit del trabajo que lo enseñó. Con el número o el caso
