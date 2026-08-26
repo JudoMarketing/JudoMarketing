@@ -8,6 +8,10 @@ Fuente: brand sheet oficial (compartido por el dueño, 2026-08-05).
 **Valores de marca:** Innovation · Strategy · Growth · Results · Partnership
 **Estética:** visuales de alto contraste, elementos 3D, iluminación futurista, fondo negro profundo con brillos morados.
 
+> Este archivo es la marca de Judo Marketing en sí. Cómo se diseña un
+> website **para un cliente** — la firma de la casa, las reglas duras, el
+> esqueleto de home, la dirección por rubro — vive en `CEREBRO.md`.
+
 ## Paleta de colores
 
 | Rol | Hex |
