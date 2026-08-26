@@ -748,9 +748,26 @@ export default function AdminPortal() {
   }
   if (denied) {
     return (
-      <p className="py-24 text-center text-judo-fog/60">
-        🚫 Acceso solo para Administración.
-      </p>
+      <div className="flex flex-col items-center gap-5 py-24 text-center">
+        <p className="text-judo-fog/60">
+          🚫 Acceso solo para Administración.
+          <br />
+          <span className="text-sm text-judo-fog/40">
+            Entraste con una cuenta que no es de administrador.
+          </span>
+        </p>
+        {/* Sin esto la sesión equivocada queda guardada en el navegador y
+            esta pantalla no tiene salida: cada recarga vuelve aquí. */}
+        <button
+          onClick={async () => {
+            await supabase.auth.signOut();
+            window.location.reload();
+          }}
+          className="rounded-full bg-judo-purple px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-judo-lilac"
+        >
+          Cerrar esa sesión y entrar con otra cuenta
+        </button>
+      </div>
     );
   }
   if (!ready) {
