@@ -8,6 +8,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
+import Turnstile, { bloqueaEnvio, resetTurnstile } from "./Turnstile";
 import SiteDossier from "./SiteDossier";
 import IntakeInbox from "./IntakeInbox";
 import { precio } from "@/lib/pricing";
@@ -173,6 +174,8 @@ export default function AdminPortal() {
   const [loginPassword, setLoginPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [loginBusy, setLoginBusy] = useState(false);
+  const [captcha, setCaptcha] = useState("");
+  const [captchaRoto, setCaptchaRoto] = useState(false);
 
   const [proofs, setProofs] = useState<ProofRow[]>([]);
   const [sites, setSites] = useState<SiteRow[]>([]);
@@ -333,16 +336,23 @@ export default function AdminPortal() {
     e.preventDefault();
     setLoginError("");
     setLoginBusy(true);
+    // El captcha de Supabase Auth exige el token también aquí: sin él,
+    // ningún login pasa, ni el de Administración.
     const { error } = await supabase.auth.signInWithPassword({
       email: loginEmail.trim(),
       password: loginPassword,
+      options: captcha ? { captchaToken: captcha } : undefined,
     });
     setLoginBusy(false);
     if (error) {
+      resetTurnstile();
+      setCaptcha("");
       setLoginError(
         error.message === "Invalid login credentials"
           ? "Correo o contraseña incorrectos."
-          : error.message
+          : /captcha/i.test(error.message)
+            ? "No se pudo verificar que no eres un robot. Desactiva el bloqueador de anuncios para esta página o intenta en otro navegador."
+            : error.message
       );
       return;
     }
@@ -723,10 +733,11 @@ export default function AdminPortal() {
             placeholder="Contraseña"
             className={inputClass}
           />
+          <Turnstile onToken={setCaptcha} onFallo={setCaptchaRoto} />
           {loginError && <p className="text-sm text-red-300">{loginError}</p>}
           <button
             type="submit"
-            disabled={loginBusy}
+            disabled={loginBusy || bloqueaEnvio(captcha, captchaRoto)}
             className="rounded-full bg-judo-purple px-4 py-3 text-sm font-semibold text-white transition hover:bg-judo-lilac disabled:opacity-50"
           >
             {loginBusy ? "Entrando…" : "Entrar"}
