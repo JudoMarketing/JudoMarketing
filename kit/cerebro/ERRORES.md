@@ -298,6 +298,38 @@ computado antes de tocar nada más.
 
 ---
 
+## 16 · El relleno que afirmaba cosas del negocio
+
+**Qué pasó.** El sitio decía "trabajamos con la mayoría de los planes
+principales" y listaba seis aseguradoras. El dueño lo leyó y respondió: **no
+aceptamos la mayoría de seguros**. También aparecía un servicio "Programa en
+clínica" — y no hay clínica.
+
+**Por qué se coló.** El relleno se escribió para que la maqueta no tuviera
+huecos: seis aseguradoras porque seis chips llenan bien la columna, un sexto
+servicio porque cinco dejan la rejilla coja. Iba marcado como `TODO real`,
+pero **un TODO no es un aviso: es una nota para uno mismo que el cliente no
+ve.** Estuvo publicado semanas.
+
+**La regla.** El relleno puede inventar *forma*, nunca *afirmaciones sobre el
+negocio*. Nombres de aseguradoras, servicios, métricas, certificaciones y
+zonas de cobertura no se rellenan: se dejan vacíos y el bloque se adapta a que
+estén vacíos, o no se pone el bloque. Un número inventado se descubre tarde;
+una cobertura inventada se paga con la familia al teléfono.
+
+**Corolario de diseño.** Si un bloque puede quedarse sin datos, tiene que
+verse bien vacío. Aquí, sin lista de planes, la columna derecha quedaba con
+una nota suelta flotando en el hueco — y un hueco en ese sitio se lee como "no
+cubren nada". Con la lista vacía el bloque pasa a una sola columna centrada.
+
+**Cómo detectarlo antes.** Al terminar, listar todas las afirmaciones
+verificables del sitio —qué servicios, dónde, con qué seguros, cuántos años,
+qué certificaciones— y pasárselas al cliente **como lista**, no enterradas en
+la maqueta. Lo que no confirme, fuera.
+
+
+---
+
 ## Cómo añadir uno
 
 En el mismo commit del trabajo que lo enseñó. Con el número o el caso

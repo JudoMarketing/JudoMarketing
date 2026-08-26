@@ -97,7 +97,12 @@ en el mismo correo del contrato.
    fecha de expiración en el expediente.
 10. **Probar el kill switch**: Deshabilitar → ver la página de la mascota
     triste → Reactivar. Queda escrito solo en la bitácora.
-11. **Anotar la entrega** en la bitácora del sitio.
+11. **Pasarle al cliente la lista de afirmaciones** antes de publicar: qué
+    servicios, en qué sitios, con qué seguros, cuántos años, qué
+    certificaciones y qué zona. Como lista, no enterradas en la maqueta. Lo
+    que no confirme por escrito, fuera del sitio. Un dato de relleno que
+    afirma algo del negocio se paga con la familia al teléfono.
+12. **Anotar la entrega** en la bitácora del sitio.
 
 ---
 

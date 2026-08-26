@@ -140,6 +140,15 @@ oscuro. Con eso se alterna el ritmo de la página sin inventar fondos.
 - **Nada de fotos de banco de imágenes fingiendo ser el cliente.** Si no hay
   fotos reales, se resuelve con tipografía, color y trazo. Un testimonio con
   la inicial en un disco de color es honesto; con una cara comprada, no.
+- **El relleno puede inventar forma, nunca afirmaciones sobre el negocio.**
+  Nombres de aseguradoras, servicios, zonas, métricas y certificaciones se
+  dejan **vacíos** —y el bloque se diseña para verse bien vacío— hasta que el
+  cliente los confirme. Un `TODO` en el código no es un aviso: el cliente no
+  lo ve, y el sitio se publica igual.
+- **Antes de entregar, la lista de afirmaciones.** Todo lo verificable que
+  dice el sitio —qué servicios, dónde, con qué seguros, cuántos años, qué
+  certificaciones— se le pasa al cliente **como lista**, no enterrado en la
+  maqueta. Lo que no confirme, fuera.
 
 ### El material real manda sobre la plantilla
 
