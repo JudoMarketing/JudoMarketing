@@ -1,6 +1,6 @@
 import { SITE_URL } from "@/lib/seo";
 import { PERFIL_GOOGLE } from "./SocialLinks";
-import { precio, precioDesde, precioTexto } from "@/lib/pricing";
+import { precio, precioDesde, precioTexto, PRECIO_JUDITOADS, PRECIO_ASISTENTE } from "@/lib/pricing";
 
 /**
  * Datos estructurados (schema.org) para Google.
@@ -74,7 +74,47 @@ export default function JsonLd({ locale }: { locale: string }) {
           price: String(precio("apps")),
           priceCurrency: "USD",
         },
+        {
+          "@type": "Offer",
+          name: "JuditoADS",
+          description: es
+            ? "Plataforma para lanzar tu propia publicidad en Facebook e Instagram con estrategia guiada, métricas en vivo y reportes PDF. Pruébala gratis."
+            : "Platform to run your own Facebook and Instagram ads with guided strategy, live metrics, and PDF reports. Try it free.",
+          price: String(PRECIO_JUDITOADS),
+          priceCurrency: "USD",
+        },
+        {
+          "@type": "Offer",
+          name: "AI Assistants",
+          description: es
+            ? "Asistentes con inteligencia artificial que atienden a tus clientes en Instagram, Facebook y tu website, a toda hora."
+            : "AI assistants that answer your customers on Instagram, Facebook, and your website, around the clock.",
+          price: String(PRECIO_ASISTENTE),
+          priceCurrency: "USD",
+        },
       ],
+    },
+    // JuditoADS como producto de software con nombre propio: es lo que puede
+    // salir en Google cuando alguien busca herramientas de publicidad
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": `${SITE_URL}/juditoads#app`,
+      name: "JuditoADS",
+      url: `${SITE_URL}/juditoads`,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      description: es
+        ? "Administrador de anuncios para pequeños negocios: conecta tu cuenta de Meta, sube tus fotos y lanza tu publicidad en Facebook e Instagram tú mismo, con estrategia guiada, métricas en tiempo real y reportes PDF."
+        : "Ads manager for small businesses: connect your Meta account, upload your photos, and run your own Facebook and Instagram ads with guided strategy, real-time metrics, and PDF reports.",
+      offers: {
+        "@type": "Offer",
+        price: String(PRECIO_JUDITOADS),
+        priceCurrency: "USD",
+        description: es ? "Pruébalo gratis" : "Try for free",
+      },
+      publisher: { "@id": `${SITE_URL}/#business` },
+      inLanguage: ["es", "en"],
     },
     {
       "@context": "https://schema.org",

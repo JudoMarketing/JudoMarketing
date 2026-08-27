@@ -23,14 +23,14 @@ const PATHS: Record<PageKey, { en: string; es: string }> = {
 const COPY: Record<PageKey, Record<"en" | "es", { title: string; description: string }>> = {
   services: {
     es: {
-      title: `Precios: Páginas Web desde ${precioDesde()}/mes, Apps y Tiendas Online | Judo Marketing`,
+      title: `Páginas Web desde ${precioDesde()}/mes y Publicidad en Facebook e Instagram | Judo Marketing`,
       description:
-        `Diseño de páginas web para negocios en Miami y toda Latinoamérica: tiendas online, páginas de citas y apps móviles desde ${precioDesde()} al mes con soporte, seguridad y tu propio panel de control.`,
+        `Páginas web para negocios desde ${precioDesde()} al mes, publicidad en Facebook e Instagram con JuditoADS ($20/mes, pruébalo gratis) y asistentes con IA que atienden a tus clientes. Miami y toda Latinoamérica.`,
     },
     en: {
-      title: `Pricing: Websites from ${precioDesde()}/month, Apps & Online Stores | Judo Marketing`,
+      title: `Websites from ${precioDesde()}/month & Facebook and Instagram Ads | Judo Marketing`,
       description:
-        `Website design for small businesses in Miami and beyond: online stores, booking pages, and mobile apps from ${precioDesde()} a month with support, security, and your own admin panel.`,
+        `Business websites from ${precioDesde()} a month, Facebook and Instagram advertising with JuditoADS ($20/mo, try it free), and AI assistants that answer your customers. Miami and beyond.`,
     },
   },
   showcase: {
@@ -83,6 +83,39 @@ const COPY: Record<PageKey, Record<"en" | "es", { title: string; description: st
   },
 };
 
+/**
+ * Keywords de la página de servicios. Google ya no lee la etiqueta keywords
+ * para posicionar, pero Bing sí la considera y a los dos les sirve que estos
+ * términos existan de verdad en el texto de la página — que es donde también
+ * están. La lista completa, con hashtags e intereses de Meta, vive en
+ * docs/juditoads-keywords.md.
+ */
+const KEYWORDS_SERVICIOS: Record<"en" | "es", string[]> = {
+  es: [
+    "publicidad en facebook e instagram",
+    "como hacer publicidad en instagram",
+    "anuncios en redes sociales para negocios",
+    "administrador de anuncios facil",
+    "meta ads para pequeños negocios",
+    "publicidad digital para restaurantes",
+    "diseño de paginas web miami",
+    "paginas web por suscripcion",
+    "asistente con inteligencia artificial para negocios",
+    "chatbot para instagram y facebook",
+  ],
+  en: [
+    "facebook and instagram ads for small business",
+    "easy ads manager",
+    "social media advertising tool",
+    "run your own facebook ads",
+    "meta ads for restaurants",
+    "website design miami",
+    "subscription website design",
+    "ai assistant for small business",
+    "chatbot for instagram and facebook",
+  ],
+};
+
 export function pageMetadata(page: PageKey, locale: string): Metadata {
   const loc = locale === "es" ? "es" : "en";
   const { title, description } = COPY[page][loc];
@@ -90,6 +123,7 @@ export function pageMetadata(page: PageKey, locale: string): Metadata {
   return {
     title,
     description,
+    ...(page === "services" ? { keywords: KEYWORDS_SERVICIOS[loc] } : {}),
     alternates: {
       canonical: `${SITE_URL}${paths[loc]}`,
       languages: {
