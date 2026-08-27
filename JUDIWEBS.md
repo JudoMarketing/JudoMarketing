@@ -13,50 +13,67 @@ repo en otra PC, lee esto y ya estás al día.
 
 ---
 
-## Cómo seguir en tu laptop (local)
+## Hacerla sesión local (esto es lo que toca)
+
+**Por qué importa, y no es solo comodidad:** los plugins y los conectores solo
+existen en sesiones **Local** y **SSH**. En una sesión de nube el botón `+`
+del cuadro de mensaje no ofrece "Plugins", así que los 5 plugins de diseño no
+se pueden ni instalar ni usar desde ahí. Todo lo que sea trabajar con plugins
+va sí o sí en local.
+
+### En la app de escritorio (lo más directo)
+
+1. Abre la app de Claude y entra a la pestaña **Code**.
+2. En el cuadro de mensaje, abre el desplegable de **entorno** y elige
+   **Local** (las otras opciones son Cloud, SSH y, en Windows, WSL).
+3. En **carpeta del proyecto**, elige la carpeta del repo `JudoMarketing` de
+   tu laptop. Si todavía no la tienes ahí:
+   ```bash
+   git clone https://github.com/JudoMarketing/JudoMarketing
+   cd JudoMarketing
+   git checkout claude/judo-website-design-5nyn3x
+   ```
+4. Elige el modelo y el modo de permisos, y manda el primer mensaje (abajo
+   está cuál).
+5. Los plugins se instalan ahí mismo: botón **`+`** junto al cuadro de
+   mensaje → **Plugins** → **Add plugin**.
+
+### Desde la terminal, si prefieres
 
 ```bash
-git clone https://github.com/JudoMarketing/JudoMarketing
 cd JudoMarketing
 git checkout claude/judo-website-design-5nyn3x
 git pull origin claude/judo-website-design-5nyn3x
-
-cp .env.example .env.local   # completar las claves
-npm install
-npm run dev                  # http://localhost:3000 → /es
-```
-
-Y para retomar la conversación desde ahí, dentro de esa carpeta:
-
-```bash
 claude
 ```
 
-El primer mensaje que le das, tal cual:
+### El primer mensaje, tal cual
 
 > Lee JUDIWEBS.md y docs/CEREBRO.md. Seguimos con judiwebs, la rama de diseño
-> de websites. Trabaja en la rama claude/judo-website-design-5nyn3x.
+> de websites. Trabaja en la rama claude/judo-website-design-5nyn3x. Ya tengo
+> los plugins de diseño instalados: úsalos todos y sé crítico.
 
-Con eso queda con todo el contexto: qué hay hecho, qué falta y cómo se
-trabaja aquí.
+### Para levantar el proyecto en esa máquina
 
-## Sobre "conectar con la otra PC"
+```bash
+cp .env.example .env.local   # completar las claves
+npm install
+npm run dev                  # http://localhost:3000 → /es
+npm run revisar -- http://localhost:3000/es
+```
 
-Conviene tenerlo claro para no perder tiempo buscándolo:
+## Lo que NO se puede, para no perder tiempo buscándolo
 
-- Esta sesión corre en un contenedor **en la nube de Claude**, no en tu
-  máquina, y el contenedor se recicla cuando queda inactivo. Por eso nada
-  vale hasta que está **commiteado y pusheado** a la rama.
-- Una sesión de la nube **no se muda** a tu laptop, y yo no puedo entrar a tu
-  laptop desde aquí. Lo que viaja entre computadoras es **el repositorio**:
-  cada PC hace `git pull` y sigue.
-- Desde el navegador o la app, la sesión se reabre por nombre (`judiwebs`) en
-  claude.ai/code. Desde la laptop, es el `claude` de arriba dentro de la
-  carpeta del repo. Los dos caminos trabajan sobre la misma rama; lo único que
-  no se puede es escribir en la rama desde dos lados a la vez sin hacer pull
-  primero.
-- **Regla de la casa:** antes de cerrar la laptop, `git push`. Antes de
-  empezar en otra PC, `git pull`.
+- **Una sesión de nube no se convierte en local.** El menú "Continue in" de la
+  app hace el camino contrario (manda una sesión local a la nube) y no existe
+  el de vuelta. Lo que se hace es abrir una sesión **Local** nueva sobre la
+  misma carpeta: el contexto lo da este archivo.
+- **Claude no puede entrar a tu laptop desde una sesión de nube.** Lo que
+  viaja entre computadoras es **el repositorio**, no la sesión.
+- Una sesión de nube corre en un contenedor de Anthropic que se recicla al
+  quedar inactivo. Nada existe hasta que está pusheado.
+- **Regla de la casa:** `git push` antes de cerrar, `git pull` antes de
+  empezar. Es lo único que hace que la laptop y la nube no se pisen.
 
 ---
 
