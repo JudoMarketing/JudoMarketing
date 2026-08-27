@@ -14,6 +14,12 @@ App Router). Conectan el sitio al panel central de judomarketing.net:
 3. **Footer**: el pie de página del sitio, con la línea "Website por Judo
    Marketing" enlazada. Ver [Footer](#footer-el-pie-de-los-sitios) más abajo.
 
+Aparte de eso, y **opcional**, está [`kit/ui/`](ui/README.md): los patrones de
+diseño de `docs/CEREBRO.md` ya escritos en código (tema derivado de un color,
+hero, fondo vivo con video o canvas, pasos, reseñas, cierre y barra de acción
+móvil) para que un sitio nuevo no arranque desde cero. Eso es ayuda de diseño;
+lo de arriba es lo que conecta el sitio al panel y va sí o sí.
+
 ## Cómo instalarlo en un sitio nuevo
 
 1. En el portal de admin (judomarketing.net/admin, pestaña Websites), crea el

@@ -6,6 +6,9 @@ supervisados desde un panel central.
 
 - **Plan maestro y fases:** [PLAN.md](PLAN.md)
 - **Guía de marca:** [docs/BRAND.md](docs/BRAND.md)
+- **Cómo se diseñan los websites:** [docs/CEREBRO.md](docs/CEREBRO.md) ·
+  patrones en código en [kit/ui/](kit/ui/README.md) · checklist ejecutable
+  con `npm run revisar -- <url>`
 - **Documentos legales:** [docs/legal/](docs/legal/README.md)
 
 ## Stack
