@@ -70,3 +70,70 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+/**
+ * Acciones sobre una cuenta de JuditoADS: suspender, reactivar o eliminar.
+ *
+ * El portal manda la orden y este servidor la reenvía con el secreto
+ * compartido; quien de verdad la ejecuta es la app de JuditoADS en su
+ * propia base. El contrato es:
+ *   POST {base}/api/admin/usuarios  { accion, userId }
+ *   → 200 { ok: true }  o  { error: "..." }
+ */
+const ACCIONES = ["suspender", "reactivar", "eliminar"] as const;
+
+export async function POST(req: NextRequest) {
+  const header = req.headers.get("authorization") || "";
+  const accessToken = header.startsWith("Bearer ") ? header.slice(7) : "";
+  if (!accessToken || !(await esAdmin(accessToken))) {
+    return NextResponse.json({ error: "Solo para Administración" }, { status: 403 });
+  }
+
+  const secret = process.env.JUDITOADS_ADMIN_TOKEN;
+  if (!secret) {
+    return NextResponse.json(
+      { error: "Falta JUDITOADS_ADMIN_TOKEN en las variables de entorno." },
+      { status: 501 }
+    );
+  }
+
+  const { accion, userId } = (await req.json().catch(() => ({}))) as {
+    accion?: string;
+    userId?: string;
+  };
+  if (!ACCIONES.includes(accion as (typeof ACCIONES)[number]) || !userId) {
+    return NextResponse.json({ error: "Petición inválida" }, { status: 400 });
+  }
+
+  try {
+    const res = await fetch(`${juditoadsBase()}/api/admin/usuarios`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${secret}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ accion, userId }),
+      cache: "no-store",
+    });
+    const cuerpo = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      return NextResponse.json(
+        {
+          error:
+            (cuerpo as { error?: string }).error ??
+            // 404/405: la app de JuditoADS todavía no implementa acciones
+            (res.status === 404 || res.status === 405
+              ? "JuditoADS todavía no acepta esta orden: falta implementarla en su app."
+              : `JuditoADS respondió ${res.status}`),
+        },
+        { status: 502 }
+      );
+    }
+    return NextResponse.json(cuerpo);
+  } catch {
+    return NextResponse.json(
+      { error: "No se pudo contactar a JuditoADS." },
+      { status: 502 }
+    );
+  }
+}

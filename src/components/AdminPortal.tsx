@@ -45,6 +45,8 @@ type JuditoUser = {
   whitelabel: boolean;
   campanas: number;
   cuentasMeta: number;
+  /** La manda JuditoADS cuando implemente las acciones; mientras, no llega. */
+  suspendida?: boolean;
 };
 
 type ContractRow = {
@@ -681,6 +683,57 @@ export default function AdminPortal() {
     irASitio(site.id);
   };
 
+  /**
+   * Suspender, reactivar o eliminar una cuenta de JuditoADS.
+   *
+   * La orden viaja portal → /api/admin/juditoads → app de JuditoADS, que es
+   * quien la ejecuta en su base. Si la app todavía no implementa acciones,
+   * el error lo dice tal cual en vez de fingir que funcionó.
+   */
+  const accionJudito = async (
+    u: JuditoUser,
+    accion: "suspender" | "reactivar" | "eliminar"
+  ) => {
+    const quien = u.negocio || u.nombre || u.email;
+    const avisos: Record<string, string> = {
+      suspender: `¿Suspender la cuenta de ${quien}? El cliente no podrá usar JuditoADS hasta que la reactives.`,
+      reactivar: `¿Reactivar la cuenta de ${quien}?`,
+      eliminar: `¿ELIMINAR la cuenta de ${quien} (${u.email})? Se borra con sus campañas y no se puede deshacer. Si es por falta de pago, mejor suspéndela.`,
+    };
+    if (!window.confirm(avisos[accion])) return;
+    if (accion === "eliminar" && u.campanas > 0 &&
+        !window.confirm(`Ojo: ${quien} tiene ${u.campanas} campaña(s) registradas. ¿Aun así la eliminas?`))
+      return;
+
+    const { data: sess } = await supabase.auth.getSession();
+    if (!sess.session) return flash("Sesión vencida, vuelve a entrar");
+    setJuditoBusy(true);
+    try {
+      const res = await fetch("/api/admin/juditoads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sess.session.access_token}`,
+        },
+        body: JSON.stringify({ accion, userId: u.id }),
+      });
+      const body = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || !body.ok) {
+        flash(body.error ?? `No se pudo: JuditoADS respondió ${res.status}`);
+      } else {
+        flash(
+          accion === "eliminar"
+            ? `Cuenta de ${quien} eliminada ✓`
+            : `Cuenta de ${quien} ${accion === "suspender" ? "suspendida" : "reactivada"} ✓`
+        );
+        await cargarJuditoads();
+      }
+    } catch {
+      flash("No se pudo contactar a JuditoADS.");
+    }
+    setJuditoBusy(false);
+  };
+
   const cargarJuditoads = async () => {
     setJuditoBusy(true);
     setJuditoError(null);
@@ -1255,6 +1308,7 @@ export default function AdminPortal() {
                       <th className="px-4 py-3">Campañas</th>
                       <th className="px-4 py-3">Cuentas Meta</th>
                       <th className="px-4 py-3">Alta</th>
+                      <th className="px-4 py-3">Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-judo-lilac/10">
@@ -1268,6 +1322,11 @@ export default function AdminPortal() {
                           {!u.emailVerificado && (
                             <span className="mt-1 inline-block rounded-full bg-amber-400/90 px-2 py-0.5 text-[10px] font-bold text-judo-black">
                               email sin confirmar
+                            </span>
+                          )}
+                          {u.suspendida && (
+                            <span className="mt-1 inline-block rounded-full bg-red-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
+                              suspendida
                             </span>
                           )}
                           {u.whitelabel && (
@@ -1298,6 +1357,32 @@ export default function AdminPortal() {
                         <td className="px-4 py-3 text-white">{u.cuentasMeta}</td>
                         <td className="px-4 py-3 text-judo-fog/60">
                           {u.creada.slice(0, 10)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            {u.suspendida ? (
+                              <button
+                                onClick={() => void accionJudito(u, "reactivar")}
+                                className="rounded-full border border-emerald-400/40 px-3 py-1 text-[11px] font-semibold text-emerald-300 transition hover:bg-emerald-400/10"
+                              >
+                                Reactivar
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => void accionJudito(u, "suspender")}
+                                className="rounded-full border border-amber-400/40 px-3 py-1 text-[11px] font-semibold text-amber-300 transition hover:bg-amber-400/10"
+                              >
+                                Suspender
+                              </button>
+                            )}
+                            <button
+                              onClick={() => void accionJudito(u, "eliminar")}
+                              title="Eliminar la cuenta y sus campañas"
+                              className="rounded-full border border-red-400/40 px-2.5 py-1 text-[11px] text-red-300 transition hover:bg-red-400/10"
+                            >
+                              🗑
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
