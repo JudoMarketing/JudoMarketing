@@ -38,3 +38,79 @@ segundos antes del disparo y tener forma de cambiar la URL (un sello de
 fecha) para forzar captura nueva.
 **Evidencia:** las portadas de Melanie Osorio y Art Foundation salieron en
 blanco en el showcase y no había forma de rehacerlas hasta el otro día.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** Supabase NO devuelve error cuando una política RLS deja
+fuera la fila: responde OK con cero filas tocadas. Mirando solo `error`, el
+panel canta éxito sin haber hecho nada. Toda escritura de administración
+lleva `.select()` y se comprueba que volvió al menos una fila.
+**Evidencia:** en el admin de judomarketing.net, «Deshabilitar» un sitio y
+«Borrar» un contrato mostraban el ✓ verde y no cambiaba nada. El fallo era
+invisible para el cliente y para nosotros: parecía un botón roto, y era la
+base de datos negándose en silencio.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** en Next.js App Router, un manejador de eventos
+(`onError`, `onClick`) dentro de un componente de SERVIDOR revienta la página
+entera en producción — y `next dev` no lo detecta. Solo lo saca `next build`
++ `next start`. Antes de publicar cualquier cosa, correr el build de
+producción de verdad, no solo el servidor de desarrollo.
+**Evidencia:** un `onError` puesto en la `<img>` de una tarjeta dejó el
+portal con «Application error» y no abría. En desarrollo funcionaba perfecto,
+así que se publicó con toda confianza.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** que un ajuste se guarde no significa que se use. Hay que
+seguirlo hasta el final: pantalla → base de datos → el motor que lo aplica.
+Un campo que se recoge, se guarda y hasta se enseña en el resumen puede no
+llegar nunca a su destino, y nadie se entera porque la interfaz miente por
+omisión: enseña la promesa, no el resultado.
+**Evidencia:** los intereses del público se elegían, se guardaban y salían en
+el resumen de la campaña, pero el motor nunca se los mandaba a Meta: las
+campañas salían a todo el país sin afinar. Igual el interruptor «deja que
+Meta amplíe el público», que viajaba hasta el motor y ahí se descartaba con
+un valor fijo. Meses funcionando a medias sin un solo error en pantalla.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando un servicio externo agrupa datos por día, hay que
+averiguar en QUÉ zona horaria lo hace antes de calcular «hoy». Con
+`toISOString()` se calcula el día UTC, y basta con que el servicio use otro
+huso para que las cifras de hoy salgan en cero o falte el primer día entero.
+**Evidencia:** Meta agrupa el gasto en la zona de la cuenta publicitaria
+(Pacífico, en nuestro caso). La barra «Presupuesto hoy» marcaba $0.00 todas
+las tardes, y al pedir métricas en UTC se perdía la primera noche de cada
+campaña: los totales del portal salían por debajo de los de Meta.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** Safari en iPhone no dispara los eventos de carga de un
+`<video>` que no se está reproduciendo. Cualquier cosa que espere
+`loadeddata` para sacarle un fotograma se cuelga para siempre. La cura:
+`playsInline` + un `play()/pause()` de arranque, escuchar también
+`loadedmetadata`, y SIEMPRE un tope de tiempo que suelte la interfaz pase lo
+que pase.
+**Evidencia:** subir un video desde el teléfono dejaba «Subiendo video»
+pegado en 100% eternamente. El archivo sí había subido; lo que se colgaba era
+la captura de la miniatura, después de la subida.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** una app de Meta en modo Desarrollo solo deja entrar a
+quien tenga rol en ella. Cualquier otra persona ve «Función no disponible» y
+parece un fallo de nuestro sitio. Pasar a Live y el App Review de los
+permisos se empiezan con semanas de antelación, no cuando ya hay clientes
+esperando. Y ojo: un portafolio de negocio con restricción publicitaria no
+puede ni conectar la app, y eso se apela aparte.
+**Evidencia:** los primeros probadores invitados a JuditoADS no pudieron
+conectar su Meta, y al ir a arreglarlo apareció encima que el portafolio
+verificado del negocio estaba restringido para anunciar.
