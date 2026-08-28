@@ -420,3 +420,28 @@ se espera un número tumba la app entera con "Invalid input" y el motivo solo
 aparece en los logs de ejecución, no en el build. Conviene tratar la cadena
 vacía como ausente antes de validar, para que el valor por defecto entre.
 **Evidencia:** `WORKER_POLL_MS=""` devolvía 500 en todas las rutas de la app.
+
+---
+### 2026-08-28 · Juditos · precio de un producto con IA
+**Qué aprendimos:** el precio de un servicio con IA hay que **medirlo antes de
+publicarlo**, y el modelo que se elige es la diferencia entre ganar y perder.
+Con 3 bots y 2.000 mensajes al mes: Opus cuesta $40,70, Sonnet $16,28 y Haiku
+$8,14. Sobre un plan de $20, Opus pierde el doble de lo que cobra. Bajar de
+modelo no es recortar calidad **si la arquitectura no le pide al modelo que
+recuerde datos**: precios, stock y huecos de agenda se validan contra la base
+dentro de las herramientas, así que al modelo solo se le pide conversar bien.
+**Evidencia:** el plan iba a salir a $20 con Opus por 2.000 mensajes; el
+cálculo con los precios reales lo paró antes de escribirlo en la web.
+
+---
+### 2026-08-28 · Juditos · precio de un producto con IA
+**Qué aprendimos:** el gasto que no se ve en un bot no son los mensajes, es
+**mantener su "cerebro" caliente en la caché**. Se paga aunque no escriba
+nadie, y se multiplica por cada bot. Con TTL de una hora la escritura cuesta
+**2× el precio de entrada** (con 5 minutos, 1,25×), y eso hay que meterlo en
+la cuenta: tres cerebros de 4.000 tokens costaban $8,64 al mes solo en
+mantenerse vivos. Cada lectura renueva la vida de la caché, así que el TTL
+largo sale a cuenta con tráfico seguido y sale caro con tráfico goteando.
+**Evidencia:** el primer cálculo del margen se hizo con 1,25× y daba 67%; con
+el multiplicador correcto bajaba a 59%, y en Opus pasaba de "justo" a
+"pierdes dinero".
