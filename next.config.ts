@@ -29,13 +29,29 @@ const nextConfig: NextConfig = {
   // judomarketing.net/juditoads. JUDITOADS_URL es la URL del deploy de esa
   // app en Vercel (ej: https://judito-ads.vercel.app); sin la variable, la
   // ruta simplemente no existe y el sitio no se ve afectado.
+  // Juditos (los asistentes de IA, repo AI-Assistants) sigue el mismo patrón:
+  // app aparte con su propia base de datos, servida bajo /juditos. Igual que
+  // arriba, sin JUDITOS_URL la ruta no existe y el sitio no se ve afectado.
   async rewrites() {
     const juditoads = process.env.JUDITOADS_URL;
-    if (!juditoads) return [];
-    return [
-      { source: "/juditoads", destination: `${juditoads}/juditoads` },
-      { source: "/juditoads/:path*", destination: `${juditoads}/juditoads/:path*` },
-    ];
+    const juditos = process.env.JUDITOS_URL;
+    const reglas = [];
+
+    if (juditoads) {
+      reglas.push(
+        { source: "/juditoads", destination: `${juditoads}/juditoads` },
+        { source: "/juditoads/:path*", destination: `${juditoads}/juditoads/:path*` },
+      );
+    }
+
+    if (juditos) {
+      reglas.push(
+        { source: "/juditos", destination: `${juditos}/juditos` },
+        { source: "/juditos/:path*", destination: `${juditos}/juditos/:path*` },
+      );
+    }
+
+    return reglas;
   },
 
   // Las direcciones viejas del portafolio, por si Google alcanzó a verlas

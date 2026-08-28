@@ -54,7 +54,34 @@ type Tab =
   | "sitios"
   | "pagos"
   | "resenas"
-  | "juditoads";
+  | "juditoads"
+  | "juditos";
+
+/** Un cliente de Juditos, los asistentes de IA (vive en otra base de datos). */
+type JuditoCliente = {
+  id: string;
+  nombre: string;
+  estado: string;
+  juditos: { nombre: string; estado: string }[];
+  canales: number;
+  documentos: number;
+  productos: number;
+  mensajesHoy: number;
+  mensajesMes: number;
+  costeMes: string;
+  esperandoPersona: number;
+};
+
+type JuditosResumen = {
+  clientes: JuditoCliente[];
+  totales: {
+    clientes: number;
+    juditosEnVivo: number;
+    mensajesHoy: number;
+    esperandoPersona: number;
+    costeMes: string;
+  };
+};
 
 /** Una cuenta del portal de JuditoADS (vive en otra base de datos). */
 type JuditoUser = {
@@ -194,6 +221,12 @@ export default function AdminPortal() {
   } | null>(null);
   const [juditoError, setJuditoError] = useState<string | null>(null);
   const [juditoBusy, setJuditoBusy] = useState(false);
+
+  // Juditos (asistentes de IA): igual que JuditoADS, otra app y otra base de
+  // datos, así que también se consulta solo al abrir su pestaña.
+  const [juditos, setJuditos] = useState<JuditosResumen | null>(null);
+  const [juditosError, setJuditosError] = useState<string | null>(null);
+  const [juditosBusy, setJuditosBusy] = useState(false);
 
   // Acceso propio del panel: sin sesión se muestra el formulario de entrada
   const [needsLogin, setNeedsLogin] = useState(false);
@@ -805,6 +838,33 @@ export default function AdminPortal() {
     setJuditoBusy(false);
   };
 
+  const cargarJuditos = async () => {
+    setJuditosBusy(true);
+    setJuditosError(null);
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) {
+      setJuditosBusy(false);
+      setJuditosError("Sesión vencida, vuelve a entrar.");
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/juditos", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setJuditosError(body.error || `Error ${res.status}`);
+        setJuditos(null);
+      } else {
+        setJuditos(body as JuditosResumen);
+      }
+    } catch {
+      setJuditosError("No se pudo contactar a Juditos.");
+    }
+    setJuditosBusy(false);
+  };
+
   // ── Render ─────────────────────────────────────────────────────────
   if (needsLogin) {
     return (
@@ -954,6 +1014,13 @@ export default function AdminPortal() {
               0,
             ],
             ["juditoads", "🚀", "JuditoADS", 0, juditoUsers?.length ?? 0],
+            [
+              "juditos",
+              "🤖",
+              "AI Assistants",
+              juditos?.totales.esperandoPersona ?? 0,
+              juditos?.totales.clientes ?? 0,
+            ],
           ] as [Tab, string, string, number, number][]
         ).map(([key, icono, label, urgente, total]) => (
           <button
@@ -961,6 +1028,7 @@ export default function AdminPortal() {
             onClick={() => {
               setTab(key);
               if (key === "juditoads" && !juditoUsers && !juditoBusy) cargarJuditoads();
+              if (key === "juditos" && !juditos && !juditosBusy) cargarJuditos();
             }}
             className={`flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold transition ${
               tab === key
@@ -1439,6 +1507,139 @@ export default function AdminPortal() {
             <p className="py-12 text-center text-judo-fog/50">
               Todavía no hay cuentas creadas en JuditoADS.
             </p>
+          )}
+        </section>
+      )}
+
+      {/* ── AI ASSISTANTS: los Juditos de cada cliente ── */}
+      {tab === "juditos" && (
+        <section className="mt-6">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">AI Assistants</h2>
+              <p className="text-sm text-judo-fog/60">
+                El Judito de cada cliente: responde Messenger, Instagram y
+                WhatsApp. Vive en otra base de datos, por eso se consulta aparte.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={cargarJuditos}
+                disabled={juditosBusy}
+                className="rounded-full border border-judo-lilac/25 px-4 py-1.5 text-xs font-semibold text-white transition hover:border-emerald-400/50 hover:text-emerald-300 disabled:opacity-50"
+              >
+                {juditosBusy ? "Cargando…" : "↻ Actualizar"}
+              </button>
+              <a
+                href="/juditos/clientes"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full bg-judo-purple px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-judo-lilac"
+              >
+                Abrir el panel ↗
+              </a>
+            </div>
+          </div>
+
+          {juditosError && (
+            <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {juditosError}
+            </p>
+          )}
+
+          {!juditosError && juditos && (
+            <>
+              <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
+                {(
+                  [
+                    ["Clientes", String(juditos.totales.clientes)],
+                    ["Juditos en vivo", String(juditos.totales.juditosEnVivo)],
+                    ["Mensajes hoy", String(juditos.totales.mensajesHoy)],
+                    ["Esperando persona", String(juditos.totales.esperandoPersona)],
+                    ["Coste del mes", juditos.totales.costeMes],
+                  ] as [string, string][]
+                ).map(([label, valor]) => (
+                  <div
+                    key={label}
+                    className="rounded-xl border border-judo-lilac/20 bg-judo-black/40 px-4 py-3"
+                  >
+                    <p className="text-[11px] uppercase tracking-wide text-judo-fog/45">
+                      {label}
+                    </p>
+                    <p className="mt-1 text-xl font-bold text-judo-fog">{valor}</p>
+                  </div>
+                ))}
+              </div>
+
+              {juditos.clientes.length === 0 ? (
+                <p className="rounded-xl border border-judo-lilac/20 bg-judo-black/40 px-4 py-8 text-center text-sm text-judo-fog/55">
+                  Todavía no hay clientes con asistente. Créalos desde el panel.
+                </p>
+              ) : (
+                <div className="overflow-x-auto rounded-xl border border-judo-lilac/20">
+                  <table className="w-full min-w-[720px] text-left text-sm">
+                    <thead>
+                      <tr className="text-[11px] uppercase tracking-wide text-judo-fog/45">
+                        <th className="px-4 py-2.5">Cliente</th>
+                        <th className="px-4 py-2.5">Judito</th>
+                        <th className="px-4 py-2.5">Canales</th>
+                        <th className="px-4 py-2.5">Cerebro</th>
+                        <th className="px-4 py-2.5 text-right">Hoy</th>
+                        <th className="px-4 py-2.5 text-right">Mes</th>
+                        <th className="px-4 py-2.5 text-right">Coste</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {juditos.clientes.map((c) => (
+                        <tr key={c.id} className="border-t border-judo-lilac/10">
+                          <td className="px-4 py-3">
+                            <p className="font-semibold text-judo-fog">{c.nombre}</p>
+                            {c.esperandoPersona > 0 && (
+                              <p className="mt-0.5 text-xs text-amber-300">
+                                {c.esperandoPersona} esperando a una persona
+                              </p>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            {c.juditos.length === 0 ? (
+                              <span className="text-xs text-judo-fog/35">sin Judito</span>
+                            ) : (
+                              c.juditos.map((j) => (
+                                <p key={j.nombre} className="text-judo-fog/80">
+                                  {j.nombre}{" "}
+                                  <span
+                                    className={
+                                      j.estado === "LIVE"
+                                        ? "text-emerald-300"
+                                        : "text-judo-fog/40"
+                                    }
+                                  >
+                                    · {j.estado === "LIVE" ? "en vivo" : j.estado.toLowerCase()}
+                                  </span>
+                                </p>
+                              ))
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-judo-fog/70">{c.canales}</td>
+                          <td className="px-4 py-3 text-judo-fog/70">
+                            {c.documentos} docs · {c.productos} prod.
+                          </td>
+                          <td className="px-4 py-3 text-right tabular-nums text-judo-fog/80">
+                            {c.mensajesHoy}
+                          </td>
+                          <td className="px-4 py-3 text-right tabular-nums text-judo-fog/80">
+                            {c.mensajesMes}
+                          </td>
+                          <td className="px-4 py-3 text-right tabular-nums text-judo-fog/60">
+                            {c.costeMes}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           )}
         </section>
       )}
