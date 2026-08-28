@@ -388,3 +388,35 @@ adivinar: él es el único que sabe si lo que no vemos existe.
 negocio pero sin compartir con su perfil personal: jura que la tiene, y la
 tiene, solo que el sistema no la ve. Preguntar «¿está aquí tu cuenta?»
 resuelve en un clic lo que ninguna comprobación automática podía decidir.
+### 2026-08-28 · Juditos · infraestructura
+**Qué aprendimos:** Vercel no ejecuta procesos que corren sin parar, así que
+cualquier app nuestra con una cola de trabajos se despliega rota en silencio:
+recibe y no procesa. La forma que funciona son dos caminos sobre el mismo
+código: el webhook responde al que llama y **sigue trabajando con
+`waitUntil()`** con la función viva, y un cron cada minuto recoge lo que haya
+quedado. El cron al minuto necesita plan Pro; en Hobby corre una vez al día y
+deja de ser red de seguridad.
+**Evidencia:** el portal encolaba los mensajes y ninguno se contestaba,
+porque `npm run worker` simplemente no existe allí.
+
+---
+### 2026-08-28 · Juditos · infraestructura
+**Qué aprendimos:** un despliegue puede fallar por pedir credenciales que no
+necesita. `prisma generate` solo lee el schema, pero exigía DATABASE_URL y
+tumbaba el build; y el cliente de base de datos, si se construye al importar
+el módulo, hace que el análisis de rutas de `next build` también las pida.
+La regla: **construir no debería necesitar acceso a la base de datos**.
+Cliente perezoso (se crea en el primer uso) y config que lea las variables
+con `process.env` en vez de con helpers que lanzan si faltan.
+**Evidencia:** cinco despliegues seguidos en Error, todos en `npm install`,
+antes de que nadie mirara los logs.
+
+---
+### 2026-08-28 · Juditos · infraestructura
+**Qué aprendimos:** una variable de entorno **declarada pero vacía** no es lo
+mismo que ausente, y rompe distinto. Los paneles se llenan de marcadores
+vacíos que alguien dejó preparados; si el código valida tipos, un `""` donde
+se espera un número tumba la app entera con "Invalid input" y el motivo solo
+aparece en los logs de ejecución, no en el build. Conviene tratar la cadena
+vacía como ausente antes de validar, para que el valor por defecto entre.
+**Evidencia:** `WORKER_POLL_MS=""` devolvía 500 en todas las rutas de la app.
