@@ -276,3 +276,18 @@ construcción: el puente entre apps se prueba entero (y quien llama distingue
 dinero — primero cortar el gasto, y si no se puede, negar la baja. Con esto
 Judito-Ads ya implementó el POST que faltaba, así que los botones de suspender
 y eliminar del portal dejan de dar 405.
+
+---
+### 2026-08-28 · Juditos · infraestructura
+**Qué aprendimos:** montar una app hermana bajo judomarketing.net con un
+rewrite tiene dos trampas que no salen en el build. La primera: los rewrites
+de Next se **hornean en el build**, no se leen al arrancar — poner la URL en
+las variables y reiniciar no hace nada, hay que volver a desplegar. La
+segunda, peor: el middleware de idiomas de next-intl se traga la ruta y la
+redirige a `/es/loquesea`, así que la app nunca carga. Cada app montada tiene
+que estar excluida **en los dos sitios**: en el rewrite de `next.config.ts` y
+en el `matcher` de `src/middleware.ts`.
+**Evidencia:** con `JUDITOS_URL` puesta al arrancar, `/juditos` seguía dando
+el 404 del sitio principal; solo apareció en `routes-manifest.json` tras
+reconstruir. Y la exclusión del middleware ya estaba escrita para
+`juditoads` desde antes — alguien pagó ese precio primero.
