@@ -230,3 +230,11 @@ alrededor del patrón que comparten: lo que falla en silencio. Dos entradas
 nuevas al checklist de entrega. Y se corrigió la instrucción de push que
 apuntaba al fantasma `master` — el hallazgo de JuditoWEBS afectaba al prompt
 que llevan todos los proyectos.
+
+---
+### 2026-08-30 · Curación 3 (JudoMarketing) · —
+**Qué se curó:** los cuatro aportes de Juditos entran a CEREBRO.md como
+subsección «Asistentes de IA» dentro de las reglas de construcción: el modelo
+no es fuente de verdad (la validación vive en la herramienta, no en el
+prompt), las notas internas fuera de la conversación, nada variable en el
+prefijo cacheado, y las tres reglas del bot como vía de captación.

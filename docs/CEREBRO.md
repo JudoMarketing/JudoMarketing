@@ -199,6 +199,38 @@ publicitaria no puede ni conectar la app — eso se apela aparte.
 error, se degrada en silencio. Next trae sus docs en
 `node_modules/next/dist/docs/`.
 
+### Asistentes de IA (de Juditos)
+
+**El modelo nunca es la fuente de verdad del dinero ni de los hechos.** La
+herramienta que registra un pedido ignora el precio que diga el bot y lo saca
+del catálogo; la que agenda una cita comprueba el solape en la base antes de
+aceptar. Un modelo puede regalar un descuento o prometer un hueco ocupado con
+toda seguridad, y el cliente lo va a exigir. **Al prompt se le da la vuelta
+hablando; a un `SELECT` no.**
+
+**Las notas internas del sistema no van como un mensaje más de la
+conversación.** Si el motor decide si contestar mirando «¿el último mensaje es
+del contacto?», una nota de error guardada al final vuelve esa respuesta un
+«no» y todos los reintentos se saltan en silencio, para siempre: el trabajo
+queda marcado como hecho y el cliente nunca recibe respuesta. Filtrar las
+notas internas antes de esa comprobación.
+
+**En el prompt cacheado no entra nada que cambie entre mensajes** — ni la
+fecha, ni la hora, ni el nombre del contacto. La caché funciona por prefijo
+exacto: un byte distinto invalida todo lo que viene detrás y se paga el
+prompt entero otra vez, cada mensaje. Lo estable (negocio, tono, reglas,
+catálogo) en el `system`; lo variable en el mensaje del usuario. Se comprueba
+en `cache_read_input_tokens`: si sale cero mensaje tras mensaje, algo
+variable se coló.
+
+**El bot del cliente es vía de captación con tres reglas, y un problema sin
+ellas.** (1) Dice quién lo construyó **solo si le preguntan**: meterlo en
+saludos y despedidas convierte el servicio del cliente en publicidad nuestra.
+(2) No habla del modelo ni de su proveedor — el crédito es de la casa, no de
+la tecnología. (3) No finge ser humano; si le preguntan si es un bot, lo
+dice: además de honesto, varios países ya lo exigen por ley. Y un interruptor
+por cliente, que siempre habrá uno que quiera marca blanca.
+
 ---
 
 ## 4. El esqueleto de home que funciona
