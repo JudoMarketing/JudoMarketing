@@ -164,3 +164,36 @@ da error, se degrada en silencio. Next trae sus propios docs dentro de cada
 proyecto en `node_modules/next/dist/docs/` — conviene leerlos antes de asumir.
 **Evidencia:** el build del starter falló con TS2353 por la clave `eslint`,
 que en Next 15 era correcta.
+
+---
+### 2026-08-27 · JuditoWEBS · plantilla base
+**Qué aprendimos:** en Next.js 16 el `proxy.ts` (lo que antes era
+`middleware.ts`) tiene que estar al mismo nivel que la carpeta `app`. Si el
+proyecto usa `src/`, va en `src/proxy.ts`, NO en la raíz. Puesto en la raíz no
+da error, no avisa en el build y no aparece en los logs: simplemente no se
+ejecuta nunca.
+**Evidencia:** con el archivo en la raíz, `/` devolvía 404 en vez de redirigir
+al idioma del visitante. El build salía verde y el único síntoma era la página
+rota. Moverlo a `src/` lo arregló sin cambiar una línea de código.
+
+---
+### 2026-08-27 · JuditoWEBS · plantilla base
+**Qué aprendimos:** la imagen de OpenGraph que genera Next se dibuja con
+Satori, que NO es un navegador: un `<div>` con más de un hijo revienta el build
+salvo que lleve `display: flex` explícito. Y ojo, dos trozos de texto seguidos
+cuentan como dos hijos. Lo más simple es unir el texto en una sola plantilla de
+cadena.
+**Evidencia:** el build falló entero en `/en/opengraph-image` y
+`/es/opengraph-image` con "Expected <div> to have explicit display: flex". El
+resto del sitio compilaba perfecto, así que el fallo llegó al final del proceso.
+
+---
+### 2026-08-27 · JuditoWEBS · plantilla base
+**Qué aprendimos:** la forma barata de hacer cumplir "un idioma por vista,
+completo" es un tipo de TypeScript. Se declara un `Dictionary` con TODAS las
+claves de texto del sitio y cada idioma tiene que satisfacerlo: si falta una
+traducción, el build falla. Con tuplas (`[T, T, T]`) el mismo truco hace
+cumplir la regla de tres — meter un cuarto servicio deja de ser un descuido y
+pasa a ser una decisión que hay que escribir.
+**Evidencia:** con esto, olvidar una cadena al traducir dejó de ser algo que
+descubre el cliente en producción y pasó a ser un error de compilación.
