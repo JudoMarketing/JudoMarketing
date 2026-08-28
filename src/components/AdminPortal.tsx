@@ -62,7 +62,13 @@ type JuditoCliente = {
   id: string;
   nombre: string;
   estado: string;
-  juditos: { nombre: string; estado: string }[];
+  juditos: {
+    id: string;
+    nombre: string;
+    estado: string;
+    modelo: string;
+    mensajesMes: number;
+  }[];
   canales: number;
   documentos: number;
   productos: number;
@@ -70,6 +76,22 @@ type JuditoCliente = {
   mensajesMes: number;
   costeMes: string;
   esperandoPersona: number;
+};
+
+/** El cerebro de un Judito, tal como lo devuelve Juditos. */
+type JuditoDetalle = {
+  id: string;
+  nombre: string;
+  estado: string;
+  cliente: { id: string; name: string };
+  negocio: string;
+  tono: string;
+  reglas: string;
+  saludo: string;
+  idioma: string;
+  modelo: string;
+  capacidades: Record<string, boolean>;
+  canales: { kind: string; displayName: string; active: boolean }[];
 };
 
 type JuditosResumen = {
@@ -229,6 +251,9 @@ export default function AdminPortal() {
   const [juditos, setJuditos] = useState<JuditosResumen | null>(null);
   const [juditosError, setJuditosError] = useState<string | null>(null);
   const [juditosBusy, setJuditosBusy] = useState(false);
+  // El Judito que se está editando, si hay alguno abierto.
+  const [juditoAbierto, setJuditoAbierto] = useState<JuditoDetalle | null>(null);
+  const [juditoGuardando, setJuditoGuardando] = useState(false);
 
   // Acceso propio del panel: sin sesión se muestra el formulario de entrada
   const [needsLogin, setNeedsLogin] = useState(false);
@@ -863,6 +888,84 @@ export default function AdminPortal() {
       }
     } catch {
       setJuditosError("No se pudo contactar a Juditos.");
+    }
+    setJuditosBusy(false);
+  };
+
+  /** Pide el token de sesión, que es lo que autoriza cada llamada. */
+  const tokenSesion = async (): Promise<string | null> => {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token ?? null;
+  };
+
+  const abrirJudito = async (id: string) => {
+    const token = await tokenSesion();
+    if (!token) return flash("Sesión vencida, vuelve a entrar.");
+    setJuditoGuardando(true);
+    try {
+      const res = await fetch(`/api/admin/juditos?judito=${encodeURIComponent(id)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) flash(body.error || `Error ${res.status}`);
+      else setJuditoAbierto(body as JuditoDetalle);
+    } catch {
+      flash("No se pudo contactar a Juditos.");
+    }
+    setJuditoGuardando(false);
+  };
+
+  const guardarJudito = async () => {
+    if (!juditoAbierto) return;
+    const token = await tokenSesion();
+    if (!token) return flash("Sesión vencida, vuelve a entrar.");
+    setJuditoGuardando(true);
+    try {
+      const res = await fetch("/api/admin/juditos", {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: juditoAbierto.id,
+          nombre: juditoAbierto.nombre,
+          estado: juditoAbierto.estado,
+          negocio: juditoAbierto.negocio,
+          tono: juditoAbierto.tono,
+          reglas: juditoAbierto.reglas,
+          saludo: juditoAbierto.saludo,
+          capacidades: juditoAbierto.capacidades,
+          resumen: "Editado desde el portal de administración",
+        }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) flash(body.error || `Error ${res.status}`);
+      else {
+        flash(`${juditoAbierto.nombre} guardado ✓`);
+        setJuditoAbierto(null);
+        await cargarJuditos();
+      }
+    } catch {
+      flash("No se pudo guardar.");
+    }
+    setJuditoGuardando(false);
+  };
+
+  const facturar = async (clientId: string, nombre: string) => {
+    if (!confirm(`¿Emitir y enviar la factura del mes a ${nombre}?`)) return;
+    const token = await tokenSesion();
+    if (!token) return flash("Sesión vencida, vuelve a entrar.");
+    setJuditosBusy(true);
+    try {
+      const res = await fetch("/api/admin/juditos", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok || body.ok === false) flash(body.error || `Error ${res.status}`);
+      else if (body.enviada) flash(`Factura ${body.numero} enviada ✓`);
+      else flash(`Factura ${body.numero} creada, pero el correo no salió: ${body.motivo}`);
+    } catch {
+      flash("No se pudo emitir la factura.");
     }
     setJuditosBusy(false);
   };
@@ -1514,6 +1617,150 @@ export default function AdminPortal() {
         </section>
       )}
 
+      {/* Editor de la lógica de un Judito, sobre el resto del panel */}
+      {juditoAbierto && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm"
+          onClick={() => setJuditoAbierto(null)}
+        >
+          <div
+            className="my-8 w-full max-w-2xl rounded-2xl border border-judo-lilac/25 bg-judo-surface p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-bold">{juditoAbierto.nombre}</h3>
+                <p className="text-sm text-judo-fog/55">
+                  {juditoAbierto.cliente.name} · {juditoAbierto.modelo.replace("claude-", "")}
+                </p>
+              </div>
+              <button
+                onClick={() => setJuditoAbierto(null)}
+                className="text-judo-fog/50 transition hover:text-judo-fog"
+              >
+                Cerrar
+              </button>
+            </div>
+
+            <div className="mt-5 space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-judo-fog/80">Nombre</label>
+                  <input
+                    className={inputClass}
+                    value={juditoAbierto.nombre}
+                    onChange={(e) => setJuditoAbierto({ ...juditoAbierto, nombre: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-judo-fog/80">Estado</label>
+                  <select
+                    className={inputClass}
+                    value={juditoAbierto.estado}
+                    onChange={(e) => setJuditoAbierto({ ...juditoAbierto, estado: e.target.value })}
+                  >
+                    <option value="DRAFT">Borrador (no responde)</option>
+                    <option value="TRAINING">En pruebas (solo el simulador)</option>
+                    <option value="LIVE">En vivo (responde a clientes)</option>
+                    <option value="PAUSED">En pausa</option>
+                  </select>
+                </div>
+              </div>
+
+              {([
+                ["negocio", "El negocio", 6],
+                ["tono", "Tono", 2],
+                ["reglas", "Reglas obligatorias", 5],
+              ] as const).map(([campo, etiqueta, filas]) => (
+                <div key={campo}>
+                  <label className="mb-1 block text-sm font-medium text-judo-fog/80">{etiqueta}</label>
+                  <textarea
+                    rows={filas}
+                    className={`${inputClass} font-mono text-[13px] leading-relaxed`}
+                    value={juditoAbierto[campo]}
+                    onChange={(e) => setJuditoAbierto({ ...juditoAbierto, [campo]: e.target.value })}
+                  />
+                </div>
+              ))}
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-judo-fog/80">Saludo</label>
+                <input
+                  className={inputClass}
+                  value={juditoAbierto.saludo}
+                  onChange={(e) => setJuditoAbierto({ ...juditoAbierto, saludo: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <p className="mb-2 text-sm font-medium text-judo-fog/80">Qué puede hacer</p>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {([
+                    ["mensajes", "Mensajes directos"],
+                    ["comentarios", "Comentarios"],
+                    ["pedidos", "Tomar pedidos"],
+                    ["citas", "Agendar citas"],
+                    ["escalar", "Pasar a humano"],
+                    ["memoria", "Memoria (Pro)"],
+                    ["correos", "Enviar correos (Pro)"],
+                  ] as const).map(([clave, etiqueta]) => {
+                    const soloPro = clave === "memoria" || clave === "correos";
+                    return (
+                      <label
+                        key={clave}
+                        className={`flex items-center gap-2 text-xs ${soloPro ? "opacity-60" : ""}`}
+                        title={soloPro ? "Se activa con el plan Pro" : undefined}
+                      >
+                        <input
+                          type="checkbox"
+                          disabled={soloPro}
+                          checked={Boolean(juditoAbierto.capacidades[clave])}
+                          onChange={(e) =>
+                            setJuditoAbierto({
+                              ...juditoAbierto,
+                              capacidades: {
+                                ...juditoAbierto.capacidades,
+                                [clave]: e.target.checked,
+                              },
+                            })
+                          }
+                          className="h-4 w-4 rounded border-judo-lilac/30"
+                        />
+                        {etiqueta}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {juditoAbierto.canales.length > 0 && (
+                <p className="text-xs text-judo-fog/45">
+                  Canales: {juditoAbierto.canales.map((c) => c.displayName).join(", ")}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={guardarJudito}
+                disabled={juditoGuardando}
+                className="rounded-full bg-judo-purple px-5 py-2 text-sm font-semibold text-white transition hover:bg-judo-lilac disabled:opacity-50"
+              >
+                {juditoGuardando ? "Guardando…" : "Guardar cambios"}
+              </button>
+              <a
+                href={`/juditos/clientes/${juditoAbierto.cliente.id}/cerebro`}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full border border-judo-lilac/30 px-5 py-2 text-sm font-semibold text-judo-fog/75 transition hover:border-judo-lilac"
+              >
+                Abrir en Juditos ↗
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── AI ASSISTANTS: los Juditos de cada cliente ── */}
       {tab === "juditos" && (
         <section className="mt-6">
@@ -1619,25 +1866,41 @@ export default function AdminPortal() {
                                 {c.esperandoPersona} esperando a una persona
                               </p>
                             )}
+                            <button
+                              onClick={() => facturar(c.id, c.nombre)}
+                              disabled={juditosBusy}
+                              className="mt-1.5 rounded-full border border-judo-lilac/30 px-3 py-0.5 text-[11px] font-semibold text-judo-fog/70 transition hover:border-emerald-400/60 hover:text-emerald-300 disabled:opacity-50"
+                            >
+                              Enviar factura
+                            </button>
                           </td>
                           <td className="px-4 py-3">
                             {c.juditos.length === 0 ? (
                               <span className="text-xs text-judo-fog/35">sin Judito</span>
                             ) : (
-                              c.juditos.map((j) => (
-                                <p key={j.nombre} className="text-judo-fog/80">
-                                  {j.nombre}{" "}
-                                  <span
-                                    className={
-                                      j.estado === "LIVE"
-                                        ? "text-emerald-300"
-                                        : "text-judo-fog/40"
-                                    }
+                              <div className="space-y-1.5">
+                                {c.juditos.map((j) => (
+                                  <button
+                                    key={j.id}
+                                    onClick={() => abrirJudito(j.id)}
+                                    className="block w-full rounded-lg border border-judo-lilac/15 px-2.5 py-1.5 text-left transition hover:border-judo-lilac/50"
                                   >
-                                    · {j.estado === "LIVE" ? "en vivo" : j.estado.toLowerCase()}
-                                  </span>
-                                </p>
-                              ))
+                                    <span className="text-judo-fog/85">{j.nombre}</span>{" "}
+                                    <span
+                                      className={
+                                        j.estado === "LIVE"
+                                          ? "text-emerald-300"
+                                          : "text-judo-fog/40"
+                                      }
+                                    >
+                                      · {j.estado === "LIVE" ? "en vivo" : j.estado.toLowerCase()}
+                                    </span>
+                                    <span className="block text-[11px] text-judo-fog/40">
+                                      {j.mensajesMes} mensajes este mes · {j.modelo.replace("claude-", "")}
+                                    </span>
+                                  </button>
+                                ))}
+                              </div>
                             )}
                           </td>
                           <td className="px-4 py-3 text-judo-fog/70">{c.canales}</td>
