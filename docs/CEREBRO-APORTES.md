@@ -267,3 +267,12 @@ facturación no se puede recuperar.
 más valor tiene es el que se niega: si Meta no acepta pausar las campañas
 (token caducado, por ejemplo), no se borra nada y se le dice a
 Administración qué campaña parar a mano.
+
+---
+### 2026-08-30 · Curación 4 (JudoMarketing) · —
+**Qué se curó:** los dos aportes nuevos de Judito-Ads entran a las reglas de
+construcción: el puente entre apps se prueba entero (y quien llama distingue
+«me dijeron que no» de «no me contestaron»), y el orden de una baja que mueve
+dinero — primero cortar el gasto, y si no se puede, negar la baja. Con esto
+Judito-Ads ya implementó el POST que faltaba, así que los botones de suspender
+y eliminar del portal dejan de dar 405.

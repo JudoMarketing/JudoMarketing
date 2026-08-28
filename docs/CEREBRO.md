@@ -205,6 +205,19 @@ publicitaria no puede ni conectar la app — eso se apela aparte.
 error, se degrada en silencio. Next trae sus docs en
 `node_modules/next/dist/docs/`.
 
+**Un puente entre apps se prueba el viaje entero, no cada lado por su
+cuenta.** Y el lado que llama debe distinguir «me dijeron que no» de «no me
+contestaron»: son problemas distintos y se arreglan en sitios distintos. Los
+botones de suspender y eliminar del portal estuvieron listos días antes que
+el `POST` del otro lado; cada clic salía 405 y parecía un fallo del portal.
+
+**Al dar de baja algo que mueve dinero, el orden es la función.** Primero se
+corta el gasto —anuncios, cobros— y solo después se toca el registro. Si el
+gasto no se puede cortar, la baja se **niega** y dice por qué: una baja a
+medias deja anuncios corriendo sin dueño y cobros a un cliente que ya no
+existe, y nadie se entera hasta ver la factura. Y baja lógica antes que
+borrado físico, que el historial de facturación no se recupera.
+
 ### Asistentes de IA (de Juditos)
 
 **El modelo nunca es la fuente de verdad del dinero ni de los hechos.** La
