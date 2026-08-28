@@ -114,3 +114,53 @@ puede ni conectar la app, y eso se apela aparte.
 **Evidencia:** los primeros probadores invitados a JuditoADS no pudieron
 conectar su Meta, y al ir a arreglarlo apareció encima que el portafolio
 verificado del negocio estaba restringido para anunciar.
+### 2026-08-27 · JuditoWEBS · plantilla base
+**Qué aprendimos:** la rama `master` de este repo NO existe. GitHub redirige
+`master` a la rama por defecto, así que el `raw` de CEREBRO.md contesta 200 y
+parece que todo está bien — pero `git push origin master` crearía una rama
+nueva y divergente en vez de aportar al hilo real. Hay que empujar a la rama
+por defecto (`claude/judo-marketing-redesign-ci2rj5`) o crear `master` de
+verdad una sola vez y mover el default ahí.
+**Evidencia:** `git ls-remote --heads origin` lista cinco ramas y ninguna es
+`master`, mientras que `curl` a la URL con `/master/` devuelve 200. La
+instrucción "haz push a master" que llevan los chats de todos los proyectos
+apunta a un fantasma.
+
+---
+### 2026-08-27 · JuditoWEBS · plantilla base
+**Qué aprendimos:** un honeypot cuyo campo trampa se valida en el esquema no
+sirve de nada. Si el validador rechaza el campo lleno, el bot recibe un error
+de validación —que lee como "reintenta"— y la rama que descarta el spam en
+silencio queda muerta. El esquema debe ACEPTAR el campo trampa y la lógica de
+descarte va después. Y el mensaje de éxito falso debe ser idéntico carácter
+por carácter al real, o el bot compara respuestas y aprende a dejarlo vacío.
+**Evidencia:** con `company: z.string().max(0)` el envío de prueba con la
+trampa llena devolvió "Please check the highlighted fields" sin ningún error
+visible. Al soltar la validación, el mismo envío devolvió éxito falso y el log
+del servidor confirmó que no se entregó nada.
+
+---
+### 2026-08-27 · JuditoWEBS · plantilla base
+**Qué aprendimos:** poner `.env*` en `.gitignore` (lo que genera
+`create-next-app`) también ignora `.env.example`. El repo llega a GitHub sin
+ningún registro de qué variables hay que configurar, y el siguiente que clone
+descubre las que faltan cuando algo se cae en producción. Hace falta
+`!.env.example` después del patrón. Ojo: `git check-ignore -v` engaña, lista
+el patrón de negación como si el archivo siguiera ignorado; la prueba real es
+`git add --dry-run`.
+**Evidencia:** el starter compilaba y subía limpio, pero `.env.example` —con
+las tres variables sin las cuales el formulario de contacto no entrega nada—
+no habría llegado nunca al repo.
+
+---
+### 2026-08-27 · JuditoWEBS · plantilla base
+**Qué aprendimos:** Next.js 16 rompe patrones que todavía se escriben por
+inercia: `middleware.ts` pasó a `proxy.ts`; `params` y `searchParams` son
+Promises (y en `opengraph-image`/`icon`, el `id` también); `images.domains`
+desapareció en favor de `remotePatterns`; y `next.config` ya no acepta la
+clave `eslint` porque `next lint` no existe. El más traicionero es
+`images.qualities`, que ahora vale `[75]` por defecto: un `quality={90}` no
+da error, se degrada en silencio. Next trae sus propios docs dentro de cada
+proyecto en `node_modules/next/dist/docs/` — conviene leerlos antes de asumir.
+**Evidencia:** el build del starter falló con TS2353 por la clave `eslint`,
+que en Next 15 era correcta.
