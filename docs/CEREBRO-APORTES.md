@@ -323,3 +323,68 @@ salta lo que puso una persona a propósito (suspendida, dada de baja).
 devolvía «sí» antes de mirar nada más. Con eso, un «suspender» desde el panel
 de Administración se habría guardado en la base sin efecto ninguno: la cuenta
 habría seguido entrando como si nada.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un error que se repite casi nunca es un error nuevo: es
+el mismo de siempre, que nadie pudo identificar porque por el camino se le
+cayó el dato que lo identifica. Cuando se envuelve un fallo ajeno, hay que
+conservar SU código —no solo el texto—, y anotarlo antes de traducirlo a la
+frase amable que ve el cliente. Y hay que separar tres cosas que se mezclan
+en un solo «no se pudo»: lo que se arregla solo si se reintenta (un 500, un
+límite de tasa), lo que arregla el cliente (un permiso), y lo que es culpa
+nuestra. Con esa separación, una parte de los errores deja de existir sin
+que nadie los vea, y la otra ya se puede buscar.
+**Evidencia:** el selector de publicaciones traducía CUALQUIER fallo a
+«no pudimos comunicarnos con Meta», sin registrar nada. Cuando el cliente
+decía «me sale un error» no había absolutamente nada que mirar. La causa
+más probable resultó ser lentitud —la llamada tardaba más que el tope de 8 s
+en páginas con historia— y llevaba meses saliendo como error.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** `class MiError extends Error` con el `target` de
+TypeScript sin fijar (o sea ES5) rompe la cadena de prototipos: el objeto
+conserva todos sus campos y aun así `e instanceof MiError` da FALSO sobre el
+mismísimo objeto que se acaba de lanzar. Es de los fallos más difíciles de
+ver que existen, porque el dato está ahí delante y el `if` no entra: el
+error se cae a la rama genérica y el usuario recibe el mensaje equivocado.
+Toda clase de error propia lleva `Object.setPrototypeOf(this, X.prototype)`
+en el constructor, y las decisiones importantes se toman con un guardia
+propio (una marca, `X.es(e)`), no con `instanceof`.
+**Evidencia:** salió en una prueba, no en producción: el aviso «reconecta tu
+Facebook» podía degradarse a «no pudimos comunicarnos con Meta» sin que
+nada fallara visiblemente. Estaba en las tres clases de error del proyecto.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** para saber qué arreglar primero no sirve un registro
+línea a línea —a miles de usuarios son millones de filas que nadie lee— ni
+sirve el orden de las quejas. Sirve un contador agrupado por (usuario, área,
+tipo de fallo) y una lista ordenada por CLIENTES AFECTADOS, no por número de
+veces: uno que reintenta cuarenta veces hace mucho ruido, pero un fallo que
+toca a trescientos una vez cada uno es mucho más grave. Y la clave de
+agrupación nunca lleva el texto del error, que el proveedor reescribe y
+partiría el mismo fallo en diez.
+**Evidencia:** con eso, «veo muchos errores repetidos» pasó de ser una
+sensación a una lista de la que se puede sacar el primero y arreglarlo.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un «✅ listo» encima de una pantalla vacía es peor que un
+error: le confirma a la persona que todo salió bien y a la vez no le da nada
+con que seguir, así que se queda esperando algo que no va a pasar. Cuando un
+proceso depende de requisitos que el usuario no controla ni conoce, hay que
+enseñarle la lista de requisitos con el estado de cada uno y el arreglo al
+lado — y el «listo» solo aparece si de verdad puede continuar. Y cuando no
+se puede saber desde el código si le falta algo, se le PREGUNTA en vez de
+adivinar: él es el único que sabe si lo que no vemos existe.
+**Evidencia:** quien conectaba Facebook sin cuenta publicitaria veía
+«✅ cuenta conectada» y una lista vacía. Mucha gente tiene su cuenta de
+negocio pero sin compartir con su perfil personal: jura que la tiene, y la
+tiene, solo que el sistema no la ve. Preguntar «¿está aquí tu cuenta?»
+resuelve en un clic lo que ninguna comprobación automática podía decidir.
