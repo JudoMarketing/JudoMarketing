@@ -79,6 +79,8 @@ type JuditosResumen = {
     juditosEnVivo: number;
     mensajesHoy: number;
     esperandoPersona: number;
+    /** Negocios que ya contrataron y esperan a que alguien los monte. */
+    solicitudesPendientes?: number;
     costeMes: string;
   };
 };
@@ -1018,7 +1020,8 @@ export default function AdminPortal() {
               "juditos",
               "🤖",
               "AI Assistants",
-              juditos?.totales.esperandoPersona ?? 0,
+              (juditos?.totales.solicitudesPendientes ?? 0) +
+                (juditos?.totales.esperandoPersona ?? 0),
               juditos?.totales.clientes ?? 0,
             ],
           ] as [Tab, string, string, number, number][]
@@ -1549,6 +1552,23 @@ export default function AdminPortal() {
 
           {!juditosError && juditos && (
             <>
+              {(juditos.totales.solicitudesPendientes ?? 0) > 0 && (
+                <a
+                  href="/juditos/solicitudes"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mb-4 block rounded-xl border border-judo-purple/40 bg-judo-purple/15 px-4 py-3 text-sm transition hover:border-judo-purple"
+                >
+                  <span className="font-semibold">
+                    {juditos.totales.solicitudesPendientes} negocio(s) contrataron y están
+                    esperando a que les montes su Judito.
+                  </span>
+                  <span className="mt-0.5 block text-xs text-judo-fog/60">
+                    Ya rellenaron su cuestionario. Ábrelo para crearlos →
+                  </span>
+                </a>
+              )}
+
               <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
                 {(
                   [
