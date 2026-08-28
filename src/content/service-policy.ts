@@ -13,7 +13,7 @@ export const policyContent: Record<
   { effective: string; sections: PolicySection[] }
 > = {
   en: {
-    effective: "Effective Date: 08/05/2026",
+    effective: "Effective Date: 08/28/2026",
     sections: [
       {
         title: "1. Agreement",
@@ -24,7 +24,7 @@ export const policyContent: Record<
       {
         title: "2. Services and Plans",
         body: [
-          "Services are provided as monthly subscriptions (such as Essential Websites, Complex Websites, and Mobile Apps), one-time projects, or custom proposals. The exact scope, price, and inclusions of each plan are stated on www.judomarketing.net, the applicable proposal, or the signed service agreement. Anything not expressly included is outside scope and may require an additional quote. Minor updates included in subscription plans cover small text edits, image replacements, link changes, basic form updates, and small layout adjustments, not new pages, redesigns, new branding, or new integrations.",
+          "Services are provided as monthly subscriptions (such as Essential Websites, Complex Websites, Mobile Apps, JuditoADS, and AI Assistants), one-time projects, or custom proposals. JuditoADS and AI Assistants have their own terms in Sections 18 and 19. The exact scope, price, and inclusions of each plan are stated on www.judomarketing.net, the applicable proposal, or the signed service agreement. Anything not expressly included is outside scope and may require an additional quote. Minor updates included in subscription plans cover small text edits, image replacements, link changes, basic form updates, and small layout adjustments, not new pages, redesigns, new branding, or new integrations.",
         ],
       },
       {
@@ -124,7 +124,29 @@ export const policyContent: Record<
         ],
       },
       {
-        title: "18. Contact",
+        title: "18. JuditoADS, Meta, and Platform Data",
+        body: [
+          "JuditoADS is a self-service subscription tool that lets the client create and run advertising on Meta platforms (Facebook and Instagram) from the client's own Meta account. Judo Marketing acts as a technology provider operating the tool on the client's behalf and at the client's direction.",
+          "Connecting the account. The client connects a Meta account through Meta's own authorization flow and grants the permissions the tool needs. The client keeps ownership and control of its ad account, Pages, and business portfolio, and may disconnect at any time from the tool or from the client's Meta settings.",
+          "Advertising spend. The JuditoADS subscription fee is separate from advertising spend. Ad budget is charged by Meta directly to the payment method on the client's ad account. Judo Marketing does not collect, hold, or refund advertising spend.",
+          "Platform Data. Data obtained from Meta (\"Platform Data\") — including access tokens, account and Page identifiers, campaign structures, and performance metrics such as reach, spend, and results — is used only to operate the service for the client who authorized it: creating and managing that client's campaigns, and showing that client its own metrics and reports. Judo Marketing does not sell, license, or transfer Platform Data; does not use it for Judo Marketing's own advertising; does not combine it with data from other clients; and does not use it to build profiles of individuals. Access tokens are stored encrypted, are never exposed in the browser, and are used only for calls the client's own actions require.",
+          "Retention and deletion. Platform Data is retained only while the client's account is active. When the client disconnects the Meta account, cancels the service, or requests deletion, tokens are revoked and Platform Data is deleted within 30 days, except records Judo Marketing must keep for legal, tax, or billing purposes. When an account is closed, active campaigns are paused before the account record is removed; if campaigns cannot be paused, the closure is refused and the client is told which campaign to stop manually, so no advertising keeps running unattended.",
+          "How to request deletion of your data. Write to admin@judomarketing.net from the email address on the account, with the subject \"Data deletion\". Judo Marketing confirms receipt and completes the deletion within 30 days. The client can also disconnect Judo Marketing at any time from Meta: Settings → Business integrations → remove the app; doing so immediately revokes our access.",
+          "Platform rules. Use of JuditoADS is also subject to Meta's Terms, Advertising Standards, and Platform Terms. The client is responsible for the content, claims, and targeting of its ads. Meta may reject, restrict, or remove ads, accounts, or permissions; Judo Marketing does not control those decisions. Some Meta features require app review, Live mode, or business verification, and are unavailable until Meta grants them.",
+        ],
+      },
+      {
+        title: "19. AI Assistants",
+        body: [
+          "AI Assistants are subscription virtual assistants that answer the client's customers on Instagram, Facebook, and the client's website, configured with information the client provides (what it sells, prices, hours, policies).",
+          "It is not a person and does not hide it. The assistant identifies itself as an automated assistant when asked. It does not impersonate a human being.",
+          "It does not commit the business. Prices, availability, and orders are confirmed against the client's own records, not invented by the assistant. Judo Marketing is not responsible for a commercial commitment the client chooses to honor beyond what its own records support.",
+          "Conversations. Messages are processed by third-party AI providers to generate the reply and are retained only as needed to operate the service and improve the client's own assistant. They are not sold, are not used to train third-party public models beyond what the provider's terms allow, and are not shared with other clients. The client must not configure the assistant to request payment details, passwords, or sensitive personal or health information; conversations that require them must be moved to a secure channel.",
+          "Accuracy and supervision. An AI assistant can make mistakes. The client is responsible for reviewing its configuration, keeping its information current, and supervising conversations that matter. Deletion of conversation data follows Section 18, \"How to request deletion of your data\".",
+        ],
+      },
+      {
+        title: "20. Contact",
         body: [
           "Judo Marketing · 66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130 · www.judomarketing.net · admin@judomarketing.net · 305-934-9981",
         ],
@@ -132,7 +154,7 @@ export const policyContent: Record<
     ],
   },
   es: {
-    effective: "Fecha efectiva: 08/05/2026",
+    effective: "Fecha efectiva: 08/28/2026",
     sections: [
       {
         title: "1. Acuerdo",
@@ -143,7 +165,7 @@ export const policyContent: Record<
       {
         title: "2. Servicios y planes",
         body: [
-          "Los servicios se ofrecen como suscripciones mensuales (Websites Esenciales, Websites Complejos y Apps Móviles), proyectos únicos o propuestas personalizadas. El alcance, precio e inclusiones exactas de cada plan se indican en www.judomarketing.net, la propuesta aplicable o el acuerdo firmado. Lo que no esté expresamente incluido está fuera de alcance y puede requerir cotización adicional. Las actualizaciones menores incluidas cubren pequeños cambios de texto, reemplazo de imágenes, cambios de enlaces, ajustes básicos de formularios y pequeños ajustes de diseño, no páginas nuevas, rediseños, nueva marca ni nuevas integraciones.",
+          "Los servicios se ofrecen como suscripciones mensuales (Websites Esenciales, Websites Complejos, Apps Móviles, JuditoADS y Asistentes con IA), proyectos únicos o propuestas personalizadas. JuditoADS y los Asistentes con IA tienen sus propios términos en las secciones 18 y 19. El alcance, precio e inclusiones exactas de cada plan se indican en www.judomarketing.net, la propuesta aplicable o el acuerdo firmado. Lo que no esté expresamente incluido está fuera de alcance y puede requerir cotización adicional. Las actualizaciones menores incluidas cubren pequeños cambios de texto, reemplazo de imágenes, cambios de enlaces, ajustes básicos de formularios y pequeños ajustes de diseño, no páginas nuevas, rediseños, nueva marca ni nuevas integraciones.",
         ],
       },
       {
@@ -243,7 +265,29 @@ export const policyContent: Record<
         ],
       },
       {
-        title: "18. Contacto",
+        title: "18. JuditoADS, Meta y los datos de la plataforma",
+        body: [
+          "JuditoADS es una herramienta por suscripción, de autoservicio, que le permite al cliente crear y publicar publicidad en las plataformas de Meta (Facebook e Instagram) desde su propia cuenta de Meta. Judo Marketing actúa como proveedor de tecnología, operando la herramienta por cuenta y bajo la dirección del cliente.",
+          "Conectar la cuenta. El cliente conecta su cuenta de Meta por el flujo de autorización de la propia Meta y otorga los permisos que la herramienta necesita. El cliente conserva la titularidad y el control de su cuenta publicitaria, sus páginas y su portafolio de negocio, y puede desconectarse cuando quiera, desde la herramienta o desde su configuración de Meta.",
+          "Inversión publicitaria. La suscripción de JuditoADS es aparte de la inversión publicitaria. El presupuesto de anuncios lo cobra Meta directamente al método de pago de la cuenta publicitaria del cliente. Judo Marketing no cobra, no retiene ni reembolsa la inversión publicitaria.",
+          "Datos de la plataforma. Los datos obtenidos de Meta —tokens de acceso, identificadores de cuenta y de página, estructura de las campañas y métricas de resultados como alcance, gasto y conversiones— se usan únicamente para operar el servicio del cliente que los autorizó: crear y gestionar sus campañas y mostrarle sus propias métricas e informes. Judo Marketing no vende, licencia ni transfiere estos datos; no los usa para su propia publicidad; no los combina con los de otros clientes; y no los usa para construir perfiles de personas. Los tokens se guardan cifrados, nunca se exponen en el navegador y solo se usan para las llamadas que exigen las acciones del propio cliente.",
+          "Conservación y borrado. Los datos de la plataforma se conservan solo mientras la cuenta del cliente está activa. Cuando el cliente desconecta su cuenta de Meta, cancela el servicio o pide el borrado, los tokens se revocan y los datos se eliminan en un plazo de 30 días, salvo los registros que Judo Marketing deba conservar por obligación legal, fiscal o de facturación. Al cerrar una cuenta, las campañas activas se pausan antes de eliminar el registro; si no se pueden pausar, el cierre se niega y se le indica al cliente qué campaña detener a mano, para que no quede publicidad corriendo sin dueño.",
+          "Cómo pedir el borrado de tus datos. Escribe a admin@judomarketing.net desde el correo de la cuenta, con el asunto \"Borrado de datos\". Judo Marketing confirma la recepción y completa el borrado en un plazo de 30 días. El cliente también puede desconectar a Judo Marketing cuando quiera desde Meta: Configuración → Integraciones de negocios → eliminar la aplicación; eso revoca nuestro acceso de inmediato.",
+          "Reglas de la plataforma. El uso de JuditoADS está sujeto además a los Términos, las Normas de Publicidad y los Términos de Plataforma de Meta. El cliente es responsable del contenido, las afirmaciones y la segmentación de sus anuncios. Meta puede rechazar, restringir o retirar anuncios, cuentas o permisos; Judo Marketing no controla esas decisiones. Algunas funciones de Meta requieren revisión de la aplicación, modo Live o verificación del negocio, y no están disponibles hasta que Meta las conceda.",
+        ],
+      },
+      {
+        title: "19. Asistentes con IA",
+        body: [
+          "Los Asistentes con IA son asistentes virtuales por suscripción que atienden a los clientes del cliente en Instagram, Facebook y su website, configurados con la información que el propio cliente entrega (qué vende, precios, horarios, políticas).",
+          "No es una persona y no lo esconde. El asistente se identifica como asistente automatizado cuando se le pregunta. No se hace pasar por un ser humano.",
+          "No compromete al negocio. Los precios, la disponibilidad y los pedidos se confirman contra los registros del propio cliente, no los inventa el asistente. Judo Marketing no responde por un compromiso comercial que el cliente decida honrar más allá de lo que sostienen sus propios registros.",
+          "Las conversaciones. Los mensajes se procesan con proveedores de inteligencia artificial externos para generar la respuesta, y se conservan solo lo necesario para operar el servicio y mejorar el asistente del propio cliente. No se venden, no se usan para entrenar modelos públicos de terceros más allá de lo que permitan los términos del proveedor, y no se comparten con otros clientes. El cliente no debe configurar el asistente para pedir datos de pago, contraseñas ni información personal o de salud sensible; las conversaciones que los requieran deben pasar a un canal seguro.",
+          "Exactitud y supervisión. Un asistente con IA puede equivocarse. El cliente es responsable de revisar su configuración, mantener su información al día y supervisar las conversaciones que importan. El borrado de los datos de conversación sigue la sección 18, \"Cómo pedir el borrado de tus datos\".",
+        ],
+      },
+      {
+        title: "20. Contacto",
         body: [
           "Judo Marketing · 66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130 · www.judomarketing.net · admin@judomarketing.net · 305-934-9981",
         ],

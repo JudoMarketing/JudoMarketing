@@ -5,6 +5,9 @@ Salida: docs/legal/contracts/Acuerdo_de_Servicio_Cliente.pdf
         docs/legal/Service_Policy_and_Terms.pdf (desde docs/legal/service-policy.md)
 """
 import re
+import shutil
+from pathlib import Path
+
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
@@ -325,8 +328,32 @@ def build_seller_agreement():
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
 
 
+# El website sirve los PDF desde public/, no desde docs/. Copiarlos aquí es
+# parte de generarlos: durante un tiempo el generador solo escribió en docs/ y
+# la descarga pública se quedó con una versión vieja sin que nadie lo notara.
+COPIAS_PUBLICAS = [
+    ("docs/legal/Service_Policy_and_Terms.pdf", "public/legal/Service_Policy_and_Terms.pdf"),
+    ("docs/legal/contracts/Acuerdo_de_Servicio_Cliente.pdf",
+     "public/legal/Acuerdo_de_Servicio_Cliente.pdf"),
+    ("docs/legal/contracts/Acuerdo_Programa_Vendedores.pdf",
+     "public/legal/Acuerdo_Programa_Vendedores.pdf"),
+]
+
+
+def publicar():
+    """Deja en public/ exactamente lo que se acaba de generar."""
+    for origen, destino in COPIAS_PUBLICAS:
+        o, d = Path(origen), Path(destino)
+        if not o.exists():
+            raise SystemExit(f"Falta el PDF generado: {origen}")
+        d.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(o, d)
+        print(f"  publicado → {destino}")
+
+
 if __name__ == "__main__":
     build_contract()
     build_policy()
     build_seller_agreement()
-    print("PDFs generados.")
+    publicar()
+    print("PDFs generados y publicados.")

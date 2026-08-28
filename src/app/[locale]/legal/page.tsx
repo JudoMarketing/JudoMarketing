@@ -13,6 +13,12 @@ export async function generateMetadata({
   return pageMetadata("legal", locale);
 }
 
+/** "18. JuditoADS, Meta…" → "seccion-18". Estable entre idiomas. */
+function anclaDe(titulo: string): string {
+  const n = titulo.match(/^(\d+)\./);
+  return n ? `seccion-${n[1]}` : "";
+}
+
 export default function LegalPage({
   params,
 }: {
@@ -65,7 +71,10 @@ export default function LegalPage({
 
         <div className="mt-10 space-y-8">
           {content.sections.map((section) => (
-            <section key={section.title}>
+            /* Cada sección lleva ancla propia (#seccion-18…) para poder
+               enlazar directo a una. Meta exige una URL que apunte a las
+               instrucciones de borrado de datos, y esa es la 18. */
+            <section key={section.title} id={anclaDe(section.title)} className="scroll-mt-24">
               <h2 className="text-lg font-semibold text-judo-lilac">
                 {section.title}
               </h2>
