@@ -55,10 +55,32 @@ clientes.
 | --- | --- | --- |
 | Resumen, Formularios, Contratos, Websites, Dinero, Reseñas | Base propia de judomarketing.net | — |
 | JuditoADS | App Judito-Ads | `JUDITOADS_URL` + `JUDITOADS_ADMIN_TOKEN` |
-| **AI Assistants** | **App AI-Assistants** | **todavía no existe** |
+| Juditos (AI Assistants) | App AI-Assistants | `JUDITOS_URL` + `JUDITOS_ADMIN_TOKEN` |
+
+Los detalles del puente de Juditos están en `juditos-integracion.md`.
+
+## Los dos caminos, y cuál conviene
+
+Hay dos formas de que una pestaña nueva llegue al portal, y las dos funcionan:
+
+**A. Se pide aquí.** Tú lo pides en el chat de Judo Marketing y, si hace falta
+algo del otro lado, se te dice qué pegarle a ese chat. Fue lo de JuditoADS.
+
+**B. El otro chat la trae hecha.** El chat de la app hermana se conecta a este
+repositorio y empuja la pestaña él mismo. Fue lo de Juditos: el chat de
+AI-Assistants montó su pestaña, su ruta puente y su documento.
+
+**Cuál conviene:** B es más rápido cuando el cambio es casi todo del lado de la
+otra app y el portal solo la muestra. A es mejor cuando el cambio toca el
+aspecto o la organización del portal, porque aquí es donde vive el criterio de
+diseño y se ve el conjunto. Si dudas, pídelo aquí: desde acá se ve el portal
+entero y se sabe si algo choca con lo demás.
+
+**En los dos casos:** el que empuja a este repositorio empuja a la rama por
+defecto, y si el push choca, `git pull --rebase`. Varias sesiones trabajan a
+la vez sobre la misma rama.
 
 ## Y si no estás seguro
 
 Pídelo aquí. Si resulta que la mitad va en otro repo, se te dice cuál es la
 mitad y qué pegarle a ese chat — como se hizo con el `POST` de Judito-Ads.
-Nunca se toca otro repositorio desde este chat.
