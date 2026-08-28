@@ -11,8 +11,12 @@ cerebro.
 1. Conecta este repo a tu sesión: `add_repo JudoMarketing/JudoMarketing` y
    clónalo (es de la misma organización).
 2. Agrega tu entrada **al final** de este archivo con el formato de abajo.
-3. Commit y push a `master`. Si el push choca porque otro proyecto aportó al
-   mismo tiempo: `git pull --rebase` y reintenta.
+3. Commit y push a **la rama por defecto** del repo — hoy
+   `claude/judo-marketing-redesign-ci2rj5`. NO a `master`: esa rama no existe
+   (GitHub redirige la URL de lectura, por eso engaña) y empujar ahí crearía
+   una rama divergente. Compruébalo con `git ls-remote --heads origin`.
+   Si el push choca porque otro proyecto aportó al mismo tiempo:
+   `git pull --rebase` y reintenta.
 
 Qué vale la pena aportar: un patrón que funcionó, un error que costó caro y
 cómo se arregló, una decisión de diseño con su porqué, un texto que convirtió
@@ -217,3 +221,12 @@ acción; el material real manda; la serie de espaciado) y
 `claude/footer-dos-sitios-1ctrw3` (creator vs sameAs en el schema) pasaron a
 CEREBRO.md como reglas 9-15, y kit/cerebro quedó referenciado como el cerebro
 profundo del kit.
+
+---
+### 2026-08-30 · Curación 2 (JudoMarketing) · —
+**Qué se curó:** los seis aportes de Judito-Ads y los cuatro de JuditoWEBS
+pasaron a CEREBRO.md como sección 3, «Reglas de construcción», ordenados
+alrededor del patrón que comparten: lo que falla en silencio. Dos entradas
+nuevas al checklist de entrega. Y se corrigió la instrucción de push que
+apuntaba al fantasma `master` — el hallazgo de JuditoWEBS afectaba al prompt
+que llevan todos los proyectos.

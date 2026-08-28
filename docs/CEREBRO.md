@@ -16,6 +16,13 @@ cualquier sesión puede leerlo:
 desde el chat de Judo Marketing y los buenos pasan aquí. Nadie edita este
 archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
+> **Ojo con la rama.** En este repo NO existe `master`. GitHub redirige esa
+> URL a la rama por defecto, así que el `raw` de arriba contesta 200 y parece
+> que todo está bien — pero `git push origin master` crearía una rama nueva y
+> divergente. Se empuja a **la rama por defecto**, que hoy es
+> `claude/judo-marketing-redesign-ci2rj5`. Lo comprueba
+> `git ls-remote --heads origin`.
+
 La paleta y los logos de la marca Judo Marketing en sí están en `BRAND.md`;
 esto es lo otro: cómo se diseña un sitio **para un cliente**.
 
@@ -135,7 +142,66 @@ protagonista que dice la acción del negocio: "Ordenar", "Quick Estimate",
 
 ---
 
-## 3. El esqueleto de home que funciona
+## 3. Reglas de construcción (de Judito-Ads y JuditoWEBS)
+
+Diseño aparte: esto es lo que rompe un sitio ya entregado.
+
+**Lo que falla en silencio es lo que hay que cazar.** Es el patrón que más se
+repite en los aportes, con tres caras distintas:
+
+1. **Supabase no avisa cuando RLS bloquea.** Responde OK con cero filas
+   tocadas. Mirando solo `error`, el panel canta éxito sin haber hecho nada.
+   Toda escritura de administración lleva `.select()` y se comprueba que
+   volvió al menos una fila. (Pasó en el admin: «Deshabilitar» y «Borrar»
+   daban ✓ verde sin cambiar nada.)
+2. **Que un ajuste se guarde no significa que se use.** Hay que seguirlo
+   hasta el final: pantalla → base de datos → el motor que lo aplica. Los
+   intereses del público se elegían, se guardaban y salían en el resumen,
+   pero el motor nunca se los mandaba a Meta. Meses a medias sin un error en
+   pantalla.
+3. **La interfaz miente por omisión:** enseña la promesa, no el resultado.
+
+**El servidor de desarrollo no prueba nada.** En Next.js App Router, un
+manejador de eventos (`onError`, `onClick`) dentro de un componente de
+SERVIDOR revienta la página entera en producción, y `next dev` no lo detecta.
+Antes de publicar, `next build` + `next start` de verdad.
+
+**Zonas horarias: preguntar en cuál agrupa el servicio externo.** Con
+`toISOString()` se calcula el día UTC; si el servicio usa otro huso, las
+cifras de hoy salen en cero y se pierde el primer día. Meta agrupa el gasto
+en la zona de la cuenta publicitaria.
+
+**Safari en iPhone no dispara los eventos de carga de un `<video>` que no se
+está reproduciendo.** Cualquier cosa que espere `loadeddata` se cuelga para
+siempre. `playsInline` + un `play()/pause()` de arranque, escuchar también
+`loadedmetadata`, y SIEMPRE un tope de tiempo que suelte la interfaz.
+
+**El honeypot se acepta en el esquema y se descarta después.** Si el
+validador rechaza el campo trampa lleno, el bot lee "reintenta" y la rama que
+descarta el spam queda muerta. Y el éxito falso debe ser idéntico carácter
+por carácter al real, o el bot compara respuestas y aprende.
+
+**`.env*` en `.gitignore` también ignora `.env.example`.** Hace falta
+`!.env.example` después del patrón, o el repo llega sin registro de qué
+variables configurar. `git check-ignore -v` engaña; la prueba real es
+`git add --dry-run`.
+
+**Permisos de Meta: semanas de antelación.** Una app en modo Desarrollo solo
+deja entrar a quien tenga rol en ella; los demás ven «Función no disponible»
+y parece fallo nuestro. Pasar a Live y el App Review se empiezan antes de
+tener clientes esperando. Y un portafolio de negocio con restricción
+publicitaria no puede ni conectar la app — eso se apela aparte.
+
+**Next.js 16 rompe patrones que se escriben por inercia:** `middleware.ts` →
+`proxy.ts`; `params` y `searchParams` son Promises; `images.domains` →
+`remotePatterns`; `next.config` ya no acepta `eslint`. El más traicionero es
+`images.qualities`, que vale `[75]` por defecto: un `quality={90}` no da
+error, se degrada en silencio. Next trae sus docs en
+`node_modules/next/dist/docs/`.
+
+---
+
+## 4. El esqueleto de home que funciona
 
 El orden que se repite en los sitios que mejor convierten:
 
@@ -152,7 +218,7 @@ principal alcanzable sin hacer zoom.
 
 ---
 
-## 4. Dirección de arte por rubro (del portafolio)
+## 5. Dirección de arte por rubro (del portafolio)
 
 | Rubro | La jugada | Referencia |
 |---|---|---|
@@ -167,7 +233,7 @@ principal alcanzable sin hacer zoom.
 
 ---
 
-## 5. El cerebro profundo del kit
+## 6. El cerebro profundo del kit
 
 Las sesiones del kit de construcción llevan su propia memoria en
 `kit/cerebro/` (rama `claude/kit-cerebro` hasta que se una): `METODO.md` (el
@@ -178,7 +244,7 @@ código y sus trampas), `VERIFICACION.md` (los scripts de comprobación),
 
 ---
 
-## 6. Checklist antes de entregar
+## 7. Checklist antes de entregar
 
 - [ ] Metadata y OpenGraph en los dos idiomas; JSON-LD del rubro.
 - [ ] Favicon y `<title>` con oficio (marca + qué hace + dónde).
@@ -190,4 +256,7 @@ código y sus trampas), `VERIFICACION.md` (los scripts de comprobación),
       visible en showcase + categoría + descripción ES/EN.
 - [ ] Botón "📡 Avisar ahora" del portal después de publicar (IndexNow para
       Bing/Yandex; Google va por Search Console).
+- [ ] `next build` + `next start` corrido de verdad, no solo `next dev`.
+- [ ] Cada escritura de administración comprobada contra la base: que la fila
+      cambió, no que el botón dijo ✓.
 - [ ] Revisado en teléfono de verdad, no solo achicando la ventana.
