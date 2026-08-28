@@ -22,6 +22,31 @@ const inputClass =
  * llega un formulario → se abre el website → se cobra
  * → se cuida la reputación. El Resumen manda al frente.
  */
+/**
+ * Comprueba que una escritura cambiara algo de verdad.
+ *
+ * Supabase NO devuelve error cuando las políticas de la base (RLS) dejan
+ * fuera la fila: responde OK con cero filas tocadas. Mirando solo `error`,
+ * el portal decía "Sitio deshabilitado ✓" sin haber deshabilitado nada, y
+ * "contrato borrado" con el contrato intacto. El fallo era invisible.
+ *
+ * Por eso cada escritura de aquí lleva .select(): es lo que hace que
+ * Supabase devuelva las filas afectadas y se pueda distinguir "funcionó"
+ * de "me lo bloquearon".
+ *
+ * Devuelve null si todo bien, o el motivo si no.
+ */
+function fallo(res: {
+  data: unknown[] | null;
+  error: { message: string } | null;
+}): string | null {
+  if (res.error) return res.error.message;
+  if (!res.data || res.data.length === 0) {
+    return "la base de datos no dejó hacer el cambio. Comprueba que tu cuenta siga teniendo el rol de administración.";
+  }
+  return null;
+}
+
 type Tab =
   | "resumen"
   | "formularios"
@@ -372,11 +397,14 @@ export default function AdminPortal() {
   };
 
   const setProofStatus = async (id: string, status: string) => {
-    const { error } = await supabase
-      .from("payment_proofs")
-      .update({ status })
-      .eq("id", id);
-    if (error) return flash(`Error: ${error.message}`);
+    const err = fallo(
+      await supabase
+        .from("payment_proofs")
+        .update({ status })
+        .eq("id", id)
+        .select("id")
+    );
+    if (err) return flash(`No se guardó: ${err}`);
     flash("Comprobante actualizado ✓");
     void loadAll();
   };
@@ -413,11 +441,14 @@ export default function AdminPortal() {
 
   const toggleSite = async (site: SiteRow) => {
     const next = site.status === "deshabilitado" ? "activo" : "deshabilitado";
-    const { error } = await supabase
-      .from("sites")
-      .update({ status: next })
-      .eq("id", site.id);
-    if (error) return flash(`Error: ${error.message}`);
+    const err = fallo(
+      await supabase
+        .from("sites")
+        .update({ status: next })
+        .eq("id", site.id)
+        .select("id")
+    );
+    if (err) return flash(`No se guardó: ${err}`);
     await supabase.from("audit_log").insert({
       actor: (await supabase.auth.getUser()).data.user?.id,
       action: next === "deshabilitado" ? "site_disabled" : "site_enabled",
@@ -450,8 +481,10 @@ export default function AdminPortal() {
   };
 
   const setReviewStatus = async (id: string, status: "aprobada" | "rechazada") => {
-    const { error } = await supabase.from("reviews").update({ status }).eq("id", id);
-    if (error) return flash(`Error: ${error.message}`);
+    const err = fallo(
+      await supabase.from("reviews").update({ status }).eq("id", id).select("id")
+    );
+    if (err) return flash(`No se guardó: ${err}`);
     flash(status === "aprobada" ? "Reseña publicada ✓" : "Reseña rechazada");
     void loadAll();
   };
@@ -464,11 +497,14 @@ export default function AdminPortal() {
     const anterior = Number(site.monthly_price);
     if (!Number.isFinite(nuevo) || nuevo < 0 || nuevo === anterior) return;
 
-    const { error } = await supabase
-      .from("sites")
-      .update({ monthly_price: nuevo })
-      .eq("id", site.id);
-    if (error) return flash(`Error: ${error.message}`);
+    const err = fallo(
+      await supabase
+        .from("sites")
+        .update({ monthly_price: nuevo })
+        .eq("id", site.id)
+        .select("id")
+    );
+    if (err) return flash(`No se guardó: ${err}`);
 
     const { data: user } = await supabase.auth.getUser();
     await supabase.from("site_events").insert({
@@ -537,11 +573,14 @@ export default function AdminPortal() {
    * no, el sitio se queda cobrando lo que se tecleó al abrirlo.
    */
   const asignarContrato = async (c: ContractRow, siteId: string) => {
-    const { error } = await supabase
-      .from("signed_contracts")
-      .update({ site_id: siteId || null })
-      .eq("id", c.id);
-    if (error) return flash(`Error: ${error.message}`);
+    const err = fallo(
+      await supabase
+        .from("signed_contracts")
+        .update({ site_id: siteId || null })
+        .eq("id", c.id)
+        .select("id")
+    );
+    if (err) return flash(`No se guardó: ${err}`);
     if (!siteId) {
       flash(`Contrato ${c.code} sin website: vuelve a quedar pendiente`);
       return void loadAll();
@@ -583,9 +622,11 @@ export default function AdminPortal() {
       return void loadAll();
     }
 
-    const { error: sErr } = await supabase.from("sites").update(cambios).eq("id", siteId);
+    const sErr = fallo(
+      await supabase.from("sites").update(cambios).eq("id", siteId).select("id")
+    );
     if (sErr) {
-      flash(`Contrato asignado, pero no se pudo copiar: ${sErr.message}`);
+      flash(`Contrato asignado, pero no se pudo copiar: ${sErr}`);
       return void loadAll();
     }
     await supabase.from("site_events").insert({
@@ -623,8 +664,10 @@ export default function AdminPortal() {
     )
       return;
 
-    const { error } = await supabase.from("signed_contracts").delete().eq("id", c.id);
-    if (error) return flash(`Error: ${error.message}`);
+    const err = fallo(
+      await supabase.from("signed_contracts").delete().eq("id", c.id).select("id")
+    );
+    if (err) return flash(`No se borró: ${err}`);
 
     // El archivo va después: si falla, al menos la fila ya no cuenta como venta
     const { error: archivoErr } = await supabase.storage
@@ -1694,6 +1737,7 @@ function SitePortfolio({
     const { error } = await supabase
       .from("sites")
       .update({ portfolio_shot_at: new Date().toISOString() })
+      .select("id")
       .eq("id", site.id);
     setPidiendoFoto(false);
     if (error) {
@@ -1883,6 +1927,7 @@ function SiteIdentidad({
       const { error } = await supabase
         .from("sites")
         .update({ name: nombre.trim(), domain: limpio || null })
+        .select("id")
         .eq("id", site.id);
       if (error) return flash(`Error: ${error.message}`);
 
