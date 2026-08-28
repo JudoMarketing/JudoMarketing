@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "@/i18n/navigation";
 
 /**
  * Líneas de luz moradas/azul-moradizas que entran por los márgenes de la
@@ -75,10 +76,22 @@ function makeLine(w: number, h: number): LightLine {
   };
 }
 
+/**
+ * Pantallas de trabajo, sin líneas. Ahí se pasa un buen rato leyendo números
+ * y tarjetas, y algo moviéndose de fondo termina molestando. Mismo criterio
+ * que la mascota (ver Mascot.tsx).
+ */
+const PANTALLAS_QUIETAS = ["/admin"];
+
 export default function LightLines() {
+  const pathname = usePathname();
+  const quieta = PANTALLAS_QUIETAS.some(
+    (ruta) => pathname === ruta || pathname.startsWith(`${ruta}/`)
+  );
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (quieta) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -190,7 +203,11 @@ export default function LightLines() {
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("resize", onResize);
     };
-  }, []);
+    // quieta cambia al navegar entre el sitio y el portal: el lienzo arranca
+    // o se apaga según a dónde se llegue
+  }, [quieta]);
+
+  if (quieta) return null;
 
   return (
     <canvas

@@ -103,6 +103,35 @@ protagonista que dice la acción del negocio: "Ordenar", "Quick Estimate",
 8. **`www` o pelado: decidir y redirigir.** melanieosorio.com solo contesta
    con www y eso rompió las capturas del showcase. El dominio que no sea el
    principal redirige al que sí.
+9. **Se mide, no se mira.** El contraste, el peso de un video y el tamaño
+   real de un icono se comprueban con un número. Casos reales: un amarillo
+   que "se veía bien" daba 3,09:1 sobre blanco (el mínimo legible es 4,5:1);
+   un icono perfecto a 72px era una mancha a los 27px a los que de verdad se
+   muestra. Y al poner cualquier textura de fondo, recalcular el texto que
+   cae encima contra el píxel del trazo, no contra la variable.
+10. **El comentario no es prueba; la captura sí.** Ya pasó: un CSS decía que
+    estaba "concentrando" los colores de la marca mientras hacía lo
+    contrario. Todo criterio de diseño se confirma mirando el render.
+11. **La tipografía equilibra la marca, no la repite.** Usar la fuente del
+    logo en todos los titulares costó una versión entera de un sitio. Logo
+    alegre → tipografía seria; el registro juguetón se queda en el logo.
+12. **Manda lo que alguien recordaría del logo al día siguiente** — casi
+    nunca es el texto ni el color más grande del archivo. Y el color de
+    acción es UNO: si también pinta enlaces e iconos, deja de señalar.
+13. **El material real manda sobre la plantilla.** Mirar todas las fotos y
+    videos del cliente ANTES de componer, y preguntar cuál es la prueba de
+    lo que hace el negocio: esa va primero y grande. Elegir el clip que cabe
+    en el hueco costó una portada que no decía nada. Y al cambiar una
+    imagen, cambiar el texto que la acompaña y su `alt`.
+14. **Una sola serie de espaciado.** Cuando el cliente dice que algo se ve
+    "rústico" y no sabe señalar qué, casi siempre es esto: doce huecos
+    inventados uno por uno, ninguno relacionado. Una serie (4/8/12/16/24/
+    32/48/64/96) repartida por jerarquía: el hueco crece con la importancia
+    del corte.
+15. **En el schema, quien construyó el sitio va en `creator`, no en
+    `sameAs`.** `sameAs` es para otras páginas del MISMO negocio (su
+    Instagram, su Google); meter ahí al hermano o a Judo es una afirmación
+    falsa.
 
 ---
 
@@ -138,7 +167,18 @@ principal alcanzable sin hacer zoom.
 
 ---
 
-## 5. Checklist antes de entregar
+## 5. El cerebro profundo del kit
+
+Las sesiones del kit de construcción llevan su propia memoria en
+`kit/cerebro/` (rama `claude/kit-cerebro` hasta que se una): `METODO.md` (el
+orden de las decisiones de diseño), `MODERNO.md` (técnicas actuales con su
+código y sus trampas), `VERIFICACION.md` (los scripts de comprobación),
+`ERRORES.md` (los errores cometidos de verdad, con lo que costó cada uno) y
+`PROMPTS.md`. Este archivo cura lo general; el detalle técnico vive allá.
+
+---
+
+## 6. Checklist antes de entregar
 
 - [ ] Metadata y OpenGraph en los dos idiomas; JSON-LD del rubro.
 - [ ] Favicon y `<title>` con oficio (marca + qué hace + dónde).

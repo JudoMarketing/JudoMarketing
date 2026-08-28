@@ -10,8 +10,10 @@ export default function AdminPage({
   const { locale } = use(params);
   setRequestLocale(locale);
 
+  // Piso sereno: sin glow ni líneas. Aquí se trabaja un buen rato y el
+  // fondo tiene que quedarse quieto debajo de las tarjetas.
   return (
-    <div className="judo-glow min-h-[70vh]">
+    <div className="min-h-[70vh] bg-judo-black">
       <AdminPortal />
     </div>
   );

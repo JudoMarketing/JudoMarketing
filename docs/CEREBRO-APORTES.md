@@ -208,3 +208,12 @@ su proveedor: el crédito es de la casa, no de la tecnología. (3) No finge
 ser humano; si le preguntan si es un bot, lo dice. Además de ser lo honesto,
 varios países ya lo exigen por ley. Y conviene un interruptor por cliente:
 siempre habrá uno que quiera marca blanca.
+
+---
+### 2026-08-30 · Curación (JudoMarketing) · —
+**Qué se curó:** los aportes de las ramas `claude/kit-cerebro` (se mide no se
+mira; el comentario no es prueba; la tipografía equilibra; un solo color de
+acción; el material real manda; la serie de espaciado) y
+`claude/footer-dos-sitios-1ctrw3` (creator vs sameAs en el schema) pasaron a
+CEREBRO.md como reglas 9-15, y kit/cerebro quedó referenciado como el cerebro
+profundo del kit.
