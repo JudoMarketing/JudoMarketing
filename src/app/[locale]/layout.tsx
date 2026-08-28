@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { precioDesde } from "@/lib/pricing";
-import { Poppins } from "next/font/google";
+import { Poppins, Inter } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -16,10 +16,23 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import "../globals.css";
 
+/**
+ * Dos tipografías con papeles claros, la regla de la casa (docs/CEREBRO.md).
+ * El sitio venía con Poppins haciendo todo: es una geométrica de display, y
+ * en párrafos, etiquetas y tablas se lee ancha y rebotada. Poppins se queda
+ * donde brilla —titulares y cifras grandes— e Inter, que está dibujada para
+ * pantalla, toma el cuerpo y la interfaz.
+ */
 const poppins = Poppins({
-  weight: ["400", "500", "600", "700"],
+  weight: ["600", "700"],
   subsets: ["latin"],
   variable: "--font-poppins",
+});
+
+const inter = Inter({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export function generateStaticParams() {
@@ -79,7 +92,7 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} className={poppins.variable}>
+    <html lang={locale} className={`${poppins.variable} ${inter.variable}`}>
       <body className="min-h-screen antialiased">
         <JsonLd locale={locale} />
         <ChunkGuard />

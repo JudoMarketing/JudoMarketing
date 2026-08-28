@@ -206,7 +206,7 @@ export default function HomePage({
                 <h3 className="mt-1 text-2xl font-bold">
                   {t(`plans.${servicio.id}.name`)}
                 </h3>
-                <p className="mt-1 text-lg font-bold" style={{ color: "var(--svc-luz)" }}>
+                <p className="display-num mt-1 text-lg font-bold" style={{ color: "var(--svc-luz)" }}>
                   {servicio.id === "websites"
                     ? `${t("plans.from")} ${precioDesde()}${t("plans.perMonth")}`
                     : t(`plans.${servicio.id}.price`)}

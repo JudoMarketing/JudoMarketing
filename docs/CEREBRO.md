@@ -57,9 +57,15 @@ variable — así se lee como sistema y no como decisiones sueltas (patrón
 
 **Dos tipografías, con papeles claros.** Una display con carácter para
 titulares + una sans tranquila para el cuerpo: Anton + Inter (Pachy), Domine
-(ART), Poppins (Judo). Máximo una tercera como acento manuscrito y solo si el
-rubro lo pide (Caveat en Pachy para el "ahora en tu casa"). Tres familias
-trabajando es el tope; cuatro es ruido.
+(ART), Poppins + Inter (Judo). Máximo una tercera como acento manuscrito y
+solo si el rubro lo pide (Caveat en Pachy para el "ahora en tu casa"). Tres
+familias trabajando es el tope; cuatro es ruido.
+
+Y la display se queda ARRIBA. Una geométrica puesta a hacer de cuerpo se lee
+ancha y rebotada en párrafos, etiquetas y tablas — el propio judomarketing.net
+tuvo a Poppins haciendo las dos cosas hasta que se separaron los papeles. Al
+ponerla en grande, tracking negativo: al espaciado por defecto se ve suelta,
+con huecos entre letras que no están en el diseño de la fuente.
 
 **El kicker encima del titular: lugar + prueba + velocidad.** En mayúsculas
 pequeñas: "SOUTHWEST FLORIDA · FREE ESTIMATES · WE ANSWER FAST",

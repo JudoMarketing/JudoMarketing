@@ -11,7 +11,10 @@
   --color-judo-surface: #1b1928;
   --color-judo-fog: #f5f5f7;
 
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  /* Cuerpo e interfaz: Inter, dibujada para pantalla */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Titulares y cifras grandes: Poppins, la de la marca */
+  --font-display: var(--font-poppins), var(--font-inter), ui-sans-serif, sans-serif;
 }
 
 html {
@@ -22,6 +25,34 @@ body {
   background-color: var(--color-judo-black);
   color: var(--color-judo-fog);
   font-family: var(--font-sans);
+  /* Inter respira mejor con algo más de interlínea en párrafos */
+  line-height: 1.6;
+}
+
+/* ── Los titulares son de Poppins ───────────────────────────────────────
+   Y llevan tracking negativo: una geométrica puesta en grande al espaciado
+   por defecto se ve suelta, con huecos entre letras que no están en el
+   diseño de la fuente. Cuanto más grande, más se cierra. */
+h1,
+h2,
+h3,
+h4,
+.display {
+  font-family: var(--font-display);
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+}
+
+h1,
+.display-xl {
+  letter-spacing: -0.032em;
+}
+
+/* Las cifras grandes (precios) son titular, no texto */
+.display-num {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Fondo con glow morado ─────────────────────────────────────────── */

@@ -132,7 +132,7 @@ export default function ServicesPage({
                     <span className="align-top text-sm text-judo-fog/50">
                       {t("from")}{" "}
                     </span>
-                    <span className="text-5xl font-bold">{precioTexto(plan)}</span>
+                    <span className="display-num text-5xl font-bold">{precioTexto(plan)}</span>
                     <span style={{ color: "var(--svc-luz)" }}>{t("perMonth")}</span>
                   </p>
                   <ul className="mt-6 flex-1 space-y-2.5">
@@ -185,7 +185,7 @@ export default function ServicesPage({
               <div>
                 <ArteAds className="mx-auto w-full max-w-md" />
                 <div className="mt-6 rounded-2xl border border-judo-lilac/15 bg-judo-black/40 p-6 text-center">
-                  <p className="text-5xl font-bold">
+                  <p className="display-num text-5xl font-bold">
                     ${PRECIO_JUDITOADS}
                     <span className="text-2xl" style={{ color: "var(--svc-luz)" }}>
                       {t("perMonth")}
@@ -221,7 +221,7 @@ export default function ServicesPage({
               <div className="order-2 lg:order-1">
                 <ArteAi className="mx-auto w-full max-w-md" />
                 <div className="mt-6 rounded-2xl border border-judo-lilac/15 bg-judo-black/40 p-6 text-center">
-                  <p className="text-5xl font-bold">
+                  <p className="display-num text-5xl font-bold">
                     ${PRECIO_ASISTENTE}
                     <span className="text-2xl" style={{ color: "var(--svc-luz)" }}>
                       {t("perMonth")}
