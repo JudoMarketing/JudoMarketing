@@ -164,3 +164,47 @@ da error, se degrada en silencio. Next trae sus propios docs dentro de cada
 proyecto en `node_modules/next/dist/docs/` — conviene leerlos antes de asumir.
 **Evidencia:** el build del starter falló con TS2353 por la clave `eslint`,
 que en Next 15 era correcta.
+
+---
+### 2026-08-28 · Juditos · asistentes de IA
+**Qué aprendimos:** en un bot con cola de trabajos, las notas internas del
+sistema no pueden guardarse como un mensaje más de la conversación. El motor
+decide si contestar mirando "¿el último mensaje es del contacto?"; si al
+fallar se guarda una nota de error como último mensaje, la respuesta a esa
+pregunta pasa a ser "no" y **todos los reintentos se saltan en silencio, para
+siempre**. El trabajo queda marcado como hecho y el cliente nunca recibe
+respuesta. La cura: filtrar las notas internas antes de esa comprobación.
+**Evidencia:** el primer intento fallaba y se reprogramaba bien, pero el
+segundo terminaba como DONE con el error todavía puesto. Con el filtro, los
+tres intentos se agotan como debe ser y el fallo sale a la luz.
+
+---
+### 2026-08-28 · Juditos · asistentes de IA
+**Qué aprendimos:** el modelo nunca es la fuente de verdad del dinero ni de
+los hechos. La herramienta que registra un pedido ignora el precio que diga
+el bot y lo saca del catálogo; la que agenda una cita comprueba el solape en
+la base de datos antes de aceptar. Un modelo puede regalar un descuento o
+prometer un hueco ocupado con toda la seguridad del mundo, y el cliente lo
+va a exigir. Que la validación viva en la herramienta y no en el prompt: al
+prompt se le puede dar la vuelta hablando, a un `SELECT` no.
+
+---
+### 2026-08-28 · Juditos · asistentes de IA
+**Qué aprendimos:** en el prompt cacheado no puede entrar nada que cambie
+entre mensajes —la fecha, la hora, el nombre del contacto—. La caché de
+Anthropic funciona por prefijo exacto: un byte distinto invalida todo lo que
+viene detrás y se paga el prompt entero otra vez, en cada mensaje. Lo estable
+(negocio, tono, reglas, catálogo) va en el `system`; lo variable va en el
+mensaje del usuario. Se comprueba mirando `cache_read_input_tokens`: si sale
+cero mensaje tras mensaje, algo variable se coló en el prefijo.
+
+---
+### 2026-08-28 · Juditos · asistentes de IA
+**Qué aprendimos:** el bot de un cliente es una vía de captación si se le
+dan tres reglas, y un problema si no. (1) Dice quién lo construyó **solo si
+le preguntan** — meterlo en saludos y despedidas convierte el servicio del
+cliente en publicidad nuestra y molesta. (2) No habla nunca del modelo ni de
+su proveedor: el crédito es de la casa, no de la tecnología. (3) No finge
+ser humano; si le preguntan si es un bot, lo dice. Además de ser lo honesto,
+varios países ya lo exigen por ley. Y conviene un interruptor por cliente:
+siempre habrá uno que quiera marca blanca.
