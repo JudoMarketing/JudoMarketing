@@ -24,7 +24,9 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 > `git ls-remote --heads origin`.
 
 La paleta y los logos de la marca Judo Marketing en sí están en `BRAND.md`;
-esto es lo otro: cómo se diseña un sitio **para un cliente**.
+esto es lo otro: cómo se diseña un sitio **para un cliente**. Y si la duda es
+en qué chat se pide un cambio cuando algo se ve en un sitio pero los datos
+vienen de otro, eso está en `QUIEN-HACE-QUE.md`.
 
 ---
 
