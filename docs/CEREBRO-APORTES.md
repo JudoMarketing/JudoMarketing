@@ -238,3 +238,32 @@ subsección «Asistentes de IA» dentro de las reglas de construcción: el model
 no es fuente de verdad (la validación vive en la herramienta, no en el
 prompt), las notas internas fuera de la conversación, nada variable en el
 prefijo cacheado, y las tres reglas del bot como vía de captación.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando dos apps de la casa se hablan por HTTP, una puede
+estar completa y la otra no haber implementado su mitad. Next responde 405 al
+método que falta, y en pantalla eso se ve igual que un botón roto. Al montar
+un puente entre apps hay que probar el viaje ENTERO, no cada lado por su
+cuenta — y el lado que llama debe distinguir «me dijeron que no» de «no me
+contestaron», porque son problemas distintos.
+**Evidencia:** el admin de judomarketing.net llevaba tiempo con los botones
+de suspender y eliminar cuentas de JuditoADS. El puente estaba bien hecho y
+hasta preveía el caso; lo que faltaba era el `POST` del otro lado. Cada clic
+salía 405 y parecía un fallo del portal.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** al dar de baja algo que mueve dinero, el orden es la
+función: primero se corta el gasto (anuncios, cobros) y solo después se toca
+el registro. Y si el gasto no se puede cortar, la baja se NIEGA y dice por
+qué. Una baja a medias deja anuncios corriendo sin dueño y cobros a un
+cliente que ya no existe en el sistema — y nadie se entera hasta ver la
+factura. Además, baja lógica antes que borrado físico: el historial de
+facturación no se puede recuperar.
+**Evidencia:** al implementar «eliminar cuenta» en JuditoADS, el caso que
+más valor tiene es el que se niega: si Meta no acepta pausar las campañas
+(token caducado, por ejemplo), no se borra nada y se le dice a
+Administración qué campaña parar a mano.
