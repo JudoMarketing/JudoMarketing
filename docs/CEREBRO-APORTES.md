@@ -197,3 +197,349 @@ cumplir la regla de tres — meter un cuarto servicio deja de ser un descuido y
 pasa a ser una decisión que hay que escribir.
 **Evidencia:** con esto, olvidar una cadena al traducir dejó de ser algo que
 descubre el cliente en producción y pasó a ser un error de compilación.
+
+---
+### 2026-08-28 · Juditos · asistentes de IA
+**Qué aprendimos:** en el prompt cacheado no puede entrar nada que cambie
+entre mensajes —la fecha, la hora, el nombre del contacto—. La caché de
+Anthropic funciona por prefijo exacto: un byte distinto invalida todo lo que
+viene detrás y se paga el prompt entero otra vez, en cada mensaje. Lo estable
+(negocio, tono, reglas, catálogo) va en el `system`; lo variable va en el
+mensaje del usuario. Se comprueba mirando `cache_read_input_tokens`: si sale
+cero mensaje tras mensaje, algo variable se coló en el prefijo.
+
+---
+### 2026-08-28 · Juditos · asistentes de IA
+**Qué aprendimos:** el bot de un cliente es una vía de captación si se le
+dan tres reglas, y un problema si no. (1) Dice quién lo construyó **solo si
+le preguntan** — meterlo en saludos y despedidas convierte el servicio del
+cliente en publicidad nuestra y molesta. (2) No habla nunca del modelo ni de
+su proveedor: el crédito es de la casa, no de la tecnología. (3) No finge
+ser humano; si le preguntan si es un bot, lo dice. Además de ser lo honesto,
+varios países ya lo exigen por ley. Y conviene un interruptor por cliente:
+siempre habrá uno que quiera marca blanca.
+
+---
+### 2026-08-30 · Curación (JudoMarketing) · —
+**Qué se curó:** los aportes de las ramas `claude/kit-cerebro` (se mide no se
+mira; el comentario no es prueba; la tipografía equilibra; un solo color de
+acción; el material real manda; la serie de espaciado) y
+`claude/footer-dos-sitios-1ctrw3` (creator vs sameAs en el schema) pasaron a
+CEREBRO.md como reglas 9-15, y kit/cerebro quedó referenciado como el cerebro
+profundo del kit.
+
+---
+### 2026-08-30 · Curación 2 (JudoMarketing) · —
+**Qué se curó:** los seis aportes de Judito-Ads y los cuatro de JuditoWEBS
+pasaron a CEREBRO.md como sección 3, «Reglas de construcción», ordenados
+alrededor del patrón que comparten: lo que falla en silencio. Dos entradas
+nuevas al checklist de entrega. Y se corrigió la instrucción de push que
+apuntaba al fantasma `master` — el hallazgo de JuditoWEBS afectaba al prompt
+que llevan todos los proyectos.
+
+---
+### 2026-08-30 · Curación 3 (JudoMarketing) · —
+**Qué se curó:** los cuatro aportes de Juditos entran a CEREBRO.md como
+subsección «Asistentes de IA» dentro de las reglas de construcción: el modelo
+no es fuente de verdad (la validación vive en la herramienta, no en el
+prompt), las notas internas fuera de la conversación, nada variable en el
+prefijo cacheado, y las tres reglas del bot como vía de captación.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando dos apps de la casa se hablan por HTTP, una puede
+estar completa y la otra no haber implementado su mitad. Next responde 405 al
+método que falta, y en pantalla eso se ve igual que un botón roto. Al montar
+un puente entre apps hay que probar el viaje ENTERO, no cada lado por su
+cuenta — y el lado que llama debe distinguir «me dijeron que no» de «no me
+contestaron», porque son problemas distintos.
+**Evidencia:** el admin de judomarketing.net llevaba tiempo con los botones
+de suspender y eliminar cuentas de JuditoADS. El puente estaba bien hecho y
+hasta preveía el caso; lo que faltaba era el `POST` del otro lado. Cada clic
+salía 405 y parecía un fallo del portal.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** al dar de baja algo que mueve dinero, el orden es la
+función: primero se corta el gasto (anuncios, cobros) y solo después se toca
+el registro. Y si el gasto no se puede cortar, la baja se NIEGA y dice por
+qué. Una baja a medias deja anuncios corriendo sin dueño y cobros a un
+cliente que ya no existe en el sistema — y nadie se entera hasta ver la
+factura. Además, baja lógica antes que borrado físico: el historial de
+facturación no se puede recuperar.
+**Evidencia:** al implementar «eliminar cuenta» en JuditoADS, el caso que
+más valor tiene es el que se niega: si Meta no acepta pausar las campañas
+(token caducado, por ejemplo), no se borra nada y se le dice a
+Administración qué campaña parar a mano.
+
+---
+### 2026-08-30 · Curación 4 (JudoMarketing) · —
+**Qué se curó:** los dos aportes nuevos de Judito-Ads entran a las reglas de
+construcción: el puente entre apps se prueba entero (y quien llama distingue
+«me dijeron que no» de «no me contestaron»), y el orden de una baja que mueve
+dinero — primero cortar el gasto, y si no se puede, negar la baja. Con esto
+Judito-Ads ya implementó el POST que faltaba, así que los botones de suspender
+y eliminar del portal dejan de dar 405.
+
+---
+### 2026-08-28 · Juditos · infraestructura
+**Qué aprendimos:** montar una app hermana bajo judomarketing.net con un
+rewrite tiene dos trampas que no salen en el build. La primera: los rewrites
+de Next se **hornean en el build**, no se leen al arrancar — poner la URL en
+las variables y reiniciar no hace nada, hay que volver a desplegar. La
+segunda, peor: el middleware de idiomas de next-intl se traga la ruta y la
+redirige a `/es/loquesea`, así que la app nunca carga. Cada app montada tiene
+que estar excluida **en los dos sitios**: en el rewrite de `next.config.ts` y
+en el `matcher` de `src/middleware.ts`.
+**Evidencia:** con `JUDITOS_URL` puesta al arrancar, `/juditos` seguía dando
+el 404 del sitio principal; solo apareció en `routes-manifest.json` tras
+reconstruir. Y la exclusión del middleware ya estaba escrita para
+`juditoads` desde antes — alguien pagó ese precio primero.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** comprobar una web «pidiendo las páginas de verdad» solo
+vale si el servidor está sirviendo la compilación que acabas de hacer.
+Reconstruir por debajo de un servidor ya arrancado no lo actualiza: sigue con
+los trozos viejos, el navegador recibe una mezcla y pinta «Application error»
+en pantallas que están perfectas. Es peor que no comprobar nada, porque manda
+a cazar un fallo que no existe. Se mata el servidor y se arranca de nuevo
+DESPUÉS de compilar. Y se comprueba que murió mirando el proceso, no el
+puerto: aquí la herramienta del puerto no enseñó nada mientras el servidor
+seguía vivo, y el segundo arranque falló en silencio con «address already in
+use» dentro de su log.
+**Evidencia:** 22 comprobaciones en rojo de golpe, con errores de hidratación
+de React en pantallas que ni se habían tocado. No había ningún fallo: el
+proceso que respondía llevaba tres minutos vivo con la compilación anterior.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando a una cuenta se le perdona el cobro (la del dueño,
+una de demostración, la de un socio), la excepción tiene que ser SOLO de
+dinero. Si se cuela en el permiso de entrar, esa cuenta deja de poder
+suspenderse o darse de baja para siempre, y nadie lo nota hasta el día que
+hace falta cerrarla. La regla que funciona: la excepción de cobro se salta lo
+que pone la facturación (prueba vencida, pago fallido, cancelada) y NO se
+salta lo que puso una persona a propósito (suspendida, dada de baja).
+**Evidencia:** al dejar entrar gratis la cuenta del dueño, la primera versión
+devolvía «sí» antes de mirar nada más. Con eso, un «suspender» desde el panel
+de Administración se habría guardado en la base sin efecto ninguno: la cuenta
+habría seguido entrando como si nada.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un error que se repite casi nunca es un error nuevo: es
+el mismo de siempre, que nadie pudo identificar porque por el camino se le
+cayó el dato que lo identifica. Cuando se envuelve un fallo ajeno, hay que
+conservar SU código —no solo el texto—, y anotarlo antes de traducirlo a la
+frase amable que ve el cliente. Y hay que separar tres cosas que se mezclan
+en un solo «no se pudo»: lo que se arregla solo si se reintenta (un 500, un
+límite de tasa), lo que arregla el cliente (un permiso), y lo que es culpa
+nuestra. Con esa separación, una parte de los errores deja de existir sin
+que nadie los vea, y la otra ya se puede buscar.
+**Evidencia:** el selector de publicaciones traducía CUALQUIER fallo a
+«no pudimos comunicarnos con Meta», sin registrar nada. Cuando el cliente
+decía «me sale un error» no había absolutamente nada que mirar. La causa
+más probable resultó ser lentitud —la llamada tardaba más que el tope de 8 s
+en páginas con historia— y llevaba meses saliendo como error.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** `class MiError extends Error` con el `target` de
+TypeScript sin fijar (o sea ES5) rompe la cadena de prototipos: el objeto
+conserva todos sus campos y aun así `e instanceof MiError` da FALSO sobre el
+mismísimo objeto que se acaba de lanzar. Es de los fallos más difíciles de
+ver que existen, porque el dato está ahí delante y el `if` no entra: el
+error se cae a la rama genérica y el usuario recibe el mensaje equivocado.
+Toda clase de error propia lleva `Object.setPrototypeOf(this, X.prototype)`
+en el constructor, y las decisiones importantes se toman con un guardia
+propio (una marca, `X.es(e)`), no con `instanceof`.
+**Evidencia:** salió en una prueba, no en producción: el aviso «reconecta tu
+Facebook» podía degradarse a «no pudimos comunicarnos con Meta» sin que
+nada fallara visiblemente. Estaba en las tres clases de error del proyecto.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** para saber qué arreglar primero no sirve un registro
+línea a línea —a miles de usuarios son millones de filas que nadie lee— ni
+sirve el orden de las quejas. Sirve un contador agrupado por (usuario, área,
+tipo de fallo) y una lista ordenada por CLIENTES AFECTADOS, no por número de
+veces: uno que reintenta cuarenta veces hace mucho ruido, pero un fallo que
+toca a trescientos una vez cada uno es mucho más grave. Y la clave de
+agrupación nunca lleva el texto del error, que el proveedor reescribe y
+partiría el mismo fallo en diez.
+**Evidencia:** con eso, «veo muchos errores repetidos» pasó de ser una
+sensación a una lista de la que se puede sacar el primero y arreglarlo.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un «✅ listo» encima de una pantalla vacía es peor que un
+error: le confirma a la persona que todo salió bien y a la vez no le da nada
+con que seguir, así que se queda esperando algo que no va a pasar. Cuando un
+proceso depende de requisitos que el usuario no controla ni conoce, hay que
+enseñarle la lista de requisitos con el estado de cada uno y el arreglo al
+lado — y el «listo» solo aparece si de verdad puede continuar. Y cuando no
+se puede saber desde el código si le falta algo, se le PREGUNTA en vez de
+adivinar: él es el único que sabe si lo que no vemos existe.
+**Evidencia:** quien conectaba Facebook sin cuenta publicitaria veía
+«✅ cuenta conectada» y una lista vacía. Mucha gente tiene su cuenta de
+negocio pero sin compartir con su perfil personal: jura que la tiene, y la
+tiene, solo que el sistema no la ve. Preguntar «¿está aquí tu cuenta?»
+resuelve en un clic lo que ninguna comprobación automática podía decidir.
+### 2026-08-28 · Juditos · infraestructura
+**Qué aprendimos:** Vercel no ejecuta procesos que corren sin parar, así que
+cualquier app nuestra con una cola de trabajos se despliega rota en silencio:
+recibe y no procesa. La forma que funciona son dos caminos sobre el mismo
+código: el webhook responde al que llama y **sigue trabajando con
+`waitUntil()`** con la función viva, y un cron cada minuto recoge lo que haya
+quedado. El cron al minuto necesita plan Pro; en Hobby corre una vez al día y
+deja de ser red de seguridad.
+**Evidencia:** el portal encolaba los mensajes y ninguno se contestaba,
+porque `npm run worker` simplemente no existe allí.
+
+---
+### 2026-08-28 · Juditos · infraestructura
+**Qué aprendimos:** un despliegue puede fallar por pedir credenciales que no
+necesita. `prisma generate` solo lee el schema, pero exigía DATABASE_URL y
+tumbaba el build; y el cliente de base de datos, si se construye al importar
+el módulo, hace que el análisis de rutas de `next build` también las pida.
+La regla: **construir no debería necesitar acceso a la base de datos**.
+Cliente perezoso (se crea en el primer uso) y config que lea las variables
+con `process.env` en vez de con helpers que lanzan si faltan.
+**Evidencia:** cinco despliegues seguidos en Error, todos en `npm install`,
+antes de que nadie mirara los logs.
+
+---
+### 2026-08-28 · Juditos · infraestructura
+**Qué aprendimos:** una variable de entorno **declarada pero vacía** no es lo
+mismo que ausente, y rompe distinto. Los paneles se llenan de marcadores
+vacíos que alguien dejó preparados; si el código valida tipos, un `""` donde
+se espera un número tumba la app entera con "Invalid input" y el motivo solo
+aparece en los logs de ejecución, no en el build. Conviene tratar la cadena
+vacía como ausente antes de validar, para que el valor por defecto entre.
+**Evidencia:** `WORKER_POLL_MS=""` devolvía 500 en todas las rutas de la app.
+
+---
+### 2026-08-28 · Juditos · precio de un producto con IA
+**Qué aprendimos:** el precio de un servicio con IA hay que **medirlo antes de
+publicarlo**, y el modelo que se elige es la diferencia entre ganar y perder.
+Con 3 bots y 2.000 mensajes al mes: Opus cuesta $40,70, Sonnet $16,28 y Haiku
+$8,14. Sobre un plan de $20, Opus pierde el doble de lo que cobra. Bajar de
+modelo no es recortar calidad **si la arquitectura no le pide al modelo que
+recuerde datos**: precios, stock y huecos de agenda se validan contra la base
+dentro de las herramientas, así que al modelo solo se le pide conversar bien.
+**Evidencia:** el plan iba a salir a $20 con Opus por 2.000 mensajes; el
+cálculo con los precios reales lo paró antes de escribirlo en la web.
+
+---
+### 2026-08-28 · Juditos · precio de un producto con IA
+**Qué aprendimos:** el gasto que no se ve en un bot no son los mensajes, es
+**mantener su "cerebro" caliente en la caché**. Se paga aunque no escriba
+nadie, y se multiplica por cada bot. Con TTL de una hora la escritura cuesta
+**2× el precio de entrada** (con 5 minutos, 1,25×), y eso hay que meterlo en
+la cuenta: tres cerebros de 4.000 tokens costaban $8,64 al mes solo en
+mantenerse vivos. Cada lectura renueva la vida de la caché, así que el TTL
+largo sale a cuenta con tráfico seguido y sale caro con tráfico goteando.
+**Evidencia:** el primer cálculo del margen se hizo con 1,25× y daba 67%; con
+el multiplicador correcto bajaba a 59%, y en Opus pasaba de "justo" a
+"pierdes dinero".
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** al arreglar un patrón hay que barrer TODOS los sitios
+donde vive, no el primero que duele. Si el mismo trabajo está hecho dos
+veces en dos archivos —un ayudante para leer y otro para escribir, una
+utilidad copiada entre módulos—, arreglar uno deja el otro roto y encima da
+la sensación de estar resuelto, que es lo peor de todo: nadie vuelve a
+mirarlo. Después de tocar algo así, `grep` por la función, por el nombre y
+por el patrón, y se arreglan todos en el mismo cambio.
+**Evidencia:** se arregló que los errores de Meta conservaran su código en
+las llamadas de LECTURA y se quedaron sin arreglar las de ESCRITURA, que
+viven en otro archivo con su propio ayudante. O sea que justo el camino que
+más se rompía —publicar y promocionar publicaciones— siguió lanzando
+errores ciegos un día más, y con la sensación de estar ya resuelto.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un camino sin pruebas no se rompe una vez, se rompe
+tres. Cada arreglo se hace a ciegas encima de lo que tocó el anterior, y
+como no hay nada que fije lo que el proveedor acepta, el arreglo de hoy
+reintroduce el fallo de la semana pasada. La regla que funciona: cuando un
+mismo flujo falla por segunda vez, lo primero no es arreglarlo — es
+escribirle la prueba, con el proveedor simulado y con los errores REALES
+metidos dentro, con su texto y su número. Cuesta una hora y evita la
+tercera.
+**Evidencia:** el flujo de promocionar una publicación se rompió tres veces
+en producción sin tener una sola prueba. Al escribirla por fin, encontró un
+fallo nuevo en la primera ejecución — uno que ya estaba desplegado y que
+nadie había notado.
+
+---
+
+### 2026-08-28 · Juditos · cuentas compartidas entre productos
+**Qué aprendimos:** cuando dos productos de la casa tienen que compartir
+cuenta, la respuesta NO es copiar la tabla de usuarios en las dos bases. Dos
+copias de una contraseña son dos sitios que se pueden filtrar y dos
+registros que se desincronizan el día que alguien cambia su correo. Lo que
+funciona: uno de los dos es el dueño de la identidad (el que cobra y donde
+la gente se registra) y el otro le pregunta. Si comparten dominio, la cookie
+de sesión llega sola de un lado al otro, así que basta un endpoint que
+devuelva "de quién es esta cookie" a quien la traiga. Sin secreto compartido:
+la cookie ES la credencial, y ese endpoint solo devuelve los datos de quien
+la trae.
+**Evidencia:** Juditos tenía su propia tabla de usuarios y su propio login.
+El dueño intentaba entrar con su cuenta de Judito Ads y le decía que no
+existía. No era un fallo de contraseña, eran dos registros distintos y solo
+uno tenía usuarios de verdad.
+
+---
+
+### 2026-08-28 · Juditos · multi-zona con basePath
+**Qué aprendimos:** en un sitio partido en zonas (`/`, `/juditoads`,
+`/juditos`), un `redirect("/otra-zona")` desde dentro de una zona sale con
+el prefijo de esa zona pegado delante: desde Juditos, `/juditoads/login` se
+convierte en `/juditos/juditoads/login`. Todo salto entre zonas tiene que ir
+con dirección completa, y el host hay que sacarlo de `x-forwarded-host`: la
+petición llega reenviada al despliegue de Vercel, y el host que se ve desde
+dentro no es el que ve la persona.
+**Evidencia:** el middleware de Judito Ads guardaba el destino sin el
+prefijo, así que quien entraba a `/juditoads/app` sin sesión acababa después
+del login en `judomarketing.net/app`, que no existe.
+
+---
+
+### 2026-08-28 · Juditos · middleware de Next
+**Qué aprendimos:** `NextResponse` construye una URL con lo que haya en la
+cabecera `Location`, y una ruta relativa no es una URL válida. No falla la
+redirección: falla el middleware entero, con
+`MIDDLEWARE_INVOCATION_FAILED` y un 500 antes de llegar a ninguna página. Si
+hace falta redirigir, siempre dirección completa.
+**Evidencia:** se cambió a Location relativo justamente para no sacar a
+nadie del dominio, y el portal entero devolvió 500 a todo el que entrara sin
+sesión. El error solo aparece en los logs de ejecución, con un
+`TypeError: Invalid URL` sin ninguna pista de dónde.
+
+---
+
+### 2026-08-28 · Juditos · dos portales que se rebotan
+**Qué aprendimos:** cuando el portal A manda al acceso de B y B devuelve a
+A, si A no reconoce la sesión el navegador se queda rebotando entre los dos
+para siempre, con la pantalla en blanco. Hace falta un sitio donde parar: una
+ruta que reparta (mira quién eres y te manda a tu portal) con una marca de
+"ya vengo de vuelta". Si al volver sigue sin reconocerte, no redirige otra
+vez: lo dice y ofrece reintentar. Cuesta veinte líneas y convierte una caída
+del otro servicio en un mensaje en vez de un cuelgue.
+**Evidencia:** lo mismo hace falta para quien tiene cuenta pero no ha
+contratado el producto: si la página protegida le echa al login y el login le
+devuelve a la página protegida, el bucle es el mismo. Ahí el reparto le lleva
+a "todavía no tienes esto, actívalo", que es la respuesta correcta.
