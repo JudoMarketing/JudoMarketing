@@ -9,7 +9,12 @@ Gerald Market.
 **Cómo se usa:** al empezar un website nuevo (en su propio chat), leer este
 archivo antes de escribir la primera línea. Este repo es público, así que
 cualquier sesión puede leerlo:
-`https://raw.githubusercontent.com/JudoMarketing/JudoMarketing/main/docs/CEREBRO.md`
+`https://raw.githubusercontent.com/JudoMarketing/JudoMarketing/master/docs/CEREBRO.md`
+
+**Cómo se alimenta:** cada proyecto aporta por su cuenta lo que aprende, en
+`CEREBRO-APORTES.md` (ahí está el formato y los pasos). Los aportes se curan
+desde el chat de Judo Marketing y los buenos pasan aquí. Nadie edita este
+archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 La paleta y los logos de la marca Judo Marketing en sí están en `BRAND.md`;
 esto es lo otro: cómo se diseña un sitio **para un cliente**.
