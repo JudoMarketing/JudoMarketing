@@ -445,3 +445,35 @@ largo sale a cuenta con tráfico seguido y sale caro con tráfico goteando.
 **Evidencia:** el primer cálculo del margen se hizo con 1,25× y daba 67%; con
 el multiplicador correcto bajaba a 59%, y en Opus pasaba de "justo" a
 "pierdes dinero".
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** al arreglar un patrón hay que barrer TODOS los sitios
+donde vive, no el primero que duele. Si el mismo trabajo está hecho dos
+veces en dos archivos —un ayudante para leer y otro para escribir, una
+utilidad copiada entre módulos—, arreglar uno deja el otro roto y encima da
+la sensación de estar resuelto, que es lo peor de todo: nadie vuelve a
+mirarlo. Después de tocar algo así, `grep` por la función, por el nombre y
+por el patrón, y se arreglan todos en el mismo cambio.
+**Evidencia:** se arregló que los errores de Meta conservaran su código en
+las llamadas de LECTURA y se quedaron sin arreglar las de ESCRITURA, que
+viven en otro archivo con su propio ayudante. O sea que justo el camino que
+más se rompía —publicar y promocionar publicaciones— siguió lanzando
+errores ciegos un día más, y con la sensación de estar ya resuelto.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un camino sin pruebas no se rompe una vez, se rompe
+tres. Cada arreglo se hace a ciegas encima de lo que tocó el anterior, y
+como no hay nada que fije lo que el proveedor acepta, el arreglo de hoy
+reintroduce el fallo de la semana pasada. La regla que funciona: cuando un
+mismo flujo falla por segunda vez, lo primero no es arreglarlo — es
+escribirle la prueba, con el proveedor simulado y con los errores REALES
+metidos dentro, con su texto y su número. Cuesta una hora y evita la
+tercera.
+**Evidencia:** el flujo de promocionar una publicación se rompió tres veces
+en producción sin tener una sola prueba. Al escribirla por fin, encontró un
+fallo nuevo en la primera ejecución — uno que ya estaba desplegado y que
+nadie había notado.
