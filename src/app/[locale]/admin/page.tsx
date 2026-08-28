@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { use } from "react";
 import AdminPortal from "@/components/AdminPortal";
+import Lanzador from "@/components/Lanzador";
 
 export default function AdminPage({
   params,
@@ -15,6 +16,7 @@ export default function AdminPage({
   return (
     <div className="min-h-[70vh] bg-judo-black">
       <AdminPortal />
+      <Lanzador aqui="judomarketing" />
     </div>
   );
 }
