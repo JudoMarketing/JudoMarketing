@@ -291,3 +291,35 @@ en el `matcher` de `src/middleware.ts`.
 el 404 del sitio principal; solo apareció en `routes-manifest.json` tras
 reconstruir. Y la exclusión del middleware ya estaba escrita para
 `juditoads` desde antes — alguien pagó ese precio primero.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** comprobar una web «pidiendo las páginas de verdad» solo
+vale si el servidor está sirviendo la compilación que acabas de hacer.
+Reconstruir por debajo de un servidor ya arrancado no lo actualiza: sigue con
+los trozos viejos, el navegador recibe una mezcla y pinta «Application error»
+en pantallas que están perfectas. Es peor que no comprobar nada, porque manda
+a cazar un fallo que no existe. Se mata el servidor y se arranca de nuevo
+DESPUÉS de compilar. Y se comprueba que murió mirando el proceso, no el
+puerto: aquí la herramienta del puerto no enseñó nada mientras el servidor
+seguía vivo, y el segundo arranque falló en silencio con «address already in
+use» dentro de su log.
+**Evidencia:** 22 comprobaciones en rojo de golpe, con errores de hidratación
+de React en pantallas que ni se habían tocado. No había ningún fallo: el
+proceso que respondía llevaba tres minutos vivo con la compilación anterior.
+
+---
+
+### 2026-08-28 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando a una cuenta se le perdona el cobro (la del dueño,
+una de demostración, la de un socio), la excepción tiene que ser SOLO de
+dinero. Si se cuela en el permiso de entrar, esa cuenta deja de poder
+suspenderse o darse de baja para siempre, y nadie lo nota hasta el día que
+hace falta cerrarla. La regla que funciona: la excepción de cobro se salta lo
+que pone la facturación (prueba vencida, pago fallido, cancelada) y NO se
+salta lo que puso una persona a propósito (suspendida, dada de baja).
+**Evidencia:** al dejar entrar gratis la cuenta del dueño, la primera versión
+devolvía «sí» antes de mirar nada más. Con eso, un «suspender» desde el panel
+de Administración se habría guardado en la base sin efecto ninguno: la cuenta
+habría seguido entrando como si nada.
