@@ -67,6 +67,20 @@ tuvo a Poppins haciendo las dos cosas hasta que se separaron los papeles. Al
 ponerla en grande, tracking negativo: al espaciado por defecto se ve suelta,
 con huecos entre letras que no están en el diseño de la fuente.
 
+**Lo que se mueve comparte un compás.** Un pulso base y todas las duraciones
+como múltiplos enteros de él: así las piezas vuelven a coincidir cada tantos
+ciclos y se percibe un latido debajo. Con duraciones sueltas —7s, 10s, 40s,
+5s— nada se reencuentra nunca y un montón de cosas moviéndose se lee como
+ruido, no como algo vivo. Es la misma idea que la serie de espaciado: una
+escala, no números inventados uno por uno.
+
+En judomarketing.net el pulso es 2,4s; los flotantes van a ×2, ×3, ×4 y ×16,
+las entradas se escalonan en dieciseisavos (0,15s) y los resplandores laten
+en el pulso base, cada uno en su fase para que una fila no respire como un
+bloque. La curva de los bucles es sinusoidal (`cubic-bezier(.37,0,.63,1)`):
+no se detiene del todo en los extremos, que es lo que separa una respiración
+de un vaivén de máquina.
+
 **El kicker encima del titular: lugar + prueba + velocidad.** En mayúsculas
 pequeñas: "SOUTHWEST FLORIDA · FREE ESTIMATES · WE ANSWER FAST",
 "MIAMI, FLORIDA · SINCE 2008", "CLASES EN ESPAÑOL". Dice de una vez dónde

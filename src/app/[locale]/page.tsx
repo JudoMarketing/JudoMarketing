@@ -96,7 +96,7 @@ export default function HomePage({
 
         <h1
           className="hero-in text-5xl font-bold leading-tight tracking-tight sm:text-7xl"
-          style={{ animationDelay: "0.15s" }}
+          style={{ animationDelay: "calc(var(--tiempo) * 1)" }}
         >
           {t("hero.title")}
           <br />
@@ -106,13 +106,13 @@ export default function HomePage({
         </h1>
         <p
           className="hero-in mt-6 max-w-2xl text-lg text-judo-fog/70"
-          style={{ animationDelay: "0.3s" }}
+          style={{ animationDelay: "calc(var(--tiempo) * 2)" }}
         >
           {t("hero.subtitle")}
         </p>
         <div
           className="hero-in mt-10 flex flex-col gap-4 sm:flex-row"
-          style={{ animationDelay: "0.45s" }}
+          style={{ animationDelay: "calc(var(--tiempo) * 3)" }}
         >
           <Link href="/contact" className="btn-primary">
             {t("hero.ctaPrimary")} →
@@ -125,7 +125,7 @@ export default function HomePage({
         {/* Dos caminos más discretos: ver el trabajo ya hecho, o entrar a
             JuditoADS. JuditoADS va con <a> normal porque es otra app servida
             bajo /juditoads, fuera del enrutado de idiomas de next-intl. */}
-        <div className="hero-in mt-5 flex flex-wrap justify-center gap-3" style={{ animationDelay: "0.6s" }}>
+        <div className="hero-in mt-5 flex flex-wrap justify-center gap-3" style={{ animationDelay: "calc(var(--tiempo) * 4)" }}>
           <Link
             href="/showcase"
             className="inline-flex items-center gap-2 rounded-full border border-judo-lilac/20 bg-white/5 px-6 py-2.5 text-sm text-judo-fog/70 backdrop-blur-sm transition hover:border-judo-lilac/45 hover:bg-white/10 hover:text-judo-fog"
@@ -160,7 +160,7 @@ export default function HomePage({
         </Reveal>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, i) => (
-            <Reveal key={step.title} delay={i * 120}>
+            <Reveal key={step.title} paso={i}>
               <TiltCard className="h-full p-6">
                 <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-judo-purple to-judo-lilac text-lg font-bold text-white shadow-[0_8px_24px_-8px_rgba(123,45,255,0.8)]">
                   {i + 1}
@@ -191,9 +191,13 @@ export default function HomePage({
             const ficha = (
               <div className={`svc ${servicio.clase} svc-card flex h-full flex-col p-7`}>
                 <div className="relative">
+                  {/* Late en el pulso base, cada tarjeta en su fase: las tres
+                      a la vez se leerían como un bloque respirando. */}
                   <div
                     aria-hidden
-                    className="svc-halo pointer-events-none absolute inset-0 opacity-45 blur-xl"
+                    className={`svc-halo late ${
+                      ["", "late-tarde", "late-medio"][i]
+                    } pointer-events-none absolute inset-0 blur-xl`}
                   />
                   <Arte className="relative mx-auto h-28 w-full" />
                 </div>
@@ -231,7 +235,7 @@ export default function HomePage({
               </div>
             );
             return (
-              <Reveal key={servicio.id} delay={i * 120}>
+              <Reveal key={servicio.id} paso={i}>
                 {servicio.externo ? (
                   /* JuditoADS es otra app (/juditoads via rewrite): <a> normal */
                   <a href={servicio.href} className="block h-full">
@@ -262,7 +266,7 @@ export default function HomePage({
         </Reveal>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {reviews.map((review, i) => (
-            <Reveal key={review.name} delay={i * 120}>
+            <Reveal key={review.name} paso={i}>
               <TiltCard className="flex h-full flex-col p-7">
                 <div className="text-judo-lilac" aria-label="5 estrellas">
                   {"★★★★★"}

@@ -11,6 +11,23 @@ import { usePathname } from "@/i18n/navigation";
 
 const COLORS = ["#7b2dff", "#a855f7", "#6d5bff", "#4f6bff", "#8f6dff", "#c084fc"];
 
+/**
+ * El compás, el mismo que el CSS (--pulso en globals.css).
+ *
+ * Antes cada línea nacía cuando le tocaba y viajaba a una velocidad al azar:
+ * el conjunto se leía como estática. Ahora una línea nace en cada tiempo y
+ * tarda un número entero de pulsos en cruzar, así que llegan y se van a
+ * compás. Sigue sin repetirse el patrón —el recorrido y el color son
+ * distintos cada vez— pero se percibe un latido debajo.
+ */
+const PULSO_MS = 2400;
+/** Pulsos que tarda una línea en cruzar la pantalla: 4, 6 u 8. */
+const CRUCES = [4, 6, 8];
+/** Cuadros por segundo del bucle, para pasar de pulsos a velocidad. */
+const CUADROS = 60;
+/** Recorrido total de `head`, de nacer a desvanecerse del todo. */
+const RECORRIDO = 1.3;
+
 type P = { x: number; y: number };
 
 type LightLine = {
@@ -70,7 +87,12 @@ function makeLine(w: number, h: number): LightLine {
     head: 0,
     trail: 0.28 + Math.random() * 0.25,
     // Velocidad reducida 30% (pedido del dueño: movimiento más calmado)
-    speed: (0.0016 + Math.random() * 0.0022) * 0.7,
+    // Cruzar en un número entero de pulsos, no en un tiempo cualquiera:
+    // recorrido dividido entre los cuadros que caben en esos pulsos.
+    speed:
+      RECORRIDO /
+      ((CRUCES[Math.floor(Math.random() * CRUCES.length)] * PULSO_MS * CUADROS) /
+        1000),
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
     width: 1.4 + Math.random() * 1.8,
   };
@@ -104,6 +126,8 @@ export default function LightLines() {
     let lines: LightLine[] = [];
     let raf = 0;
     let running = true;
+    /** Cuándo cayó el último tiempo del compás. */
+    let ultimoTiempo = 0;
 
     const resize = () => {
       w = canvas.clientWidth;
@@ -168,11 +192,17 @@ export default function LightLines() {
         l.head += l.speed * (reduced ? 0 : 1);
         drawLine(l);
       }
-      // Reemplazar las que ya se desvanecieron por patrones nuevos
+      // Las que se desvanecieron esperan al siguiente tiempo para renacer:
+      // es lo que hace que las entradas caigan juntas en vez de gotear.
+      const ahora = performance.now();
+      const enTiempo = ahora - ultimoTiempo >= PULSO_MS / 4;
+      if (enTiempo) ultimoTiempo = ahora;
       lines = lines.map((l) =>
-        l.head - l.trail > 1.3 ? makeLine(w, h) : l
+        l.head - l.trail > 1.3 && enTiempo ? makeLine(w, h) : l
       );
-      while (lines.length < count()) lines.push(makeLine(w, h));
+      if (enTiempo) {
+        while (lines.length < count()) lines.push(makeLine(w, h));
+      }
       raf = requestAnimationFrame(frame);
     };
 

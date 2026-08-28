@@ -63,14 +63,14 @@ export default function ServicesPage({
         <h1 className="hero-in text-4xl font-bold sm:text-6xl">{t("title")}</h1>
         <p
           className="hero-in mx-auto mt-4 max-w-xl text-lg text-judo-fog/70"
-          style={{ animationDelay: "0.2s" }}
+          style={{ animationDelay: "calc(var(--tiempo) * 1)" }}
         >
           {t("subtitle")}
         </p>
 
         <div
           className="hero-in mt-10 grid gap-4 sm:grid-cols-3"
-          style={{ animationDelay: "0.3s" }}
+          style={{ animationDelay: "calc(var(--tiempo) * 2)" }}
         >
           {FAMILIAS.map((f) => (
             <a
@@ -122,7 +122,7 @@ export default function ServicesPage({
           {planes.map((plan, i) => {
             const features = t.raw(`${plan}.features`) as string[];
             return (
-              <Reveal key={plan} delay={i * 110}>
+              <Reveal key={plan} paso={i}>
                 <div className="svc-card flex h-full flex-col p-7">
                   <h3 className="text-lg font-bold">{t(`${plan}.name`)}</h3>
                   <p className="mt-1 text-sm text-judo-fog/60">
@@ -269,7 +269,7 @@ export default function ServicesPage({
         </Reveal>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {diffs.map((diff, i) => (
-            <Reveal key={diff.title} delay={i * 80}>
+            <Reveal key={diff.title} paso={i}>
               <div className="svc svc-card h-full p-5 text-center">
                 <h3
                   className="text-sm font-bold"

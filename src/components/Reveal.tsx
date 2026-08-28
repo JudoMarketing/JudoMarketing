@@ -2,14 +2,22 @@
 
 import { useEffect, useRef } from "react";
 
-/** Aparece suavemente al entrar en pantalla (scroll reveal). */
+/**
+ * Aparece suavemente al entrar en pantalla (scroll reveal).
+ *
+ * El retraso se pide en PASOS del compás, no en milisegundos: `paso={i}` para
+ * escalonar una fila. Cada paso vale un --tiempo (un dieciseisavo del pulso),
+ * así que las entradas caen sobre el mismo latido que el resto del
+ * movimiento. Antes cada pantalla inventaba su escalonado —80, 100, 110,
+ * 120ms— y ninguno se llevaba con otro.
+ */
 export default function Reveal({
   children,
-  delay = 0,
+  paso = 0,
   className = "",
 }: {
   children: React.ReactNode;
-  delay?: number;
+  paso?: number;
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -35,7 +43,11 @@ export default function Reveal({
   }, []);
 
   return (
-    <div ref={ref} className={`reveal ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+    <div
+      ref={ref}
+      className={`reveal ${className}`}
+      style={{ transitionDelay: `calc(var(--tiempo) * ${paso})` }}
+    >
       {children}
     </div>
   );

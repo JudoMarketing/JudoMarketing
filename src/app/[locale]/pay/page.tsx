@@ -39,7 +39,7 @@ export default async function PayPage({
         <div className="rounded-2xl border border-judo-lilac/15 bg-[#0e0e16] p-6 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)] sm:p-8">
           <div className="text-center">
             <h1 className="hero-in text-3xl font-bold sm:text-4xl">{t("title")}</h1>
-            <p className="hero-in mt-3 text-judo-fog/70" style={{ animationDelay: "0.15s" }}>
+            <p className="hero-in mt-3 text-judo-fog/70" style={{ animationDelay: "calc(var(--tiempo) * 1)" }}>
               {t("subtitle")}
             </p>
             <p className="mt-4 inline-block rounded-full border border-judo-lilac/40 bg-judo-surface/70 px-4 py-1.5 text-sm">
