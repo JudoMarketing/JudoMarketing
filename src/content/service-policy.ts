@@ -146,7 +146,20 @@ export const policyContent: Record<
         ],
       },
       {
-        title: "20. Contact",
+        title: "20. Government and Law Enforcement Requests",
+        body: [
+          "Judo Marketing sometimes holds personal information belonging to its clients and to their customers. When a public authority — police, a court, a regulator, or any government body, in the United States or elsewhere — asks for that information, the following procedure applies to every request, without exception.",
+          "1. Legality review. No data is disclosed on the strength of a request alone. Before anything is handed over, Judo Marketing verifies that the request is genuine, that it comes from an authority with jurisdiction, and that it carries the legal instrument the disclosure requires (a subpoena, court order, or warrant, as applicable). A request that arrives by email or phone without a verifiable legal instrument is not honored; verification is sought through the authority's official channels. Where the law requires a warrant, a subpoena is not accepted in its place.",
+          "2. Challenging unlawful requests. If a request appears to lack a legal basis, exceeds the authority's jurisdiction, is overly broad, or conflicts with the law of the country where the data subject resides, Judo Marketing objects and, where warranted, retains counsel to move to quash, narrow, or otherwise oppose it. Judo Marketing does not comply merely because complying is easier or cheaper than objecting.",
+          "3. Data minimization. Only the minimum information the request actually compels is disclosed — never a whole account, a whole database, or a whole client because that is simpler to extract. What is disclosed is limited to the identified individuals, the identified time period, and the identified data categories. If the request is broader than its legal basis supports, Judo Marketing asks that it be narrowed before responding.",
+          "4. Documentation. Every request is recorded in an internal register: date received, requesting authority, legal instrument, data requested, the legality assessment and its reasoning, who was involved in the decision, what was disclosed or refused, and the date of response. The register is retained even when nothing is disclosed.",
+          "Notice to the affected party. Unless prohibited by law or by a court order, Judo Marketing notifies the affected client before disclosing, so the client can seek its own protection. Where notice is prohibited, Judo Marketing notifies as soon as the prohibition lapses.",
+          "Emergencies. In a request involving an imminent risk of death or serious physical harm, information may be disclosed before the full review is completed. The review and the record are completed afterward, and the disclosure is documented the same way.",
+          "Contact for legal requests: admin@judomarketing.net, subject \"Legal request\".",
+        ],
+      },
+      {
+        title: "21. Contact",
         body: [
           "Judo Marketing · 66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130 · www.judomarketing.net · admin@judomarketing.net · 305-934-9981",
         ],
@@ -287,7 +300,20 @@ export const policyContent: Record<
         ],
       },
       {
-        title: "20. Contacto",
+        title: "20. Solicitudes de autoridades públicas",
+        body: [
+          "Judo Marketing guarda a veces información personal de sus clientes y de los clientes de sus clientes. Cuando una autoridad pública —policía, un juzgado, un regulador o cualquier organismo de gobierno, de Estados Unidos o de otro país— pide esa información, se aplica este procedimiento a toda solicitud, sin excepción.",
+          "1. Revisión de legalidad. No se entrega ningún dato por el solo hecho de que lo pidan. Antes de entregar nada, Judo Marketing verifica que la solicitud sea auténtica, que venga de una autoridad con jurisdicción y que traiga el instrumento legal que la entrega exige (citación, orden judicial u orden de registro, según corresponda). Una solicitud que llega por correo o por teléfono sin un instrumento legal verificable no se atiende; la verificación se busca por los canales oficiales de la autoridad. Donde la ley exige una orden judicial, no se acepta una citación en su lugar.",
+          "2. Impugnación de solicitudes ilegales. Si una solicitud parece carecer de base legal, excede la jurisdicción de la autoridad, es excesivamente amplia o entra en conflicto con la ley del país donde reside la persona afectada, Judo Marketing se opone y, cuando corresponde, contrata abogado para pedir que se anule, se acote o se rechace. Judo Marketing no cumple una solicitud solo porque cumplirla salga más fácil o más barato que oponerse.",
+          "3. Minimización de datos. Se entrega únicamente la información mínima que la solicitud de verdad obliga a entregar, nunca una cuenta entera, una base de datos entera ni un cliente entero por ser más sencillo de extraer. Lo entregado se limita a las personas identificadas, al periodo identificado y a las categorías de datos identificadas. Si la solicitud es más amplia de lo que su base legal sostiene, Judo Marketing pide que se acote antes de responder.",
+          "4. Documentación. Toda solicitud queda en un registro interno: fecha de recepción, autoridad solicitante, instrumento legal, datos pedidos, la valoración de legalidad y su razonamiento, quiénes participaron en la decisión, qué se entregó o se negó y la fecha de respuesta. El registro se conserva incluso cuando no se entrega nada.",
+          "Aviso a la persona afectada. Salvo que la ley o una orden judicial lo prohíban, Judo Marketing avisa al cliente afectado antes de entregar, para que pueda buscar su propia protección. Cuando el aviso está prohibido, se avisa en cuanto la prohibición decae.",
+          "Emergencias. Ante una solicitud que implique riesgo inminente de muerte o daño físico grave, puede entregarse información antes de completar la revisión. La revisión y el registro se completan después, y la entrega se documenta igual.",
+          "Contacto para solicitudes legales: admin@judomarketing.net, asunto \"Solicitud legal\".",
+        ],
+      },
+      {
+        title: "21. Contacto",
         body: [
           "Judo Marketing · 66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130 · www.judomarketing.net · admin@judomarketing.net · 305-934-9981",
         ],
