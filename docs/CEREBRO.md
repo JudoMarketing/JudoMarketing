@@ -23,6 +23,12 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 > `claude/judo-marketing-redesign-ci2rj5`. Lo comprueba
 > `git ls-remote --heads origin`.
 
+**Novedades** (lo último que cambió, para el que ya lo había leído):
+
+| Fecha | Qué cambió |
+| --- | --- |
+| 2026-08-29 | **Sección 0 nueva: Judo Marketing es una empresa de Florida.** Ley de Florida, tribunales de Miami-Dade, brechas por FIPA, horario Eastern, cobros en USD, mercado base Miami. Aplica a todos los proyectos. |
+
 La paleta y los logos de la marca Judo Marketing en sí están en `BRAND.md`;
 esto es lo otro: cómo se diseña un sitio **para un cliente**. Y si la duda es
 en qué chat se pide un cambio cuando algo se ve en un sitio pero los datos

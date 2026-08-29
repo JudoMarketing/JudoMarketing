@@ -6,6 +6,13 @@ aprendió, **al final del archivo, sin tocar lo de los demás**. Después, desde
 el chat de Judo Marketing, se curan estos aportes y los buenos pasan al
 cerebro.
 
+> **Antes de aportar, lee la sección 0 del cerebro.** Judo Marketing es una
+> empresa de **Florida, Estados Unidos** (Miami). Eso fija la ley aplicable de
+> los contratos y políticas que escribas (Florida, tribunales de Miami-Dade),
+> la regla de notificación de brechas (FIPA, no GDPR por defecto), la zona
+> horaria de horarios y cron jobs (Eastern, `America/New_York`), la moneda
+> (USD) y el mercado base de SEO local (Miami / South Florida).
+
 ## Cómo aportar (desde el chat de cualquier proyecto)
 
 1. Conecta este repo a tu sesión: `add_repo JudoMarketing/JudoMarketing` y
