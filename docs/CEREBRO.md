@@ -30,6 +30,28 @@ vienen de otro, eso está en `QUIEN-HACE-QUE.md`.
 
 ---
 
+## 0. Dónde está Judo Marketing (dato fijo)
+
+**Judo Marketing es una empresa de Florida, Estados Unidos.** Sede en Miami:
+66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130. No es un detalle de
+contacto: cambia decisiones en todos los proyectos.
+
+| Qué | Cómo cae en el trabajo |
+| --- | --- |
+| **Ley aplicable** | Estado de Florida. Jurisdicción para disputas: Miami-Dade County. Todo contrato, política o aviso legal que se escriba para un sitio nuestro se rige por Florida salvo que el cliente imponga otra cosa por escrito. |
+| **Brechas de datos** | Aplica la ley de notificación de brechas de Florida (FIPA). Si un sitio guarda datos personales, el plan de incidentes se escribe contra esa regla, no contra el GDPR por defecto. |
+| **Autoridades** | Una solicitud de datos con jurisdicción sobre nosotros es de Florida / EE. UU. El procedimiento está en `legal/solicitudes-de-autoridades.md` y en la sección 20 de la Política de Servicio. |
+| **Zona horaria** | Eastern (`America/New_York`). Horarios, cortes de facturación, envíos de correo y cron jobs se piensan en Eastern, no en UTC a secas. |
+| **Idioma** | Miami es bilingüe de verdad. Español e inglés al mismo nivel, sin “versión traducida”. El selector EN/ES no es un extra. |
+| **SEO local** | El mercado base es Miami / South Florida. Ciudad y estado van en títulos, descripciones y en el `LocalBusiness` del sitio; `areaServed` incluye Miami y Florida. |
+| **Impuestos y pagos** | Facturación en USD, procesamiento por Stripe con entidad en EE. UU. Los precios se muestran en dólares sin conversión automática. |
+
+Un cliente puede estar en cualquier parte —hay sitios nuestros fuera de
+Florida—, pero **la empresa que firma, cobra y responde es de Florida.** Ante
+la duda de qué ley o qué huso horario usar, es Florida.
+
+---
+
 ## 1. La firma de la casa
 
 Lo que hace que un website se reconozca como nuestro, rubro aparte:

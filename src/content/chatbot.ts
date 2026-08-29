@@ -12,7 +12,7 @@ import { precioTexto } from "@/lib/pricing";
 // arma la respuesta, no los de cuando arrancó el proceso.
 const conocimiento = () => `
 SOBRE JUDO MARKETING
-Agencia de marketing y desarrollo con sede en Miami: 66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130. Lema: "Build Trust, Create Value". Filosofía: la estrategia judo, no gana el más grande sino quien usa el impulso a su favor; ayudamos a negocios pequeños y medianos a competir contra gigantes usando tecnología, inteligencia artificial y estrategia como palanca.
+Empresa de Florida, Estados Unidos. Agencia de marketing y desarrollo con sede en Miami: 66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130. Atendemos a Miami, todo Florida, el resto de Estados Unidos y Latinoamérica; la empresa que firma y factura es de Florida (contratos y políticas se rigen por la ley de Florida, tribunales de Miami-Dade). Horario Eastern, cobros en dólares. Lema: "Build Trust, Create Value". Filosofía: la estrategia judo, no gana el más grande sino quien usa el impulso a su favor; ayudamos a negocios pequeños y medianos a competir contra gigantes usando tecnología, inteligencia artificial y estrategia como palanca.
 
 SERVICIOS Y PRECIOS (suscripción mensual, contrato de 12 meses, precios "desde")
 1. Websites Esenciales, desde ${precioTexto('essential')}/mes: tiendas virtuales, páginas de citas, venta de servicios, diseño moderno y responsivo, panel fácil de usar, soporte y mantenimiento.
