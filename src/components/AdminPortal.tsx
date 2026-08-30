@@ -12,6 +12,7 @@ import Turnstile, { bloqueaEnvio, resetTurnstile } from "./Turnstile";
 import SiteDossier from "./SiteDossier";
 import IntakeInbox from "./IntakeInbox";
 import { precio } from "@/lib/pricing";
+import { APPS_INVITADO, nombreApp, type AppInvitado } from "@/content/apps-hermanas";
 
 // Campo de texto estándar del panel (antes vivía en AuthForms)
 const inputClass =
@@ -55,7 +56,40 @@ type Tab =
   | "pagos"
   | "resenas"
   | "juditoads"
-  | "juditos";
+  | "juditos"
+  | "judimental"
+  | "invitados";
+
+/** Una silla de invitado: alguien que entra a una app sin pagar. */
+type Silla = {
+  id: string;
+  app: AppInvitado;
+  email: string;
+  name: string | null;
+  note: string | null;
+  expires_at: string | null;
+  status: "pendiente" | "activa" | "revocada" | "error";
+  synced_at: string | null;
+  last_error: string | null;
+  created_at: string;
+};
+
+/** Una persona registrada en JudiMental, tal como la devuelve esa app. */
+type PersonaMental = {
+  id: string;
+  nombre?: string;
+  email?: string;
+  registradoEn?: string;
+  ultimaActividad?: string | null;
+  racha?: number;
+  plan?: string;
+  progreso?: { etiqueta?: string; porcentaje?: number } | null;
+};
+
+type ResumenMental = {
+  totales?: { registrados?: number; activos7d?: number; sesiones?: number };
+  personas?: PersonaMental[];
+};
 
 /** Un cliente de Juditos, los asistentes de IA (vive en otra base de datos). */
 type JuditoCliente = {
@@ -254,6 +288,22 @@ export default function AdminPortal() {
   // El Judito que se está editando, si hay alguno abierto.
   const [juditoAbierto, setJuditoAbierto] = useState<JuditoDetalle | null>(null);
   const [juditoGuardando, setJuditoGuardando] = useState(false);
+
+  // JudiMental: la app del teléfono. Solo se mira, no se toca desde aquí.
+  const [mental, setMental] = useState<ResumenMental | null>(null);
+  const [mentalError, setMentalError] = useState<string | null>(null);
+  const [mentalBusy, setMentalBusy] = useState(false);
+
+  // Sillas de invitado: la lista sí vive en nuestra base, pero quien deja de
+  // cobrar es cada app hermana, así que cada silla lleva su estado de envío.
+  const [sillas, setSillas] = useState<Silla[] | null>(null);
+  const [sillasError, setSillasError] = useState<string | null>(null);
+  const [sillasBusy, setSillasBusy] = useState(false);
+  const [sillaApp, setSillaApp] = useState<AppInvitado>("juditoads");
+  const [sillaEmail, setSillaEmail] = useState("");
+  const [sillaNombre, setSillaNombre] = useState("");
+  const [sillaNota, setSillaNota] = useState("");
+  const [sillaExpira, setSillaExpira] = useState("");
 
   // Acceso propio del panel: sin sesión se muestra el formulario de entrada
   const [needsLogin, setNeedsLogin] = useState(false);
@@ -892,6 +942,139 @@ export default function AdminPortal() {
     setJuditosBusy(false);
   };
 
+  const cargarJudimental = async () => {
+    setMentalBusy(true);
+    setMentalError(null);
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) {
+      setMentalBusy(false);
+      setMentalError("Sesión vencida, vuelve a entrar.");
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/judimental", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setMentalError(body.error || `Error ${res.status}`);
+        setMental(null);
+      } else {
+        setMental(body as ResumenMental);
+      }
+    } catch {
+      setMentalError("No se pudo contactar a JudiMental.");
+    }
+    setMentalBusy(false);
+  };
+
+  // ── Sillas de invitado ────────────────────────────────────────────
+  const cargarSillas = async () => {
+    setSillasBusy(true);
+    setSillasError(null);
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) {
+      setSillasBusy(false);
+      setSillasError("Sesión vencida, vuelve a entrar.");
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/invitados", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setSillasError(body.error || `Error ${res.status}`);
+        setSillas(null);
+      } else {
+        setSillas((body.sillas ?? []) as Silla[]);
+      }
+    } catch {
+      setSillasError("No se pudo leer la lista de invitados.");
+    }
+    setSillasBusy(false);
+  };
+
+  /** Manda una orden de invitados y recarga la lista. */
+  const pedirSilla = async (cuerpo: Record<string, unknown>): Promise<boolean> => {
+    const { data: sess } = await supabase.auth.getSession();
+    if (!sess.session) {
+      flash("Sesión vencida, vuelve a entrar");
+      return false;
+    }
+    setSillasBusy(true);
+    try {
+      const res = await fetch("/api/admin/invitados", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sess.session.access_token}`,
+        },
+        body: JSON.stringify(cuerpo),
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+        silla?: Silla;
+      };
+      setSillasBusy(false);
+      if (!res.ok || !body.ok) {
+        flash(body.error ?? `No se pudo: error ${res.status}`);
+        // Aunque falle el envío a la app, la fila pudo quedar guardada: se
+        // recarga para que se vea el estado real y el botón de reintentar.
+        await cargarSillas();
+        return false;
+      }
+      await cargarSillas();
+      return true;
+    } catch {
+      setSillasBusy(false);
+      flash("No se pudo contactar al servidor.");
+      return false;
+    }
+  };
+
+  const otorgarSilla = async () => {
+    const email = sillaEmail.trim().toLowerCase();
+    if (!email) return flash("Falta el correo");
+    if (!sillaNota.trim()) return flash("Escribe por qué le das el acceso: sin motivo, esta lista se olvida.");
+
+    const ok = await pedirSilla({
+      accion: "otorgar",
+      app: sillaApp,
+      email,
+      nombre: sillaNombre.trim() || undefined,
+      nota: sillaNota.trim(),
+      expira: sillaExpira ? new Date(`${sillaExpira}T23:59:59`).toISOString() : null,
+    });
+    if (ok) {
+      flash(`${email} entra gratis a ${nombreApp(sillaApp)} ✓`);
+      setSillaEmail("");
+      setSillaNombre("");
+      setSillaNota("");
+      setSillaExpira("");
+    }
+  };
+
+  const accionSilla = async (s: Silla, accion: "revocar" | "reintentar" | "eliminar") => {
+    const quien = s.name || s.email;
+    if (accion === "revocar" && !window.confirm(`¿Quitarle a ${quien} el acceso gratis a ${nombreApp(s.app)}?`)) return;
+    if (accion === "eliminar" && !window.confirm(`¿Borrar la silla de ${quien} en ${nombreApp(s.app)}? Primero se le quita el acceso en la app; si eso falla, la fila no se borra.`)) return;
+
+    const ok = await pedirSilla({ accion, id: s.id });
+    if (ok) {
+      flash(
+        accion === "eliminar"
+          ? `Silla de ${quien} borrada ✓`
+          : accion === "revocar"
+            ? `${quien} ya no entra gratis ✓`
+            : `Orden reenviada a ${nombreApp(s.app)} ✓`
+      );
+    }
+  };
+
   /** Pide el token de sesión, que es lo que autoriza cada llamada. */
   const tokenSesion = async (): Promise<string | null> => {
     const { data } = await supabase.auth.getSession();
@@ -1127,6 +1310,21 @@ export default function AdminPortal() {
                 (juditos?.totales.esperandoPersona ?? 0),
               juditos?.totales.clientes ?? 0,
             ],
+            [
+              "judimental",
+              "🧠",
+              "JudiMental",
+              0,
+              mental?.totales?.registrados ?? mental?.personas?.length ?? 0,
+            ],
+            [
+              "invitados",
+              "🎟️",
+              "Invitados",
+              // Lo urgente es lo que la app hermana todavía no aplicó.
+              (sillas ?? []).filter((s) => s.status === "pendiente" || s.status === "error").length,
+              (sillas ?? []).filter((s) => s.status === "activa").length,
+            ],
           ] as [Tab, string, string, number, number][]
         ).map(([key, icono, label, urgente, total]) => (
           <button
@@ -1135,6 +1333,8 @@ export default function AdminPortal() {
               setTab(key);
               if (key === "juditoads" && !juditoUsers && !juditoBusy) cargarJuditoads();
               if (key === "juditos" && !juditos && !juditosBusy) cargarJuditos();
+              if (key === "judimental" && !mental && !mentalBusy) cargarJudimental();
+              if (key === "invitados" && !sillas && !sillasBusy) cargarSillas();
             }}
             className={`flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold transition ${
               tab === key
@@ -1613,6 +1813,305 @@ export default function AdminPortal() {
             <p className="py-12 text-center text-judo-fog/50">
               Todavía no hay cuentas creadas en JuditoADS.
             </p>
+          )}
+        </section>
+      )}
+
+      {/* ── JUDIMENTAL: quién se registró y cómo va ── */}
+      {tab === "judimental" && (
+        <section className="mt-6">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">JudiMental</h2>
+              <p className="text-sm text-judo-fog/60">
+                Quién está registrado y cómo va. Solo lectura: desde aquí no se
+                toca nada de la app.
+              </p>
+            </div>
+            <button
+              onClick={cargarJudimental}
+              disabled={mentalBusy}
+              className="rounded-full border border-judo-lilac/25 px-4 py-1.5 text-xs font-semibold text-white transition hover:border-emerald-400/50 hover:text-emerald-300 disabled:opacity-50"
+            >
+              {mentalBusy ? "Cargando…" : "↻ Actualizar"}
+            </button>
+          </div>
+
+          <p className="mb-4 rounded-xl border border-judo-lilac/20 bg-white/[0.03] px-4 py-3 text-xs text-judo-fog/60">
+            🔒 Aquí llega el avance, nunca lo que la persona escribe dentro de la
+            app. El contenido de una app de salud mental no sale de su base de
+            datos.
+          </p>
+
+          {mentalError && (
+            <p className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+              {mentalError}
+            </p>
+          )}
+
+          {!mentalError && mental && (
+            <>
+              <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {[
+                  ["Registrados", mental.totales?.registrados ?? mental.personas?.length ?? 0],
+                  ["Activos (7 días)", mental.totales?.activos7d ?? "—"],
+                  ["Sesiones", mental.totales?.sesiones ?? "—"],
+                ].map(([label, value]) => (
+                  <div
+                    key={String(label)}
+                    className="rounded-xl border border-judo-lilac/20 bg-white/[0.03] px-4 py-3"
+                  >
+                    <p className="text-xs text-judo-fog/50">{label}</p>
+                    <p className="text-2xl font-bold text-white">{value}</p>
+                  </div>
+                ))}
+              </div>
+
+              {(mental.personas ?? []).length === 0 ? (
+                <p className="py-12 text-center text-judo-fog/50">
+                  Todavía no hay nadie registrado en JudiMental.
+                </p>
+              ) : (
+                <div className="overflow-x-auto rounded-xl border border-judo-lilac/20">
+                  <table className="w-full min-w-[680px] text-left text-sm">
+                    <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-judo-fog/50">
+                      <tr>
+                        <th className="px-4 py-3">Persona</th>
+                        <th className="px-4 py-3">Progreso</th>
+                        <th className="px-4 py-3">Racha</th>
+                        <th className="px-4 py-3">Última vez</th>
+                        <th className="px-4 py-3">Alta</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-judo-lilac/10">
+                      {(mental.personas ?? []).map((p) => (
+                        <tr key={p.id}>
+                          <td className="px-4 py-3">
+                            <p className="font-semibold text-white">{p.nombre || p.email || p.id}</p>
+                            {p.email && p.nombre && (
+                              <p className="text-xs text-judo-fog/60">{p.email}</p>
+                            )}
+                            {p.plan && (
+                              <span className="mt-1 inline-block rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-bold text-judo-fog/70">
+                                {p.plan}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            {typeof p.progreso?.porcentaje === "number" ? (
+                              <div className="min-w-[130px]">
+                                <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                                  <div
+                                    className="h-full rounded-full bg-emerald-400"
+                                    style={{
+                                      width: `${Math.max(0, Math.min(100, p.progreso.porcentaje))}%`,
+                                    }}
+                                  />
+                                </div>
+                                <p className="mt-1 text-[11px] text-judo-fog/60">
+                                  {p.progreso.etiqueta ?? `${p.progreso.porcentaje}%`}
+                                </p>
+                              </div>
+                            ) : (
+                              <span className="text-judo-fog/50">
+                                {p.progreso?.etiqueta ?? "—"}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-white">
+                            {typeof p.racha === "number" ? `${p.racha} días` : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-judo-fog/60">
+                            {p.ultimaActividad ? p.ultimaActividad.slice(0, 10) : "—"}
+                          </td>
+                          <td className="px-4 py-3 text-judo-fog/60">
+                            {p.registradoEn ? p.registradoEn.slice(0, 10) : "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
+          )}
+        </section>
+      )}
+
+      {/* ── INVITADOS: sillas gratis en las apps de la casa ── */}
+      {tab === "invitados" && (
+        <section className="mt-6">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">Sillas de invitado</h2>
+              <p className="text-sm text-judo-fog/60">
+                Gente que entra sin pagar suscripción. La lista se guarda aquí y
+                la orden se le manda a la app.
+              </p>
+            </div>
+            <button
+              onClick={cargarSillas}
+              disabled={sillasBusy}
+              className="rounded-full border border-judo-lilac/25 px-4 py-1.5 text-xs font-semibold text-white transition hover:border-emerald-400/50 hover:text-emerald-300 disabled:opacity-50"
+            >
+              {sillasBusy ? "Cargando…" : "↻ Actualizar"}
+            </button>
+          </div>
+
+          {/* Dar una silla */}
+          <div className="mb-5 rounded-xl border border-judo-lilac/20 bg-white/[0.03] p-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-judo-fog/50">
+              Dar acceso gratis
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              <select
+                value={sillaApp}
+                onChange={(e) => setSillaApp(e.target.value as AppInvitado)}
+                className={inputClass}
+              >
+                {APPS_INVITADO.map((a) => (
+                  <option key={a.key} value={a.key} className="bg-judo-black">
+                    {a.icono} {a.nombre}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="email"
+                value={sillaEmail}
+                onChange={(e) => setSillaEmail(e.target.value)}
+                placeholder="correo de la persona"
+                className={inputClass}
+              />
+              <input
+                value={sillaNombre}
+                onChange={(e) => setSillaNombre(e.target.value)}
+                placeholder="nombre (opcional)"
+                className={inputClass}
+              />
+              <input
+                value={sillaNota}
+                onChange={(e) => setSillaNota(e.target.value)}
+                placeholder="por qué (obligatorio)"
+                className={inputClass}
+              />
+              <input
+                type="date"
+                value={sillaExpira}
+                onChange={(e) => setSillaExpira(e.target.value)}
+                title="Hasta cuándo. Vacío = para siempre."
+                className={inputClass}
+              />
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => void otorgarSilla()}
+                disabled={sillasBusy}
+                className="rounded-full bg-emerald-400 px-5 py-2 text-xs font-bold text-judo-black transition hover:bg-emerald-300 disabled:opacity-50"
+              >
+                Dar la silla
+              </button>
+              <p className="text-xs text-judo-fog/50">
+                Sin fecha, el acceso es para siempre. La app hermana es la que
+                deja de cobrar.
+              </p>
+            </div>
+          </div>
+
+          {sillasError && (
+            <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {sillasError}
+            </p>
+          )}
+
+          {!sillasError && sillas && sillas.length === 0 && (
+            <p className="py-12 text-center text-judo-fog/50">
+              Todavía no hay invitados. Todo el mundo paga.
+            </p>
+          )}
+
+          {!sillasError && sillas && sillas.length > 0 && (
+            <div className="overflow-x-auto rounded-xl border border-judo-lilac/20">
+              <table className="w-full min-w-[760px] text-left text-sm">
+                <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-judo-fog/50">
+                  <tr>
+                    <th className="px-4 py-3">Persona</th>
+                    <th className="px-4 py-3">App</th>
+                    <th className="px-4 py-3">Motivo</th>
+                    <th className="px-4 py-3">Hasta</th>
+                    <th className="px-4 py-3">Estado</th>
+                    <th className="px-4 py-3">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-judo-lilac/10">
+                  {sillas.map((s) => (
+                    <tr key={s.id} className="align-top">
+                      <td className="px-4 py-3">
+                        <p className="font-semibold text-white">{s.name || s.email}</p>
+                        {s.name && <p className="text-xs text-judo-fog/60">{s.email}</p>}
+                        <p className="text-[11px] text-judo-fog/40">
+                          desde {s.created_at.slice(0, 10)}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3 text-white">{nombreApp(s.app)}</td>
+                      <td className="px-4 py-3 text-judo-fog/70">{s.note || "—"}</td>
+                      <td className="px-4 py-3 text-judo-fog/60">
+                        {s.expires_at ? s.expires_at.slice(0, 10) : "sin fecha"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                            s.status === "activa"
+                              ? "bg-emerald-400 text-judo-black"
+                              : s.status === "pendiente"
+                                ? "bg-amber-400/90 text-judo-black"
+                                : s.status === "error"
+                                  ? "bg-red-500/90 text-white"
+                                  : "bg-white/10 text-judo-fog/70"
+                          }`}
+                        >
+                          {s.status}
+                        </span>
+                        {s.last_error && (
+                          <p className="mt-1 max-w-[240px] text-[11px] text-amber-300/80">
+                            {s.last_error}
+                          </p>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {(s.status === "pendiente" || s.status === "error") && (
+                            <button
+                              onClick={() => void accionSilla(s, "reintentar")}
+                              disabled={sillasBusy}
+                              className="rounded-full border border-emerald-400/40 px-3 py-1 text-[11px] font-semibold text-emerald-300 transition hover:bg-emerald-400/10 disabled:opacity-50"
+                            >
+                              Reintentar
+                            </button>
+                          )}
+                          {s.status === "activa" && (
+                            <button
+                              onClick={() => void accionSilla(s, "revocar")}
+                              disabled={sillasBusy}
+                              className="rounded-full border border-amber-400/40 px-3 py-1 text-[11px] font-semibold text-amber-300 transition hover:bg-amber-400/10 disabled:opacity-50"
+                            >
+                              Quitar
+                            </button>
+                          )}
+                          <button
+                            onClick={() => void accionSilla(s, "eliminar")}
+                            disabled={sillasBusy}
+                            title="Quitarle el acceso y borrar la fila"
+                            className="rounded-full border border-red-400/40 px-2.5 py-1 text-[11px] text-red-300 transition hover:bg-red-400/10 disabled:opacity-50"
+                          >
+                            🗑
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </section>
       )}

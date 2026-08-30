@@ -56,8 +56,16 @@ clientes.
 | Resumen, Formularios, Contratos, Websites, Dinero, Reseñas | Base propia de judomarketing.net | — |
 | JuditoADS | App Judito-Ads | `JUDITOADS_URL` + `JUDITOADS_ADMIN_TOKEN` |
 | Juditos (AI Assistants) | App AI-Assistants | `JUDITOS_URL` + `JUDITOS_ADMIN_TOKEN` |
+| JudiMental | App JudiMental (solo lectura) | `JUDIMENTAL_URL` + `JUDIMENTAL_ADMIN_TOKEN` |
+| Invitados | Base propia + orden a las tres apps | los tres puentes de arriba |
 
-Los detalles del puente de Juditos están en `juditos-integracion.md`.
+Los detalles del puente de Juditos están en `juditos-integracion.md`, y los de
+las sillas de invitado en `invitados-integracion.md`.
+
+**Invitados es el caso mixto que mejor explica la regla:** la lista de quién
+entra gratis, quién se la dio y por qué vive en la base de judomarketing.net
+—se pide aquí—, pero **dejar de cobrarle de verdad** lo hace cada app en su
+propia base, y eso se pide en su chat.
 
 ## Los dos caminos, y cuál conviene
 
