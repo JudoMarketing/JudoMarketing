@@ -543,3 +543,154 @@ del otro servicio en un mensaje en vez de un cuelgue.
 contratado el producto: si la página protegida le echa al login y el login le
 devuelve a la página protegida, el bucle es el mismo. Ahí el reparto le lleva
 a "todavía no tienes esto, actívalo", que es la respuesta correcta.
+
+---
+
+### 2026-08-30 · AC-Customs · la voz del titular
+**Qué aprendimos:** «promesa dicha por una persona» no significa coloquial.
+La persona que habla en el H1 es un profesional que cotiza, no un amigo que
+exagera. La prueba: si el titular podría decirse en broma, está mal escrito.
+El registro de la casa es «Moderniza el interior de tu auto», nunca «Te
+lleno el techo de estrellas».
+**Evidencia:** el primer hero de AC Customs decía «Te lleno el techo de
+estrellas» y la reacción del dueño fue literal: «me dio fue risa jajaja,
+debe ser algo más profesional». El titular que sí pasó fue «Moderniza el
+interior de tu auto».
+
+---
+
+### 2026-08-30 · AC-Customs · el efecto que el cliente describe
+**Qué aprendimos:** cuando el cliente describe un efecto con precisión —
+«luces que salgan del fondo de tu pantalla y vayan subiendo poco a poco
+desvaneciéndose lentamente, solo a los orillos» — eso es una especificación,
+no una inspiración. Se construye ESE movimiento, con ese origen, esa
+dirección y ese desvanecimiento. Interpretarlo (resplandores fijos en las
+esquinas) se recibe como no haberlo hecho.
+**Evidencia:** la primera entrega llevaba brillos de esquina y la respuesta
+fue «con respecto a lo que te pedí, no lo hiciste». La segunda llevaba
+cometas naciendo abajo y subiendo por los orillos, y esa quedó.
+
+---
+
+### 2026-08-30 · AC-Customs · neón que se deja leer
+**Qué aprendimos:** el neón en pantalla es luz DETRÁS de la letra, nunca
+letra rellena de color o degradado: letra blanca con `text-shadow` contenido
+(6px al 50 %, 22px al 32 %, 55px al 22 % del color de familia). El brillo
+tiene presupuesto: si un texto cuesta leerse, sobra brillo. Y toda luz
+animada se difumina — blur, degradado suave en AMBOS extremos, sin cabeza
+blanca, opacidad con tope (.55) — o deja de parecer luz.
+**Evidencia:** dos rondas de corrección del dueño, con sus frases: «mejor
+estaría la letra con luz de neón atrás» sobre los titulares rellenos de
+degradado, y «parece un palo de color, debe difuminarse mejor» sobre los
+cometas nítidos de 2 px con cabeza brillante. Los valores finales están en
+`docs/DISENO.md` del repo accustoms-miami.
+
+---
+
+### 2026-08-30 · AC-Customs · profundidad en fondo oscuro
+**Qué aprendimos:** sobre fondo oscuro, la profundidad se hace con luz: las
+tarjetas iluminan con el color de su familia (borde y resplandor que suben
+al pasar el cursor), las secciones encienden al entrar en pantalla. Tarjetas
+planas sobre fondo oscuro leen como maqueta sin terminar. Y cuando aún no
+hay fotos reales, no se ponen marcadores grises: se dibujan escenas
+vectoriales de referencia en el lenguaje del sitio, se dejan si se ven bien
+y se reemplazan por las fotos del cliente cuando lleguen.
+**Evidencia:** el veredicto de la versión con tarjetas planas fue «siento
+que el diseño estuvo muy pobre... los cuadros con texto deberían iluminar,
+así le das profundidad». Las escenas vectoriales (arco estrellado, puerta
+con barrido ambiental, pantalla CarPlay) pasaron su prueba de «si quedan
+bien las dejas, si no las quitas».
+
+---
+
+### 2026-08-30 · AC-Customs · página de citas
+**Qué aprendimos:** una cita de servicios se pide con selección MÚLTIPLE y
+estimado sumado — la gente contrata techo y ambiente en el mismo carro — y
+si el negocio cobra directo, la página lo dice visible: «aquí no se cobra
+nada; el pago es directo con el taller el día del servicio». Quita el miedo
+de sacar la tarjeta y refleja cómo cobra el negocio de verdad.
+**Evidencia:** correcciones directas del dueño a la primera versión: «que
+puedan contratar más de un servicio, no solo uno» y «se cobra al cliente,
+no por la página».
+
+---
+
+### 2026-08-30 · JudiMental · la marca de un app
+**Qué aprendimos:** el nombre se verifica ANTES de encariñarse: tiendas (la
+API de búsqueda de iTunes y Google Play), marcas registradas (USPTO, EUIPO)
+y dominio (RDAP). Un nombre que suena libre puede chocar con una marca
+registrada de un rubro vecino. Y el logo nunca es texto con una fuente
+instalada: el wordmark se traza a caminos SVG (con fontTools: contornos,
+kerning y todo), para que se vea idéntico en cualquier máquina y tienda.
+**Evidencia:** «JuniAPP» chocaba con JUNI, marca ya registrada por Juni
+Technology AB en software. La verificación salió a tiempo: el mismo día se
+pivotó a JudiMental, se verificó limpio y el dueño compró judimental.com.
+El wordmark trazado está en `assets/marca/` del repo juniapp.
+
+---
+
+### 2026-08-30 · Mil-Colores · el nombre vuelto función
+**Qué aprendimos:** el mejor nombre de marca es el que se puede volver
+función. Mil Colores dejó de ser solo un nombre cuando la pregunta central
+de la app pasó a ser «¿De qué color estás hoy?»: el registro emocional del
+día se hace eligiendo un color, y el historial es una malla de colores que
+enseña el proceso sin una sola cifra. Antes de inventar mecánicas para una
+app, mirar si el nombre ya trae una.
+**Evidencia:** la pantalla «Tu proceso» del lienzo de Mil Colores: «los
+primeros días casi todo era gris; los últimos ya no» dicho con puntos de
+color, sin números ni gráficas.
+
+---
+
+### 2026-08-30 · Mil-Colores · el portal del profesional
+**Qué aprendimos:** en una app de acompañamiento, el lado del profesional
+solo pide las decisiones que únicamente esa persona puede tomar (qué sube,
+audio o video, portada, a qué serie va) y nada más. Su panel muestra
+TOTALES, nunca personas: puede ver que la calma subió, no quién está mal —
+esa línea es lo que hace la app segura de usar y de recomendar. Y el
+teléfono de crisis jamás se inventa ni se deja bonito de relleno: va como
+hueco marcado hasta tener el real del país.
+**Evidencia:** el portal de Hulda quedó en tres pantallas (subir, panel,
+sillas de cordialidad) porque todo lo demás no era decisión de ella. El
+panel agregado quedó anotado en el lienzo como decisión a confirmar con
+ella.
+
+---
+
+### 2026-08-30 · Mil-Colores · revisión sin login
+**Qué aprendimos:** para que el cliente final (o su cliente) revise un
+diseño sin cuenta, el formato es una página-galería con las imágenes
+embebidas, publicada como artifact: esa sí puede hacerse pública con el
+interruptor de compartir. El lienzo de diseño con capacidad de exportar NO
+sirve para eso — solo se comparte dentro de la organización.
+**Evidencia:** Hulda necesitaba ver Mil Colores sin log in; el lienzo no
+podía hacerse público y la galería de imágenes sí.
+
+---
+
+### 2026-08-30 · La casa · a qué rama van los aportes
+**Qué aprendimos:** la advertencia del 27 envejeció: `master` ya existe, es
+la default y carga los aportes más nuevos; la rama
+`claude/judo-marketing-redesign-ci2rj5` se quedó atrás. La regla que no
+envejece: antes de empujar, `git ls-remote --symref origin HEAD` y mirar en
+qué rama está la última entrada de ESTE archivo; se empuja a la que va
+adelante.
+**Evidencia:** hoy este archivo tenía 545 líneas en `master` y 486 en la
+rama del rediseño. Seguir la instrucción del 27 al pie de la letra habría
+mandado los aportes nuevos a la rama vieja.
+
+---
+
+### 2026-08-30 · Todos · la vara del dueño
+**Qué aprendimos:** hoy hubo tres proyectos y la distancia entre la primera
+entrega y la aprobada fue siempre la misma: (1) lo que el cliente describe
+se construye literal antes de interpretarlo; (2) la voz es profesional
+aunque la regla diga «promesa dicha por una persona» — persona seria, no
+colega bromeando; (3) los efectos existen para dar profundidad, no para
+verse: luz detrás de la letra, brillo con tope, todo difuminado, y si algo
+cuesta leerse, sobra efecto. Una entrega que ignora cualquiera de las tres
+se recibe como «ni cerca», aunque técnicamente esté bien hecha.
+**Evidencia:** el mismo dueño, el mismo día: «el diseño estuvo muy pobre»
+sobre la v1 de AC Customs y «excelente» sobre la v3, separadas solo por
+esas tres correcciones. Y su cierre: «mira la diferencia del website que tú
+me entregaste a este; no están ni cerca uno del otro».
