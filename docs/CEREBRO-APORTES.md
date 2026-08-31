@@ -721,3 +721,46 @@ lo que dejó a medias cuesta diez líneas y convierte "empiezo otra vez desde
 cero" en "sigue donde lo dejaste".
 **Evidencia:** el cuestionario guardaba con cada tecla y aun así una pestaña
 cerrada dejaba la solicitud inalcanzable.
+
+---
+
+### 2026-08-28 · Juditos · multi-zona y etiquetas <a>
+**Qué aprendimos:** en una app servida bajo un prefijo (`/juditos`), Next se
+lo pone solo a lo que pasa por `<Link>` y por el router. Una etiqueta `<a>`
+con ruta absoluta se va tal cual, así que `href="/clientes/x"` acaba en el
+dominio raíz, que es OTRA aplicación. Y en local, sin prefijo, funciona
+perfecto: es un fallo que solo existe en producción y solo al pulsar ese
+botón concreto, así que no se encuentra mirando el código, se encuentra
+cuando un cliente lo reporta. La regla: dentro de una `<a>`, o va envuelto en
+un ayudante que pone el prefijo, o es una dirección de otra zona a propósito.
+Y encima se pone un script que recorre el código y para el build si aparece
+otra.
+**Evidencia:** seis de golpe, incluido el botón de conectar la cuenta de Meta
+—el paso sin el cual no funciona nada del producto—.
+
+---
+
+### 2026-08-28 · Juditos · cerrar sesión con cuenta compartida
+**Qué aprendimos:** cuando dos productos comparten cuenta, "cerrar sesión"
+tiene que significar lo mismo en los dos. Borrar solo la cookie propia deja a
+la persona dentro del otro, y si el otro es el dueño de la identidad, al
+recargar vuelve a estar dentro del primero: el botón parece roto porque hace
+justo lo que dice, pero no lo que hace falta. Compartiendo dominio, cada
+portal puede borrar las dos cookies, y eso es más fiable que mandar al
+navegador de uno a otro para que cada uno borre la suya (menos saltos, y no
+se queda a medias si el otro no responde). Y después de salir hay que ir a
+una página pública: quedarse en la protegida hace que el guardia mande otra
+vez al acceso, y salir acaba pareciendo un intento de entrar.
+**Evidencia:** "No veo botón de log off cuando estoy en mi cuenta". El botón
+estaba; lo que no hacía era sacar a nadie.
+
+---
+
+### 2026-08-28 · Juditos · lo que decide quién es dueño de qué
+**Qué aprendimos:** el identificador de la cuenta a la que se engancha algo
+que se crea NUNCA puede venir de un campo del formulario, ni siquiera oculto.
+Un campo oculto lo cambia cualquiera desde la consola del navegador. Sale de
+la sesión, en el servidor, siempre.
+**Evidencia:** la contratación guardaba el id de la cuenta desde un `<input
+type="hidden">`. Con el id de otra persona, la solicitud habría aparecido en
+el portal de esa persona, con el nombre de su negocio, su plan y su consumo.
