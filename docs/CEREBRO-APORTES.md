@@ -694,3 +694,30 @@ se recibe como «ni cerca», aunque técnicamente esté bien hecha.
 sobre la v1 de AC Customs y «excelente» sobre la v3, separadas solo por
 esas tres correcciones. Y su cierre: «mira la diferencia del website que tú
 me entregaste a este; no están ni cerca uno del otro».
+
+---
+
+### 2026-08-28 · Juditos · formularios largos
+**Qué aprendimos:** un formulario que la gente tarda veinte minutos en
+rellenar no se sirve dentro del cascarón de la página de ventas. Esa
+cabecera está hecha para captar (entrar, comprar, ver precios) y todos sus
+botones son salidas: uno manda a identificarse cuando no hace falta
+identificarse para nada, y el botón de comprar empieza una solicitud nueva
+encima de la que ya estaba a medias. Mientras alguien está rellenando, la
+única navegación que debe existir es la del propio formulario, con los pasos
+a la vista y el logo como única puerta.
+**Evidencia:** "cuando estoy creando un judito me pide entrar, y quiero mi
+judito, no debería salir si ya lo estoy creando". El formulario no pedía
+nada: era la cabecera heredada de la landing.
+
+---
+
+### 2026-08-28 · Juditos · enlaces con estado dentro
+**Qué aprendimos:** si el paso 2 de un proceso vive en una URL con un id
+dentro, quien cierra la pestaña sin apuntarla se queda sin forma de volver, y
+lo que escribió sigue guardado en la base sin que nadie pueda alcanzarlo. El
+autoguardado no sirve de nada si se pierde la llave. Una cookie con el id de
+lo que dejó a medias cuesta diez líneas y convierte "empiezo otra vez desde
+cero" en "sigue donde lo dejaste".
+**Evidencia:** el cuestionario guardaba con cada tecla y aun así una pestaña
+cerrada dejaba la solicitud inalcanzable.
