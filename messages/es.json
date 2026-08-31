@@ -9,7 +9,12 @@
     "showcase": "Portafolio",
     "about": "Nosotros",
     "contact": "Contacto",
-    "login": "JuditoADS"
+    "login": "Juditos",
+    "loginTitle": "Entrar a",
+    "loginAds": "JuditoADS",
+    "loginAdsWhat": "Tus anuncios en Facebook e Instagram",
+    "loginAi": "AI Assistants",
+    "loginAiWhat": "Tu asistente que contesta solo"
   },
   "hero": {
     "title": "Construye confianza,",

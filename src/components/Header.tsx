@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -18,6 +18,27 @@ const LINKS = [
 export default function Header() {
   const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
+  const [puertas, setPuertas] = useState(false);
+  const cajaPuertas = useRef<HTMLDivElement>(null);
+
+  // El menú de acceso se cierra al pulsar fuera o con Escape.
+  useEffect(() => {
+    if (!puertas) return;
+    function fuera(e: MouseEvent) {
+      if (cajaPuertas.current && !cajaPuertas.current.contains(e.target as Node)) {
+        setPuertas(false);
+      }
+    }
+    function escape(e: KeyboardEvent) {
+      if (e.key === "Escape") setPuertas(false);
+    }
+    document.addEventListener("mousedown", fuera);
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("mousedown", fuera);
+      document.removeEventListener("keydown", escape);
+    };
+  }, [puertas]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-judo-lilac/15 bg-judo-black/85 backdrop-blur">
@@ -45,12 +66,64 @@ export default function Header() {
 
         <div className="flex items-center gap-2.5 sm:gap-3">
           <LanguageSwitcher />
-          {/* El acceso es el portal de clientes de JuditoADS (misma web,
-              otra app bajo /juditoads): <a> normal, fuera del enrutado de
-              idiomas. Si ya hay sesión entra directo; si no, pide login. */}
-          <a href="/juditoads/app" className="btn-3d text-sm">
-            {t("login")}
-          </a>
+          {/* Hay dos portales de cliente detrás de este botón: JuditoADS
+              (anuncios) y los asistentes de IA. Antes el botón llevaba solo al
+              primero, así que quien tenía asistente no encontraba su puerta.
+              Ahora pregunta a dónde va.
+
+              Los dos destinos son otras apps bajo el mismo dominio
+              (/juditoads, /juditos): <a> normal, fuera del enrutado de idiomas
+              — un <Link> les pegaría el prefijo de idioma delante. Si ya hay
+              sesión entra directo; si no, cada app pide su login. */}
+          <div ref={cajaPuertas} className="relative">
+            <button
+              type="button"
+              onClick={() => setPuertas((v) => !v)}
+              aria-expanded={puertas}
+              aria-haspopup="menu"
+              className="btn-3d flex items-center gap-1.5 text-sm"
+            >
+              {t("login")}
+              <span
+                aria-hidden
+                className={`text-[10px] transition-transform ${puertas ? "rotate-180" : ""}`}
+              >
+                ▾
+              </span>
+            </button>
+
+            {puertas && (
+              <div
+                role="menu"
+                className="absolute right-0 top-[calc(100%+0.6rem)] w-[17.5rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-judo-lilac/20 bg-judo-surface/95 shadow-2xl shadow-black/50 backdrop-blur"
+              >
+                <p className="border-b border-white/10 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/40">
+                  {t("loginTitle")}
+                </p>
+                {(
+                  [
+                    ["/juditoads/app", "🚀", t("loginAds"), t("loginAdsWhat")],
+                    ["/juditos/mi", "🤖", t("loginAi"), t("loginAiWhat")],
+                  ] as const
+                ).map(([href, emoji, nombre, que]) => (
+                  <a
+                    key={href}
+                    href={href}
+                    role="menuitem"
+                    className="flex items-start gap-3 px-4 py-3 transition hover:bg-white/[0.06]"
+                  >
+                    <span aria-hidden className="mt-0.5 text-lg">
+                      {emoji}
+                    </span>
+                    <span>
+                      <span className="block text-sm font-semibold text-white">{nombre}</span>
+                      <span className="block text-xs text-judo-fog/50">{que}</span>
+                    </span>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
           {/* Hamburguesa (móvil) */}
           <button
             onClick={() => setOpen(!open)}

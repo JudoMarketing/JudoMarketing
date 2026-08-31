@@ -9,7 +9,12 @@
     "showcase": "Showcase",
     "about": "About Us",
     "contact": "Contact",
-    "login": "JuditoADS"
+    "login": "Juditos",
+    "loginTitle": "Go to",
+    "loginAds": "JuditoADS",
+    "loginAdsWhat": "Your Facebook and Instagram ads",
+    "loginAi": "AI Assistants",
+    "loginAiWhat": "Your assistant that answers on its own"
   },
   "hero": {
     "title": "Build Trust,",
