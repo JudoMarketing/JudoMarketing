@@ -484,3 +484,35 @@ tercera.
 en producción sin tener una sola prueba. Al escribirla por fin, encontró un
 fallo nuevo en la primera ejecución — uno que ya estaba desplegado y que
 nadie había notado.
+
+---
+
+### 2026-09-04 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un estado que depende de un tercero no se puede guardar
+y dar por bueno: hay que volver a preguntarlo. Guardar «conectado» el día
+que la persona autorizó y seguir enseñándolo meses después no es un caché,
+es una afirmación que envejeció sin que nadie la revisara — y el tercero
+revoca accesos sin avisar a nadie. La forma que funciona: preguntar de
+verdad, guardar la respuesta CON su fecha, y volver a preguntar cuando esa
+fecha envejece. Y ponerlo donde se ve, no solo en la pantalla del ajuste:
+el fallo se lo encuentra la persona haciendo cualquier otra cosa.
+**Evidencia:** un cliente fue a actualizar su publicidad, Meta le contestó
+que su cuenta estaba desconectada, y la pantalla de cuentas le seguía
+enseñando todas las palomitas verdes. Buscó el fallo media hora donde no
+estaba. Meta había revocado el token —pasa al cambiar la contraseña, al
+quitar la app, o a los 60 días— y no avisa.
+
+---
+
+### 2026-09-04 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** al construir un aviso, el falso positivo cuesta más que
+el falso negativo. Un aviso que salta cuando no toca se deja de leer, y
+entonces tampoco sirve el día que sí toca. Así que la condición tiene que
+ser lo que el tercero dice EXPLÍCITAMENTE, no cualquier cosa que salga mal:
+un timeout, un 500 o un límite de tasa son el proveedor teniendo un mal
+rato, no el usuario con un problema. Ante la duda, callarse y dejar el
+estado como estaba.
+**Evidencia:** el chequeo de conexión con Meta distingue tres respuestas y
+no dos: viva, caída, y «no se sabe». Solo la segunda enciende el aviso. La
+prueba que lo fija tiene tantos casos de «esto NO es una desconexión» como
+de «esto sí lo es».
