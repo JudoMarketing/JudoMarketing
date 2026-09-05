@@ -516,3 +516,35 @@ estado como estaba.
 no dos: viva, caída, y «no se sabe». Solo la segunda enciende el aviso. La
 prueba que lo fija tiene tantos casos de «esto NO es una desconexión» como
 de «esto sí lo es».
+
+---
+
+### 2026-09-05 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando se arregla algo que llevaba tiempo ignorándose en
+silencio, se heredan de golpe todos los conflictos que ese silencio tapaba.
+Una opción que el usuario elegía y el código descartaba no estaba «sin
+efecto»: estaba evitando chocar con las reglas del proveedor. Al empezar a
+respetarla, el choque sale — y sale en producción, en la cara de quien la
+había elegido. La regla: después de hacer que una opción por fin cuente, hay
+que probarla CONTRA las reglas del tercero en sus combinaciones, sobre todo
+con los valores que vienen por defecto, porque esos los tiene todo el mundo.
+**Evidencia:** se arregló que el interruptor «deja que la plataforma amplíe
+el público» llegara de verdad a Meta, después de meses clavado en apagado.
+Como viene encendido de fábrica, a partir de ahí cualquiera que además
+bajara el tope de edad recibía un rechazo del conjunto entero: Meta no
+acepta un máximo de edad firme junto a ese público. Mientras la opción se
+ignoraba, el conflicto no existía.
+
+---
+
+### 2026-09-05 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando dos ajustes del usuario se contradicen y el
+proveedor solo admite uno, gana el que la persona eligió a mano, no el que
+venía por defecto. Mover un deslizador hasta un número es un acto
+deliberado; un interruptor encendido de fábrica casi nunca se ha mirado. Y
+la decisión se le cuenta JUNTO al ajuste, no en el resumen final: enterarse
+al final de que lo que dejaste puesto no se aplicó es lo que hace desconfiar
+de la herramienta entera.
+**Evidencia:** con un tope de edad, se apaga el público automático y se
+avisa ahí mismo de por qué y de cómo recuperarlo (subir el máximo). Ninguna
+de las dos opciones se traiciona en silencio.
