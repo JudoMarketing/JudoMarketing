@@ -15,6 +15,35 @@ Regenerar ambos PDF: `python scripts/generate_legal_pdfs.py`
 (el PDF de la póliza se genera automáticamente desde `service-policy.md` — editar el
 markdown y regenerar).
 
+## Contratos que salen del portal (09/2026)
+
+El programa de vendedores se retiró, y con él la firma en el teléfono del
+vendedor. Ahora los contratos se mandan desde el portal de admin, pestaña
+**Documentos**: se elige el tipo, se ponen los datos del cliente y el PDF sale
+ya firmado por Judo Marketing al correo del cliente, con un enlace de
+aceptación. La aceptación queda registrada (nombre, fecha, hora, IP) y el PDF
+se vuelve a emitir con ese bloque; esa es la versión definitiva.
+
+| Contrato | Para | Texto maestro |
+|---|---|---|
+| Websites y apps | 12 meses; al terminar: seguir igual, solo hosting ($30/mes por consumo) o llevárselo todo | `src/content/documentos.ts` → `websites()` |
+| JuditoADS | suscripción mes a mes; el presupuesto de anuncios es del cliente y lo cobra Meta; Platform Data | `src/content/documentos.ts` → `juditoads()` |
+| Juditos (AI Assistants) | suscripción por asistente; límites de la IA; canales de mensajería; consumo base y ajuste | `src/content/documentos.ts` → `juditos()` |
+
+Los tres comparten: datos personales y HIPAA (nada de PHI sin BAA y
+configuración compatible, con costo), límite de responsabilidad (12 meses de
+cuotas), indemnidad, disponibilidad y terceros, ley de Florida y Miami-Dade,
+firma electrónica (E-SIGN y ley de Florida), acuerdo completo.
+
+**Aquí el maestro es el TypeScript, no un markdown:** el PDF se arma en el
+servidor al pulsar «Enviar» (`src/lib/documentos-pdf.ts`, con pdf-lib), con
+los datos del cliente ya puestos. No hay PDF estático que regenerar. El
+`acuerdo-de-servicio-cliente.md` de arriba queda como el contrato genérico
+descargable de `/legal`; el que se firma es el del portal.
+
+> Lo escribió una IA con criterio, no un abogado. Antes del primer cliente
+> grande, que un abogado de Florida lo lea.
+
 ## Qué resuelve la póliza única (decisiones del dueño, 08/05/2026)
 
 - **Modelo de 12 meses** (§7): código, diseño, portales y dominio son de Judo durante el

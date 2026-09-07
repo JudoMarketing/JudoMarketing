@@ -15,6 +15,9 @@ export default function robots(): MetadataRoute.Robots {
         "/suspended-demo",
         "/intake",
         "/es/demo-suspension",
+        // Enlaces de aceptación de contratos: privados, uno por cliente
+        "/acepto/",
+        "/es/acepto/",
       ],
     },
     sitemap: "https://www.judomarketing.net/sitemap.xml",

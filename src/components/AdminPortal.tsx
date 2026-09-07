@@ -11,8 +11,9 @@ import { getSupabase } from "@/lib/supabase";
 import Turnstile, { bloqueaEnvio, resetTurnstile } from "./Turnstile";
 import SiteDossier from "./SiteDossier";
 import IntakeInbox from "./IntakeInbox";
-import { precio } from "@/lib/pricing";
+import { precio, PRECIO_ASISTENTE, PRECIO_JUDITOADS } from "@/lib/pricing";
 import { APPS_INVITADO, nombreApp, type AppInvitado } from "@/content/apps-hermanas";
+import { NOMBRE_TIPO, TIPOS_DOCUMENTO, type TipoDocumento } from "@/content/documentos";
 
 // Campo de texto estándar del panel (antes vivía en AuthForms)
 const inputClass =
@@ -58,7 +59,39 @@ type Tab =
   | "juditoads"
   | "juditos"
   | "judimental"
-  | "invitados";
+  | "invitados"
+  | "documentos";
+
+/** Un contrato enviado desde el portal (tabla documents). */
+type DocumentoRow = {
+  id: string;
+  code: string;
+  kind: TipoDocumento;
+  recipient_name: string;
+  business_name: string | null;
+  recipient_email: string;
+  plan: string | null;
+  monthly_price: number | string;
+  project: string | null;
+  starts_on: string;
+  sent_at: string | null;
+  send_error: string | null;
+  accepted_at: string | null;
+  accepted_name: string | null;
+  accepted_ip: string | null;
+  created_at: string;
+};
+
+/** Los planes de website que se pueden poner en un contrato, con su precio. */
+const PLANES_CONTRATO: { etiqueta: string; precio: number }[] = [
+  { etiqueta: "Website Esencial", precio: precio("essential") },
+  { etiqueta: "Website Complejo", precio: precio("complex") },
+  { etiqueta: "App de teléfono", precio: precio("apps") },
+];
+
+/** Hoy en hora del Este, como aaaa-mm-dd para el <input type="date">. */
+const hoyEste = () =>
+  new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 
 /** Una silla de invitado: alguien que entra a una app sin pagar. */
 type Silla = {
@@ -304,6 +337,19 @@ export default function AdminPortal() {
   const [sillaNombre, setSillaNombre] = useState("");
   const [sillaNota, setSillaNota] = useState("");
   const [sillaExpira, setSillaExpira] = useState("");
+
+  // Documentos: contratos que salen de aquí ya firmados y se aceptan por enlace.
+  const [documentos, setDocumentos] = useState<DocumentoRow[] | null>(null);
+  const [documentosError, setDocumentosError] = useState<string | null>(null);
+  const [documentosBusy, setDocumentosBusy] = useState(false);
+  const [docTipo, setDocTipo] = useState<TipoDocumento>("websites");
+  const [docEmail, setDocEmail] = useState("");
+  const [docNombre, setDocNombre] = useState("");
+  const [docEmpresa, setDocEmpresa] = useState("");
+  const [docPlan, setDocPlan] = useState(PLANES_CONTRATO[0].etiqueta);
+  const [docPrecio, setDocPrecio] = useState(String(PLANES_CONTRATO[0].precio));
+  const [docProyecto, setDocProyecto] = useState("");
+  const [docInicio, setDocInicio] = useState(hoyEste);
 
   // Acceso propio del panel: sin sesión se muestra el formulario de entrada
   const [needsLogin, setNeedsLogin] = useState(false);
@@ -1075,6 +1121,149 @@ export default function AdminPortal() {
     }
   };
 
+  // ── Documentos ────────────────────────────────────────────────────
+  const cargarDocumentos = async () => {
+    setDocumentosBusy(true);
+    setDocumentosError(null);
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) {
+      setDocumentosBusy(false);
+      setDocumentosError("Sesión vencida, vuelve a entrar.");
+      return;
+    }
+    try {
+      const res = await fetch("/api/admin/documentos", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setDocumentosError(body.error || `Error ${res.status}`);
+        setDocumentos(null);
+      } else {
+        setDocumentos((body.documentos ?? []) as DocumentoRow[]);
+      }
+    } catch {
+      setDocumentosError("No se pudo leer la lista de documentos.");
+    }
+    setDocumentosBusy(false);
+  };
+
+  /** Manda una orden de documentos; devuelve el cuerpo o null si falló. */
+  const pedirDocumento = async (
+    cuerpo: Record<string, unknown>
+  ): Promise<{ ok?: boolean; error?: string; documento?: DocumentoRow } | null> => {
+    const { data: sess } = await supabase.auth.getSession();
+    if (!sess.session) {
+      flash("Sesión vencida, vuelve a entrar");
+      return null;
+    }
+    setDocumentosBusy(true);
+    try {
+      const res = await fetch("/api/admin/documentos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sess.session.access_token}`,
+        },
+        body: JSON.stringify(cuerpo),
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+        documento?: DocumentoRow;
+      };
+      setDocumentosBusy(false);
+      if (!res.ok) {
+        flash(body.error ?? `No se pudo: error ${res.status}`);
+        await cargarDocumentos();
+        return null;
+      }
+      await cargarDocumentos();
+      return body;
+    } catch {
+      setDocumentosBusy(false);
+      flash("No se pudo contactar al servidor.");
+      return null;
+    }
+  };
+
+  /** Al cambiar el tipo, el plan y el precio se ponen solos; se pueden retocar. */
+  const cambiarTipoDocumento = (tipo: TipoDocumento) => {
+    setDocTipo(tipo);
+    if (tipo === "websites") {
+      setDocPlan(PLANES_CONTRATO[0].etiqueta);
+      setDocPrecio(String(PLANES_CONTRATO[0].precio));
+    } else {
+      setDocPlan("");
+      setDocPrecio(String(tipo === "juditoads" ? PRECIO_JUDITOADS : PRECIO_ASISTENTE));
+    }
+  };
+
+  const enviarDocumento = async () => {
+    const email = docEmail.trim().toLowerCase();
+    if (!email) return flash("Falta el correo del cliente");
+    if (docNombre.trim().length < 2) return flash("Falta el nombre del cliente");
+    if (!(Number(docPrecio) > 0)) return flash("Revisa el precio mensual");
+
+    const body = await pedirDocumento({
+      accion: "enviar",
+      tipo: docTipo,
+      email,
+      nombre: docNombre.trim(),
+      empresa: docEmpresa.trim() || undefined,
+      plan: docTipo === "websites" ? docPlan : undefined,
+      precio: Number(docPrecio),
+      proyecto: docProyecto.trim() || undefined,
+      inicio: docInicio,
+    });
+    if (!body) return;
+    if (body.ok) {
+      flash(`Contrato de ${NOMBRE_TIPO[docTipo]} enviado a ${email} ✓`);
+      setDocEmail("");
+      setDocNombre("");
+      setDocEmpresa("");
+      setDocProyecto("");
+    } else {
+      // El PDF quedó guardado; solo el correo falló. La lista lo enseña.
+      flash(`El contrato se generó pero el correo no salió: ${body.error ?? "sin detalle"}`);
+    }
+  };
+
+  const accionDocumento = async (d: DocumentoRow, accion: "reenviar" | "eliminar") => {
+    if (
+      accion === "eliminar" &&
+      !window.confirm(`¿Borrar el contrato ${d.code} de ${d.recipient_name}? Se borra el PDF y el enlace deja de funcionar.`)
+    )
+      return;
+    const body = await pedirDocumento({ accion, id: d.id });
+    if (!body) return;
+    if (accion === "eliminar") flash(`Contrato ${d.code} borrado ✓`);
+    else if (body.ok) flash(`Contrato reenviado a ${d.recipient_email} ✓`);
+    else flash(`No salió: ${body.error ?? "sin detalle"}`);
+  };
+
+  const descargarDocumento = async (d: DocumentoRow) => {
+    const { data: sess } = await supabase.auth.getSession();
+    if (!sess.session) return flash("Sesión vencida, vuelve a entrar");
+    const res = await fetch(`/api/admin/documentos?descargar=${encodeURIComponent(d.id)}`, {
+      headers: { Authorization: `Bearer ${sess.session.access_token}` },
+    });
+    const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+    if (!res.ok || !body.url) return flash(body.error ?? "No se pudo abrir el PDF");
+    window.open(body.url, "_blank", "noopener");
+  };
+
+  const copiarEnlaceAceptacion = async (d: DocumentoRow) => {
+    const enlace = `https://www.judomarketing.net/es/acepto/${d.code}`;
+    try {
+      await navigator.clipboard.writeText(enlace);
+      flash("Enlace de aceptación copiado ✓");
+    } catch {
+      window.prompt("Copia el enlace:", enlace);
+    }
+  };
+
   /** Pide el token de sesión, que es lo que autoriza cada llamada. */
   const tokenSesion = async (): Promise<string | null> => {
     const { data } = await supabase.auth.getSession();
@@ -1325,6 +1514,14 @@ export default function AdminPortal() {
               (sillas ?? []).filter((s) => s.status === "pendiente" || s.status === "error").length,
               (sillas ?? []).filter((s) => s.status === "activa").length,
             ],
+            [
+              "documentos",
+              "📄",
+              "Documentos",
+              // Lo urgente: correos que no salieron.
+              (documentos ?? []).filter((d) => d.send_error && !d.sent_at).length,
+              (documentos ?? []).length,
+            ],
           ] as [Tab, string, string, number, number][]
         ).map(([key, icono, label, urgente, total]) => (
           <button
@@ -1335,6 +1532,7 @@ export default function AdminPortal() {
               if (key === "juditos" && !juditos && !juditosBusy) cargarJuditos();
               if (key === "judimental" && !mental && !mentalBusy) cargarJudimental();
               if (key === "invitados" && !sillas && !sillasBusy) cargarSillas();
+              if (key === "documentos" && !documentos && !documentosBusy) cargarDocumentos();
             }}
             className={`flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold transition ${
               tab === key
@@ -2105,6 +2303,257 @@ export default function AdminPortal() {
                           >
                             🗑
                           </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* ── DOCUMENTOS: contratos firmados que salen por correo ── */}
+      {tab === "documentos" && (
+        <section className="mt-6">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">Documentos</h2>
+              <p className="text-sm text-judo-fog/60">
+                El contrato sale ya firmado por Judo Marketing, en PDF, al correo
+                del cliente, con un enlace para que lo acepte. Su aceptación queda
+                registrada con nombre, fecha, hora e IP.
+              </p>
+            </div>
+            <button
+              onClick={cargarDocumentos}
+              disabled={documentosBusy}
+              className="rounded-full border border-judo-lilac/25 px-4 py-1.5 text-xs font-semibold text-white transition hover:border-emerald-400/50 hover:text-emerald-300 disabled:opacity-50"
+            >
+              {documentosBusy ? "Cargando…" : "↻ Actualizar"}
+            </button>
+          </div>
+
+          {/* Nuevo contrato */}
+          <div className="mb-5 rounded-xl border border-judo-lilac/20 bg-white/[0.03] p-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-judo-fog/50">
+              Enviar un contrato
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <select
+                value={docTipo}
+                onChange={(e) => cambiarTipoDocumento(e.target.value as TipoDocumento)}
+                className={inputClass}
+              >
+                {TIPOS_DOCUMENTO.map((t) => (
+                  <option key={t} value={t} className="bg-judo-black">
+                    {NOMBRE_TIPO[t]}
+                  </option>
+                ))}
+              </select>
+              {docTipo === "websites" ? (
+                <select
+                  value={docPlan}
+                  onChange={(e) => {
+                    setDocPlan(e.target.value);
+                    const p = PLANES_CONTRATO.find((x) => x.etiqueta === e.target.value);
+                    if (p) setDocPrecio(String(p.precio));
+                  }}
+                  className={inputClass}
+                >
+                  {PLANES_CONTRATO.map((p) => (
+                    <option key={p.etiqueta} value={p.etiqueta} className="bg-judo-black">
+                      {p.etiqueta} · ${p.precio}/mes
+                    </option>
+                  ))}
+                  <option value="Otro" className="bg-judo-black">
+                    Otro (precio a mano)
+                  </option>
+                </select>
+              ) : (
+                <input
+                  value={docProyecto}
+                  onChange={(e) => setDocProyecto(e.target.value)}
+                  placeholder={docTipo === "juditos" ? "nombre del asistente (opcional)" : "negocio o cuenta (opcional)"}
+                  className={inputClass}
+                />
+              )}
+              <div className="relative">
+                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-judo-fog/50">
+                  $
+                </span>
+                <input
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={docPrecio}
+                  onChange={(e) => setDocPrecio(e.target.value)}
+                  placeholder="precio mensual"
+                  className={`${inputClass} pl-8`}
+                />
+              </div>
+              <input
+                type="date"
+                value={docInicio}
+                onChange={(e) => setDocInicio(e.target.value)}
+                title="Fecha de inicio del servicio"
+                className={inputClass}
+              />
+              <input
+                type="email"
+                value={docEmail}
+                onChange={(e) => setDocEmail(e.target.value)}
+                placeholder="correo del cliente"
+                className={inputClass}
+              />
+              <input
+                value={docNombre}
+                onChange={(e) => setDocNombre(e.target.value)}
+                placeholder="nombre y apellido del cliente"
+                className={inputClass}
+              />
+              <input
+                value={docEmpresa}
+                onChange={(e) => setDocEmpresa(e.target.value)}
+                placeholder="empresa (opcional)"
+                className={inputClass}
+              />
+              {docTipo === "websites" && (
+                <input
+                  value={docProyecto}
+                  onChange={(e) => setDocProyecto(e.target.value)}
+                  placeholder="dominio o proyecto (opcional)"
+                  className={inputClass}
+                />
+              )}
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => void enviarDocumento()}
+                disabled={documentosBusy}
+                className="rounded-full bg-emerald-400 px-5 py-2 text-xs font-bold text-judo-black transition hover:bg-emerald-300 disabled:opacity-50"
+              >
+                {documentosBusy ? "Generando…" : "Generar, firmar y enviar"}
+              </button>
+              <p className="text-xs text-judo-fog/50">
+                Se genera el PDF con estos datos, se firma por Judo Marketing y se
+                manda al correo. Revísalos antes: el contrato sale con lo que diga aquí.
+              </p>
+            </div>
+          </div>
+
+          {documentosError && (
+            <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {documentosError}
+            </p>
+          )}
+
+          {!documentosError && documentos && documentos.length === 0 && (
+            <p className="py-12 text-center text-judo-fog/50">
+              Todavía no has enviado ningún contrato.
+            </p>
+          )}
+
+          {!documentosError && documentos && documentos.length > 0 && (
+            <div className="overflow-x-auto rounded-xl border border-judo-lilac/20">
+              <table className="w-full min-w-[820px] text-left text-sm">
+                <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-judo-fog/50">
+                  <tr>
+                    <th className="px-4 py-3">Cliente</th>
+                    <th className="px-4 py-3">Contrato</th>
+                    <th className="px-4 py-3">Precio</th>
+                    <th className="px-4 py-3">Correo</th>
+                    <th className="px-4 py-3">Aceptación</th>
+                    <th className="px-4 py-3">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-judo-lilac/10">
+                  {documentos.map((d) => (
+                    <tr key={d.id} className="align-top">
+                      <td className="px-4 py-3">
+                        <p className="font-semibold text-white">{d.recipient_name}</p>
+                        {d.business_name && (
+                          <p className="text-xs text-judo-fog/60">{d.business_name}</p>
+                        )}
+                        <p className="text-xs text-judo-fog/60">{d.recipient_email}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="text-white">{NOMBRE_TIPO[d.kind]}</p>
+                        <p className="text-xs text-judo-fog/60">
+                          {[d.plan, d.project].filter(Boolean).join(" · ") || "—"}
+                        </p>
+                        <p className="text-[11px] text-judo-lilac">{d.code}</p>
+                        <p className="text-[11px] text-judo-fog/40">
+                          inicio {d.starts_on.slice(0, 10)} · creado {d.created_at.slice(0, 10)}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3 text-white">${Number(d.monthly_price)}/mes</td>
+                      <td className="px-4 py-3">
+                        {d.sent_at ? (
+                          <span className="rounded-full bg-emerald-400 px-2 py-0.5 text-[11px] font-bold text-judo-black">
+                            enviado {d.sent_at.slice(0, 10)}
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-red-500/90 px-2 py-0.5 text-[11px] font-bold text-white">
+                            no salió
+                          </span>
+                        )}
+                        {d.send_error && (
+                          <p className="mt-1 max-w-[220px] text-[11px] text-amber-300/80">{d.send_error}</p>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {d.accepted_at ? (
+                          <>
+                            <span className="rounded-full bg-emerald-400 px-2 py-0.5 text-[11px] font-bold text-judo-black">
+                              ✓ aceptado
+                            </span>
+                            <p className="mt-1 text-[11px] text-judo-fog/60">
+                              {d.accepted_name} · {d.accepted_at.slice(0, 10)}
+                              {d.accepted_ip ? ` · IP ${d.accepted_ip}` : ""}
+                            </p>
+                          </>
+                        ) : (
+                          <span className="rounded-full bg-amber-400/90 px-2 py-0.5 text-[11px] font-bold text-judo-black">
+                            pendiente
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            onClick={() => void descargarDocumento(d)}
+                            className="rounded-full border border-judo-lilac/30 px-3 py-1 text-[11px] font-semibold text-white transition hover:bg-white/[0.06]"
+                          >
+                            PDF
+                          </button>
+                          <button
+                            onClick={() => void accionDocumento(d, "reenviar")}
+                            disabled={documentosBusy}
+                            className="rounded-full border border-emerald-400/40 px-3 py-1 text-[11px] font-semibold text-emerald-300 transition hover:bg-emerald-400/10 disabled:opacity-50"
+                          >
+                            Reenviar
+                          </button>
+                          {!d.accepted_at && (
+                            <>
+                              <button
+                                onClick={() => void copiarEnlaceAceptacion(d)}
+                                title="Copiar el enlace de aceptación para mandarlo por WhatsApp"
+                                className="rounded-full border border-judo-lilac/30 px-3 py-1 text-[11px] text-judo-fog/80 transition hover:bg-white/[0.06]"
+                              >
+                                🔗 Enlace
+                              </button>
+                              <button
+                                onClick={() => void accionDocumento(d, "eliminar")}
+                                disabled={documentosBusy}
+                                title="Borrar el contrato y su PDF"
+                                className="rounded-full border border-red-400/40 px-2.5 py-1 text-[11px] text-red-300 transition hover:bg-red-400/10 disabled:opacity-50"
+                              >
+                                🗑
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>

@@ -18,6 +18,12 @@ const PRECIOS = tabla.precios as Record<Plan, number>;
 /** Los dos servicios que se suman al website y cuestan igual. */
 export const PRECIO_JUDITOADS = tabla.extras.juditoads;
 export const PRECIO_ASISTENTE = tabla.extras.asistente;
+/**
+ * Lo que paga un cliente que terminó sus 12 meses y se queda alojado con
+ * nosotros sin contratar más diseño ni cambios. Es la base: si su website
+ * consume mucho más de lo normal, el contrato permite ajustarlo con aviso.
+ */
+export const PRECIO_HOSTING = tabla.extras.hosting;
 
 export function precio(plan: Plan): number {
   return PRECIOS[plan];

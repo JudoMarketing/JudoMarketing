@@ -1,5 +1,5 @@
 {
   "_comentario": "Fuente única de los precios. La leen src/lib/pricing.ts (el website) y los scripts de Python que arman los PDF. Si cambia un precio, se cambia aquí y en ningún otro lado.",
   "precios": { "essential": 99, "complex": 200, "apps": 300 },
-  "extras": { "juditoads": 20, "asistente": 20 }
+  "extras": { "juditoads": 20, "asistente": 20, "hosting": 30 }
 }
