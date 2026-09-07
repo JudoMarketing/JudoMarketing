@@ -9,8 +9,9 @@
 // Cuando el cliente acepta desde su enlace, se vuelve a generar con su bloque
 // de aceptación (nombre, fecha, hora, IP) y esa es la versión definitiva.
 
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
 import { FIRMANTE, type Documento } from "@/content/documentos";
+import { FIRMA_PNG_BASE64 } from "@/content/firma";
 
 export type Aceptacion = {
   nombre: string;
@@ -203,28 +204,60 @@ function tablaDatos(l: Lienzo, filas: [string, string][]): void {
   l.y -= 10;
 }
 
+/** Lo que va sobre la línea de firma: el trazo real o un nombre en cursiva. */
+type Rubrica =
+  | { trazo: PDFImage }
+  | { texto: string; color: ReturnType<typeof rgb>; tam?: number };
+
+/** Alto total del bloque, para reservar sitio y alinear las dos columnas. */
+const ALTO_FIRMA = 170;
+
+/**
+ * Un bloque de firma: etiqueta arriba, la rúbrica apoyada sobre la línea, y
+ * debajo el nombre, el cargo y los datos de verificación.
+ */
 function bloqueFirma(
   l: Lienzo,
   x: number,
   ancho: number,
   titulo: string,
+  rubrica: Rubrica,
   lineas: { texto: string; fuente?: PDFFont; tam?: number; color?: ReturnType<typeof rgb> }[]
 ): void {
-  let y = l.y;
-  l.pagina.drawText(sanear(titulo), { x, y, size: 8, font: l.negrita, color: MORADO });
-  y -= 30;
+  const y0 = l.y;
+  const yLinea = y0 - 78;
+  l.pagina.drawText(sanear(titulo), { x, y: y0, size: 8, font: l.negrita, color: MORADO });
+
+  if ("trazo" in rubrica) {
+    // El trazo real, con su base un poco por debajo de la línea, como una
+    // firma de bolígrafo que la cruza.
+    const altoTrazo = 62;
+    const anchoTrazo = Math.min(ancho, (rubrica.trazo.width * altoTrazo) / rubrica.trazo.height);
+    l.pagina.drawImage(rubrica.trazo, { x, y: yLinea - 8, width: anchoTrazo, height: altoTrazo });
+  } else {
+    l.pagina.drawText(sanear(rubrica.texto), {
+      x,
+      y: yLinea + 8,
+      size: rubrica.tam ?? 20,
+      font: l.cursiva,
+      color: rubrica.color,
+    });
+  }
+
+  l.pagina.drawLine({
+    start: { x, y: yLinea },
+    end: { x: x + ancho, y: yLinea },
+    thickness: 0.6,
+    color: LINEA,
+  });
+
+  let y = yLinea - 16;
   for (const ln of lineas) {
     const fuente = ln.fuente ?? l.normal;
     const tam = ln.tam ?? 9;
     l.pagina.drawText(sanear(ln.texto), { x, y, size: tam, font: fuente, color: ln.color ?? TINTA });
     y -= tam * 1.5;
   }
-  l.pagina.drawLine({
-    start: { x, y: l.y - 16 },
-    end: { x: x + ancho, y: l.y - 16 },
-    thickness: 0.6,
-    color: LINEA,
-  });
 }
 
 export async function generarPdf(
@@ -273,14 +306,15 @@ export async function generarPdf(
   }
 
   // Firmas: siempre juntas, en una página con sitio
-  asegurar(l, 150);
+  asegurar(l, ALTO_FIRMA + 40);
   l.y -= 6;
   parrafo(l, "Firmas", { fuente: l.negrita, tam: 11.5, color: MORADO, despues: 8 });
   const yFirmas = l.y;
   const anchoCol = (ANCHO_TEXTO - 24) / 2;
+  const VERDE = rgb(0.05, 0.5, 0.35);
 
-  bloqueFirma(l, MARGEN, anchoCol, "JUDO MARKETING", [
-    { texto: FIRMANTE.nombre, fuente: l.cursiva, tam: 20, color: MORADO },
+  const trazo = await doc.embedPng(Buffer.from(FIRMA_PNG_BASE64, "base64"));
+  bloqueFirma(l, MARGEN, anchoCol, "JUDO MARKETING", { trazo }, [
     { texto: FIRMANTE.nombre, fuente: l.negrita },
     { texto: FIRMANTE.cargo },
     { texto: `Firmado electrónicamente el ${fecha}`, color: GRIS },
@@ -294,21 +328,22 @@ export async function generarPdf(
     anchoCol,
     "EL CLIENTE",
     aceptacion
+      ? { texto: aceptacion.nombre, color: VERDE }
+      : { texto: "Pendiente de aceptación", color: GRIS, tam: 12 },
+    aceptacion
       ? [
-          { texto: aceptacion.nombre, fuente: l.cursiva, tam: 20, color: rgb(0.05, 0.5, 0.35) },
           { texto: aceptacion.nombre, fuente: l.negrita },
           { texto: `Aceptado electrónicamente el ${aceptacion.cuando} (hora del Este)`, color: GRIS },
           { texto: `Desde la dirección IP ${aceptacion.ip}`, color: GRIS },
           { texto: `Código de verificación: ${codigo}`, color: GRIS },
         ]
       : [
-          { texto: "Pendiente de aceptación", fuente: l.cursiva, tam: 12, color: GRIS },
           { texto: "El cliente acepta desde el enlace que recibió por correo.", color: GRIS },
           { texto: "Al aceptar, este documento se vuelve a emitir con su nombre,", color: GRIS },
           { texto: "fecha, hora y dirección IP en este espacio.", color: GRIS },
         ]
   );
-  l.y = yFirmas - 110;
+  l.y = yFirmas - ALTO_FIRMA;
 
   pie(l, doc.getPageCount());
   return doc.save();

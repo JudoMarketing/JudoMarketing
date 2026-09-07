@@ -56,7 +56,7 @@ export type Documento = {
 
 export const FIRMANTE = {
   nombre: "Junior Osorio",
-  cargo: "Administración · Judo Marketing",
+  cargo: "Director · Judo Marketing",
   empresa: "Judo Marketing",
   direccion: "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130, Estados Unidos",
   correo: "admin@judomarketing.net",
