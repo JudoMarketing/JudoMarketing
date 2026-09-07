@@ -80,6 +80,20 @@ const nextConfig: NextConfig = {
 
   async headers() {
     return [
+      // Los PDFs no pueden llevar <link rel="canonical">, y Google marcó la
+      // política en PDF como "duplicado sin canonical" de /legal, que dice lo
+      // mismo en HTML. Un PDF sí puede decirlo por cabecera. El contrato no
+      // tiene versión HTML que lo represente: no se indexa y listo.
+      {
+        source: "/legal/Service_Policy_and_Terms.pdf",
+        headers: [
+          { key: "Link", value: '<https://www.judomarketing.net/legal>; rel="canonical"' },
+        ],
+      },
+      {
+        source: "/legal/Acuerdo_de_Servicio_Cliente.pdf",
+        headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+      },
       ...SW_PATHS.map((source) => ({
         source,
         headers: [

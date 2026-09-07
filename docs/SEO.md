@@ -75,6 +75,17 @@ nosotros por un vendedor o un anuncio.
    datos estructurados FAQPage para resultados enriquecidos.
 4. Ya existentes: sitemap bilingüe con hreflang, robots.txt, dominio
    verificado en Search Console, sitemap enviado, textos con keywords.
+5. **Regla del canonical (09/2026).** Cada página declara el suyo; el
+   layout no pone ninguno. Cuando lo ponía, toda página sin el suyo (pagar,
+   admin, la demo de suspensión) salía diciendo "soy la portada" y Search
+   Console las reportó como duplicados. Las públicas usan `pageMetadata()`
+   (o `homeAlternates()` la portada); las que no deben salir en Google usan
+   `privateMetadata()`: noindex + su propio canonical.
+6. **PDFs.** No pueden llevar `<link rel="canonical">`, así que se dice por
+   cabecera en `next.config.ts`: la política en PDF apunta a `/legal` (es el
+   mismo texto) y el contrato lleva `X-Robots-Tag: noindex`. Material interno
+   (guion de ventas, acuerdo del programa retirado) **no va en `public/`**:
+   Google indexa lo que encuentra aunque nadie lo enlace.
 
 ## 4. Pasos del dueño (en orden de impacto)
 

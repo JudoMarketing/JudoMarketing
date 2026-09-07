@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Genera el Guion de Ventas de Judo Marketing en PDF (material interno
-para vendedores). Salida: public/legal/Guion_de_Ventas.pdf"""
+para vendedores). Salida: docs/legal/Guion_de_Ventas.pdf
+
+Es material INTERNO: no va en public/. Estuvo ahí un tiempo y Google lo
+encontró e indexó, aunque ninguna página lo enlazara."""
 
 import json
 
@@ -18,7 +21,7 @@ LILAC = HexColor("#A855F7")
 DARK = HexColor("#1a1a24")
 GRAY = HexColor("#555566")
 
-OUT = "public/legal/Guion_de_Ventas.pdf"
+OUT = "docs/legal/Guion_de_Ventas.pdf"
 
 # Los precios salen del mismo archivo que usa el website, para que el guion
 # nunca quede diciendo una cifra que la página ya no cobra.

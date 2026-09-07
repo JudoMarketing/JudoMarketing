@@ -335,8 +335,10 @@ COPIAS_PUBLICAS = [
     ("docs/legal/Service_Policy_and_Terms.pdf", "public/legal/Service_Policy_and_Terms.pdf"),
     ("docs/legal/contracts/Acuerdo_de_Servicio_Cliente.pdf",
      "public/legal/Acuerdo_de_Servicio_Cliente.pdf"),
-    ("docs/legal/contracts/Acuerdo_Programa_Vendedores.pdf",
-     "public/legal/Acuerdo_Programa_Vendedores.pdf"),
+    # El acuerdo del programa de vendedores se sigue generando en docs/ por
+    # si hace falta, pero ya no se publica: el programa se retiró y el sitio
+    # no lo enlaza. Un PDF público sin enlace solo lo encuentra Google, y lo
+    # que Google encuentra lo indexa.
 ]
 
 

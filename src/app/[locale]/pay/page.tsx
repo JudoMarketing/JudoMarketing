@@ -2,6 +2,21 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import PaymentOptions from "@/components/PaymentOptions";
 import { precioTexto } from "@/lib/pricing";
+import { privateMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
+
+/**
+ * El checkout no se indexa: es un paso, no una página que alguien busque, y
+ * con ?plan= tiene tres versiones que Google veía como copias de la portada.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return privateMetadata(locale === "es" ? "/es/pagar" : "/pay");
+}
 
 const PLAN_KEYS = ["essential", "complex", "apps"] as const;
 type PlanKey = (typeof PLAN_KEYS)[number];

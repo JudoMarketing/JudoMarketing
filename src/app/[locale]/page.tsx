@@ -9,9 +9,20 @@ import { PERFIL_GOOGLE } from "@/components/SocialLinks";
 import ListoOverlay from "@/components/ListoOverlay";
 import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
 import { precioDesde } from "@/lib/pricing";
+import { homeAlternates } from "@/lib/seo";
+import type { Metadata } from "next";
 
 /** Se regenera cada hora, para que un cambio de precio o de copia salga solo. */
 export const revalidate = 3600;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return { alternates: homeAlternates(locale) };
+}
 
 
 /** Los tres servicios, en el orden en que el cliente los necesita. */

@@ -12,7 +12,8 @@ export const SITE_URL = "https://www.judomarketing.net";
 
 type PageKey = "services" | "showcase" | "about" | "contact" | "legal";
 
-const PATHS: Record<PageKey, { en: string; es: string }> = {
+const PATHS: Record<PageKey | "home", { en: string; es: string }> = {
+  home: { en: "/", es: "/es" },
   services: { en: "/services", es: "/es/servicios" },
   showcase: { en: "/showcase", es: "/es/showcase" },
   about: { en: "/about", es: "/es/nosotros" },
@@ -115,6 +116,31 @@ const KEYWORDS_SERVICIOS: Record<"en" | "es", string[]> = {
     "chatbot for instagram and facebook",
   ],
 };
+
+/** Canonical y hreflang de la portada; el título y la descripción los pone el layout. */
+export function homeAlternates(locale: string): Metadata["alternates"] {
+  const loc = locale === "es" ? "es" : "en";
+  return {
+    canonical: `${SITE_URL}${PATHS.home[loc]}`,
+    languages: {
+      en: `${SITE_URL}${PATHS.home.en}`,
+      es: `${SITE_URL}${PATHS.home.es}`,
+      "x-default": `${SITE_URL}${PATHS.home.en}`,
+    },
+  };
+}
+
+/**
+ * Páginas que no deben salir en Google: el checkout, el portal de admin, la
+ * demo de suspensión. Llevan noindex y su propio canonical, para que ninguna
+ * herede la de la portada y aparezca como duplicado de la home.
+ */
+export function privateMetadata(path: string): Metadata {
+  return {
+    robots: { index: false, follow: false },
+    alternates: { canonical: `${SITE_URL}${path}` },
+  };
+}
 
 export function pageMetadata(page: PageKey, locale: string): Metadata {
   const loc = locale === "es" ? "es" : "en";

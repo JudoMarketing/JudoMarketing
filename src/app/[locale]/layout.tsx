@@ -52,10 +52,11 @@ export async function generateMetadata({
     metadataBase: new URL("https://www.judomarketing.net"),
     title: t("title"),
     description: descripcion,
-    alternates: {
-      canonical: locale === "es" ? "/es" : "/",
-      languages: { en: "/", es: "/es", "x-default": "/" },
-    },
+    // Sin canonical aquí a propósito. Cuando el layout lo traía, toda página
+    // que no declarara el suyo (pagar, admin, la demo de suspensión) salía
+    // diciendo "soy la portada", y Google las marcaba como duplicados. Cada
+    // página declara el suyo: las públicas con pageMetadata(), las privadas
+    // con noindex.
     icons: { icon: "/brand/logo-black.jpg" },
     // Verificación de cada buscador. Se pegan en Vercel y aparecen solas;
     // sin ellas el sitio funciona igual, solo que no puedes ver sus reportes.
