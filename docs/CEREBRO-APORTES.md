@@ -615,3 +615,22 @@ parece cierto DESDE FUERA aunque no lo sea.
 **Evidencia:** las instrucciones al revisor se escribieron alrededor de ese
 punto: dónde está «Connect with Facebook», que la cuenta de prueba abre en
 demo y cómo reproducir cada permiso desde ahí.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando la persona dice «¿por qué no lo haces tú, tienes
+acceso a todo?», la respuesta útil no es explicar mejor el comando: es
+quitar el comando. Y la premisa hay que corregirla sin rodeos: no se tiene
+acceso a todo, y a los secretos de producción (tokens, base de datos) no se
+tiene a propósito — ese mismo muro es el que protege a la persona de
+cualquiera que entre en la sesión. Lo que sí se puede hacer es mover la
+tarea a donde el secreto ya vive: el servidor del panel de administración
+guarda el token, así que un botón ahí hace lo mismo que el curl sin que la
+persona toque una terminal ni copie el token a ningún sitio. La regla:
+«hazlo tú» sobre un secreto ajeno se contesta con un botón, no con un
+tutorial.
+**Evidencia:** la cuenta del revisor de Meta solo se podía crear con curl y
+el token de administración en la mano. Se puso una tarjeta en la pestaña de
+JuditoADS del panel: se escribe la contraseña, se pulsa, y la orden viaja
+por el mismo puente que ya usaban suspender y eliminar.
