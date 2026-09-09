@@ -188,8 +188,10 @@ type JuditoUser = {
   whitelabel: boolean;
   campanas: number;
   cuentasMeta: number;
-  /** La manda JuditoADS cuando implemente las acciones; mientras, no llega. */
+  /** Sin acceso, con sus campañas pausadas; se puede reactivar. */
   suspendida?: boolean;
+  /** Resto de una baja lógica antigua: solo queda borrarla de verdad. */
+  dadaDeBaja?: boolean;
 };
 
 type ContractRow = {
@@ -517,9 +519,9 @@ export default function AdminPortal() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const flash = (text: string) => {
+  const flash = (text: string, ms = 3000) => {
     setMsg(text);
-    setTimeout(() => setMsg(""), 3000);
+    setTimeout(() => setMsg(""), ms);
   };
 
   // ── Acceso ─────────────────────────────────────────────────────────
@@ -906,7 +908,7 @@ export default function AdminPortal() {
     const avisos: Record<string, string> = {
       suspender: `¿Suspender la cuenta de ${quien}? El cliente no podrá usar JuditoADS hasta que la reactives.`,
       reactivar: `¿Reactivar la cuenta de ${quien}?`,
-      eliminar: `¿ELIMINAR la cuenta de ${quien} (${u.email})? Se borra con sus campañas y no se puede deshacer. Si es por falta de pago, mejor suspéndela.`,
+      eliminar: `¿ELIMINAR la cuenta de ${quien} (${u.email})? Se borra de verdad con sus campañas, cuentas de Meta y conexión; sus anuncios se pausan y su cobro se cancela primero. El correo queda libre. No se puede deshacer. Si es por falta de pago, mejor suspéndela.`,
     };
     if (!window.confirm(avisos[accion])) return;
     if (accion === "eliminar" && u.campanas > 0 &&
@@ -925,15 +927,17 @@ export default function AdminPortal() {
         },
         body: JSON.stringify({ accion, userId: u.id }),
       });
-      const body = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      const body = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+        detalle?: string;
+      };
       if (!res.ok || !body.ok) {
-        flash(body.error ?? `No se pudo: JuditoADS respondió ${res.status}`);
+        flash(body.error ?? `No se pudo: JuditoADS respondió ${res.status}`, 8000);
       } else {
-        flash(
-          accion === "eliminar"
-            ? `Cuenta de ${quien} eliminada ✓`
-            : `Cuenta de ${quien} ${accion === "suspender" ? "suspendida" : "reactivada"} ✓`
-        );
+        // JuditoADS cuenta qué hizo de verdad: cuántas campañas paró, si
+        // canceló el cobro. Eso vale más que un ✓ y se deja leer.
+        flash(body.detalle ? `✓ ${body.detalle}` : `Cuenta de ${quien} ${accion === "eliminar" ? "eliminada" : accion === "suspender" ? "suspendida" : "reactivada"} ✓`, 8000);
         await cargarJuditoads();
       }
     } catch {
@@ -2016,7 +2020,7 @@ export default function AdminPortal() {
                       <th className="px-4 py-3">Campañas</th>
                       <th className="px-4 py-3">Cuentas Meta</th>
                       <th className="px-4 py-3">Alta</th>
-                      <th className="px-4 py-3">Acciones</th>
+                      <th className="sticky right-0 bg-judo-black px-4 py-3">Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-judo-lilac/10">
@@ -2035,6 +2039,11 @@ export default function AdminPortal() {
                           {u.suspendida && (
                             <span className="mt-1 inline-block rounded-full bg-red-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
                               suspendida
+                            </span>
+                          )}
+                          {u.dadaDeBaja && (
+                            <span className="mt-1 inline-block rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-bold text-judo-fog/80" title="Baja antigua: la fila sigue ocupando el correo. Bórrala con 🗑.">
+                              dada de baja
                             </span>
                           )}
                           {u.whitelabel && (
@@ -2066,9 +2075,9 @@ export default function AdminPortal() {
                         <td className="px-4 py-3 text-judo-fog/60">
                           {u.creada.slice(0, 10)}
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="sticky right-0 bg-judo-black px-4 py-3">
                           <div className="flex items-center gap-2">
-                            {u.suspendida ? (
+                            {u.dadaDeBaja ? null : u.suspendida ? (
                               <button
                                 onClick={() => void accionJudito(u, "reactivar")}
                                 className="rounded-full border border-emerald-400/40 px-3 py-1 text-[11px] font-semibold text-emerald-300 transition hover:bg-emerald-400/10"
