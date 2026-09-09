@@ -582,3 +582,36 @@ en el panel del usuario. Se le pidió borrarlos; no existían para él.
 Comprobado después que estaban fuera de la solicitud
 (in_current_submission: false), o sea que ni siquiera había nada que borrar:
 el paso entero sobraba.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando el que evalúa publica su rúbrica, se escribe
+contra la rúbrica, no contra la intuición de «suena flojo». Meta dice
+literalmente las cuatro preguntas que cada descripción de permiso tiene que
+contestar y qué tiene que verse en el video; un texto corto que las conteste
+las cuatro vale más que uno elegante que conteste dos. Y la rúbrica también
+dice qué NO hacer: prometer en el texto algo que el video no enseña es la
+causa «could not reproduce». Así que cada afirmación se comprobó contra el
+código antes de escribirla (qué endpoint, qué campos) y cada texto termina
+señalando en qué toma del video se ve.
+**Evidencia:** el usuario preguntó si sus textos eran «muy mundanos». No era
+eso: el rechazo anterior fue por pedir un permiso que la app no usa, y los
+siete textos nunca se habían revisado. Se rehicieron con la estructura de
+las cuatro preguntas, citando endpoint y campos verificados, sin adornos.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** el riesgo más grande de un trámite suele estar en lo que
+uno da por obvio de su propio producto. Meta rechaza el envío ENTERO si el
+revisor «no encuentra el login con Facebook». En JuditoADS ese login está
+dentro, en la pantalla de cuentas, y la entrada es con correo — una decisión
+correcta de producto que para un revisor parece que la integración no
+existe. Eso no se arregla en el código: se arregla en las instrucciones al
+revisor, diciéndole dónde está y por qué. Antes de mandar nada a revisión,
+leer la lista de errores comunes del evaluador y preguntarse cuál de ellos
+parece cierto DESDE FUERA aunque no lo sea.
+**Evidencia:** las instrucciones al revisor se escribieron alrededor de ese
+punto: dónde está «Connect with Facebook», que la cuenta de prueba abre en
+demo y cómo reproducir cada permiso desde ahí.
