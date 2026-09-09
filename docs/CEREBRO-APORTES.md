@@ -548,3 +548,37 @@ de la herramienta entera.
 **Evidencia:** con un tope de edad, se apaga el público automático y se
 avisa ahí mismo de por qué y de cómo recuperarlo (subir el máximo). Ninguna
 de las dos opciones se traiciona en silencio.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** unas instrucciones se escriben con las palabras que la
+persona TIENE DELANTE, no con las que uno traduciría. Si su herramienta está
+en inglés, cada botón va citado en inglés aunque la explicación vaya en su
+idioma; traducirlo es obligarle a adivinar la correspondencia, y con eso se
+rinde. Y toda instrucción necesita su salida: «si esto no aparece en tu
+pantalla, sáltalo». Sin esa frase, lo que falta no se interpreta como «no
+aplica» sino como «no lo encuentro, no sirvo para esto» — y la persona se
+queda parada en un paso que no existía.
+**Evidencia:** una guía de trámite escrita con los nombres traducidos al
+español para un panel en inglés terminó en «no entiendo ni papa y no veo
+algunas cosas de las que me hablas». Rehecha pantalla por pantalla, con cada
+control entrecomillado tal cual sale, la explicación al lado y una salida
+explícita en cada paso que podía no aparecer.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** que una cosa exista en la API no significa que la
+interfaz la enseñe. Son dos superficies distintas del mismo sistema y no
+coinciden: la API lista estados internos, restos y registros que el panel
+oculta a propósito. Mandar a alguien a pulsar algo que solo se ha visto en
+una respuesta JSON es mandarlo a buscar lo que no está. Antes de convertir
+un dato de la API en un paso manual, hay que confirmarlo en la pantalla —
+una captura suya vale más que el listado— y, si no se puede confirmar,
+decirlo así en vez de darlo por hecho.
+**Evidencia:** dos permisos que la API devolvía como rechazados no aparecían
+en el panel del usuario. Se le pidió borrarlos; no existían para él.
+Comprobado después que estaban fuera de la solicitud
+(in_current_submission: false), o sea que ni siquiera había nada que borrar:
+el paso entero sobraba.
