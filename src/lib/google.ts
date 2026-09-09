@@ -173,7 +173,20 @@ export function resumirGsc(
   };
 }
 
-export async function consultarSearchConsole(propiedad: string): Promise<ResumenGsc> {
+/**
+ * Search Console identifica una propiedad de dominio como `sc-domain:x.com`
+ * y una de URL como `https://www.x.com/` (con la barra). En pantalla no se
+ * ve así, y la gente escribe lo que ve: "x.com". Se corrige aquí.
+ */
+export function normalizarPropiedadGsc(v: string): string {
+  const t = v.trim();
+  if (t.startsWith("sc-domain:")) return t;
+  if (/^https?:\/\//i.test(t)) return t.endsWith("/") ? t : `${t}/`;
+  return `sc-domain:${t.replace(/^www\./, "").replace(/\/+$/, "")}`;
+}
+
+export async function consultarSearchConsole(propiedadCruda: string): Promise<ResumenGsc> {
+  const propiedad = normalizarPropiedadGsc(propiedadCruda);
   // Search Console publica con dos o tres días de retraso: se corta antes.
   const hasta = diasAtras(3);
   const desde = diasAtras(30);
@@ -217,7 +230,10 @@ export function resumirGa4(propiedad: string, totales: ReporteGa4, paginas: Repo
 }
 
 export async function consultarAnalytics(propertyId: string): Promise<ResumenGa4> {
-  const id = propertyId.replace(/^properties\//, "").trim();
+  // Vale "498231477", "properties/498231477" o "G-XXXX" pegado por error:
+  // solo cuentan los dígitos del ID de propiedad.
+  const id = propertyId.replace(/^properties\//, "").replace(/\D/g, "").trim();
+  if (!id) throw new Error("el ID de propiedad de Analytics es un número (Admin → Property details → Property ID)");
   const url = `https://analyticsdata.googleapis.com/v1beta/properties/${encodeURIComponent(id)}:runReport`;
   const [totales, paginas] = await Promise.all([
     llamar<ReporteGa4>(url, {
