@@ -634,3 +634,20 @@ tutorial.
 el token de administración en la mano. Se puso una tarjeta en la pestaña de
 JuditoADS del panel: se escribe la contraseña, se pulsa, y la orden viaja
 por el mismo puente que ya usaban suspender y eliminar.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un botón que dice X y hace X′ es peor que un botón que
+no existe. «Eliminar» marcaba la cuenta como dada de baja y la dejaba en la
+lista; «Suspender» suspendía, pero el listado no lo decía, así que la fila
+seguía ofreciendo «Suspender». Todo funcionaba por dentro y para la persona
+nada funcionaba, porque lo único que ve es la lista después de pulsar. La
+regla: una acción de administración se comprueba MIRANDO LA LISTA después,
+no leyendo el 200 de la API. Y cuando el resultado cambia el estado, la
+lista tiene que traer ese estado; si no, el botón contrario nunca aparece.
+**Evidencia:** la pestaña de JuditoADS tenía los tres botones desde hacía
+semanas y la persona pidió «permíteme borrar cuentas». Se hizo borrado
+real (con las guardas de gasto y cobro por delante), el listado manda
+`suspendida`/`dadaDeBaja`, la columna de acciones va fija para que no se
+pierda fuera del borde, y el mensaje enseña el detalle en vez de un ✓.
