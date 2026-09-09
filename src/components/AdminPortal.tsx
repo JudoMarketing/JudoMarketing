@@ -14,6 +14,18 @@ import IntakeInbox from "./IntakeInbox";
 import { precio, PRECIO_ASISTENTE, PRECIO_JUDITOADS } from "@/lib/pricing";
 import { APPS_INVITADO, nombreApp, type AppInvitado } from "@/content/apps-hermanas";
 import { NOMBRE_TIPO, TIPOS_DOCUMENTO, type TipoDocumento } from "@/content/documentos";
+// Solo el tipo: el módulo en sí es de servidor y no entra al navegador.
+import type { GoogleDeSitio } from "@/lib/google";
+
+/** "▲ 12 %", "▼ 8 %" o "=" : ahora contra el periodo anterior. */
+function tendencia(ahora: number, antes: number): { texto: string; clase: string } {
+  if (!antes) return ahora ? { texto: "nuevo", clase: "text-judo-fog/45" } : { texto: "", clase: "" };
+  const p = Math.round(((ahora - antes) / antes) * 100);
+  if (Math.abs(p) < 3) return { texto: "=", clase: "text-judo-fog/45" };
+  return p > 0
+    ? { texto: `▲ ${p} %`, clase: "text-emerald-300" }
+    : { texto: `▼ ${Math.abs(p)} %`, clase: "text-amber-300" };
+}
 
 // Campo de texto estándar del panel (antes vivía en AuthForms)
 const inputClass =
@@ -398,6 +410,12 @@ export default function AdminPortal() {
   const [docProyecto, setDocProyecto] = useState("");
   const [docInicio, setDocInicio] = useState(hoyEste);
 
+  // Google (Search Console + Analytics) por website. Llega aparte y después:
+  // Google tarda, y el portal no tiene por qué esperarlo para pintarse.
+  const [google, setGoogle] = useState<Record<string, GoogleDeSitio>>({});
+  const [googleRobot, setGoogleRobot] = useState<string | null>(null);
+  const [googleBusy, setGoogleBusy] = useState(false);
+
   // Acceso propio del panel: sin sesión se muestra el formulario de entrada
   const [needsLogin, setNeedsLogin] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
@@ -553,6 +571,7 @@ export default function AdminPortal() {
       setReady(true);
       // Los contratos enviados también cuentan en "por hacer" del Resumen
       void cargarDocumentos();
+      void cargarGoogle();
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -1362,6 +1381,52 @@ export default function AdminPortal() {
     }
   };
 
+  // ── Google ────────────────────────────────────────────────────────
+  const cargarGoogle = async () => {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) return;
+    setGoogleBusy(true);
+    try {
+      const res = await fetch("/api/admin/google?todos=1", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        robot?: string | null;
+        sitios?: Record<string, GoogleDeSitio>;
+      };
+      if (res.ok) {
+        setGoogle(body.sitios ?? {});
+        setGoogleRobot(body.robot ?? null);
+      }
+    } catch {
+      // Sin Google el portal sigue igual; el bloque de cada website lo dice.
+    }
+    setGoogleBusy(false);
+  };
+
+  /** Vuelve a pedirle a Google un website, saltándose lo guardado. */
+  const refrescarGoogle = async (siteId: string) => {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) return flash("Sesión vencida, vuelve a entrar");
+    setGoogleBusy(true);
+    try {
+      const res = await fetch(`/api/admin/google?site=${encodeURIComponent(siteId)}&fresco=1`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const body = (await res.json().catch(() => ({}))) as GoogleDeSitio & { robot?: string | null; error?: string };
+      if (!res.ok) flash(body.error ?? `Google no contestó (${res.status})`);
+      else {
+        setGoogle((g) => ({ ...g, [siteId]: body }));
+        setGoogleRobot(body.robot ?? null);
+      }
+    } catch {
+      flash("No se pudo contactar al servidor");
+    }
+    setGoogleBusy(false);
+  };
+
   /** Pide el token de sesión, que es lo que autoriza cada llamada. */
   const tokenSesion = async (): Promise<string | null> => {
     const { data } = await supabase.auth.getSession();
@@ -1787,6 +1852,9 @@ export default function AdminPortal() {
                       <th className="px-4 py-2.5">Estado</th>
                       <th className="px-4 py-2.5 text-right">Ventas</th>
                       <th className="px-4 py-2.5 text-right">Visitas</th>
+                      <th className="px-4 py-2.5 text-right" title="Search Console y Analytics, últimos 28 días">
+                        Google · 28 d
+                      </th>
                       <th className="px-4 py-2.5">Cobro</th>
                       <th className="px-4 py-2.5 text-right">Al mes</th>
                       <th className="px-4 py-2.5"></th>
@@ -1795,7 +1863,7 @@ export default function AdminPortal() {
                   <tbody className="divide-y divide-judo-lilac/10">
                     {sites.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="px-4 py-8 text-center text-judo-fog/45">
+                        <td colSpan={8} className="px-4 py-8 text-center text-judo-fog/45">
                           Todavía no hay websites. Se crean en la pestaña Websites.
                         </td>
                       </tr>
@@ -1834,6 +1902,36 @@ export default function AdminPortal() {
                           </td>
                           <td className="px-4 py-2.5 text-right tabular-nums text-white">
                             {m?.traffic != null ? m.traffic : <span className="text-judo-fog/30">—</span>}
+                          </td>
+                          <td className="px-4 py-2.5 text-right tabular-nums">
+                            {(() => {
+                              const g = google[s.id];
+                              if (!g || (!g.gsc && !g.ga4)) {
+                                return (
+                                  <span className="text-[11px] text-judo-fog/30">
+                                    {s.gsc_property || s.ga4_property_id ? (googleBusy ? "…" : "sin datos") : "sin conectar"}
+                                  </span>
+                                );
+                              }
+                              const tc = g.gsc ? tendencia(g.gsc.clics, g.gsc.clicsAntes) : null;
+                              const tu = g.ga4 ? tendencia(g.ga4.usuarios, g.ga4.usuariosAntes) : null;
+                              return (
+                                <>
+                                  {g.gsc && (
+                                    <p className="text-white">
+                                      {g.gsc.clics} clics{" "}
+                                      {tc && <span className={`text-[11px] ${tc.clase}`}>{tc.texto}</span>}
+                                    </p>
+                                  )}
+                                  {g.ga4 && (
+                                    <p className="text-judo-fog/70">
+                                      {g.ga4.usuarios} usuarios{" "}
+                                      {tu && <span className={`text-[11px] ${tu.clase}`}>{tu.texto}</span>}
+                                    </p>
+                                  )}
+                                </>
+                              );
+                            })()}
                           </td>
                           <td className="px-4 py-2.5">
                             {s.status === "activo" && s.next_payment_due ? (
@@ -3558,6 +3656,13 @@ export default function AdminPortal() {
                           "📡 sin telemetría aún (kit no conectado)"
                         )}
                       </p>
+                      <GoogleSitio
+                        site={site}
+                        datos={google[site.id] ?? null}
+                        robot={googleRobot}
+                        ocupado={googleBusy}
+                        onRefrescar={() => void refrescarGoogle(site.id)}
+                      />
                       <SiteIdentidad site={site} onSaved={loadAll} flash={flash} />
                       {/* La clave lleva el valor guardado: al registrar un pago o
                           cambiar el precio, el campo se vuelve a montar con el dato
@@ -3795,6 +3900,140 @@ function SitePortfolio({
             sola. Si esa captura no luce bien, pon aquí una imagen propia y esa
             manda. El portafolio se refresca a los pocos minutos.
           </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Google: lo que el buscador y Analytics saben de este website ────
+// Los últimos 28 días contra los 28 anteriores. Si falta algo (la llave del
+// robot, el acceso a la propiedad, la propiedad misma), lo dice aquí en
+// palabras y con el correo del robot a mano para copiarlo.
+function GoogleSitio({
+  site,
+  datos,
+  robot,
+  ocupado,
+  onRefrescar,
+}: {
+  site: SiteRow;
+  datos: GoogleDeSitio | null;
+  robot: string | null;
+  ocupado: boolean;
+  onRefrescar: () => void;
+}) {
+  const conectado = Boolean(site.gsc_property || site.ga4_property_id);
+  const g = datos?.gsc ?? null;
+  const a = datos?.ga4 ?? null;
+
+  const Numero = ({ etiqueta, valor, antes }: { etiqueta: string; valor: string | number; antes?: number }) => {
+    const t = antes != null && typeof valor === "number" ? tendencia(valor, antes) : null;
+    return (
+      <div>
+        <p className="text-[10px] uppercase tracking-wide text-judo-fog/40">{etiqueta}</p>
+        <p className="text-base font-bold tabular-nums text-white">
+          {valor} {t && <span className={`text-[11px] font-normal ${t.clase}`}>{t.texto}</span>}
+        </p>
+      </div>
+    );
+  };
+
+  return (
+    <div className="mt-2 rounded-xl border border-judo-lilac/15 bg-judo-black/30 p-3 text-xs text-judo-fog/60">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="font-semibold text-judo-fog/80">🔍 Google · últimos 28 días</span>
+        {g && (
+          <span className="text-[11px] text-judo-fog/40">
+            {g.desde.slice(5)} → {g.hasta.slice(5)}
+          </span>
+        )}
+        <button
+          onClick={onRefrescar}
+          disabled={ocupado}
+          className="ml-auto text-judo-lilac hover:underline disabled:opacity-50"
+          title="Pedirle a Google los datos frescos"
+        >
+          {ocupado ? "…" : "↻ actualizar"}
+        </button>
+      </div>
+
+      {!conectado && (
+        <p className="mt-2 text-[11px] text-judo-fog/45">
+          Sin conectar. Pon la propiedad de Search Console y el ID de Analytics en
+          <b> Expediente → 📊 Medición</b>. Los pasos están en <code>docs/google-conexion.md</code>.
+        </p>
+      )}
+
+      {conectado && !datos && (
+        <p className="mt-2 text-[11px] text-judo-fog/45">{ocupado ? "Pidiendo a Google…" : "Sin datos todavía."}</p>
+      )}
+
+      {(g || a) && (
+        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+          {g && (
+            <div>
+              <p className="mb-1.5 text-[11px] font-semibold text-judo-fog/70">Buscador (Search Console)</p>
+              <div className="grid grid-cols-4 gap-2">
+                <Numero etiqueta="Clics" valor={g.clics} antes={g.clicsAntes} />
+                <Numero etiqueta="Impresiones" valor={g.impresiones} antes={g.impresionesAntes} />
+                <Numero etiqueta="CTR" valor={`${(g.ctr * 100).toFixed(1)} %`} />
+                <Numero etiqueta="Posición" valor={g.posicion.toFixed(1)} />
+              </div>
+              {g.consultas.length > 0 && (
+                <ul className="mt-2 space-y-0.5">
+                  {g.consultas.map((c) => (
+                    <li key={c.consulta} className="flex justify-between gap-2">
+                      <span className="truncate text-judo-fog/75">“{c.consulta}”</span>
+                      <span className="shrink-0 tabular-nums text-judo-fog/45">
+                        {c.clics} clics · pos. {c.posicion}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+          {a && (
+            <div>
+              <p className="mb-1.5 text-[11px] font-semibold text-judo-fog/70">Visitas (Analytics)</p>
+              <div className="grid grid-cols-3 gap-2">
+                <Numero etiqueta="Usuarios" valor={a.usuarios} antes={a.usuariosAntes} />
+                <Numero etiqueta="Sesiones" valor={a.sesiones} antes={a.sesionesAntes} />
+                <Numero etiqueta="Páginas vistas" valor={a.vistas} />
+              </div>
+              {a.paginas.length > 0 && (
+                <ul className="mt-2 space-y-0.5">
+                  {a.paginas.map((p) => (
+                    <li key={p.ruta} className="flex justify-between gap-2">
+                      <span className="truncate text-judo-fog/75">{p.ruta}</span>
+                      <span className="shrink-0 tabular-nums text-judo-fog/45">{p.vistas} vistas</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {datos && datos.faltas.length > 0 && (
+        <div className="mt-2 space-y-0.5">
+          {datos.faltas.map((f) => (
+            <p key={f} className="text-[11px] text-amber-300/85">⚠ {f}</p>
+          ))}
+          {robot && datos.faltas.some((f) => /no deja entrar/.test(f)) && (
+            <p className="text-[11px] text-judo-fog/50">
+              Correo del robot para darle acceso:{" "}
+              <button
+                onClick={() => void navigator.clipboard.writeText(robot)}
+                className="text-judo-lilac hover:underline"
+                title="Copiar"
+              >
+                {robot}
+              </button>
+            </p>
+          )}
         </div>
       )}
     </div>
