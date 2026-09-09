@@ -70,6 +70,15 @@
       "kicker": "They get answers",
       "price": "$20/mo",
       "description": "An assistant that answers your customers around the clock."
+    },
+    "essential": {
+      "name": "Essential Website"
+    },
+    "complex": {
+      "name": "Complex Website"
+    },
+    "apps": {
+      "name": "Mobile App"
     }
   },
   "reviews": {

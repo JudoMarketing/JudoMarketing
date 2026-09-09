@@ -1963,6 +1963,15 @@ export default function AdminPortal() {
               </div>
             </section>
 
+            {/* Estado de la conexión con Google, para saber qué falta sin adivinar */}
+            <p className="-mt-3 text-[11px] text-judo-fog/45">
+              {googleBusy
+                ? "🔍 Google: pidiendo datos…"
+                : googleRobot
+                  ? `🔍 Google: robot conectado (${googleRobot}) · ${sites.filter((s) => s.gsc_property || s.ga4_property_id).length} de ${sites.length} websites con propiedad puesta en Expediente › Medición`
+                  : "🔍 Google: sin llave. Falta GOOGLE_SERVICE_ACCOUNT_JSON en Vercel (docs/google-conexion.md, paso 2) y un Redeploy."}
+            </p>
+
             {/* Herramienta suelta: aviso a los buscadores que no son Google */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-judo-lilac/15 px-5 py-3 text-xs text-judo-fog/55">
               <span>

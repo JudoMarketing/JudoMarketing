@@ -70,6 +70,15 @@
       "kicker": "Te contestan",
       "price": "$20/mes",
       "description": "Un asistente que responde a tus clientes a toda hora."
+    },
+    "essential": {
+      "name": "Website Esencial"
+    },
+    "complex": {
+      "name": "Website Complejo"
+    },
+    "apps": {
+      "name": "App de teléfono"
     }
   },
   "reviews": {
