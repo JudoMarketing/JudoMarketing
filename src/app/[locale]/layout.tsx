@@ -14,7 +14,27 @@ import ChunkGuard from "@/components/ChunkGuard";
 import ServiceWorkerPurge from "@/components/ServiceWorkerPurge";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 import "../globals.css";
+
+/**
+ * Google Analytics del propio sitio. Sin esta etiqueta la propiedad de GA4
+ * de judomarketing.net decía "No data received" y el portal iba a enseñar
+ * ceros para siempre. El ID (G-XXXX) vive en NEXT_PUBLIC_GA_ID; sin la
+ * variable no se carga nada.
+ */
+function GoogleAnalytics() {
+  const id = process.env.NEXT_PUBLIC_GA_ID;
+  if (!id) return null;
+  return (
+    <>
+      <Script src={`https://www.googletagmanager.com/gtag/js?id=${id}`} strategy="afterInteractive" />
+      <Script id="ga4" strategy="afterInteractive">
+        {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${id}',{anonymize_ip:true});`}
+      </Script>
+    </>
+  );
+}
 
 /**
  * Dos tipografías con papeles claros, la regla de la casa (docs/CEREBRO.md).
@@ -109,6 +129,7 @@ export default async function LocaleLayout({
         </NextIntlClientProvider>
         <SpeedInsights />
         <Analytics />
+        <GoogleAnalytics />
       </body>
     </html>
   );
