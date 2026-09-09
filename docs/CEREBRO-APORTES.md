@@ -198,6 +198,37 @@ la base de datos antes de aceptar. Un modelo puede regalar un descuento o
 prometer un hueco ocupado con toda la seguridad del mundo, y el cliente lo
 va a exigir. Que la validación viva en la herramienta y no en el prompt: al
 prompt se le puede dar la vuelta hablando, a un `SELECT` no.
+### 2026-08-27 · JuditoWEBS · plantilla base
+**Qué aprendimos:** en Next.js 16 el `proxy.ts` (lo que antes era
+`middleware.ts`) tiene que estar al mismo nivel que la carpeta `app`. Si el
+proyecto usa `src/`, va en `src/proxy.ts`, NO en la raíz. Puesto en la raíz no
+da error, no avisa en el build y no aparece en los logs: simplemente no se
+ejecuta nunca.
+**Evidencia:** con el archivo en la raíz, `/` devolvía 404 en vez de redirigir
+al idioma del visitante. El build salía verde y el único síntoma era la página
+rota. Moverlo a `src/` lo arregló sin cambiar una línea de código.
+
+---
+### 2026-08-27 · JuditoWEBS · plantilla base
+**Qué aprendimos:** la imagen de OpenGraph que genera Next se dibuja con
+Satori, que NO es un navegador: un `<div>` con más de un hijo revienta el build
+salvo que lleve `display: flex` explícito. Y ojo, dos trozos de texto seguidos
+cuentan como dos hijos. Lo más simple es unir el texto en una sola plantilla de
+cadena.
+**Evidencia:** el build falló entero en `/en/opengraph-image` y
+`/es/opengraph-image` con "Expected <div> to have explicit display: flex". El
+resto del sitio compilaba perfecto, así que el fallo llegó al final del proceso.
+
+---
+### 2026-08-27 · JuditoWEBS · plantilla base
+**Qué aprendimos:** la forma barata de hacer cumplir "un idioma por vista,
+completo" es un tipo de TypeScript. Se declara un `Dictionary` con TODAS las
+claves de texto del sitio y cada idioma tiene que satisfacerlo: si falta una
+traducción, el build falla. Con tuplas (`[T, T, T]`) el mismo truco hace
+cumplir la regla de tres — meter un cuarto servicio deja de ser un descuido y
+pasa a ser una decisión que hay que escribir.
+**Evidencia:** con esto, olvidar una cadena al traducir dejó de ser algo que
+descubre el cliente en producción y pasó a ser un error de compilación.
 
 ---
 ### 2026-08-28 · Juditos · asistentes de IA
@@ -651,3 +682,304 @@ semanas y la persona pidió «permíteme borrar cuentas». Se hizo borrado
 real (con las guardas de gasto y cobro por delante), el listado manda
 `suspendida`/`dadaDeBaja`, la columna de acciones va fija para que no se
 pierda fuera del borde, y el mensaje enseña el detalle en vez de un ✓.
+### 2026-08-28 · Juditos · cuentas compartidas entre productos
+**Qué aprendimos:** cuando dos productos de la casa tienen que compartir
+cuenta, la respuesta NO es copiar la tabla de usuarios en las dos bases. Dos
+copias de una contraseña son dos sitios que se pueden filtrar y dos
+registros que se desincronizan el día que alguien cambia su correo. Lo que
+funciona: uno de los dos es el dueño de la identidad (el que cobra y donde
+la gente se registra) y el otro le pregunta. Si comparten dominio, la cookie
+de sesión llega sola de un lado al otro, así que basta un endpoint que
+devuelva "de quién es esta cookie" a quien la traiga. Sin secreto compartido:
+la cookie ES la credencial, y ese endpoint solo devuelve los datos de quien
+la trae.
+**Evidencia:** Juditos tenía su propia tabla de usuarios y su propio login.
+El dueño intentaba entrar con su cuenta de Judito Ads y le decía que no
+existía. No era un fallo de contraseña, eran dos registros distintos y solo
+uno tenía usuarios de verdad.
+
+---
+
+### 2026-08-28 · Juditos · multi-zona con basePath
+**Qué aprendimos:** en un sitio partido en zonas (`/`, `/juditoads`,
+`/juditos`), un `redirect("/otra-zona")` desde dentro de una zona sale con
+el prefijo de esa zona pegado delante: desde Juditos, `/juditoads/login` se
+convierte en `/juditos/juditoads/login`. Todo salto entre zonas tiene que ir
+con dirección completa, y el host hay que sacarlo de `x-forwarded-host`: la
+petición llega reenviada al despliegue de Vercel, y el host que se ve desde
+dentro no es el que ve la persona.
+**Evidencia:** el middleware de Judito Ads guardaba el destino sin el
+prefijo, así que quien entraba a `/juditoads/app` sin sesión acababa después
+del login en `judomarketing.net/app`, que no existe.
+
+---
+
+### 2026-08-28 · Juditos · middleware de Next
+**Qué aprendimos:** `NextResponse` construye una URL con lo que haya en la
+cabecera `Location`, y una ruta relativa no es una URL válida. No falla la
+redirección: falla el middleware entero, con
+`MIDDLEWARE_INVOCATION_FAILED` y un 500 antes de llegar a ninguna página. Si
+hace falta redirigir, siempre dirección completa.
+**Evidencia:** se cambió a Location relativo justamente para no sacar a
+nadie del dominio, y el portal entero devolvió 500 a todo el que entrara sin
+sesión. El error solo aparece en los logs de ejecución, con un
+`TypeError: Invalid URL` sin ninguna pista de dónde.
+
+---
+
+### 2026-08-28 · Juditos · dos portales que se rebotan
+**Qué aprendimos:** cuando el portal A manda al acceso de B y B devuelve a
+A, si A no reconoce la sesión el navegador se queda rebotando entre los dos
+para siempre, con la pantalla en blanco. Hace falta un sitio donde parar: una
+ruta que reparta (mira quién eres y te manda a tu portal) con una marca de
+"ya vengo de vuelta". Si al volver sigue sin reconocerte, no redirige otra
+vez: lo dice y ofrece reintentar. Cuesta veinte líneas y convierte una caída
+del otro servicio en un mensaje en vez de un cuelgue.
+**Evidencia:** lo mismo hace falta para quien tiene cuenta pero no ha
+contratado el producto: si la página protegida le echa al login y el login le
+devuelve a la página protegida, el bucle es el mismo. Ahí el reparto le lleva
+a "todavía no tienes esto, actívalo", que es la respuesta correcta.
+
+---
+
+### 2026-08-30 · AC-Customs · la voz del titular
+**Qué aprendimos:** «promesa dicha por una persona» no significa coloquial.
+La persona que habla en el H1 es un profesional que cotiza, no un amigo que
+exagera. La prueba: si el titular podría decirse en broma, está mal escrito.
+El registro de la casa es «Moderniza el interior de tu auto», nunca «Te
+lleno el techo de estrellas».
+**Evidencia:** el primer hero de AC Customs decía «Te lleno el techo de
+estrellas» y la reacción del dueño fue literal: «me dio fue risa jajaja,
+debe ser algo más profesional». El titular que sí pasó fue «Moderniza el
+interior de tu auto».
+
+---
+
+### 2026-08-30 · AC-Customs · el efecto que el cliente describe
+**Qué aprendimos:** cuando el cliente describe un efecto con precisión —
+«luces que salgan del fondo de tu pantalla y vayan subiendo poco a poco
+desvaneciéndose lentamente, solo a los orillos» — eso es una especificación,
+no una inspiración. Se construye ESE movimiento, con ese origen, esa
+dirección y ese desvanecimiento. Interpretarlo (resplandores fijos en las
+esquinas) se recibe como no haberlo hecho.
+**Evidencia:** la primera entrega llevaba brillos de esquina y la respuesta
+fue «con respecto a lo que te pedí, no lo hiciste». La segunda llevaba
+cometas naciendo abajo y subiendo por los orillos, y esa quedó.
+
+---
+
+### 2026-08-30 · AC-Customs · neón que se deja leer
+**Qué aprendimos:** el neón en pantalla es luz DETRÁS de la letra, nunca
+letra rellena de color o degradado: letra blanca con `text-shadow` contenido
+(6px al 50 %, 22px al 32 %, 55px al 22 % del color de familia). El brillo
+tiene presupuesto: si un texto cuesta leerse, sobra brillo. Y toda luz
+animada se difumina — blur, degradado suave en AMBOS extremos, sin cabeza
+blanca, opacidad con tope (.55) — o deja de parecer luz.
+**Evidencia:** dos rondas de corrección del dueño, con sus frases: «mejor
+estaría la letra con luz de neón atrás» sobre los titulares rellenos de
+degradado, y «parece un palo de color, debe difuminarse mejor» sobre los
+cometas nítidos de 2 px con cabeza brillante. Los valores finales están en
+`docs/DISENO.md` del repo accustoms-miami.
+
+---
+
+### 2026-08-30 · AC-Customs · profundidad en fondo oscuro
+**Qué aprendimos:** sobre fondo oscuro, la profundidad se hace con luz: las
+tarjetas iluminan con el color de su familia (borde y resplandor que suben
+al pasar el cursor), las secciones encienden al entrar en pantalla. Tarjetas
+planas sobre fondo oscuro leen como maqueta sin terminar. Y cuando aún no
+hay fotos reales, no se ponen marcadores grises: se dibujan escenas
+vectoriales de referencia en el lenguaje del sitio, se dejan si se ven bien
+y se reemplazan por las fotos del cliente cuando lleguen.
+**Evidencia:** el veredicto de la versión con tarjetas planas fue «siento
+que el diseño estuvo muy pobre... los cuadros con texto deberían iluminar,
+así le das profundidad». Las escenas vectoriales (arco estrellado, puerta
+con barrido ambiental, pantalla CarPlay) pasaron su prueba de «si quedan
+bien las dejas, si no las quitas».
+
+---
+
+### 2026-08-30 · AC-Customs · página de citas
+**Qué aprendimos:** una cita de servicios se pide con selección MÚLTIPLE y
+estimado sumado — la gente contrata techo y ambiente en el mismo carro — y
+si el negocio cobra directo, la página lo dice visible: «aquí no se cobra
+nada; el pago es directo con el taller el día del servicio». Quita el miedo
+de sacar la tarjeta y refleja cómo cobra el negocio de verdad.
+**Evidencia:** correcciones directas del dueño a la primera versión: «que
+puedan contratar más de un servicio, no solo uno» y «se cobra al cliente,
+no por la página».
+
+---
+
+### 2026-08-30 · JudiMental · la marca de un app
+**Qué aprendimos:** el nombre se verifica ANTES de encariñarse: tiendas (la
+API de búsqueda de iTunes y Google Play), marcas registradas (USPTO, EUIPO)
+y dominio (RDAP). Un nombre que suena libre puede chocar con una marca
+registrada de un rubro vecino. Y el logo nunca es texto con una fuente
+instalada: el wordmark se traza a caminos SVG (con fontTools: contornos,
+kerning y todo), para que se vea idéntico en cualquier máquina y tienda.
+**Evidencia:** «JuniAPP» chocaba con JUNI, marca ya registrada por Juni
+Technology AB en software. La verificación salió a tiempo: el mismo día se
+pivotó a JudiMental, se verificó limpio y el dueño compró judimental.com.
+El wordmark trazado está en `assets/marca/` del repo juniapp.
+
+---
+
+### 2026-08-30 · Mil-Colores · el nombre vuelto función
+**Qué aprendimos:** el mejor nombre de marca es el que se puede volver
+función. Mil Colores dejó de ser solo un nombre cuando la pregunta central
+de la app pasó a ser «¿De qué color estás hoy?»: el registro emocional del
+día se hace eligiendo un color, y el historial es una malla de colores que
+enseña el proceso sin una sola cifra. Antes de inventar mecánicas para una
+app, mirar si el nombre ya trae una.
+**Evidencia:** la pantalla «Tu proceso» del lienzo de Mil Colores: «los
+primeros días casi todo era gris; los últimos ya no» dicho con puntos de
+color, sin números ni gráficas.
+
+---
+
+### 2026-08-30 · Mil-Colores · el portal del profesional
+**Qué aprendimos:** en una app de acompañamiento, el lado del profesional
+solo pide las decisiones que únicamente esa persona puede tomar (qué sube,
+audio o video, portada, a qué serie va) y nada más. Su panel muestra
+TOTALES, nunca personas: puede ver que la calma subió, no quién está mal —
+esa línea es lo que hace la app segura de usar y de recomendar. Y el
+teléfono de crisis jamás se inventa ni se deja bonito de relleno: va como
+hueco marcado hasta tener el real del país.
+**Evidencia:** el portal de Hulda quedó en tres pantallas (subir, panel,
+sillas de cordialidad) porque todo lo demás no era decisión de ella. El
+panel agregado quedó anotado en el lienzo como decisión a confirmar con
+ella.
+
+---
+
+### 2026-08-30 · Mil-Colores · revisión sin login
+**Qué aprendimos:** para que el cliente final (o su cliente) revise un
+diseño sin cuenta, el formato es una página-galería con las imágenes
+embebidas, publicada como artifact: esa sí puede hacerse pública con el
+interruptor de compartir. El lienzo de diseño con capacidad de exportar NO
+sirve para eso — solo se comparte dentro de la organización.
+**Evidencia:** Hulda necesitaba ver Mil Colores sin log in; el lienzo no
+podía hacerse público y la galería de imágenes sí.
+
+---
+
+### 2026-08-30 · La casa · a qué rama van los aportes
+**Qué aprendimos:** la advertencia del 27 envejeció: `master` ya existe, es
+la default y carga los aportes más nuevos; la rama
+`claude/judo-marketing-redesign-ci2rj5` se quedó atrás. La regla que no
+envejece: antes de empujar, `git ls-remote --symref origin HEAD` y mirar en
+qué rama está la última entrada de ESTE archivo; se empuja a la que va
+adelante.
+**Evidencia:** hoy este archivo tenía 545 líneas en `master` y 486 en la
+rama del rediseño. Seguir la instrucción del 27 al pie de la letra habría
+mandado los aportes nuevos a la rama vieja.
+
+---
+
+### 2026-08-30 · Todos · la vara del dueño
+**Qué aprendimos:** hoy hubo tres proyectos y la distancia entre la primera
+entrega y la aprobada fue siempre la misma: (1) lo que el cliente describe
+se construye literal antes de interpretarlo; (2) la voz es profesional
+aunque la regla diga «promesa dicha por una persona» — persona seria, no
+colega bromeando; (3) los efectos existen para dar profundidad, no para
+verse: luz detrás de la letra, brillo con tope, todo difuminado, y si algo
+cuesta leerse, sobra efecto. Una entrega que ignora cualquiera de las tres
+se recibe como «ni cerca», aunque técnicamente esté bien hecha.
+**Evidencia:** el mismo dueño, el mismo día: «el diseño estuvo muy pobre»
+sobre la v1 de AC Customs y «excelente» sobre la v3, separadas solo por
+esas tres correcciones. Y su cierre: «mira la diferencia del website que tú
+me entregaste a este; no están ni cerca uno del otro».
+
+---
+
+### 2026-08-28 · Juditos · formularios largos
+**Qué aprendimos:** un formulario que la gente tarda veinte minutos en
+rellenar no se sirve dentro del cascarón de la página de ventas. Esa
+cabecera está hecha para captar (entrar, comprar, ver precios) y todos sus
+botones son salidas: uno manda a identificarse cuando no hace falta
+identificarse para nada, y el botón de comprar empieza una solicitud nueva
+encima de la que ya estaba a medias. Mientras alguien está rellenando, la
+única navegación que debe existir es la del propio formulario, con los pasos
+a la vista y el logo como única puerta.
+**Evidencia:** "cuando estoy creando un judito me pide entrar, y quiero mi
+judito, no debería salir si ya lo estoy creando". El formulario no pedía
+nada: era la cabecera heredada de la landing.
+
+---
+
+### 2026-08-28 · Juditos · enlaces con estado dentro
+**Qué aprendimos:** si el paso 2 de un proceso vive en una URL con un id
+dentro, quien cierra la pestaña sin apuntarla se queda sin forma de volver, y
+lo que escribió sigue guardado en la base sin que nadie pueda alcanzarlo. El
+autoguardado no sirve de nada si se pierde la llave. Una cookie con el id de
+lo que dejó a medias cuesta diez líneas y convierte "empiezo otra vez desde
+cero" en "sigue donde lo dejaste".
+**Evidencia:** el cuestionario guardaba con cada tecla y aun así una pestaña
+cerrada dejaba la solicitud inalcanzable.
+
+---
+
+### 2026-08-28 · Juditos · multi-zona y etiquetas <a>
+**Qué aprendimos:** en una app servida bajo un prefijo (`/juditos`), Next se
+lo pone solo a lo que pasa por `<Link>` y por el router. Una etiqueta `<a>`
+con ruta absoluta se va tal cual, así que `href="/clientes/x"` acaba en el
+dominio raíz, que es OTRA aplicación. Y en local, sin prefijo, funciona
+perfecto: es un fallo que solo existe en producción y solo al pulsar ese
+botón concreto, así que no se encuentra mirando el código, se encuentra
+cuando un cliente lo reporta. La regla: dentro de una `<a>`, o va envuelto en
+un ayudante que pone el prefijo, o es una dirección de otra zona a propósito.
+Y encima se pone un script que recorre el código y para el build si aparece
+otra.
+**Evidencia:** seis de golpe, incluido el botón de conectar la cuenta de Meta
+—el paso sin el cual no funciona nada del producto—.
+
+---
+
+### 2026-08-28 · Juditos · cerrar sesión con cuenta compartida
+**Qué aprendimos:** cuando dos productos comparten cuenta, "cerrar sesión"
+tiene que significar lo mismo en los dos. Borrar solo la cookie propia deja a
+la persona dentro del otro, y si el otro es el dueño de la identidad, al
+recargar vuelve a estar dentro del primero: el botón parece roto porque hace
+justo lo que dice, pero no lo que hace falta. Compartiendo dominio, cada
+portal puede borrar las dos cookies, y eso es más fiable que mandar al
+navegador de uno a otro para que cada uno borre la suya (menos saltos, y no
+se queda a medias si el otro no responde). Y después de salir hay que ir a
+una página pública: quedarse en la protegida hace que el guardia mande otra
+vez al acceso, y salir acaba pareciendo un intento de entrar.
+**Evidencia:** "No veo botón de log off cuando estoy en mi cuenta". El botón
+estaba; lo que no hacía era sacar a nadie.
+
+---
+
+### 2026-08-28 · Juditos · lo que decide quién es dueño de qué
+**Qué aprendimos:** el identificador de la cuenta a la que se engancha algo
+que se crea NUNCA puede venir de un campo del formulario, ni siquiera oculto.
+Un campo oculto lo cambia cualquiera desde la consola del navegador. Sale de
+la sesión, en el servidor, siempre.
+**Evidencia:** la contratación guardaba el id de la cuenta desde un `<input
+type="hidden">`. Con el id de otra persona, la solicitud habría aparecido en
+el portal de esa persona, con el nombre de su negocio, su plan y su consumo.
+
+---
+
+### 2026-09-09 · Juditos · SaaS de asistentes
+**Qué aprendimos:** traducir un producto entero se hace en un solo cambio
+y con un diccionario tipado, no página a página. El truco que evita que se
+escape una frase: el diccionario en inglés define la FORMA (`Dict = typeof
+en`) y el español se declara como `const es: Dict`. Así el compilador señala
+cada clave que falta o sobra, y una página que usa una clave inexistente no
+compila. Los textos que llevan números o nombres van como funciones
+(`pending(n)`, `juditoOf(name)`) en vez de concatenar, porque el orden de
+las palabras cambia de un idioma a otro. Y el idioma no se resuelve una vez
+por componente: una sola función de servidor lee las cookies en orden de
+prioridad (la propia, la del producto hermano, la del sitio padre) y un
+proveedor de cliente reparte el resultado. Los correos y los datos que se
+crean solos (el cliente de ejemplo, el saludo por defecto) reciben el idioma
+como parámetro explícito; nunca lo adivinan.
+**Evidencia:** Juditos pasó de solo español a inglés por defecto con cambio
+por bandera en una tarde. Lo que rompió el compilador fueron exactamente los
+dos sitios que se habrían olvidado: una ruta de prueba de correo que llamaba
+a la plantilla sin idioma, y la factura que leía el idioma del Judito sin
+haberlo pedido en la consulta. Sin el tipo, los dos habrían salido en
+producción en el idioma equivocado sin que nadie lo viera.
