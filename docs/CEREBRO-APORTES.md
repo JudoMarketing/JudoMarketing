@@ -764,3 +764,26 @@ la sesión, en el servidor, siempre.
 **Evidencia:** la contratación guardaba el id de la cuenta desde un `<input
 type="hidden">`. Con el id de otra persona, la solicitud habría aparecido en
 el portal de esa persona, con el nombre de su negocio, su plan y su consumo.
+
+---
+
+### 2026-09-09 · Juditos · SaaS de asistentes
+**Qué aprendimos:** traducir un producto entero se hace en un solo cambio
+y con un diccionario tipado, no página a página. El truco que evita que se
+escape una frase: el diccionario en inglés define la FORMA (`Dict = typeof
+en`) y el español se declara como `const es: Dict`. Así el compilador señala
+cada clave que falta o sobra, y una página que usa una clave inexistente no
+compila. Los textos que llevan números o nombres van como funciones
+(`pending(n)`, `juditoOf(name)`) en vez de concatenar, porque el orden de
+las palabras cambia de un idioma a otro. Y el idioma no se resuelve una vez
+por componente: una sola función de servidor lee las cookies en orden de
+prioridad (la propia, la del producto hermano, la del sitio padre) y un
+proveedor de cliente reparte el resultado. Los correos y los datos que se
+crean solos (el cliente de ejemplo, el saludo por defecto) reciben el idioma
+como parámetro explícito; nunca lo adivinan.
+**Evidencia:** Juditos pasó de solo español a inglés por defecto con cambio
+por bandera en una tarde. Lo que rompió el compilador fueron exactamente los
+dos sitios que se habrían olvidado: una ruta de prueba de correo que llamaba
+a la plantilla sin idioma, y la factura que leía el idioma del Judito sin
+haberlo pedido en la consulta. Sin el tipo, los dos habrían salido en
+producción en el idioma equivocado sin que nadie lo viera.
