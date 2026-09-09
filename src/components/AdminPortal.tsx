@@ -312,6 +312,15 @@ export default function AdminPortal() {
   } | null>(null);
   const [juditoError, setJuditoError] = useState<string | null>(null);
   const [juditoBusy, setJuditoBusy] = useState(false);
+  // Cuenta del revisor de Meta (App Review). La contraseña se elige aquí y
+  // se enseña UNA vez al crearla: JuditoADS no la guarda en claro.
+  const [revisorClave, setRevisorClave] = useState("");
+  const [revisorBusy, setRevisorBusy] = useState(false);
+  const [revisorListo, setRevisorListo] = useState<{
+    url: string;
+    email: string;
+    password: string;
+  } | null>(null);
 
   // Juditos (asistentes de IA): igual que JuditoADS, otra app y otra base de
   // datos, así que también se consulta solo al abrir su pestaña.
@@ -931,6 +940,51 @@ export default function AdminPortal() {
       flash("No se pudo contactar a JuditoADS.");
     }
     setJuditoBusy(false);
+  };
+
+  /**
+   * Crear o restablecer la cuenta que se le da al revisor de Meta.
+   *
+   * La ejecuta la app de JuditoADS: deja el correo verificado, acceso sin
+   * cobro y una cuenta publicitaria de demostración con campañas. Se puede
+   * repetir cuando haga falta; cada vez pone la contraseña nueva.
+   */
+  const crearRevisor = async () => {
+    const clave = revisorClave.trim();
+    if (clave.length < 8) return flash("La contraseña necesita al menos 8 caracteres.");
+    if (!window.confirm(`¿Dejar la cuenta del revisor de Meta con la contraseña «${clave}»? Si ya existía, la anterior deja de valer.`))
+      return;
+
+    const { data: sess } = await supabase.auth.getSession();
+    if (!sess.session) return flash("Sesión vencida, vuelve a entrar");
+    setRevisorBusy(true);
+    setRevisorListo(null);
+    try {
+      const res = await fetch("/api/admin/juditoads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sess.session.access_token}`,
+        },
+        body: JSON.stringify({ accion: "revisor", password: clave }),
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+        credenciales?: { url: string; email: string; password: string };
+      };
+      if (!res.ok || !body.ok || !body.credenciales) {
+        flash(body.error ?? `No se pudo: JuditoADS respondió ${res.status}`);
+      } else {
+        setRevisorListo(body.credenciales);
+        setRevisorClave("");
+        flash("Cuenta del revisor lista ✓");
+        await cargarJuditoads();
+      }
+    } catch {
+      flash("No se pudo contactar a JuditoADS.");
+    }
+    setRevisorBusy(false);
   };
 
   const cargarJuditoads = async () => {
@@ -1885,6 +1939,45 @@ export default function AdminPortal() {
               </p>
             </div>
           )}
+
+          {/* Cuenta del revisor de Meta: la que se pone en el App Review */}
+          <div className="mb-4 rounded-xl border border-judo-lilac/20 bg-judo-black/40 px-4 py-4">
+            <p className="font-semibold text-white">🔍 Cuenta del revisor de Meta</p>
+            <p className="mt-1 text-xs text-judo-fog/60">
+              Es la que se pone en el App Review para que el revisor entre. Elige la
+              contraseña y pulsa el botón: queda con el correo verificado, sin cobro, y con
+              una cuenta de demostración con campañas para que el tablero no esté vacío.
+              Se puede repetir cuando haga falta; cada vez pone la contraseña nueva.
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <input
+                type="text"
+                value={revisorClave}
+                onChange={(e) => setRevisorClave(e.target.value)}
+                placeholder="contraseña para el revisor (mínimo 8)"
+                autoComplete="off"
+                className={`${inputClass} sm:max-w-xs`}
+              />
+              <button
+                onClick={() => void crearRevisor()}
+                disabled={revisorBusy || revisorClave.trim().length < 8}
+                className="rounded-full bg-emerald-400 px-5 py-2 text-xs font-bold text-judo-black transition hover:bg-emerald-300 disabled:opacity-50"
+              >
+                {revisorBusy ? "Creando…" : "Crear / restablecer"}
+              </button>
+            </div>
+            {revisorListo && (
+              <div className="mt-3 rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
+                <p className="font-semibold">✓ Lista. Esto es lo que va en el App Review:</p>
+                <p className="mt-1 font-mono text-xs">{revisorListo.url}</p>
+                <p className="font-mono text-xs">{revisorListo.email}</p>
+                <p className="font-mono text-xs">{revisorListo.password}</p>
+                <p className="mt-1 text-xs opacity-80">
+                  La contraseña solo se enseña aquí y ahora. Si la pierdes, vuelve a crearla.
+                </p>
+              </div>
+            )}
+          </div>
 
           {!juditoError && juditoUsers && juditoUsers.length > 0 && (
             <>
