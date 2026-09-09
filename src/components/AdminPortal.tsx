@@ -52,7 +52,6 @@ function fallo(res: {
 type Tab =
   | "resumen"
   | "formularios"
-  | "contratos"
   | "sitios"
   | "pagos"
   | "resenas"
@@ -211,7 +210,44 @@ type ContractRow = {
 type PayRow = {
   amount: number;
   paid_at: string;
+  site_id: string | null;
+  method: string | null;
 };
+
+/** "2026-09-15" + 1 mes → "2026-10-15", sin pasar por Date ni por zonas horarias. */
+function unMesDespues(fecha: string): string {
+  const [a, m, d] = fecha.slice(0, 10).split("-").map(Number);
+  const mes = m === 12 ? 1 : m + 1;
+  const anio = m === 12 ? a + 1 : a;
+  // Si el día no existe en el mes siguiente (31 → febrero), se recorta al último
+  const ultimo = new Date(Date.UTC(anio, mes, 0)).getUTCDate();
+  return `${anio}-${String(mes).padStart(2, "0")}-${String(Math.min(d, ultimo)).padStart(2, "0")}`;
+}
+
+/** "hace 3 min", "hace 2 h", "hace 4 d": cuándo reportó el kit por última vez. */
+function haceCuanto(iso: string): string {
+  const min = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+  if (min < 60) return `hace ${min} min`;
+  const h = Math.round(min / 60);
+  if (h < 48) return `hace ${h} h`;
+  return `hace ${Math.round(h / 24)} d`;
+}
+
+/** "2026-09-15" → "15 sep". Sin Date: una fecha sin hora no tiene zona. */
+function fechaCorta(iso: string): string {
+  const [a, m, d] = iso.slice(0, 10).split("-").map(Number);
+  return `${d} ${new Date(Date.UTC(a, m - 1, d)).toLocaleDateString("es-US", { month: "short", timeZone: "UTC" })}`;
+}
+
+/** "2026-09" → "sep 2026", para las columnas de ingresos por mes. */
+function nombreDeMes(clave: string): string {
+  const [a, m] = clave.split("-").map(Number);
+  return new Date(Date.UTC(a, m - 1, 1)).toLocaleDateString("es-US", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
 
 type ProofRow = {
   id: string;
@@ -436,7 +472,7 @@ export default function AdminPortal() {
         .limit(500),
       supabase
         .from("payments")
-        .select("amount,paid_at")
+        .select("amount,paid_at,site_id,method")
         .order("paid_at", { ascending: false })
         .limit(1000),
       supabase
@@ -515,6 +551,8 @@ export default function AdminPortal() {
       }
       await loadAll();
       setReady(true);
+      // Los contratos enviados también cuentan en "por hacer" del Resumen
+      void cargarDocumentos();
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -634,15 +672,17 @@ export default function AdminPortal() {
       recorded_by: user.user?.id,
     });
     if (error) return flash(`Error: ${error.message}`);
-    const base = site.next_payment_due ? new Date(site.next_payment_due) : new Date();
-    base.setMonth(base.getMonth() + 1);
-    await supabase
-      .from("sites")
-      .update({
-        months_paid: site.months_paid + 1,
-        next_payment_due: base.toISOString().slice(0, 10),
-      })
-      .eq("id", site.id);
+    // Un mes más sobre la fecha de cobro, como texto: con Date el "2026-09-15"
+    // se leía en UTC y de noche salía un día antes.
+    const siguiente = unMesDespues(site.next_payment_due ?? hoyEste());
+    const err = fallo(
+      await supabase
+        .from("sites")
+        .update({ months_paid: site.months_paid + 1, next_payment_due: siguiente })
+        .eq("id", site.id)
+        .select("id")
+    );
+    if (err) return flash(`Pago registrado, pero no se movió la fecha: ${err}`);
     flash(`Pago de $${site.monthly_price} registrado ✓`);
     void loadAll();
   };
@@ -1519,246 +1559,577 @@ export default function AdminPortal() {
         </p>
       )}
 
-      {/* Pestañas, en el orden del camino de un cliente. El número en ámbar es
-          lo que espera por ti; el gris es solo cuántos hay. */}
-      <div className="mt-6 flex flex-wrap gap-2">
+      {/* Pestañas en dos grupos: lo de la agencia (websites y clientes) y las
+          apps hermanas. El número en ámbar es lo que espera por ti; el gris es
+          solo cuántos hay. */}
+      <div className="mt-6 flex flex-col gap-2.5">
         {(
           [
-            ["resumen", "📊", "Resumen", 0, 0],
-            ["formularios", "📨", "Formularios", intakeNuevos, intakeSueltos],
-            [
-              "contratos",
-              "📑",
-              "Contratos",
-              contractRows.filter((c) => !c.site_id).length,
-              contractRows.length,
-            ],
-            ["sitios", "🌐", "Websites", sitiosEnRiesgo, sites.length],
-            [
-              "pagos",
-              "💵",
-              "Dinero",
-              proofs.filter((p) => p.status === "pendiente").length,
-              0,
-            ],
-            [
-              "resenas",
-              "⭐",
-              "Reseñas",
-              reviews.filter((r) => r.status === "pendiente").length,
-              0,
-            ],
-            ["juditoads", "🚀", "JuditoADS", 0, juditoUsers?.length ?? 0],
-            [
-              "juditos",
-              "🤖",
-              "AI Assistants",
-              (juditos?.totales.solicitudesPendientes ?? 0) +
-                (juditos?.totales.esperandoPersona ?? 0),
-              juditos?.totales.clientes ?? 0,
-            ],
-            [
-              "judimental",
-              "🧠",
-              "JudiMental",
-              0,
-              mental?.totales?.registrados ?? mental?.personas?.length ?? 0,
-            ],
-            [
-              "invitados",
-              "🎟️",
-              "Invitados",
-              // Lo urgente es lo que la app hermana todavía no aplicó.
-              (sillas ?? []).filter((s) => s.status === "pendiente" || s.status === "error").length,
-              (sillas ?? []).filter((s) => s.status === "activa").length,
-            ],
-            [
-              "documentos",
-              "📄",
-              "Documentos",
-              // Lo urgente: correos que no salieron.
-              (documentos ?? []).filter((d) => d.send_error && !d.sent_at).length,
-              (documentos ?? []).length,
-            ],
-          ] as [Tab, string, string, number, number][]
-        ).map(([key, icono, label, urgente, total]) => (
-          <button
-            key={key}
-            onClick={() => {
-              setTab(key);
-              if (key === "juditoads" && !juditoUsers && !juditoBusy) cargarJuditoads();
-              if (key === "juditos" && !juditos && !juditosBusy) cargarJuditos();
-              if (key === "judimental" && !mental && !mentalBusy) cargarJudimental();
-              if (key === "invitados" && !sillas && !sillasBusy) cargarSillas();
-              if (key === "documentos" && !documentos && !documentosBusy) cargarDocumentos();
-            }}
-            className={`flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold transition ${
-              tab === key
-                ? "border border-emerald-300 bg-emerald-400 text-judo-black shadow-[0_0_16px_-2px_rgba(52,211,153,0.75)]"
-                : "border border-judo-lilac/25 text-white hover:border-emerald-400/50 hover:text-emerald-300"
-            }`}
-          >
-            <span aria-hidden>{icono}</span>
-            {label}
-            {urgente > 0 && (
-              <span
-                className={`rounded-full px-1.5 text-[10px] font-bold ${
-                  tab === key ? "bg-judo-black text-amber-300" : "bg-amber-400/90 text-judo-black"
+            {
+              titulo: "Agencia",
+              pestañas: [
+                ["resumen", "📊", "Resumen", 0, 0],
+                ["sitios", "🌐", "Websites", sitiosEnRiesgo, sites.length],
+                ["formularios", "📨", "Formularios", intakeNuevos, intakeSueltos],
+                [
+                  "documentos",
+                  "📄",
+                  "Documentos",
+                  // Lo urgente: correos que no salieron y contratos viejos sin website.
+                  (documentos ?? []).filter((d) => d.send_error && !d.sent_at).length +
+                    contractRows.filter((c) => !c.site_id).length,
+                  (documentos ?? []).length,
+                ],
+                [
+                  "pagos",
+                  "💵",
+                  "Dinero",
+                  proofs.filter((p) => p.status === "pendiente").length,
+                  0,
+                ],
+                [
+                  "resenas",
+                  "⭐",
+                  "Reseñas",
+                  reviews.filter((r) => r.status === "pendiente").length,
+                  0,
+                ],
+              ],
+            },
+            {
+              titulo: "Apps",
+              pestañas: [
+                ["juditoads", "🚀", "JuditoADS", 0, juditoUsers?.length ?? 0],
+                [
+                  "juditos",
+                  "🤖",
+                  "AI Assistants",
+                  (juditos?.totales.solicitudesPendientes ?? 0) +
+                    (juditos?.totales.esperandoPersona ?? 0),
+                  juditos?.totales.clientes ?? 0,
+                ],
+                [
+                  "judimental",
+                  "🧠",
+                  "JudiMental",
+                  0,
+                  mental?.totales?.registrados ?? mental?.personas?.length ?? 0,
+                ],
+                [
+                  "invitados",
+                  "🎟️",
+                  "Invitados",
+                  // Lo urgente es lo que la app hermana todavía no aplicó.
+                  (sillas ?? []).filter((s) => s.status === "pendiente" || s.status === "error").length,
+                  (sillas ?? []).filter((s) => s.status === "activa").length,
+                ],
+              ],
+            },
+          ] as { titulo: string; pestañas: [Tab, string, string, number, number][] }[]
+        ).map((grupo) => (
+          <div key={grupo.titulo} className="flex flex-wrap items-center gap-2">
+            <span className="w-14 text-[10px] font-semibold uppercase tracking-[0.18em] text-judo-fog/35">
+              {grupo.titulo}
+            </span>
+            {grupo.pestañas.map(([key, icono, label, urgente, total]) => (
+              <button
+                key={key}
+                onClick={() => {
+                  setTab(key);
+                  if (key === "juditoads" && !juditoUsers && !juditoBusy) cargarJuditoads();
+                  if (key === "juditos" && !juditos && !juditosBusy) cargarJuditos();
+                  if (key === "judimental" && !mental && !mentalBusy) cargarJudimental();
+                  if (key === "invitados" && !sillas && !sillasBusy) cargarSillas();
+                  if (key === "documentos" && !documentos && !documentosBusy) cargarDocumentos();
+                }}
+                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold transition ${
+                  tab === key
+                    ? "border border-emerald-300 bg-emerald-400 text-judo-black shadow-[0_0_16px_-2px_rgba(52,211,153,0.75)]"
+                    : "border border-judo-lilac/25 text-white hover:border-emerald-400/50 hover:text-emerald-300"
                 }`}
               >
-                {urgente}
-              </span>
-            )}
-            {urgente === 0 && total > 0 && (
-              <span className={tab === key ? "text-judo-black/55" : "text-judo-fog/40"}>
-                {total}
-              </span>
-            )}
-          </button>
+                <span aria-hidden>{icono}</span>
+                {label}
+                {urgente > 0 && (
+                  <span
+                    className={`rounded-full px-1.5 text-[10px] font-bold ${
+                      tab === key ? "bg-judo-black text-amber-300" : "bg-amber-400/90 text-judo-black"
+                    }`}
+                  >
+                    {urgente}
+                  </span>
+                )}
+                {urgente === 0 && total > 0 && (
+                  <span className={tab === key ? "text-judo-black/55" : "text-judo-fog/40"}>
+                    {total}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         ))}
       </div>
 
-      {/* ── RESUMEN: estadísticas ── */}
+      {/* ── RESUMEN ───────────────────────────────────────────────────
+          Tres preguntas, en orden: ¿qué espera por mí? ¿cuánto entra? ¿cómo
+          está cada website? Lo demás vive en su pestaña. */}
       {tab === "resumen" && (() => {
         const now = new Date();
         const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
         const monthRevenue = payRows
           .filter((p) => p.paid_at?.startsWith(monthKey))
           .reduce((s, p) => s + Number(p.amount), 0);
-        const totalRevenue = payRows.reduce((s, p) => s + Number(p.amount), 0);
         // La cuenta real: solo cuentan los sitios que están activos
-        const activos = finance.filter((f) => f.status === "activo");
-        const mrr = activos.reduce((t, f) => t + (f.revenue_cents ?? 0), 0) / 100;
-        const costos = activos.reduce((t, f) => t + (f.cost_cents ?? 0), 0) / 100;
+        const activosFin = finance.filter((f) => f.status === "activo");
+        const mrr = activosFin.reduce((t, f) => t + (f.revenue_cents ?? 0), 0) / 100;
+        const costos = activosFin.reduce((t, f) => t + (f.cost_cents ?? 0), 0) / 100;
         const margen = mrr - costos;
-        // Mismo criterio que el aviso ⏰ de la lista de websites, para que los
-        // dos números nunca se contradigan
-        const enRiesgo = sites.filter(
-          (s) =>
-            s.status === "activo" && !!s.next_payment_due && s.next_payment_due < hoy
-        ).length;
 
-        // Cada tarjeta lleva a la pestaña donde eso se resuelve: el Resumen
-        // dice qué pasa, y el clic dice dónde arreglarlo.
-        const stats: [string, string, string, Tab][] = [
-          ["📨", "Formularios sin atender", String(intakeNuevos), "formularios"],
-          ["🔗", "Formularios sin website", String(intakeSueltos), "formularios"],
+        const vencido = (s: SiteRow) =>
+          s.status === "activo" && !!s.next_payment_due && s.next_payment_due < hoy;
+        const caido = (s: SiteRow) => metrics[s.id]?.is_live === false;
+
+        // Solo lo que de verdad espera por ti, y cada línea lleva a donde se
+        // resuelve. Si no hay nada, se dice "todo al día" y ya.
+        const porHacer = (
           [
-            "📑",
-            "Contratos por armar",
-            String(contractRows.filter((c) => !c.site_id).length),
-            "contratos",
-          ],
-          ["🌐", "Websites activos", `${sites.filter((s) => s.status === "activo").length}/${sites.length}`, "sitios"],
-          ["⏰", "Con el pago vencido", String(enRiesgo), "sitios"],
-          ["🔑", "Accesos por conseguir", String(accessGaps), "sitios"],
-          ["💵", "Ingresos este mes", `$${monthRevenue.toFixed(0)}`, "pagos"],
-          ["📈", "Ingresos totales", `$${totalRevenue.toFixed(0)}`, "pagos"],
-          ["🔁", "Facturación recurrente", `$${mrr.toFixed(0)}/mes`, "sitios"],
-          ["📉", "Costos de los sitios", `$${costos.toFixed(0)}/mes`, "sitios"],
-          ["🟢", "Tu ganancia al mes", `$${margen.toFixed(0)}`, "sitios"],
-          ["🧾", "Pagos por verificar", String(proofs.filter((p) => p.status === "pendiente").length), "pagos"],
-          ["⭐", "Reseñas por moderar", String(reviews.filter((r) => r.status === "pendiente").length), "resenas"],
-        ];
+            ["📨", "formularios nuevos sin atender", intakeNuevos, "formularios"],
+            ["🔗", "formularios sin website", intakeSueltos, "formularios"],
+            ["⏰", "websites con el pago vencido", sites.filter(vencido).length, "sitios"],
+            ["🔴", "websites caídos según el kit", sites.filter(caido).length, "sitios"],
+            ["🔑", "accesos de clientes por conseguir", accessGaps, "sitios"],
+            ["🧾", "comprobantes de pago por verificar", proofs.filter((p) => p.status === "pendiente").length, "pagos"],
+            ["📄", "contratos enviados que el cliente no ha aceptado", (documentos ?? []).filter((d) => d.sent_at && !d.accepted_at).length, "documentos"],
+            ["✉️", "contratos cuyo correo no salió", (documentos ?? []).filter((d) => d.send_error && !d.sent_at).length, "documentos"],
+            ["📑", "contratos del programa anterior sin website", contractRows.filter((c) => !c.site_id).length, "documentos"],
+            ["⭐", "reseñas por moderar", reviews.filter((r) => r.status === "pendiente").length, "resenas"],
+          ] as [string, string, number, Tab][]
+        ).filter(([, , n]) => n > 0);
+
+        // Los que piden atención primero, luego activos, luego el resto
+        const peso = (s: SiteRow) =>
+          vencido(s) || caido(s) ? 0 : s.status === "activo" ? 1 : s.status === "en_desarrollo" ? 2 : 3;
+        const ordenados = [...sites].sort((a, b) => peso(a) - peso(b) || a.name.localeCompare(b.name));
+        const activos = sites.filter((s) => s.status === "activo").length;
 
         return (
-          <div className="mt-6 flex flex-col gap-5">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {stats.map(([icon, label, value, destino]) => (
-                <button
-                  key={label}
-                  onClick={() => setTab(destino)}
-                  className={`${box} text-left transition hover:border-judo-lilac/50`}
-                >
-                  <p className="text-xs text-judo-fog/50">{icon} {label}</p>
-                  <p className="mt-1 text-2xl font-bold text-judo-lilac">{value}</p>
-                </button>
-              ))}
-            </div>
-
-            {/* Aviso a los buscadores que no son Google */}
-            <div className={`${box} flex flex-wrap items-center gap-3`}>
-              <div className="min-w-0 flex-1">
-                <h2 className="font-semibold">🔎 Avisar a los buscadores</h2>
-                <p className="mt-1 text-xs text-judo-fog/55">
-                  Le dice a Bing, Yahoo, DuckDuckGo, Yandex y Ecosia que hay
-                  contenido nuevo. Úsalo cuando cambies textos o publiques un
-                  website en el showcase; no hace falta más de una vez al día.
+          <div className="mt-6 flex flex-col gap-7">
+            {/* Por hacer */}
+            <section>
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-judo-fog/45">
+                Por hacer
+              </h2>
+              {porHacer.length === 0 ? (
+                <p className={`${box} mt-2 text-sm text-emerald-300`}>
+                  ✓ Todo al día. Nada espera por ti.
                 </p>
+              ) : (
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  {porHacer.map(([icono, label, n, destino]) => (
+                    <button
+                      key={label}
+                      onClick={() => setTab(destino)}
+                      className={`${box} flex items-center gap-3 py-3 text-left transition hover:border-amber-400/60`}
+                    >
+                      <span className="w-8 text-2xl font-bold tabular-nums text-amber-300">{n}</span>
+                      <span className="text-sm text-judo-fog/85">
+                        <span aria-hidden>{icono}</span> {label}
+                      </span>
+                      <span className="ml-auto text-judo-lilac" aria-hidden>→</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Dinero, en cuatro números */}
+            <section>
+              <div className="flex items-center justify-between">
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-judo-fog/45">
+                  Dinero
+                </h2>
+                <button onClick={() => setTab("pagos")} className="text-xs text-judo-lilac hover:underline">
+                  ver el detalle →
+                </button>
               </div>
-              <button onClick={avisarBuscadores} className={btnPurple}>
-                📡 Avisar ahora
+              <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {(
+                  [
+                    ["Cobrado este mes", `$${monthRevenue.toFixed(0)}`, "text-white"],
+                    ["Facturación al mes", `$${mrr.toFixed(0)}`, "text-judo-lilac"],
+                    ["Costos al mes", `$${costos.toFixed(0)}`, "text-judo-fog/70"],
+                    ["Ganancia al mes", `$${margen.toFixed(0)}`, "text-emerald-300"],
+                  ] as [string, string, string][]
+                ).map(([label, valor, color]) => (
+                  <div key={label} className={box}>
+                    <p className="text-xs text-judo-fog/50">{label}</p>
+                    <p className={`mt-1 text-2xl font-bold tabular-nums ${color}`}>{valor}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Websites: lo que el cliente ve en su portal, resumido a una línea */}
+            <section>
+              <div className="flex items-center justify-between">
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-judo-fog/45">
+                  Websites · {activos} de {sites.length} activos
+                </h2>
+                <button onClick={() => setTab("sitios")} className="text-xs text-judo-lilac hover:underline">
+                  ver todos →
+                </button>
+              </div>
+              <div className="mt-2 overflow-x-auto rounded-2xl border border-judo-lilac/20">
+                <table className="w-full min-w-[760px] text-left text-sm">
+                  <thead className="bg-white/[0.04] text-[11px] uppercase tracking-wide text-judo-fog/45">
+                    <tr>
+                      <th className="px-4 py-2.5">Website</th>
+                      <th className="px-4 py-2.5">Estado</th>
+                      <th className="px-4 py-2.5 text-right">Ventas</th>
+                      <th className="px-4 py-2.5 text-right">Visitas</th>
+                      <th className="px-4 py-2.5">Cobro</th>
+                      <th className="px-4 py-2.5 text-right">Al mes</th>
+                      <th className="px-4 py-2.5"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-judo-lilac/10">
+                    {sites.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-8 text-center text-judo-fog/45">
+                          Todavía no hay websites. Se crean en la pestaña Websites.
+                        </td>
+                      </tr>
+                    )}
+                    {ordenados.map((s) => {
+                      const m = metrics[s.id];
+                      const atencion = vencido(s) || caido(s);
+                      return (
+                        <tr key={s.id} className={`transition hover:bg-white/[0.03] ${atencion ? "bg-amber-400/[0.04]" : ""}`}>
+                          <td className="px-4 py-2.5">
+                            <button onClick={() => irASitio(s.id)} className="text-left">
+                              <p className="font-semibold text-white hover:text-emerald-300">{s.name}</p>
+                              <p className="text-xs text-judo-fog/45">{s.domain ?? "sin dominio"}</p>
+                            </button>
+                          </td>
+                          <td className="px-4 py-2.5">
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                                s.status === "activo"
+                                  ? "bg-emerald-400/15 text-emerald-300"
+                                  : s.status === "deshabilitado"
+                                    ? "bg-red-500/15 text-red-300"
+                                    : "bg-amber-400/15 text-amber-300"
+                              }`}
+                            >
+                              {s.status === "en_desarrollo" ? "en desarrollo" : s.status}
+                            </span>
+                            <p className="mt-1 text-[11px] text-judo-fog/45">
+                              {m
+                                ? `${m.is_live === false ? "🔴 caído" : "🟢 en vivo"} · ${haceCuanto(m.reported_at)}`
+                                : "📡 sin kit"}
+                            </p>
+                          </td>
+                          <td className="px-4 py-2.5 text-right tabular-nums text-white">
+                            {m ? m.salesTotal : <span className="text-judo-fog/30">—</span>}
+                          </td>
+                          <td className="px-4 py-2.5 text-right tabular-nums text-white">
+                            {m?.traffic != null ? m.traffic : <span className="text-judo-fog/30">—</span>}
+                          </td>
+                          <td className="px-4 py-2.5">
+                            {s.status === "activo" && s.next_payment_due ? (
+                              <span className={vencido(s) ? "font-semibold text-amber-300" : "text-judo-fog/70"}>
+                                {vencido(s) ? "⏰ " : ""}
+                                {fechaCorta(s.next_payment_due)}
+                              </span>
+                            ) : (
+                              <span className="text-judo-fog/30">—</span>
+                            )}
+                            <p className="text-[11px] text-judo-fog/40">{s.months_paid}/12 pagos</p>
+                          </td>
+                          <td className="px-4 py-2.5 text-right tabular-nums text-white">
+                            ${Number(s.monthly_price)}
+                          </td>
+                          <td className="px-4 py-2.5 text-right">
+                            <button
+                              onClick={() => toggleSite(s)}
+                              className={s.status === "deshabilitado" ? btnGreen : btnDanger}
+                            >
+                              {s.status === "deshabilitado" ? "Encender" : "Apagar"}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* Herramienta suelta: aviso a los buscadores que no son Google */}
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-judo-lilac/15 px-5 py-3 text-xs text-judo-fog/55">
+              <span>
+                🔎 ¿Cambiaste textos o publicaste un website en el showcase? Avísale
+                a Bing, Yahoo, DuckDuckGo, Yandex y Ecosia. Google se entera solo.
+              </span>
+              <button onClick={avisarBuscadores} className={btnGhost}>
+                📡 Avisar a los buscadores
               </button>
             </div>
           </div>
         );
       })()}
 
-      {/* ── PAGOS ZELLE ── */}
-      {tab === "pagos" && (
-        <div className="mt-6 flex flex-col gap-3">
-          {proofs.length === 0 && (
-            <p className="text-sm text-judo-fog/50">No hay comprobantes de pago todavía.</p>
-          )}
-          {proofs.map((p) => (
-            <div key={p.id} className={`${box} flex flex-wrap items-center gap-3`}>
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold">
-                  {p.method === "usdt" ? "🪙" : "🏦"} {p.payer_name}{" "}
-                  <span className="text-sm font-normal text-judo-fog/50">
-                    · {p.method === "usdt" ? "USDT" : "Zelle"} · plan {p.plan} ·{" "}
-                    {new Date(p.created_at).toLocaleDateString("es-US")}
-                  </span>
-                </p>
-                <p className="text-xs text-judo-fog/50">
-                  {p.source ? `Origen: ${p.source} · ` : ""}
-                  Estado:{" "}
-                  <b
-                    className={
-                      p.status === "verificado"
-                        ? "text-emerald-300"
-                        : p.status === "rechazado"
-                          ? "text-red-300"
-                          : "text-amber-300"
-                    }
-                  >
-                    {p.status}
-                  </b>
-                  {p.method === "usdt" && p.status === "pendiente" && (
-                    <span className="ml-2 text-amber-200">
-                      ⏳ la red tarda 30 a 60 min en confirmar
-                    </span>
-                  )}
-                </p>
-              </div>
-              {p.tx_hash && (
-                <a
-                  href={`https://etherscan.io/tx/${p.tx_hash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={btnGhost}
+      {/* ── DINERO ────────────────────────────────────────────────────
+          Cuánto entró, cuánto entra cada mes, qué deja cada website, y los
+          comprobantes de Zelle/USDT que hay que verificar a mano. */}
+      {tab === "pagos" && (() => {
+        const claveMes = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        const ahora = new Date();
+        const meses: string[] = [];
+        for (let i = 5; i >= 0; i--) {
+          meses.push(claveMes(new Date(ahora.getFullYear(), ahora.getMonth() - i, 1)));
+        }
+        const porMes: Record<string, number> = {};
+        for (const p of payRows) {
+          const k = (p.paid_at ?? "").slice(0, 7);
+          porMes[k] = (porMes[k] ?? 0) + Number(p.amount);
+        }
+        const esteMes = porMes[meses[5]] ?? 0;
+        const mesPasado = porMes[meses[4]] ?? 0;
+        const total = payRows.reduce((s, p) => s + Number(p.amount), 0);
+        const activosFin = finance.filter((f) => f.status === "activo");
+        const mrr = activosFin.reduce((t, f) => t + (f.revenue_cents ?? 0), 0) / 100;
+        const costos = activosFin.reduce((t, f) => t + (f.cost_cents ?? 0), 0) / 100;
+        const finPorSitio: Record<string, FinanceRow> = {};
+        for (const f of finance) finPorSitio[f.site_id] = f;
+        const nombreSitio = (id: string | null) => sites.find((s) => s.id === id)?.name ?? "—";
+        const pendientesProof = proofs.filter((p) => p.status === "pendiente");
+        const resueltosProof = proofs.filter((p) => p.status !== "pendiente").slice(0, 8);
+
+        const Comprobante = ({ p }: { p: ProofRow }) => (
+          <div className={`${box} flex flex-wrap items-center gap-3 py-3`}>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold">
+                {p.method === "usdt" ? "🪙" : "🏦"} {p.payer_name}{" "}
+                <span className="text-sm font-normal text-judo-fog/50">
+                  · {p.method === "usdt" ? "USDT" : "Zelle"} · plan {p.plan} ·{" "}
+                  {new Date(p.created_at).toLocaleDateString("es-US")}
+                </span>
+              </p>
+              <p className="text-xs text-judo-fog/50">
+                {p.source ? `Origen: ${p.source} · ` : ""}
+                <b
+                  className={
+                    p.status === "verificado"
+                      ? "text-emerald-300"
+                      : p.status === "rechazado"
+                        ? "text-red-300"
+                        : "text-amber-300"
+                  }
                 >
-                  Ver en Etherscan
-                </a>
-              )}
-              {p.screenshot_path && (
-                <button onClick={() => viewProof(p.screenshot_path!)} className={btnGhost}>
-                  Ver captura
-                </button>
-              )}
+                  {p.status}
+                </b>
+                {p.method === "usdt" && p.status === "pendiente" && (
+                  <span className="ml-2 text-amber-200">⏳ la red tarda 30 a 60 min en confirmar</span>
+                )}
+              </p>
+            </div>
+            {p.tx_hash && (
+              <a href={`https://etherscan.io/tx/${p.tx_hash}`} target="_blank" rel="noopener noreferrer" className={btnGhost}>
+                Ver en Etherscan
+              </a>
+            )}
+            {p.screenshot_path && (
+              <button onClick={() => viewProof(p.screenshot_path!)} className={btnGhost}>
+                Ver captura
+              </button>
+            )}
+            {p.status !== "verificado" && (
               <button onClick={() => setProofStatus(p.id, "verificado")} className={btnGreen}>
                 Verificar ✓
               </button>
-              <button
-                onClick={() => setProofStatus(p.id, "rechazado")}
-                className={btnDanger}
-              >
+            )}
+            {p.status !== "rechazado" && (
+              <button onClick={() => setProofStatus(p.id, "rechazado")} className={btnDanger}>
                 Rechazar
               </button>
+            )}
+          </div>
+        );
+
+        return (
+          <div className="mt-6 flex flex-col gap-7">
+            {/* Los cuatro números */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {(
+                [
+                  ["Cobrado este mes", `$${esteMes.toFixed(0)}`, "text-white"],
+                  ["Mes pasado", `$${mesPasado.toFixed(0)}`, "text-judo-fog/70"],
+                  ["Cobrado en total", `$${total.toFixed(0)}`, "text-judo-lilac"],
+                  ["Ganancia al mes", `$${(mrr - costos).toFixed(0)}`, "text-emerald-300"],
+                ] as [string, string, string][]
+              ).map(([label, valor, color]) => (
+                <div key={label} className={box}>
+                  <p className="text-xs text-judo-fog/50">{label}</p>
+                  <p className={`mt-1 text-2xl font-bold tabular-nums ${color}`}>{valor}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* Seis meses, de un vistazo */}
+            <section>
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-judo-fog/45">
+                Cobrado por mes
+              </h2>
+              <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
+                {meses.map((k, i) => (
+                  <div
+                    key={k}
+                    className={`rounded-xl border px-3 py-2 ${
+                      i === 5 ? "border-judo-lilac/40 bg-judo-purple/10" : "border-judo-lilac/15"
+                    }`}
+                  >
+                    <p className="text-[11px] text-judo-fog/45">{nombreDeMes(k)}</p>
+                    <p className="text-lg font-bold tabular-nums text-white">${(porMes[k] ?? 0).toFixed(0)}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Qué deja cada website */}
+            <section>
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-judo-fog/45">
+                Por website · facturación ${mrr.toFixed(0)} − costos ${costos.toFixed(0)} = ganancia ${(mrr - costos).toFixed(0)} al mes
+              </h2>
+              <div className="mt-2 overflow-x-auto rounded-2xl border border-judo-lilac/20">
+                <table className="w-full min-w-[720px] text-left text-sm">
+                  <thead className="bg-white/[0.04] text-[11px] uppercase tracking-wide text-judo-fog/45">
+                    <tr>
+                      <th className="px-4 py-2.5">Website</th>
+                      <th className="px-4 py-2.5 text-right">Cobra</th>
+                      <th className="px-4 py-2.5 text-right">Costos</th>
+                      <th className="px-4 py-2.5 text-right">Deja</th>
+                      <th className="px-4 py-2.5">Pagos</th>
+                      <th className="px-4 py-2.5">Próximo cobro</th>
+                      <th className="px-4 py-2.5"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-judo-lilac/10">
+                    {sites.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-8 text-center text-judo-fog/45">
+                          Todavía no hay websites.
+                        </td>
+                      </tr>
+                    )}
+                    {[...sites]
+                      .sort((a, b) => (a.status === "activo" ? 0 : 1) - (b.status === "activo" ? 0 : 1))
+                      .map((s) => {
+                        const f = finPorSitio[s.id];
+                        const vencido = s.status === "activo" && !!s.next_payment_due && s.next_payment_due < hoy;
+                        const apagado = s.status !== "activo";
+                        return (
+                          <tr key={s.id} className={apagado ? "opacity-55" : ""}>
+                            <td className="px-4 py-2.5">
+                              <button onClick={() => irASitio(s.id)} className="text-left">
+                                <p className="font-semibold text-white hover:text-emerald-300">{s.name}</p>
+                                <p className="text-[11px] text-judo-fog/45">
+                                  {s.status === "en_desarrollo" ? "en desarrollo" : s.status}
+                                  {s.payment_method ? ` · ${s.payment_method}` : ""}
+                                </p>
+                              </button>
+                            </td>
+                            <td className="px-4 py-2.5 text-right tabular-nums text-white">${Number(s.monthly_price)}</td>
+                            <td className="px-4 py-2.5 text-right tabular-nums text-judo-fog/70">
+                              {f ? `$${(f.cost_cents / 100).toFixed(0)}` : "—"}
+                            </td>
+                            <td className="px-4 py-2.5 text-right tabular-nums text-emerald-300">
+                              {f ? `$${(f.margin_cents / 100).toFixed(0)}` : "—"}
+                            </td>
+                            <td className="px-4 py-2.5 tabular-nums text-judo-fog/70">{s.months_paid}/12</td>
+                            <td className="px-4 py-2.5">
+                              {s.status === "activo" && s.next_payment_due ? (
+                                <span className={vencido ? "font-semibold text-amber-300" : "text-judo-fog/70"}>
+                                  {vencido ? "⏰ " : ""}
+                                  {fechaCorta(s.next_payment_due)}
+                                </span>
+                              ) : (
+                                <span className="text-judo-fog/30">—</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-2.5 text-right">
+                              {s.status === "activo" && (
+                                <button onClick={() => registerPayment(s)} className={btnGhost}>
+                                  💵 Registrar pago
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* Comprobantes que esperan */}
+            {pendientesProof.length > 0 && (
+              <section>
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-300">
+                  Comprobantes por verificar · {pendientesProof.length}
+                </h2>
+                <div className="mt-2 flex flex-col gap-2">
+                  {pendientesProof.map((p) => (
+                    <Comprobante key={p.id} p={p} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Últimos pagos registrados */}
+            <section>
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-judo-fog/45">
+                Últimos pagos
+              </h2>
+              {payRows.length === 0 ? (
+                <p className="mt-2 text-sm text-judo-fog/45">Todavía no hay pagos registrados.</p>
+              ) : (
+                <div className="mt-2 overflow-hidden rounded-2xl border border-judo-lilac/20">
+                  <table className="w-full text-left text-sm">
+                    <tbody className="divide-y divide-judo-lilac/10">
+                      {payRows.slice(0, 12).map((p, i) => (
+                        <tr key={`${p.paid_at}-${i}`}>
+                          <td className="px-4 py-2 text-judo-fog/60">
+                            {new Date(p.paid_at).toLocaleDateString("es-US")}
+                          </td>
+                          <td className="px-4 py-2 text-white">{nombreSitio(p.site_id)}</td>
+                          <td className="px-4 py-2 text-judo-fog/45">{p.method ?? ""}</td>
+                          <td className="px-4 py-2 text-right tabular-nums text-emerald-300">
+                            ${Number(p.amount).toFixed(0)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+
+            {resueltosProof.length > 0 && (
+              <section>
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-judo-fog/45">
+                  Comprobantes ya revisados
+                </h2>
+                <div className="mt-2 flex flex-col gap-2 opacity-70">
+                  {resueltosProof.map((p) => (
+                    <Comprobante key={p.id} p={p} />
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── FORMULARIOS DE CLIENTES: la entrada de todo ── */}
       {tab === "formularios" && (
@@ -1769,132 +2140,6 @@ export default function AdminPortal() {
           onCambio={loadAll}
         />
       )}
-
-      {/* ── CONTRATOS FIRMADOS ─────────────────────────────────────────
-          Un contrato sin website no es papeleo pendiente: es una venta
-          cerrada cuyo sitio todavía no existe. Sale primero y en ámbar. */}
-      {tab === "contratos" && (() => {
-        const pendientes = contractRows.filter((c) => !c.site_id);
-        const asignados = contractRows.filter((c) => c.site_id);
-
-        const Ficha = ({ c }: { c: ContractRow }) => {
-          const sitio = sites.find((s) => s.id === c.site_id);
-          return (
-            <div
-              className={`rounded-2xl border bg-judo-surface p-5 ${
-                c.site_id ? "border-judo-lilac/20" : "border-amber-400/45"
-              }`}
-            >
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold">
-                    {c.client_name}
-                    {c.business_name && (
-                      <span className="ml-2 text-sm font-normal text-judo-fog/50">
-                        {c.business_name}
-                      </span>
-                    )}
-                  </p>
-                  <p className="text-xs text-judo-fog/50">
-                    <span className="text-judo-lilac">{c.code}</span> · {c.plan} ·{" "}
-                    <b className="text-judo-fog">
-                      ${Number(c.monthly_price).toFixed(2)}/mes
-                    </b>{" "}
-                    · {new Date(c.created_at).toLocaleDateString("es-US")}
-                  </p>
-                  <p className="text-xs text-judo-fog/40">
-                    {c.client_email}
-                    {c.domain && ` · ${c.domain}`}
-                  </p>
-                </div>
-                <button onClick={() => abrirContrato(c)} className={btnGhost}>
-                  📄 Descargar PDF
-                </button>
-                <button
-                  onClick={() => void borrarContrato(c)}
-                  title="Borrar este contrato y su PDF"
-                  className={btnDanger}
-                >
-                  🗑
-                </button>
-              </div>
-
-              <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-judo-lilac/10 pt-3 text-xs text-judo-fog/50">
-                <span>🌐 Website:</span>
-                <select
-                  value={c.site_id ?? ""}
-                  onChange={(e) => void asignarContrato(c, e.target.value)}
-                  className={`${fieldSm} max-w-[16rem]`}
-                >
-                  <option value="" className="bg-judo-surface">
-                    Sin asignar (pendiente)
-                  </option>
-                  {sites.map((s) => (
-                    <option key={s.id} value={s.id} className="bg-judo-surface">
-                      {s.name}
-                      {s.domain ? ` · ${s.domain}` : ""}
-                    </option>
-                  ))}
-                </select>
-                {sitio ? (
-                  <button
-                    onClick={() => irASitio(sitio.id)}
-                    className="text-judo-lilac hover:underline"
-                  >
-                    abrir {sitio.name} →
-                  </button>
-                ) : (
-                  <>
-                    <span className="font-semibold text-amber-300">
-                      pendiente: este cliente ya firmó y su website no existe
-                    </span>
-                    <button onClick={() => void sitioDesdeContrato(c)} className={btnPurple}>
-                      ➕ Crear su website
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          );
-        };
-
-        return (
-          <div className="mt-6 flex flex-col gap-5">
-            {contractRows.length === 0 && (
-              <p className={`${box} text-sm text-judo-fog/50`}>
-                Todavía no hay contratos firmados. Aparecen aquí en cuanto un
-                cliente firme el suyo.
-              </p>
-            )}
-
-            {pendientes.length > 0 && (
-              <div className="flex flex-col gap-3">
-                <h2 className="font-semibold text-amber-300">
-                  ⏳ Por armar ({pendientes.length})
-                </h2>
-                <p className="-mt-2 text-xs text-judo-fog/50">
-                  Cada uno es una venta cerrada esperando su website. Asígnalo a
-                  uno que ya exista, o créalo aquí mismo.
-                </p>
-                {pendientes.map((c) => (
-                  <Ficha key={c.id} c={c} />
-                ))}
-              </div>
-            )}
-
-            {asignados.length > 0 && (
-              <div className="flex flex-col gap-3">
-                <h2 className="font-semibold">✓ Con website ({asignados.length})</h2>
-                {asignados.map((c) => (
-                  <Ficha key={c.id} c={c} />
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })()}
-
-      {/* ── RESEÑAS DE VISITANTES ── */}
 
       {/* ── JUDITOADS: cuentas del portal de publicidad ── */}
       {tab === "juditoads" && (
@@ -2593,11 +2838,11 @@ export default function AdminPortal() {
                       <td className="px-4 py-3 text-white">${Number(d.monthly_price)}/mes</td>
                       <td className="px-4 py-3">
                         {d.sent_at ? (
-                          <span className="rounded-full bg-emerald-400 px-2 py-0.5 text-[11px] font-bold text-judo-black">
-                            enviado {d.sent_at.slice(0, 10)}
+                          <span className="whitespace-nowrap rounded-full bg-emerald-400 px-2 py-0.5 text-[11px] font-bold text-judo-black">
+                            ✓ {fechaCorta(d.sent_at)}
                           </span>
                         ) : (
-                          <span className="rounded-full bg-red-500/90 px-2 py-0.5 text-[11px] font-bold text-white">
+                          <span className="whitespace-nowrap rounded-full bg-red-500/90 px-2 py-0.5 text-[11px] font-bold text-white">
                             no salió
                           </span>
                         )}
@@ -2666,6 +2911,136 @@ export default function AdminPortal() {
           )}
         </section>
       )}
+
+      {/* ── CONTRATOS DEL PROGRAMA ANTERIOR ─────────────────────────────
+          Los que firmaron los vendedores en su teléfono. El programa se
+          retiró; estos quedan aquí, debajo de los Documentos nuevos, hasta que
+          cada uno tenga su website o se borre. Un contrato sin website no es
+          papeleo: es una venta cerrada cuyo sitio todavía no existe. */}
+      {tab === "documentos" && contractRows.length > 0 && (() => {
+        const pendientes = contractRows.filter((c) => !c.site_id);
+        const asignados = contractRows.filter((c) => c.site_id);
+
+        const Ficha = ({ c }: { c: ContractRow }) => {
+          const sitio = sites.find((s) => s.id === c.site_id);
+          return (
+            <div
+              className={`rounded-2xl border bg-judo-surface p-5 ${
+                c.site_id ? "border-judo-lilac/20" : "border-amber-400/45"
+              }`}
+            >
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold">
+                    {c.client_name}
+                    {c.business_name && (
+                      <span className="ml-2 text-sm font-normal text-judo-fog/50">
+                        {c.business_name}
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-xs text-judo-fog/50">
+                    <span className="text-judo-lilac">{c.code}</span> · {c.plan} ·{" "}
+                    <b className="text-judo-fog">
+                      ${Number(c.monthly_price).toFixed(2)}/mes
+                    </b>{" "}
+                    · {new Date(c.created_at).toLocaleDateString("es-US")}
+                  </p>
+                  <p className="text-xs text-judo-fog/40">
+                    {c.client_email}
+                    {c.domain && ` · ${c.domain}`}
+                  </p>
+                </div>
+                <button onClick={() => abrirContrato(c)} className={btnGhost}>
+                  📄 Descargar PDF
+                </button>
+                <button
+                  onClick={() => void borrarContrato(c)}
+                  title="Borrar este contrato y su PDF"
+                  className={btnDanger}
+                >
+                  🗑
+                </button>
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-judo-lilac/10 pt-3 text-xs text-judo-fog/50">
+                <span>🌐 Website:</span>
+                <select
+                  value={c.site_id ?? ""}
+                  onChange={(e) => void asignarContrato(c, e.target.value)}
+                  className={`${fieldSm} max-w-[16rem]`}
+                >
+                  <option value="" className="bg-judo-surface">
+                    Sin asignar (pendiente)
+                  </option>
+                  {sites.map((s) => (
+                    <option key={s.id} value={s.id} className="bg-judo-surface">
+                      {s.name}
+                      {s.domain ? ` · ${s.domain}` : ""}
+                    </option>
+                  ))}
+                </select>
+                {sitio ? (
+                  <button
+                    onClick={() => irASitio(sitio.id)}
+                    className="text-judo-lilac hover:underline"
+                  >
+                    abrir {sitio.name} →
+                  </button>
+                ) : (
+                  <>
+                    <span className="font-semibold text-amber-300">
+                      pendiente: este cliente ya firmó y su website no existe
+                    </span>
+                    <button onClick={() => void sitioDesdeContrato(c)} className={btnPurple}>
+                      ➕ Crear su website
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        };
+
+        return (
+          <div className="mt-10 flex flex-col gap-5 border-t border-judo-lilac/15 pt-6">
+            <div>
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-judo-fog/45">
+                Contratos del programa de vendedores (anterior) · {contractRows.length}
+              </h2>
+              <p className="mt-1 text-xs text-judo-fog/50">
+                Firmados en el teléfono de un vendedor antes de retirar el programa.
+                Los nuevos salen arriba, ya firmados por ti.
+              </p>
+            </div>
+
+            {pendientes.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <h3 className="font-semibold text-amber-300">
+                  ⏳ Sin website ({pendientes.length})
+                </h3>
+                <p className="-mt-2 text-xs text-judo-fog/50">
+                  Cada uno es una venta cerrada esperando su website. Asígnalo a
+                  uno que ya exista, o créalo aquí mismo.
+                </p>
+                {pendientes.map((c) => (
+                  <Ficha key={c.id} c={c} />
+                ))}
+              </div>
+            )}
+
+            {asignados.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <h3 className="font-semibold">✓ Con website ({asignados.length})</h3>
+                {asignados.map((c) => (
+                  <Ficha key={c.id} c={c} />
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
 
       {/* Editor de la lógica de un Judito, sobre el resto del panel */}
       {juditoAbierto && (
@@ -3184,8 +3559,16 @@ export default function AdminPortal() {
                         )}
                       </p>
                       <SiteIdentidad site={site} onSaved={loadAll} flash={flash} />
-                      <SitePrice site={site} onGuardar={cambiarPrecio} />
-                      <SiteDates site={site} onSaved={loadAll} flash={flash} />
+                      {/* La clave lleva el valor guardado: al registrar un pago o
+                          cambiar el precio, el campo se vuelve a montar con el dato
+                          nuevo en vez de quedarse enseñando el viejo. */}
+                      <SitePrice key={`p-${site.monthly_price}`} site={site} onGuardar={cambiarPrecio} />
+                      <SiteDates
+                        key={`f-${site.next_payment_due}-${site.domain_expires_at}`}
+                        site={site}
+                        onSaved={loadAll}
+                        flash={flash}
+                      />
                       <SitePortfolio site={site} onSaved={loadAll} flash={flash} />
                       <SiteDossier site={site} onSaved={loadAll} flash={flash} />
 
@@ -3200,7 +3583,7 @@ export default function AdminPortal() {
                           className={btnGhost}
                           title="Copiar la clave del Judo Site Kit"
                         >
-                          🔑 Kit
+                          🔑 Copiar clave del kit
                         </button>
                         <button onClick={() => registerPayment(site)} className={btnGhost}>
                           💵 Registrar pago
@@ -3494,6 +3877,14 @@ function SiteIdentidad({
       .update({ status: estado })
       .eq("id", site.id);
     if (error) return flash(`Error: ${error.message}`);
+    // Apagar o encender un website queda en la auditoría, venga del botón o de aquí
+    if (estado === "deshabilitado" || site.status === "deshabilitado") {
+      await supabase.from("audit_log").insert({
+        actor: (await supabase.auth.getUser()).data.user?.id,
+        action: estado === "deshabilitado" ? "site_disabled" : "site_enabled",
+        target: site.name,
+      });
+    }
     flash(`Estado: ${ESTADOS_SITIO.find((e) => e.id === estado)?.nombre} ✓`);
     onSaved();
   };
