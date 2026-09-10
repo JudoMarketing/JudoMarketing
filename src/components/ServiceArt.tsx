@@ -18,11 +18,10 @@ import Image from "next/image";
  * pone a todas, compiten entre sí y no acelera ninguna.
  */
 /**
- * Los renders de JuditoADS y Juditos vienen sobre negro, con su propia viñeta.
- * Quitarles el fondo a mano dejaba una mancha semitransparente detrás de la
- * figura (la sombra del suelo, el resplandor): se veía sucio. Mejor dejar la
- * imagen intacta y desvanecer sus bordes con una máscara radial: el centro
- * queda entero y el negro de las orillas se funde con el fondo del sitio.
+ * Desvanecido opcional para un render que venga sobre fondo opaco: una
+ * máscara radial funde sus orillas con el fondo del sitio. Hoy ninguna lo
+ * usa (las tres son PNG transparentes), pero quitarle el fondo a mano a un
+ * render deja manchas, así que esto se queda por si llega otro sobre negro.
  */
 const DESVANECIDO = "radial-gradient(ellipse 56% 56% at 50% 50%, #000 58%, transparent 100%)";
 
@@ -69,12 +68,15 @@ export function ArteWebsites({ className = "" }: { className?: string }) {
   );
 }
 
-/** JuditoADS: la mascota levantando el nombre. Es más logo que escena, y va con la marca. */
+/**
+ * JuditoADS: la mascota levantando el nombre. Es más logo que escena, y va
+ * con la marca. PNG con transparencia de origen: no necesita desvanecido.
+ */
 export function ArteAds({ className = "" }: { className?: string }) {
-  return <Ilustracion src="/servicios/juditoads.jpg" alto={1175} className={className} desvanecer />;
+  return <Ilustracion src="/servicios/juditoads.png" alto={1065} className={className} />;
 }
 
-/** Juditos: la familia de asistentes, cada uno con su oficio. */
+/** Juditos: la familia de asistentes, cada uno con su oficio. Transparente de origen. */
 export function ArteAi({ className = "" }: { className?: string }) {
-  return <Ilustracion src="/servicios/ai-assistants.jpg" alto={686} className={className} desvanecer />;
+  return <Ilustracion src="/servicios/ai-assistants.png" alto={689} className={className} />;
 }
