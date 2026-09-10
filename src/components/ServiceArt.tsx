@@ -50,12 +50,16 @@ export function ArteWebsites({ className = "" }: { className?: string }) {
   );
 }
 
-/** JuditoADS: el anuncio saliendo a las redes y los números subiendo. */
+/**
+ * JuditoADS: la mascota levantando el nombre. Es más logo que escena, y va
+ * con la marca. Venía sobre negro; se le quitó el fondo para que el
+ * resplandor se funda con el del sitio en vez de verse un rectángulo.
+ */
 export function ArteAds({ className = "" }: { className?: string }) {
-  return <Ilustracion src="/servicios/juditoads.png" alto={699} className={className} />;
+  return <Ilustracion src="/servicios/juditoads.png" alto={1210} className={className} />;
 }
 
-/** AI Assistants: el robot contestando a toda hora. */
+/** Juditos: la familia de asistentes, cada uno con su oficio. Mismo tratamiento. */
 export function ArteAi({ className = "" }: { className?: string }) {
-  return <Ilustracion src="/servicios/ai-assistants.png" alto={703} className={className} />;
+  return <Ilustracion src="/servicios/ai-assistants.png" alto={675} className={className} />;
 }

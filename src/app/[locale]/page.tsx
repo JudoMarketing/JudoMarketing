@@ -210,7 +210,9 @@ export default function HomePage({
                       ["", "late-tarde", "late-medio"][i]
                     } pointer-events-none absolute inset-0 blur-xl`}
                   />
-                  <Arte className="relative mx-auto h-28 w-full" />
+                  {/* Las ilustraciones son más logo que escena: necesitan alto
+                      para leerse, sobre todo la de JuditoADS, que es cuadrada. */}
+                  <Arte className="relative mx-auto h-44 w-full" />
                 </div>
                 <p
                   className="mt-5 text-xs font-bold tracking-wide uppercase"
