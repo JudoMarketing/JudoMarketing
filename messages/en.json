@@ -63,7 +63,7 @@
       "kicker": "They see you",
       "price": "$20/mo",
       "description": "Launch your own Facebook and Instagram ads.",
-      "free": "Try for free."
+      "free": "14 days free."
     },
     "ai": {
       "name": "AI Assistants",
@@ -187,7 +187,7 @@
       ],
       "priceNote": "+ whatever you spend on Meta, paid straight to them",
       "cta": "Open JuditoADS",
-      "free": "Try for free."
+      "free": "14 days free."
     },
     "assistant": {
       "name": "AI Assistants",
