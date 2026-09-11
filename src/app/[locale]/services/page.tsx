@@ -245,9 +245,10 @@ export default function ServicesPage({
                     {t("assistant.demoNote")}
                   </p>
                   {/* Juditos es otra app bajo /juditos: <a> normal, fuera del
-                      enrutado de idiomas. Antes llevaba a Contacto (agendar
-                      reunión); el cliente contrata solo desde su portal. */}
-                  <a href="/juditos/mi" className="svc-btn mt-5">
+                      enrutado de idiomas. Va a su página pública (planes y
+                      botón de contratar); /juditos/mi pide login y a un
+                      visitante nuevo lo mandaba a la pantalla de acceso. */}
+                  <a href="/juditos" className="svc-btn mt-5">
                     {t("assistant.cta")} →
                   </a>
                 </div>
