@@ -68,7 +68,7 @@
     "ai": {
       "name": "AI Assistants",
       "kicker": "Te contestan",
-      "price": "$20/mes",
+      "price": "desde $25/mes",
       "description": "Un asistente que responde a tus clientes a toda hora."
     },
     "essential": {
@@ -193,14 +193,17 @@
       "name": "AI Assistants",
       "body": "Sabe qué vendes, tus precios y tus horarios. Atiende a los curiosos; tú atiendes a los que compran.",
       "features": [
-        "Instagram, Facebook y tu web",
+        "Messenger, Instagram y WhatsApp",
         "Responde de madrugada",
         "Te pasa al cliente listo",
         "Entrenado con tu negocio"
       ],
       "demo": "Pruébalo aquí mismo",
       "demoNote": "El robot de esta página es uno de estos.",
-      "cta": "Quiero uno"
+      "cta": "Quiero uno",
+      "from": "desde",
+      "plans": "Hasta 3 Juditos, cada uno con su propio cerebro",
+      "pro": "Juditos Pro, con memoria y razonamiento: {pro}/mes"
     },
     "diffTitle": "Por qué con nosotros",
     "diff": {

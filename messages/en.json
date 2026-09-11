@@ -68,7 +68,7 @@
     "ai": {
       "name": "AI Assistants",
       "kicker": "They get answers",
-      "price": "$20/mo",
+      "price": "from $25/mo",
       "description": "An assistant that answers your customers around the clock."
     },
     "essential": {
@@ -193,14 +193,17 @@
       "name": "AI Assistants",
       "body": "It knows what you sell, your prices and your hours. It handles the browsers; you handle the buyers.",
       "features": [
-        "Instagram, Facebook and your site",
+        "Messenger, Instagram and WhatsApp",
         "Answers at 3am",
         "Hands you the ready ones",
         "Trained on your business"
       ],
       "demo": "Try it right here",
       "demoNote": "The robot on this page is one of them.",
-      "cta": "I want one"
+      "cta": "I want one",
+      "from": "from",
+      "plans": "Up to 3 Juditos, each with its own brain",
+      "pro": "Juditos Pro, with memory and reasoning: {pro}/mo"
     },
     "diffTitle": "Why us",
     "diff": {

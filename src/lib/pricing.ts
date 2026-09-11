@@ -15,9 +15,15 @@ export type Plan = (typeof PLANES)[number];
 
 const PRECIOS = tabla.precios as Record<Plan, number>;
 
-/** Los dos servicios que se suman al website y cuestan igual. */
+/** Los dos servicios que se suman al website. */
 export const PRECIO_JUDITOADS = tabla.extras.juditoads;
+/**
+ * Juditos: el plan base (hasta tres asistentes) y el Pro (razonamiento
+ * complejo y memoria por cliente). Los manda la app de Juditos; aquí se
+ * copian para que el sitio, el chatbot y los contratos digan lo mismo.
+ */
 export const PRECIO_ASISTENTE = tabla.extras.asistente;
+export const PRECIO_ASISTENTE_PRO = tabla.extras.asistentePro;
 /**
  * Lo que paga un cliente que terminó sus 12 meses y se queda alojado con
  * nosotros sin contratar más diseño ni cambios. Es la base: si su website

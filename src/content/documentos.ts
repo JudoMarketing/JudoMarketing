@@ -305,13 +305,13 @@ function juditoads(d: DatosDocumento): Documento {
 function juditos(d: DatosDocumento): Documento {
   return {
     titulo: "Acuerdo de servicio · Juditos, asistentes con inteligencia artificial",
-    subtitulo: "Suscripción por asistente · Mes a mes",
+    subtitulo: "Suscripción mensual según el plan · Mes a mes",
     datos: partes(d, `Judito${d.proyecto ? ` · ${d.proyecto}` : ""}`),
     secciones: [
       {
         titulo: "1. El servicio",
         parrafos: [
-          `Un Judito es un asistente con inteligencia artificial que Judo Marketing configura para el negocio del cliente y conecta a sus canales (WhatsApp, Instagram, Messenger, chat del website u otros que se acuerden) para atender a sus clientes: responder preguntas, dar información de productos, precios y horarios, tomar datos de contacto y, cuando el cliente lo configure, agendar o derivar a una persona. La suscripción cuesta ${usd(d.precioMensual)} al mes por asistente, se paga por adelantado y se renueva mes a mes hasta que el cliente cancele.`,
+          `Un Judito es un asistente con inteligencia artificial que Judo Marketing configura para el negocio del cliente y conecta a sus canales (WhatsApp, Instagram, Messenger, chat del website u otros que se acuerden) para atender a sus clientes: responder preguntas, dar información de productos, precios y horarios, tomar datos de contacto y, cuando el cliente lo configure, agendar o derivar a una persona. La suscripción cuesta ${usd(d.precioMensual)} al mes según el plan contratado (Juditos: hasta tres asistentes, cada uno con su propio cerebro; Juditos Pro: razonamiento complejo y memoria de cada cliente), se paga por adelantado y se renueva mes a mes hasta que el cliente cancele.`,
           "Incluye: la configuración inicial del asistente con la información que el cliente entregue; su conexión a los canales acordados; el panel donde el cliente ve las conversaciones y ajusta las instrucciones; el alojamiento; y el consumo base de mensajes de la cláusula 6.",
         ],
       },
@@ -346,8 +346,8 @@ function juditos(d: DatosDocumento): Documento {
       {
         titulo: "6. Consumo base y ajuste por uso",
         parrafos: [
-          "La suscripción incluye el consumo base de un asistente para un negocio pequeño o mediano: la cantidad de conversaciones y mensajes por mes indicada en la ficha del plan vigente en www.judomarketing.net al momento de contratar, o en su defecto mil (1.000) conversaciones al mes.",
-          "Si el asistente supera claramente ese consumo durante dos (2) meses seguidos, Judo Marketing le mostrará al cliente el consumo medido y el nuevo precio, proporcional a ese consumo, con treinta (30) días de aviso. El cliente puede aceptarlo, limitar el uso del asistente o cancelar. Nunca se aumenta el precio sin mostrar el consumo que lo justifica.",
+          "La suscripción incluye la cantidad de mensajes por mes indicada en la ficha del plan vigente en www.judomarketing.net/juditos al momento de contratar.",
+          "Si el asistente supera ese límite, Judo Marketing agrega bloques de mil (1.000) mensajes adicionales por diez dólares (USD 10) en el plan Juditos y quince dólares (USD 15) en el plan Juditos Pro, y se lo avisa al cliente antes de cobrarlos. Nunca se cobra un bloque adicional sin mostrar el consumo que lo justifica. El cliente puede, en cambio, limitar el uso del asistente o cancelar.",
         ],
       },
       {

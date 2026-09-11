@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import Reveal from "@/components/Reveal";
 import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
 import { pageMetadata } from "@/lib/seo";
-import { precioTexto, PRECIO_JUDITOADS, PRECIO_ASISTENTE } from "@/lib/pricing";
+import { precioTexto, PRECIO_JUDITOADS, PRECIO_ASISTENTE, PRECIO_ASISTENTE_PRO } from "@/lib/pricing";
 
 /**
  * Tres servicios, tres colores, poco texto.
@@ -222,14 +222,21 @@ export default function ServicesPage({
                 <ArteAi className="mx-auto w-full max-w-md" />
                 <div className="mt-6 rounded-2xl border border-judo-lilac/15 bg-judo-black/40 p-6 text-center">
                   <p className="display-num text-5xl font-bold">
+                    <span className="mr-1 text-lg font-semibold text-judo-fog/60">
+                      {t("assistant.from")}
+                    </span>
                     ${PRECIO_ASISTENTE}
                     <span className="text-2xl" style={{ color: "var(--svc-luz)" }}>
                       {t("perMonth")}
                     </span>
                   </p>
+                  <p className="mt-2 text-sm text-judo-fog/75">{t("assistant.plans")}</p>
+                  <p className="mt-1 text-xs text-judo-fog/50">
+                    {t("assistant.pro", { pro: `$${PRECIO_ASISTENTE_PRO}` })}
+                  </p>
                   {/* La mejor prueba del servicio es la que ya corre en esta página */}
                   <p
-                    className="mt-3 text-xs font-bold tracking-wide uppercase"
+                    className="mt-4 text-xs font-bold tracking-wide uppercase"
                     style={{ color: "var(--svc-luz)" }}
                   >
                     👇 {t("assistant.demo")}
@@ -237,9 +244,12 @@ export default function ServicesPage({
                   <p className="mt-1 text-xs text-judo-fog/55">
                     {t("assistant.demoNote")}
                   </p>
-                  <Link href="/contact" className="svc-btn mt-5">
+                  {/* Juditos es otra app bajo /juditos: <a> normal, fuera del
+                      enrutado de idiomas. Antes llevaba a Contacto (agendar
+                      reunión); el cliente contrata solo desde su portal. */}
+                  <a href="/juditos/mi" className="svc-btn mt-5">
                     {t("assistant.cta")} →
-                  </Link>
+                  </a>
                 </div>
               </div>
 
