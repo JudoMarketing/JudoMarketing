@@ -60,10 +60,9 @@ export default function JsonLd({ locale }: { locale: string }) {
           "@type": "Offer",
           name: es ? "Websites Complejos" : "Complex Websites",
           description: es
-            ? "Delivery, logística, clases virtuales e integraciones personalizadas."
-            : "Delivery, logistics, virtual classes, and custom integrations.",
-          price: String(precio("complex")),
-          priceCurrency: "USD",
+            ? "Delivery, logística, clases virtuales e integraciones personalizadas. Precio a la medida."
+            : "Delivery, logistics, virtual classes, and custom integrations. Custom pricing.",
+          // Sin precio a propósito: cada uno se cotiza aparte.
         },
         {
           "@type": "Offer",

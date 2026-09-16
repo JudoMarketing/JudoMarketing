@@ -15,10 +15,13 @@ export default function Reveal({
   children,
   paso = 0,
   className = "",
+  id,
 }: {
   children: React.ReactNode;
   paso?: number;
   className?: string;
+  /** Ancla, para que un enlace con # caiga justo en este bloque. */
+  id?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -45,6 +48,7 @@ export default function Reveal({
   return (
     <div
       ref={ref}
+      id={id}
       className={`reveal ${className}`}
       style={{ transitionDelay: `calc(var(--tiempo) * ${paso})` }}
     >
