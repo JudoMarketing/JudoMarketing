@@ -84,9 +84,12 @@ aspecto o la organización del portal, porque aquí es donde vive el criterio de
 diseño y se ve el conjunto. Si dudas, pídelo aquí: desde acá se ve el portal
 entero y se sabe si algo choca con lo demás.
 
-**En los dos casos:** el que empuja a este repositorio empuja a la rama por
-defecto, y si el push choca, `git pull --rebase`. Varias sesiones trabajan a
-la vez sobre la misma rama.
+**En los dos casos:** cada chat empuja a su rama de este repositorio: el de
+JuditoADS a `juditoads`, el de Juditos a `juditos`, el de Judo Marketing a
+`master`. Si el push choca, `git pull --rebase`. La pestaña o el puente que
+trae el otro chat se ve en judomarketing.net cuando su rama se une a `master`
+desde el chat de Judo Marketing; hasta entonces está en el repo, no en
+producción.
 
 ## Y si no estás seguro
 

@@ -23,10 +23,29 @@ npm run dev    # http://localhost:3000 → redirige a /es
 npm run build  # build de producción
 ```
 
+## Ramas del repositorio
+
+| Rama | Para qué | Quién la trabaja |
+| --- | --- | --- |
+| `master` | Judo Marketing: judomarketing.net y el portal. Es la rama de producción en Vercel. | Chat de Judo Marketing |
+| `juditoads` | Lo que el chat de JuditoADS toca en este repo: su pestaña del portal, el puente `/juditoads`, sus aportes al cerebro. | Chat de JuditoADS (repo `Judito-Ads`) |
+| `juditos` | Lo mismo para Juditos: pestaña AI Assistants, puente `/juditos`, aportes. | Chat de Juditos (repo `AI-Assistants`) |
+| `ads-and-sell-strategies` | Estrategias de anuncios y de venta. | Chat de estrategias |
+
+Reglas:
+
+- Cada chat empuja a su rama. Antes de empujar, `git pull --rebase` por si
+  otra sesión empujó primero.
+- Nada llega a judomarketing.net hasta que su rama se une a `master` desde el
+  chat de Judo Marketing (`git merge juditoads`, por ejemplo). Empujar a
+  `juditoads` o `juditos` no cambia producción por sí solo.
+- Las ramas viejas no se borraron a ciegas: quedaron como etiquetas
+  `archivo/<nombre>`. Se recuperan con `git checkout -b <nombre> archivo/<nombre>`.
+
 ## Deploy (Vercel)
 
-1. Importar este repo en Vercel (rama `claude/judo-marketing-redesign-ci2rj5` como
-   preview; `main` como producción cuando se haga merge).
+1. Importar este repo en Vercel con `master` como rama de producción
+   (Settings → Git → Production Branch). Las demás ramas salen como preview.
 2. Framework preset: Next.js — sin configuración extra.
 3. Variables de entorno: ver `.env.example`.
 4. Aplicar `supabase/migrations/0001_init.sql` en el SQL Editor de Supabase.

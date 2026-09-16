@@ -117,7 +117,7 @@ nosotros por un vendedor o un anuncio.
 
    | Sitio de la red | Estado del pie |
    |---|---|
-   | zanoah.shop | ✅ Enlace a Judo + a Delivery Rush, y `creator` en el schema (rama `claude/footer-dos-sitios-1ctrw3`, falta merge y deploy) |
+   | zanoah.shop | ✅ Enlace a Judo + a Delivery Rush, y `creator` en el schema (el trabajo quedó en la etiqueta `archivo/footer-dos-sitios`; falta traerlo a `master` y desplegar) |
    | deliveryrushflorida.com | ⬜ El repo `JudoMarketing/Delivery-Rush` está vacío: el sitio publicado no se construyó ahí. Hasta que su código esté en GitHub, el enlace de vuelta hacia Zanoah y Judo no se puede montar |
 5. **Search Console, revisar 1 vez al mes**: Rendimiento → ver con qué
    búsquedas apareces; Páginas → confirmar que se indexen.

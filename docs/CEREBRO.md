@@ -16,11 +16,10 @@ cualquier sesión puede leerlo:
 desde el chat de Judo Marketing y los buenos pasan aquí. Nadie edita este
 archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
-> **Ojo con la rama.** En este repo NO existe `master`. GitHub redirige esa
-> URL a la rama por defecto, así que el `raw` de arriba contesta 200 y parece
-> que todo está bien — pero `git push origin master` crearía una rama nueva y
-> divergente. Se empuja a **la rama por defecto**, que hoy es
-> `claude/judo-marketing-redesign-ci2rj5`. Lo comprueba
+> **Ojo con la rama.** `master` es la rama de producción y donde vive este
+> cerebro. JuditoADS aporta desde la rama `juditoads`, Juditos desde `juditos`
+> y los demás proyectos empujan a `master`. El reparto completo está en el
+> README, sección «Ramas del repositorio». Lo comprueba
 > `git ls-remote --heads origin`.
 
 **Novedades** (lo último que cambió, para el que ya lo había leído):
@@ -331,7 +330,8 @@ principal alcanzable sin hacer zoom.
 ## 6. El cerebro profundo del kit
 
 Las sesiones del kit de construcción llevan su propia memoria en
-`kit/cerebro/` (rama `claude/kit-cerebro` hasta que se una): `METODO.md` (el
+`kit/cerebro/` (archivado en la etiqueta `archivo/kit-cerebro`; se trae con
+`git checkout archivo/kit-cerebro -- kit/cerebro`): `METODO.md` (el
 orden de las decisiones de diseño), `MODERNO.md` (técnicas actuales con su
 código y sus trampas), `VERIFICACION.md` (los scripts de comprobación),
 `ERRORES.md` (los errores cometidos de verdad, con lo que costó cada uno) y

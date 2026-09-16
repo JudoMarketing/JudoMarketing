@@ -18,12 +18,12 @@ cerebro.
 1. Conecta este repo a tu sesión: `add_repo JudoMarketing/JudoMarketing` y
    clónalo (es de la misma organización).
 2. Agrega tu entrada **al final** de este archivo con el formato de abajo.
-3. Commit y push a **la rama por defecto** del repo — hoy
-   `claude/judo-marketing-redesign-ci2rj5`. NO a `master`: esa rama no existe
-   (GitHub redirige la URL de lectura, por eso engaña) y empujar ahí crearía
-   una rama divergente. Compruébalo con `git ls-remote --heads origin`.
-   Si el push choca porque otro proyecto aportó al mismo tiempo:
-   `git pull --rebase` y reintenta.
+3. Commit y push a **la rama de tu proyecto**: JuditoADS a `juditoads`,
+   Juditos a `juditos`, el resto a `master`. Compruébalo con
+   `git ls-remote --heads origin`. Si el push choca porque otro proyecto
+   aportó al mismo tiempo: `git pull --rebase` y reintenta. Los aportes que
+   entran por `juditoads` y `juditos` llegan al cerebro cuando esas ramas se
+   unen a `master` desde el chat de Judo Marketing.
 
 Qué vale la pena aportar: un patrón que funcionó, un error que costó caro y
 cómo se arregló, una decisión de diseño con su porqué, un texto que convirtió
@@ -983,3 +983,19 @@ dos sitios que se habrían olvidado: una ruta de prueba de correo que llamaba
 a la plantilla sin idioma, y la factura que leía el idioma del Judito sin
 haberlo pedido en la consulta. Sin el tipo, los dos habrían salido en
 producción en el idioma equivocado sin que nadie lo viera.
+
+---
+
+### 2026-09-16 · La casa · ramas del repo
+**Qué aprendimos:** las advertencias del 27 y del 30 de agosto quedan
+cerradas. `master` contiene todo lo del rediseño y es la rama de producción
+(Vercel → Settings → Git → Production Branch = `master`). Quedan cuatro ramas
+de trabajo: `master` (Judo Marketing), `juditoads`, `juditos` y
+`ads-and-sell-strategies`. Las ramas viejas se archivaron como etiquetas
+`archivo/...`; no se perdió nada. Lo que se empuja a `juditoads` o `juditos`
+no sale a producción hasta que se une a `master`.
+**Evidencia:** durante dos semanas Vercel desplegó desde
+`claude/judo-marketing-redesign-ci2rj5` mientras GitHub decía que la default
+era `master`. Los aportes que fueron a `master` no se desplegaban y los
+cambios del rediseño no estaban en la default. Una sola rama de producción,
+y que sea la default, corta ese doble camino.
