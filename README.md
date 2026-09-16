@@ -7,6 +7,7 @@ supervisados desde un panel central.
 - **Plan maestro y fases:** [PLAN.md](PLAN.md)
 - **Guía de marca:** [docs/BRAND.md](docs/BRAND.md)
 - **Documentos legales:** [docs/legal/](docs/legal/README.md)
+- **Prospección por correo:** [docs/LEADS.md](docs/LEADS.md)
 
 ## Stack
 
@@ -30,7 +31,7 @@ npm run build  # build de producción
 | `master` | Judo Marketing: judomarketing.net y el portal. Es la rama de producción en Vercel. | Chat de Judo Marketing |
 | `juditoads` | Lo que el chat de JuditoADS toca en este repo: su pestaña del portal, el puente `/juditoads`, sus aportes al cerebro. | Chat de JuditoADS (repo `Judito-Ads`) |
 | `juditos` | Lo mismo para Juditos: pestaña AI Assistants, puente `/juditos`, aportes. | Chat de Juditos (repo `AI-Assistants`) |
-| `ads-and-sell-strategies` | Estrategias de anuncios y de venta. | Chat de estrategias |
+| `ads-and-sell-strategies` | Estrategias de anuncios y de venta. La prospección por correo vive aquí: [docs/LEADS.md](docs/LEADS.md). | Chat de estrategias |
 
 Reglas:
 

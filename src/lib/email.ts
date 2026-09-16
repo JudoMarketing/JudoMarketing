@@ -77,6 +77,12 @@ export async function sendBrandedEmail(
     replyTo?: string;
     /** Archivos que viajan con el correo, por ejemplo un contrato en PDF. */
     adjuntos?: { nombre: string; contenido: Buffer; tipo?: string }[];
+    /** Remitente distinto del transaccional, por ejemplo una persona. Debe ser un alias de la cuenta SMTP. */
+    from?: string;
+    /** Cabeceras extra, por ejemplo List-Unsubscribe en los correos de prospección. */
+    headers?: Record<string, string>;
+    /** Versión en texto plano del mismo correo. */
+    texto?: string;
   }
 ): Promise<boolean> {
   if (!isEmailConfigured()) return false;
@@ -87,10 +93,12 @@ export async function sendBrandedEmail(
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
   });
   await transporter.sendMail({
-    from: FROM,
+    from: extras?.from ?? FROM,
     to: Array.isArray(to) ? to.join(", ") : to,
     subject,
     html,
+    text: extras?.texto,
+    headers: extras?.headers,
     replyTo: extras?.replyTo,
     ...(extras?.adjuntos?.length
       ? {

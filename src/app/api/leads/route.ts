@@ -1,0 +1,255 @@
+// Prospección por correo: la puerta que usa la sesión automática.
+//
+// La sesión (docs/LEADS.md) no tiene base de datos ni SMTP: le pide todo a
+// esta ruta con el secreto LEADS_SECRET. El secreto vive en Vercel y en el
+// entorno de la sesión, nunca en el navegador ni en el repo.
+//
+//   GET  ?corridas=1            últimas corridas (para rotar el zip)
+//   GET  ?zip=33130             leads de ese zip con su estado
+//   POST {accion:"buscar"}      negocios de un zip según Google Places
+//   POST {accion:"guardar"}     guarda lo investigado (upsert por place_id)
+//   POST {accion:"enviar"}      manda los borradores, con todos los candados
+//   POST {accion:"descartar"}   marca leads que no se van a escribir
+//   POST {accion:"corrida"}     deja registro de la corrida
+
+import { NextRequest, NextResponse } from "next/server";
+import {
+  autorizado,
+  buscarNegocios,
+  clienteServicio,
+  enviarBorradores,
+  secretoLeads,
+  type Borrador,
+} from "@/lib/leads";
+
+// Places tarda entre 10 y 30 llamadas por zip; el envío, hasta 20 correos.
+export const maxDuration = 120;
+
+function rechazar(req: NextRequest): NextResponse | null {
+  if (!secretoLeads()) {
+    return NextResponse.json(
+      { error: "Prospección no configurada: falta LEADS_SECRET en Vercel." },
+      { status: 503 }
+    );
+  }
+  if (!autorizado(req.headers.get("authorization"))) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  return null;
+}
+
+function conTablas(e: unknown): NextResponse {
+  const msg = (e as Error).message ?? String(e);
+  if (/relation .* does not exist|leads/.test(msg) && /does not exist/.test(msg)) {
+    return NextResponse.json(
+      { error: "Falta aplicar supabase/migrations/0027_leads.sql en el SQL Editor de Supabase." },
+      { status: 500 }
+    );
+  }
+  return NextResponse.json({ error: msg }, { status: 500 });
+}
+
+export async function GET(req: NextRequest) {
+  const no = rechazar(req);
+  if (no) return no;
+  const supabase = clienteServicio();
+  const zip = req.nextUrl.searchParams.get("zip");
+  try {
+    if (req.nextUrl.searchParams.get("corridas")) {
+      const { data, error } = await supabase
+        .from("leads_corridas")
+        .select("zip, encontrados, con_correo, enviados, modo, creado_en")
+        .order("creado_en", { ascending: false })
+        .limit(60);
+      if (error) throw error;
+      return NextResponse.json({ corridas: data ?? [] });
+    }
+    if (zip) {
+      const { data, error } = await supabase
+        .from("leads")
+        .select("id, nombre, email, estado, puntaje, enviado_en, website, telefono")
+        .eq("zip", zip)
+        .order("puntaje", { ascending: false });
+      if (error) throw error;
+      return NextResponse.json({ leads: data ?? [] });
+    }
+    return NextResponse.json({ error: "Falta ?zip= o ?corridas=1" }, { status: 400 });
+  } catch (e) {
+    return conTablas(e);
+  }
+}
+
+type LeadEntrante = {
+  place_id: string;
+  nombre: string;
+  zip: string;
+  direccion?: string | null;
+  telefono?: string | null;
+  website?: string | null;
+  email?: string | null;
+  tipo_google?: string | null;
+  rubro?: string | null;
+  rating?: number | null;
+  resenas?: number | null;
+  idioma?: "es" | "en" | null;
+  constructor?: string | null;
+  senales?: string[];
+  resumen_sitio?: string | null;
+  puntaje?: number;
+};
+
+export async function POST(req: NextRequest) {
+  const no = rechazar(req);
+  if (no) return no;
+
+  let cuerpo: Record<string, unknown>;
+  try {
+    cuerpo = (await req.json()) as Record<string, unknown>;
+  } catch {
+    return NextResponse.json({ error: "JSON inválido" }, { status: 400 });
+  }
+  const accion = cuerpo.accion;
+
+  try {
+    if (accion === "buscar") {
+      const zip = String(cuerpo.zip ?? "").trim();
+      if (!/^\d{5}$/.test(zip)) {
+        return NextResponse.json({ error: "zip debe tener 5 dígitos" }, { status: 400 });
+      }
+      const maximo = Math.min(Number(cuerpo.maximo ?? 100), 150);
+      const semilla = Number(cuerpo.semilla ?? 0);
+      const { candidatos, consultas, aviso } = await buscarNegocios(zip, maximo, semilla);
+
+      // Qué candidatos ya conocemos, para que la sesión no repita trabajo.
+      const supabase = clienteServicio();
+      const ids = candidatos.map((c) => c.place_id);
+      const conocidos = new Map<string, { id: string; estado: string; enviado_en: string | null; email: string | null }>();
+      for (let i = 0; i < ids.length; i += 100) {
+        const { data, error } = await supabase
+          .from("leads")
+          .select("id, place_id, estado, enviado_en, email")
+          .in("place_id", ids.slice(i, i + 100));
+        if (error) throw error;
+        for (const fila of data ?? []) conocidos.set(fila.place_id, fila);
+      }
+      return NextResponse.json({
+        zip,
+        consultas,
+        aviso,
+        candidatos: candidatos.map((c) => ({ ...c, conocido: conocidos.get(c.place_id) ?? null })),
+      });
+    }
+
+    if (accion === "guardar") {
+      const entrantes = (cuerpo.leads ?? []) as LeadEntrante[];
+      if (!Array.isArray(entrantes) || entrantes.length === 0 || entrantes.length > 200) {
+        return NextResponse.json({ error: "leads: entre 1 y 200" }, { status: 400 });
+      }
+      const supabase = clienteServicio();
+      const { data: existentes, error: e1 } = await supabase
+        .from("leads")
+        .select("id, place_id, estado, email, enviado_en")
+        .in("place_id", entrantes.map((l) => l.place_id));
+      if (e1) throw e1;
+      const porPlace = new Map((existentes ?? []).map((f) => [f.place_id, f]));
+
+      const salida: Array<{ id: string; place_id: string; estado: string; email: string | null; nuevo: boolean }> = [];
+      for (const l of entrantes) {
+        if (!l.place_id || !l.nombre || !/^\d{5}$/.test(l.zip ?? "")) continue;
+        const email = l.email?.trim().toLowerCase() || null;
+        const investigado = {
+          nombre: l.nombre.slice(0, 200),
+          zip: l.zip,
+          direccion: l.direccion ?? null,
+          telefono: l.telefono ?? null,
+          website: l.website ?? null,
+          tipo_google: l.tipo_google ?? null,
+          rubro: l.rubro ?? null,
+          rating: l.rating ?? null,
+          resenas: l.resenas ?? null,
+          idioma: l.idioma ?? null,
+          constructor: l.constructor ?? null,
+          senales: Array.isArray(l.senales) ? l.senales.slice(0, 20) : [],
+          resumen_sitio: l.resumen_sitio?.slice(0, 1200) ?? null,
+          puntaje: Number.isFinite(l.puntaje) ? Number(l.puntaje) : 0,
+        };
+        const previo = porPlace.get(l.place_id);
+        if (!previo) {
+          const { data, error } = await supabase
+            .from("leads")
+            .insert({ place_id: l.place_id, email, estado: email ? "nuevo" : "sin_correo", ...investigado })
+            .select("id, place_id, estado, email")
+            .single();
+          if (error) throw error;
+          salida.push({ ...data, nuevo: true });
+          continue;
+        }
+        // Ya estaba: se refresca la investigación, pero el estado y el correo
+        // de un lead escrito o dado de baja no se tocan.
+        const cambios: Record<string, unknown> = { ...investigado };
+        const sinHistoria = previo.estado === "nuevo" || previo.estado === "sin_correo";
+        if (sinHistoria) {
+          const correoFinal = previo.email ?? email;
+          cambios.email = correoFinal;
+          cambios.estado = correoFinal ? "nuevo" : "sin_correo";
+        }
+        const { data, error } = await supabase
+          .from("leads")
+          .update(cambios)
+          .eq("id", previo.id)
+          .select("id, place_id, estado, email")
+          .single();
+        if (error) throw error;
+        salida.push({ ...data, nuevo: false });
+      }
+      return NextResponse.json({ leads: salida });
+    }
+
+    if (accion === "enviar") {
+      const borradores = (cuerpo.borradores ?? []) as Borrador[];
+      if (!Array.isArray(borradores) || borradores.length === 0) {
+        return NextResponse.json({ error: "borradores vacío" }, { status: 400 });
+      }
+      const resultado = await enviarBorradores(borradores);
+      return NextResponse.json(resultado);
+    }
+
+    if (accion === "descartar") {
+      const ids = (cuerpo.lead_ids ?? []) as string[];
+      const motivo = String(cuerpo.motivo ?? "").slice(0, 300);
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return NextResponse.json({ error: "lead_ids vacío" }, { status: 400 });
+      }
+      const supabase = clienteServicio();
+      const { error } = await supabase
+        .from("leads")
+        .update({ estado: "descartado", notas: motivo || null })
+        .in("id", ids)
+        .in("estado", ["nuevo", "sin_correo"]);
+      if (error) throw error;
+      return NextResponse.json({ ok: true, descartados: ids.length });
+    }
+
+    if (accion === "corrida") {
+      const supabase = clienteServicio();
+      const fila = {
+        zip: String(cuerpo.zip ?? ""),
+        encontrados: Number(cuerpo.encontrados ?? 0),
+        con_correo: Number(cuerpo.con_correo ?? 0),
+        enviados: Number(cuerpo.enviados ?? 0),
+        modo: (process.env.LEADS_MODO ?? "prueba") === "real" ? "real" : "prueba",
+        resumen: String(cuerpo.resumen ?? "").slice(0, 4000) || null,
+      };
+      if (!/^\d{5}$/.test(fila.zip)) {
+        return NextResponse.json({ error: "zip inválido" }, { status: 400 });
+      }
+      const { error } = await supabase.from("leads_corridas").insert(fila);
+      if (error) throw error;
+      return NextResponse.json({ ok: true });
+    }
+
+    return NextResponse.json({ error: "accion desconocida" }, { status: 400 });
+  } catch (e) {
+    return conTablas(e);
+  }
+}
