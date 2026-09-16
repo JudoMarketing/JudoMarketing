@@ -82,7 +82,7 @@ export default function PortfolioGrid({
       {/* Tres por fila en cualquier pantalla */}
       <div className="grid grid-cols-3 gap-3 sm:gap-5">
         {visibles.map((trabajo, i) => (
-          <Reveal key={trabajo.dominio} delay={i * 80}>
+          <Reveal key={trabajo.dominio} paso={i}>
             <a
               href={trabajo.url}
               target="_blank"

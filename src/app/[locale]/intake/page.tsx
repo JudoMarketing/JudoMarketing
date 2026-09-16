@@ -50,13 +50,13 @@ export default async function IntakePage({
           <h1 className="hero-in text-4xl font-bold sm:text-5xl">{t("title")}</h1>
           <p
             className="hero-in mx-auto mt-3 max-w-xl text-judo-fog/70"
-            style={{ animationDelay: "0.15s" }}
+            style={{ animationDelay: "calc(var(--tiempo) * 1)" }}
           >
             {t("subtitle")}
           </p>
           <p
             className="hero-in mt-2 text-sm text-judo-fog/45"
-            style={{ animationDelay: "0.25s" }}
+            style={{ animationDelay: "calc(var(--tiempo) * 2)" }}
           >
             {t("time")}
           </p>

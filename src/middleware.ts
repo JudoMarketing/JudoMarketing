@@ -49,7 +49,9 @@ export default function middleware(request: NextRequest) {
 
 export const config = {
   // Dejamos pasar los .js/.png sueltos para poder atrapar el service worker
-  // viejo; api, _next y _vercel siguen fuera. juditoads también: es otra app
-  // (rewrite en next.config.ts) y el middleware de idiomas no debe tocarla.
-  matcher: "/((?!api|trpc|reparar|juditoads|_next|_vercel).*)",
+  // viejo; api, _next y _vercel siguen fuera. juditoads y juditos también:
+  // son otras apps (rewrites en next.config.ts) y el middleware de idiomas
+  // no debe tocarlas — si las toca, /juditos acaba redirigido a /es/juditos
+  // y la app no carga.
+  matcher: "/((?!api|trpc|reparar|juditoads|juditos|_next|_vercel).*)",
 };

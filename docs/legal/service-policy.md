@@ -2,7 +2,7 @@
 
 One unified policy for services, subscriptions, websites, apps, digital products, virtual assistants, marketing packages, privacy, and communications.
 
-Effective Date: 08/05/2026
+Effective Date: 08/28/2026
 
 ## 1. Agreement
 
@@ -17,7 +17,8 @@ controls for that project.
 ## 2. Services and Plans
 
 Services are provided as monthly subscriptions (such as Essential Websites, Complex
-Websites, and Mobile Apps), one-time projects, or custom proposals. The exact scope,
+Websites, Mobile Apps, JuditoADS, and AI Assistants), one-time projects, or custom
+proposals. JuditoADS and AI Assistants have their own terms in Sections 18 and 19. The exact scope,
 price, and inclusions of each plan are stated on www.judomarketing.net, the applicable
 proposal, or the signed service agreement. Anything not expressly included is outside
 scope and may require an additional quote. Minor updates included in subscription plans
@@ -192,7 +193,123 @@ of Miami-Dade County, Florida. Judo Marketing may update this Policy from time t
 updates are posted on www.judomarketing.net with a revised effective date, and continued
 use of services constitutes acceptance.
 
-## 18. Contact
+## 18. JuditoADS, Meta, and Platform Data
+
+JuditoADS is a self-service subscription tool that lets the client create and run
+advertising on Meta platforms (Facebook and Instagram) from the client's **own** Meta
+account. Judo Marketing acts as a technology provider operating the tool on the client's
+behalf and at the client's direction.
+
+**Connecting the account.** The client connects a Meta account through Meta's own
+authorization flow and grants the permissions the tool needs. The client keeps ownership
+and control of its ad account, Pages, and business portfolio, and may disconnect at any
+time from the tool or from the client's Meta settings.
+
+**Advertising spend.** The JuditoADS subscription fee is separate from advertising
+spend. Ad budget is charged by Meta directly to the payment method on the client's ad
+account. Judo Marketing does not collect, hold, or refund advertising spend.
+
+**Platform Data.** Data obtained from Meta ("Platform Data") — including access tokens,
+account and Page identifiers, campaign structures, and performance metrics such as
+reach, spend, and results — is used **only** to operate the service for the client who
+authorized it: creating and managing that client's campaigns, and showing that client
+its own metrics and reports. Judo Marketing does **not** sell, license, or transfer
+Platform Data; does **not** use it for Judo Marketing's own advertising; does **not**
+combine it with data from other clients; and does **not** use it to build profiles of
+individuals. Access tokens are stored encrypted, are never exposed in the browser, and
+are used only for calls the client's own actions require.
+
+**Retention and deletion.** Platform Data is retained only while the client's account is
+active. When the client disconnects the Meta account, cancels the service, or requests
+deletion, tokens are revoked and Platform Data is deleted within 30 days, except records
+Judo Marketing must keep for legal, tax, or billing purposes. When an account is closed,
+active campaigns are paused **before** the account record is removed; if campaigns
+cannot be paused, the closure is refused and the client is told which campaign to stop
+manually, so no advertising keeps running unattended.
+
+**How to request deletion of your data.** Write to **admin@judomarketing.net** from the
+email address on the account, with the subject "Data deletion". Judo Marketing confirms
+receipt and completes the deletion within 30 days. The client can also disconnect Judo
+Marketing at any time from Meta: **Settings → Business integrations → remove the app**;
+doing so immediately revokes our access.
+
+**Platform rules.** Use of JuditoADS is also subject to Meta's Terms, Advertising
+Standards, and Platform Terms. The client is responsible for the content, claims, and
+targeting of its ads. Meta may reject, restrict, or remove ads, accounts, or
+permissions; Judo Marketing does not control those decisions. Some Meta features require
+app review, Live mode, or business verification, and are unavailable until Meta grants
+them.
+
+## 19. AI Assistants
+
+AI Assistants are subscription virtual assistants that answer the client's customers on
+Instagram, Facebook, and the client's website, configured with information the client
+provides (what it sells, prices, hours, policies).
+
+**It is not a person and does not hide it.** The assistant identifies itself as an
+automated assistant when asked. It does not impersonate a human being.
+
+**It does not commit the business.** Prices, availability, and orders are confirmed
+against the client's own records, not invented by the assistant. Judo Marketing is not
+responsible for a commercial commitment the client chooses to honor beyond what its own
+records support.
+
+**Conversations.** Messages are processed by third-party AI providers to generate the
+reply and are retained only as needed to operate the service and improve the client's
+own assistant. They are not sold, are not used to train third-party public models beyond
+what the provider's terms allow, and are not shared with other clients. The client must
+not configure the assistant to request payment details, passwords, or sensitive personal
+or health information; conversations that require them must be moved to a secure channel.
+
+**Accuracy and supervision.** An AI assistant can make mistakes. The client is
+responsible for reviewing its configuration, keeping its information current, and
+supervising conversations that matter. Deletion of conversation data follows Section 18,
+"How to request deletion of your data".
+
+## 20. Government and Law Enforcement Requests
+
+Judo Marketing sometimes holds personal information belonging to its clients and to
+their customers. When a public authority — police, a court, a regulator, or any
+government body, in the United States or elsewhere — asks for that information, the
+following procedure applies to every request, without exception.
+
+**1. Legality review.** No data is disclosed on the strength of a request alone. Before
+anything is handed over, Judo Marketing verifies that the request is genuine, that it
+comes from an authority with jurisdiction, and that it carries the legal instrument the
+disclosure requires (a subpoena, court order, or warrant, as applicable). A request that
+arrives by email or phone without a verifiable legal instrument is not honored;
+verification is sought through the authority's official channels. Where the law requires
+a warrant, a subpoena is not accepted in its place.
+
+**2. Challenging unlawful requests.** If a request appears to lack a legal basis, exceeds
+the authority's jurisdiction, is overly broad, or conflicts with the law of the country
+where the data subject resides, Judo Marketing objects and, where warranted, retains
+counsel to move to quash, narrow, or otherwise oppose it. Judo Marketing does not comply
+merely because complying is easier or cheaper than objecting.
+
+**3. Data minimization.** Only the minimum information the request actually compels is
+disclosed — never a whole account, a whole database, or a whole client because that is
+simpler to extract. What is disclosed is limited to the identified individuals, the
+identified time period, and the identified data categories. If the request is broader
+than its legal basis supports, Judo Marketing asks that it be narrowed before responding.
+
+**4. Documentation.** Every request is recorded in an internal register: date received,
+requesting authority, legal instrument, data requested, the legality assessment and its
+reasoning, who was involved in the decision, what was disclosed or refused, and the date
+of response. The register is retained even when nothing is disclosed.
+
+**Notice to the affected party.** Unless prohibited by law or by a court order, Judo
+Marketing notifies the affected client before disclosing, so the client can seek its own
+protection. Where notice is prohibited, Judo Marketing notifies as soon as the
+prohibition lapses.
+
+**Emergencies.** In a request involving an imminent risk of death or serious physical
+harm, information may be disclosed before the full review is completed. The review and
+the record are completed afterward, and the disclosure is documented the same way.
+
+**Contact for legal requests:** admin@judomarketing.net, subject "Legal request".
+
+## 21. Contact
 
 Judo Marketing · 66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130 ·
 www.judomarketing.net · admin@judomarketing.net · 305-934-9981

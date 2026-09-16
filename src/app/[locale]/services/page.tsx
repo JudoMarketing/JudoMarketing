@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import Reveal from "@/components/Reveal";
 import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
 import { pageMetadata } from "@/lib/seo";
-import { precioTexto, PRECIO_JUDITOADS, PRECIO_ASISTENTE } from "@/lib/pricing";
+import { precioTexto, PRECIO_JUDITOADS, PRECIO_ASISTENTE, PRECIO_ASISTENTE_PRO } from "@/lib/pricing";
 
 /**
  * Tres servicios, tres colores, poco texto.
@@ -63,14 +63,14 @@ export default function ServicesPage({
         <h1 className="hero-in text-4xl font-bold sm:text-6xl">{t("title")}</h1>
         <p
           className="hero-in mx-auto mt-4 max-w-xl text-lg text-judo-fog/70"
-          style={{ animationDelay: "0.2s" }}
+          style={{ animationDelay: "calc(var(--tiempo) * 1)" }}
         >
           {t("subtitle")}
         </p>
 
         <div
           className="hero-in mt-10 grid gap-4 sm:grid-cols-3"
-          style={{ animationDelay: "0.3s" }}
+          style={{ animationDelay: "calc(var(--tiempo) * 2)" }}
         >
           {FAMILIAS.map((f) => (
             <a
@@ -122,7 +122,7 @@ export default function ServicesPage({
           {planes.map((plan, i) => {
             const features = t.raw(`${plan}.features`) as string[];
             return (
-              <Reveal key={plan} delay={i * 110}>
+              <Reveal key={plan} paso={i}>
                 <div className="svc-card flex h-full flex-col p-7">
                   <h3 className="text-lg font-bold">{t(`${plan}.name`)}</h3>
                   <p className="mt-1 text-sm text-judo-fog/60">
@@ -132,7 +132,7 @@ export default function ServicesPage({
                     <span className="align-top text-sm text-judo-fog/50">
                       {t("from")}{" "}
                     </span>
-                    <span className="text-5xl font-bold">{precioTexto(plan)}</span>
+                    <span className="display-num text-5xl font-bold">{precioTexto(plan)}</span>
                     <span style={{ color: "var(--svc-luz)" }}>{t("perMonth")}</span>
                   </p>
                   <ul className="mt-6 flex-1 space-y-2.5">
@@ -185,7 +185,7 @@ export default function ServicesPage({
               <div>
                 <ArteAds className="mx-auto w-full max-w-md" />
                 <div className="mt-6 rounded-2xl border border-judo-lilac/15 bg-judo-black/40 p-6 text-center">
-                  <p className="text-5xl font-bold">
+                  <p className="display-num text-5xl font-bold">
                     ${PRECIO_JUDITOADS}
                     <span className="text-2xl" style={{ color: "var(--svc-luz)" }}>
                       {t("perMonth")}
@@ -221,15 +221,22 @@ export default function ServicesPage({
               <div className="order-2 lg:order-1">
                 <ArteAi className="mx-auto w-full max-w-md" />
                 <div className="mt-6 rounded-2xl border border-judo-lilac/15 bg-judo-black/40 p-6 text-center">
-                  <p className="text-5xl font-bold">
+                  <p className="display-num text-5xl font-bold">
+                    <span className="mr-1 text-lg font-semibold text-judo-fog/60">
+                      {t("assistant.from")}
+                    </span>
                     ${PRECIO_ASISTENTE}
                     <span className="text-2xl" style={{ color: "var(--svc-luz)" }}>
                       {t("perMonth")}
                     </span>
                   </p>
+                  <p className="mt-2 text-sm text-judo-fog/75">{t("assistant.plans")}</p>
+                  <p className="mt-1 text-xs text-judo-fog/50">
+                    {t("assistant.pro", { pro: `$${PRECIO_ASISTENTE_PRO}` })}
+                  </p>
                   {/* La mejor prueba del servicio es la que ya corre en esta página */}
                   <p
-                    className="mt-3 text-xs font-bold tracking-wide uppercase"
+                    className="mt-4 text-xs font-bold tracking-wide uppercase"
                     style={{ color: "var(--svc-luz)" }}
                   >
                     👇 {t("assistant.demo")}
@@ -237,9 +244,13 @@ export default function ServicesPage({
                   <p className="mt-1 text-xs text-judo-fog/55">
                     {t("assistant.demoNote")}
                   </p>
-                  <Link href="/contact" className="svc-btn mt-5">
+                  {/* Juditos es otra app bajo /juditos: <a> normal, fuera del
+                      enrutado de idiomas. Va a su página pública (planes y
+                      botón de contratar); /juditos/mi pide login y a un
+                      visitante nuevo lo mandaba a la pantalla de acceso. */}
+                  <a href="/juditos" className="svc-btn mt-5">
                     {t("assistant.cta")} →
-                  </Link>
+                  </a>
                 </div>
               </div>
 
@@ -269,7 +280,7 @@ export default function ServicesPage({
         </Reveal>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {diffs.map((diff, i) => (
-            <Reveal key={diff.title} delay={i * 80}>
+            <Reveal key={diff.title} paso={i}>
               <div className="svc svc-card h-full p-5 text-center">
                 <h3
                   className="text-sm font-bold"

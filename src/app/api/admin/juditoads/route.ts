@@ -97,10 +97,58 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { accion, userId } = (await req.json().catch(() => ({}))) as {
+  const { accion, userId, password } = (await req.json().catch(() => ({}))) as {
     accion?: string;
     userId?: string;
+    password?: string;
   };
+
+  // La cuenta que se le entrega al revisor de Meta para el App Review.
+  //
+  // No es una cuenta de la lista: la crea (o la restablece) la propia app de
+  // JuditoADS en POST /api/admin/revisor, con la contraseña que se elija
+  // aquí. Va por este puente por la misma razón que todo lo demás: el
+  // secreto compartido no puede salir del servidor, y así la persona no
+  // tiene que abrir una terminal ni copiar el token a ningún sitio.
+  if (accion === "revisor") {
+    if (!password || password.length < 8) {
+      return NextResponse.json(
+        { error: "La contraseña del revisor necesita al menos 8 caracteres." },
+        { status: 400 }
+      );
+    }
+    try {
+      const res = await fetch(`${juditoadsBase()}/api/admin/revisor`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${secret}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password }),
+        cache: "no-store",
+      });
+      const cuerpo = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        return NextResponse.json(
+          {
+            error:
+              (cuerpo as { error?: string }).error ??
+              (res.status === 404 || res.status === 405
+                ? "JuditoADS todavía no tiene la ruta del revisor desplegada."
+                : `JuditoADS respondió ${res.status}`),
+          },
+          { status: 502 }
+        );
+      }
+      return NextResponse.json(cuerpo);
+    } catch {
+      return NextResponse.json(
+        { error: "No se pudo contactar a JuditoADS." },
+        { status: 502 }
+      );
+    }
+  }
+
   if (!ACCIONES.includes(accion as (typeof ACCIONES)[number]) || !userId) {
     return NextResponse.json({ error: "Petición inválida" }, { status: 400 });
   }

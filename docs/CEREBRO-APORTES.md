@@ -6,13 +6,24 @@ aprendió, **al final del archivo, sin tocar lo de los demás**. Después, desde
 el chat de Judo Marketing, se curan estos aportes y los buenos pasan al
 cerebro.
 
+> **Antes de aportar, lee la sección 0 del cerebro.** Judo Marketing es una
+> empresa de **Florida, Estados Unidos** (Miami). Eso fija la ley aplicable de
+> los contratos y políticas que escribas (Florida, tribunales de Miami-Dade),
+> la regla de notificación de brechas (FIPA, no GDPR por defecto), la zona
+> horaria de horarios y cron jobs (Eastern, `America/New_York`), la moneda
+> (USD) y el mercado base de SEO local (Miami / South Florida).
+
 ## Cómo aportar (desde el chat de cualquier proyecto)
 
 1. Conecta este repo a tu sesión: `add_repo JudoMarketing/JudoMarketing` y
    clónalo (es de la misma organización).
 2. Agrega tu entrada **al final** de este archivo con el formato de abajo.
-3. Commit y push a `master`. Si el push choca porque otro proyecto aportó al
-   mismo tiempo: `git pull --rebase` y reintenta.
+3. Commit y push a **la rama por defecto** del repo — hoy
+   `claude/judo-marketing-redesign-ci2rj5`. NO a `master`: esa rama no existe
+   (GitHub redirige la URL de lectura, por eso engaña) y empujar ahí crearía
+   una rama divergente. Compruébalo con `git ls-remote --heads origin`.
+   Si el push choca porque otro proyecto aportó al mismo tiempo:
+   `git pull --rebase` y reintenta.
 
 Qué vale la pena aportar: un patrón que funcionó, un error que costó caro y
 cómo se arregló, una decisión de diseño con su porqué, un texto que convirtió
@@ -166,6 +177,27 @@ proyecto en `node_modules/next/dist/docs/` — conviene leerlos antes de asumir.
 que en Next 15 era correcta.
 
 ---
+### 2026-08-28 · Juditos · asistentes de IA
+**Qué aprendimos:** en un bot con cola de trabajos, las notas internas del
+sistema no pueden guardarse como un mensaje más de la conversación. El motor
+decide si contestar mirando "¿el último mensaje es del contacto?"; si al
+fallar se guarda una nota de error como último mensaje, la respuesta a esa
+pregunta pasa a ser "no" y **todos los reintentos se saltan en silencio, para
+siempre**. El trabajo queda marcado como hecho y el cliente nunca recibe
+respuesta. La cura: filtrar las notas internas antes de esa comprobación.
+**Evidencia:** el primer intento fallaba y se reprogramaba bien, pero el
+segundo terminaba como DONE con el error todavía puesto. Con el filtro, los
+tres intentos se agotan como debe ser y el fallo sale a la luz.
+
+---
+### 2026-08-28 · Juditos · asistentes de IA
+**Qué aprendimos:** el modelo nunca es la fuente de verdad del dinero ni de
+los hechos. La herramienta que registra un pedido ignora el precio que diga
+el bot y lo saca del catálogo; la que agenda una cita comprueba el solape en
+la base de datos antes de aceptar. Un modelo puede regalar un descuento o
+prometer un hueco ocupado con toda la seguridad del mundo, y el cliente lo
+va a exigir. Que la validación viva en la herramienta y no en el prompt: al
+prompt se le puede dar la vuelta hablando, a un `SELECT` no.
 ### 2026-08-27 · JuditoWEBS · plantilla base
 **Qué aprendimos:** en Next.js 16 el `proxy.ts` (lo que antes era
 `middleware.ts`) tiene que estar al mismo nivel que la carpeta `app`. Si el
@@ -486,6 +518,170 @@ nadie había notado.
 
 ---
 
+### 2026-09-04 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un estado que depende de un tercero no se puede guardar
+y dar por bueno: hay que volver a preguntarlo. Guardar «conectado» el día
+que la persona autorizó y seguir enseñándolo meses después no es un caché,
+es una afirmación que envejeció sin que nadie la revisara — y el tercero
+revoca accesos sin avisar a nadie. La forma que funciona: preguntar de
+verdad, guardar la respuesta CON su fecha, y volver a preguntar cuando esa
+fecha envejece. Y ponerlo donde se ve, no solo en la pantalla del ajuste:
+el fallo se lo encuentra la persona haciendo cualquier otra cosa.
+**Evidencia:** un cliente fue a actualizar su publicidad, Meta le contestó
+que su cuenta estaba desconectada, y la pantalla de cuentas le seguía
+enseñando todas las palomitas verdes. Buscó el fallo media hora donde no
+estaba. Meta había revocado el token —pasa al cambiar la contraseña, al
+quitar la app, o a los 60 días— y no avisa.
+
+---
+
+### 2026-09-04 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** al construir un aviso, el falso positivo cuesta más que
+el falso negativo. Un aviso que salta cuando no toca se deja de leer, y
+entonces tampoco sirve el día que sí toca. Así que la condición tiene que
+ser lo que el tercero dice EXPLÍCITAMENTE, no cualquier cosa que salga mal:
+un timeout, un 500 o un límite de tasa son el proveedor teniendo un mal
+rato, no el usuario con un problema. Ante la duda, callarse y dejar el
+estado como estaba.
+**Evidencia:** el chequeo de conexión con Meta distingue tres respuestas y
+no dos: viva, caída, y «no se sabe». Solo la segunda enciende el aviso. La
+prueba que lo fija tiene tantos casos de «esto NO es una desconexión» como
+de «esto sí lo es».
+
+---
+
+### 2026-09-05 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando se arregla algo que llevaba tiempo ignorándose en
+silencio, se heredan de golpe todos los conflictos que ese silencio tapaba.
+Una opción que el usuario elegía y el código descartaba no estaba «sin
+efecto»: estaba evitando chocar con las reglas del proveedor. Al empezar a
+respetarla, el choque sale — y sale en producción, en la cara de quien la
+había elegido. La regla: después de hacer que una opción por fin cuente, hay
+que probarla CONTRA las reglas del tercero en sus combinaciones, sobre todo
+con los valores que vienen por defecto, porque esos los tiene todo el mundo.
+**Evidencia:** se arregló que el interruptor «deja que la plataforma amplíe
+el público» llegara de verdad a Meta, después de meses clavado en apagado.
+Como viene encendido de fábrica, a partir de ahí cualquiera que además
+bajara el tope de edad recibía un rechazo del conjunto entero: Meta no
+acepta un máximo de edad firme junto a ese público. Mientras la opción se
+ignoraba, el conflicto no existía.
+
+---
+
+### 2026-09-05 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando dos ajustes del usuario se contradicen y el
+proveedor solo admite uno, gana el que la persona eligió a mano, no el que
+venía por defecto. Mover un deslizador hasta un número es un acto
+deliberado; un interruptor encendido de fábrica casi nunca se ha mirado. Y
+la decisión se le cuenta JUNTO al ajuste, no en el resumen final: enterarse
+al final de que lo que dejaste puesto no se aplicó es lo que hace desconfiar
+de la herramienta entera.
+**Evidencia:** con un tope de edad, se apaga el público automático y se
+avisa ahí mismo de por qué y de cómo recuperarlo (subir el máximo). Ninguna
+de las dos opciones se traiciona en silencio.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** unas instrucciones se escriben con las palabras que la
+persona TIENE DELANTE, no con las que uno traduciría. Si su herramienta está
+en inglés, cada botón va citado en inglés aunque la explicación vaya en su
+idioma; traducirlo es obligarle a adivinar la correspondencia, y con eso se
+rinde. Y toda instrucción necesita su salida: «si esto no aparece en tu
+pantalla, sáltalo». Sin esa frase, lo que falta no se interpreta como «no
+aplica» sino como «no lo encuentro, no sirvo para esto» — y la persona se
+queda parada en un paso que no existía.
+**Evidencia:** una guía de trámite escrita con los nombres traducidos al
+español para un panel en inglés terminó en «no entiendo ni papa y no veo
+algunas cosas de las que me hablas». Rehecha pantalla por pantalla, con cada
+control entrecomillado tal cual sale, la explicación al lado y una salida
+explícita en cada paso que podía no aparecer.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** que una cosa exista en la API no significa que la
+interfaz la enseñe. Son dos superficies distintas del mismo sistema y no
+coinciden: la API lista estados internos, restos y registros que el panel
+oculta a propósito. Mandar a alguien a pulsar algo que solo se ha visto en
+una respuesta JSON es mandarlo a buscar lo que no está. Antes de convertir
+un dato de la API en un paso manual, hay que confirmarlo en la pantalla —
+una captura suya vale más que el listado— y, si no se puede confirmar,
+decirlo así en vez de darlo por hecho.
+**Evidencia:** dos permisos que la API devolvía como rechazados no aparecían
+en el panel del usuario. Se le pidió borrarlos; no existían para él.
+Comprobado después que estaban fuera de la solicitud
+(in_current_submission: false), o sea que ni siquiera había nada que borrar:
+el paso entero sobraba.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando el que evalúa publica su rúbrica, se escribe
+contra la rúbrica, no contra la intuición de «suena flojo». Meta dice
+literalmente las cuatro preguntas que cada descripción de permiso tiene que
+contestar y qué tiene que verse en el video; un texto corto que las conteste
+las cuatro vale más que uno elegante que conteste dos. Y la rúbrica también
+dice qué NO hacer: prometer en el texto algo que el video no enseña es la
+causa «could not reproduce». Así que cada afirmación se comprobó contra el
+código antes de escribirla (qué endpoint, qué campos) y cada texto termina
+señalando en qué toma del video se ve.
+**Evidencia:** el usuario preguntó si sus textos eran «muy mundanos». No era
+eso: el rechazo anterior fue por pedir un permiso que la app no usa, y los
+siete textos nunca se habían revisado. Se rehicieron con la estructura de
+las cuatro preguntas, citando endpoint y campos verificados, sin adornos.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** el riesgo más grande de un trámite suele estar en lo que
+uno da por obvio de su propio producto. Meta rechaza el envío ENTERO si el
+revisor «no encuentra el login con Facebook». En JuditoADS ese login está
+dentro, en la pantalla de cuentas, y la entrada es con correo — una decisión
+correcta de producto que para un revisor parece que la integración no
+existe. Eso no se arregla en el código: se arregla en las instrucciones al
+revisor, diciéndole dónde está y por qué. Antes de mandar nada a revisión,
+leer la lista de errores comunes del evaluador y preguntarse cuál de ellos
+parece cierto DESDE FUERA aunque no lo sea.
+**Evidencia:** las instrucciones al revisor se escribieron alrededor de ese
+punto: dónde está «Connect with Facebook», que la cuenta de prueba abre en
+demo y cómo reproducir cada permiso desde ahí.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando la persona dice «¿por qué no lo haces tú, tienes
+acceso a todo?», la respuesta útil no es explicar mejor el comando: es
+quitar el comando. Y la premisa hay que corregirla sin rodeos: no se tiene
+acceso a todo, y a los secretos de producción (tokens, base de datos) no se
+tiene a propósito — ese mismo muro es el que protege a la persona de
+cualquiera que entre en la sesión. Lo que sí se puede hacer es mover la
+tarea a donde el secreto ya vive: el servidor del panel de administración
+guarda el token, así que un botón ahí hace lo mismo que el curl sin que la
+persona toque una terminal ni copie el token a ningún sitio. La regla:
+«hazlo tú» sobre un secreto ajeno se contesta con un botón, no con un
+tutorial.
+**Evidencia:** la cuenta del revisor de Meta solo se podía crear con curl y
+el token de administración en la mano. Se puso una tarjeta en la pestaña de
+JuditoADS del panel: se escribe la contraseña, se pulsa, y la orden viaja
+por el mismo puente que ya usaban suspender y eliminar.
+
+---
+
+### 2026-09-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un botón que dice X y hace X′ es peor que un botón que
+no existe. «Eliminar» marcaba la cuenta como dada de baja y la dejaba en la
+lista; «Suspender» suspendía, pero el listado no lo decía, así que la fila
+seguía ofreciendo «Suspender». Todo funcionaba por dentro y para la persona
+nada funcionaba, porque lo único que ve es la lista después de pulsar. La
+regla: una acción de administración se comprueba MIRANDO LA LISTA después,
+no leyendo el 200 de la API. Y cuando el resultado cambia el estado, la
+lista tiene que traer ese estado; si no, el botón contrario nunca aparece.
+**Evidencia:** la pestaña de JuditoADS tenía los tres botones desde hacía
+semanas y la persona pidió «permíteme borrar cuentas». Se hizo borrado
+real (con las guardas de gasto y cobro por delante), el listado manda
+`suspendida`/`dadaDeBaja`, la columna de acciones va fija para que no se
+pierda fuera del borde, y el mensaje enseña el detalle en vez de un ✓.
 ### 2026-08-28 · Juditos · cuentas compartidas entre productos
 **Qué aprendimos:** cuando dos productos de la casa tienen que compartir
 cuenta, la respuesta NO es copiar la tabla de usuarios en las dos bases. Dos

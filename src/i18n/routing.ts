@@ -17,5 +17,8 @@ export const routing = defineRouting({
     "/admin": "/admin",
     "/pay": { es: "/pagar", en: "/pay" },
     "/suspended-demo": { es: "/demo-suspension", en: "/suspended-demo" },
+    // /acepto/[code] (aceptación de contratos) no va aquí: no se traduce y
+    // nunca se enlaza con <Link>, así que no necesita entrada. Meterla rompe
+    // el tipado del selector de idioma, que maneja solo rutas fijas.
   },
 });

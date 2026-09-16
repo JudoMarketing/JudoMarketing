@@ -35,7 +35,7 @@ export default async function PortfolioPage({
           <h1 className="hero-in text-4xl font-bold sm:text-6xl">{t("title")}</h1>
           <p
             className="hero-in mx-auto mt-3 max-w-2xl text-judo-fog/70"
-            style={{ animationDelay: "0.15s" }}
+            style={{ animationDelay: "calc(var(--tiempo) * 1)" }}
           >
             {t("subtitle")}
           </p>

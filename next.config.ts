@@ -29,13 +29,29 @@ const nextConfig: NextConfig = {
   // judomarketing.net/juditoads. JUDITOADS_URL es la URL del deploy de esa
   // app en Vercel (ej: https://judito-ads.vercel.app); sin la variable, la
   // ruta simplemente no existe y el sitio no se ve afectado.
+  // Juditos (los asistentes de IA, repo AI-Assistants) sigue el mismo patrón:
+  // app aparte con su propia base de datos, servida bajo /juditos. Igual que
+  // arriba, sin JUDITOS_URL la ruta no existe y el sitio no se ve afectado.
   async rewrites() {
     const juditoads = process.env.JUDITOADS_URL;
-    if (!juditoads) return [];
-    return [
-      { source: "/juditoads", destination: `${juditoads}/juditoads` },
-      { source: "/juditoads/:path*", destination: `${juditoads}/juditoads/:path*` },
-    ];
+    const juditos = process.env.JUDITOS_URL;
+    const reglas = [];
+
+    if (juditoads) {
+      reglas.push(
+        { source: "/juditoads", destination: `${juditoads}/juditoads` },
+        { source: "/juditoads/:path*", destination: `${juditoads}/juditoads/:path*` },
+      );
+    }
+
+    if (juditos) {
+      reglas.push(
+        { source: "/juditos", destination: `${juditos}/juditos` },
+        { source: "/juditos/:path*", destination: `${juditos}/juditos/:path*` },
+      );
+    }
+
+    return reglas;
   },
 
   // Las direcciones viejas del portafolio, por si Google alcanzó a verlas
@@ -64,6 +80,20 @@ const nextConfig: NextConfig = {
 
   async headers() {
     return [
+      // Los PDFs no pueden llevar <link rel="canonical">, y Google marcó la
+      // política en PDF como "duplicado sin canonical" de /legal, que dice lo
+      // mismo en HTML. Un PDF sí puede decirlo por cabecera. El contrato no
+      // tiene versión HTML que lo represente: no se indexa y listo.
+      {
+        source: "/legal/Service_Policy_and_Terms.pdf",
+        headers: [
+          { key: "Link", value: '<https://www.judomarketing.net/legal>; rel="canonical"' },
+        ],
+      },
+      {
+        source: "/legal/Acuerdo_de_Servicio_Cliente.pdf",
+        headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+      },
       ...SW_PATHS.map((source) => ({
         source,
         headers: [

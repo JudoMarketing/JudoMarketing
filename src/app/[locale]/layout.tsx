@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { precioDesde } from "@/lib/pricing";
-import { Poppins } from "next/font/google";
+import { Poppins, Inter } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -14,12 +14,45 @@ import ChunkGuard from "@/components/ChunkGuard";
 import ServiceWorkerPurge from "@/components/ServiceWorkerPurge";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import Script from "next/script";
 import "../globals.css";
 
+/**
+ * Google Analytics del propio sitio. Sin esta etiqueta la propiedad de GA4
+ * de judomarketing.net decía "No data received" y el portal iba a enseñar
+ * ceros para siempre. El ID (G-XXXX) vive en NEXT_PUBLIC_GA_ID; sin la
+ * variable no se carga nada.
+ */
+function GoogleAnalytics() {
+  const id = process.env.NEXT_PUBLIC_GA_ID;
+  if (!id) return null;
+  return (
+    <>
+      <Script src={`https://www.googletagmanager.com/gtag/js?id=${id}`} strategy="afterInteractive" />
+      <Script id="ga4" strategy="afterInteractive">
+        {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${id}',{anonymize_ip:true});`}
+      </Script>
+    </>
+  );
+}
+
+/**
+ * Dos tipografías con papeles claros, la regla de la casa (docs/CEREBRO.md).
+ * El sitio venía con Poppins haciendo todo: es una geométrica de display, y
+ * en párrafos, etiquetas y tablas se lee ancha y rebotada. Poppins se queda
+ * donde brilla —titulares y cifras grandes— e Inter, que está dibujada para
+ * pantalla, toma el cuerpo y la interfaz.
+ */
 const poppins = Poppins({
-  weight: ["400", "500", "600", "700"],
+  weight: ["600", "700"],
   subsets: ["latin"],
   variable: "--font-poppins",
+});
+
+const inter = Inter({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export function generateStaticParams() {
@@ -39,10 +72,11 @@ export async function generateMetadata({
     metadataBase: new URL("https://www.judomarketing.net"),
     title: t("title"),
     description: descripcion,
-    alternates: {
-      canonical: locale === "es" ? "/es" : "/",
-      languages: { en: "/", es: "/es", "x-default": "/" },
-    },
+    // Sin canonical aquí a propósito. Cuando el layout lo traía, toda página
+    // que no declarara el suyo (pagar, admin, la demo de suspensión) salía
+    // diciendo "soy la portada", y Google las marcaba como duplicados. Cada
+    // página declara el suyo: las públicas con pageMetadata(), las privadas
+    // con noindex.
     icons: { icon: "/brand/logo-black.jpg" },
     // Verificación de cada buscador. Se pegan en Vercel y aparecen solas;
     // sin ellas el sitio funciona igual, solo que no puedes ver sus reportes.
@@ -79,7 +113,7 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} className={poppins.variable}>
+    <html lang={locale} className={`${poppins.variable} ${inter.variable}`}>
       <body className="min-h-screen antialiased">
         <JsonLd locale={locale} />
         <ChunkGuard />
@@ -95,6 +129,7 @@ export default async function LocaleLayout({
         </NextIntlClientProvider>
         <SpeedInsights />
         <Analytics />
+        <GoogleAnalytics />
       </body>
     </html>
   );

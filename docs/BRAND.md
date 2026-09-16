@@ -28,8 +28,12 @@ noche morada, con algo más de luz.
 
 ## Tipografía
 
-- **Poppins Bold** — titulares.
-- **Poppins Regular** — cuerpo de texto.
+- **Poppins SemiBold/Bold** — titulares y cifras grandes, con tracking
+  negativo (-0.022em, y -0.032em en los tamaños de hero).
+- **Inter** — cuerpo, interfaz y datos, a 1.6 de interlínea.
+
+Poppins hacía las dos cosas hasta 08/2026. Es una geométrica de display: en
+párrafos, etiquetas y tablas se lee ancha y rebotada. Se quedó donde brilla.
 
 ## Logo
 
@@ -63,6 +67,11 @@ Comportamiento en la web (Fase 1):
 ## Datos de la empresa
 
 - **Dirección:** 66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130
+- **Estado / jurisdicción:** Florida, Estados Unidos. Ley aplicable: Estado de
+  Florida; tribunales de Miami-Dade County. Notificación de brechas: regla de
+  Florida (FIPA).
+- **Zona horaria:** Eastern — `America/New_York`
+- **Moneda:** USD
 - **Teléfono/WhatsApp:** 305-934-9981
 - **Email:** admin@judomarketing.net
 - **Web:** www.judomarketing.net

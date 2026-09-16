@@ -1,6 +1,18 @@
 import { setRequestLocale } from "next-intl/server";
 import { use } from "react";
 import AdminPortal from "@/components/AdminPortal";
+import Lanzador from "@/components/Lanzador";
+import { privateMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return privateMetadata(locale === "es" ? "/es/admin" : "/admin");
+}
 
 export default function AdminPage({
   params,
@@ -10,9 +22,12 @@ export default function AdminPage({
   const { locale } = use(params);
   setRequestLocale(locale);
 
+  // Piso sereno: sin glow ni líneas. Aquí se trabaja un buen rato y el
+  // fondo tiene que quedarse quieto debajo de las tarjetas.
   return (
-    <div className="judo-glow min-h-[70vh]">
+    <div className="min-h-[70vh] bg-judo-black">
       <AdminPortal />
+      <Lanzador aqui="judomarketing" />
     </div>
   );
 }

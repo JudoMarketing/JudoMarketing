@@ -73,7 +73,7 @@ export default function ContactPage({
           <h1 className="hero-in text-4xl font-bold sm:text-6xl">{t("title")}</h1>
           <p
             className="hero-in mt-3 text-judo-fog/70"
-            style={{ animationDelay: "0.15s" }}
+            style={{ animationDelay: "calc(var(--tiempo) * 1)" }}
           >
             {t("subtitle")}
           </p>
@@ -97,7 +97,7 @@ export default function ContactPage({
           {/* Canales */}
           <div className="flex flex-col gap-4 lg:col-span-2">
             {channels.map((channel, i) => (
-              <Reveal key={channel.title} delay={i * 100}>
+              <Reveal key={channel.title} paso={i}>
                 <a
                   href={channel.href}
                   target={channel.href.startsWith("http") ? "_blank" : undefined}
@@ -127,7 +127,7 @@ export default function ContactPage({
                 </a>
               </Reveal>
             ))}
-            <Reveal delay={400}>
+            <Reveal paso={3}>
               <p className="px-2 text-center text-sm text-judo-fog/50">
                 {t("chatSoon")}
               </p>

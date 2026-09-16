@@ -11,7 +11,32 @@
   --color-judo-surface: #1b1928;
   --color-judo-fog: #f5f5f7;
 
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  /* ── El compás ────────────────────────────────────────────────────
+     Todo lo que se mueve late sobre el mismo tiempo base. Antes cada
+     animación tenía su duración inventada (7s, 10s, 40s, 5s): al no estar
+     emparentadas nunca se reencuentran, y un montón de cosas moviéndose
+     cada una por su lado se lee como ruido, no como algo vivo.
+
+     Ahora toda duración es un múltiplo entero del pulso, así que vuelven a
+     coincidir periódicamente y se percibe un solo latido. Es la misma idea
+     que la serie de espaciado: una escala, no números sueltos. */
+  --pulso: 2.4s;
+  --pulso-2: 4.8s;
+  --pulso-3: 7.2s;
+  --pulso-4: 9.6s;
+  --pulso-16: 38.4s;
+  /* El tiempo partido en 16: la unidad para escalonar entradas */
+  --tiempo: 0.15s;
+  /* Sinusoidal: nunca se detiene del todo en los extremos, que es lo que
+     hace que un bucle se sienta respiración y no vaivén de máquina. */
+  --curva-pulso: cubic-bezier(0.37, 0, 0.63, 1);
+  /* Para lo que entra una sola vez: sale rápido, frena suave */
+  --curva-entrada: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Cuerpo e interfaz: Inter, dibujada para pantalla */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Titulares y cifras grandes: Poppins, la de la marca */
+  --font-display: var(--font-poppins), var(--font-inter), ui-sans-serif, sans-serif;
 }
 
 html {
@@ -22,6 +47,34 @@ body {
   background-color: var(--color-judo-black);
   color: var(--color-judo-fog);
   font-family: var(--font-sans);
+  /* Inter respira mejor con algo más de interlínea en párrafos */
+  line-height: 1.6;
+}
+
+/* ── Los titulares son de Poppins ───────────────────────────────────────
+   Y llevan tracking negativo: una geométrica puesta en grande al espaciado
+   por defecto se ve suelta, con huecos entre letras que no están en el
+   diseño de la fuente. Cuanto más grande, más se cierra. */
+h1,
+h2,
+h3,
+h4,
+.display {
+  font-family: var(--font-display);
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+}
+
+h1,
+.display-xl {
+  letter-spacing: -0.032em;
+}
+
+/* Las cifras grandes (precios) son titular, no texto */
+.display-num {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Fondo con glow morado ─────────────────────────────────────────── */
@@ -185,7 +238,10 @@ body {
 .reveal {
   opacity: 0;
   transform: translateY(26px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  /* Medio pulso, con la curva de entrada de la casa */
+  transition:
+    opacity calc(var(--pulso) / 2) var(--curva-entrada),
+    transform calc(var(--pulso) / 2) var(--curva-entrada);
 }
 
 .reveal.in {
@@ -207,10 +263,13 @@ body {
 
 .hero-in {
   opacity: 0;
-  animation: heroUp 0.8s ease forwards;
+  /* Un tercio de pulso. Los escalonados van en múltiplos de --tiempo. */
+  animation: heroUp calc(var(--pulso) / 3) var(--curva-entrada) forwards;
 }
 
-/* ── Elementos flotantes 3D ────────────────────────────────────────── */
+/* ── Elementos flotantes 3D ──────────────────────────────────────────
+   Las duraciones son múltiplos del pulso (×3, ×4, ×2, ×16), así que las
+   piezas vuelven a alinearse en vez de derivar cada una por su lado. */
 @keyframes floatY {
   0%,
   100% {
@@ -230,20 +289,49 @@ body {
   }
 }
 
+/* El latido: lo que hace que algo se lea vivo y no solo a la deriva. Va
+   sobre el pulso base, así que TODO lo que respira lo hace a la vez. */
+@keyframes respirar {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.035);
+  }
+}
+
 .float-slow {
-  animation: floatY 7s ease-in-out infinite;
+  animation: floatY var(--pulso-3) var(--curva-pulso) infinite;
 }
 
 .float-slower {
-  animation: floatY 10s ease-in-out infinite;
+  animation: floatY var(--pulso-4) var(--curva-pulso) infinite;
 }
 
 .spin-slow {
-  animation: spinSlow 40s linear infinite;
+  animation: spinSlow var(--pulso-16) linear infinite;
 }
 
 .mascot-float {
-  animation: floatY 5s ease-in-out infinite;
+  animation: floatY var(--pulso-2) var(--curva-pulso) infinite;
+}
+
+/* Los resplandores laten en el pulso base */
+.late {
+  animation: respirar var(--pulso) var(--curva-pulso) infinite;
+}
+
+/* Media y una fase entera de retraso: lo mismo, en contratiempo, para que
+   una fila de piezas no suba y baje toda a una como un bloque. */
+.late-medio {
+  animation-delay: calc(var(--pulso) / -2);
+}
+
+.late-tarde {
+  animation-delay: calc(var(--pulso) / -4);
 }
 
 /* ── Burbuja de pensamiento (anime) ────────────────────────────────── */
@@ -295,7 +383,8 @@ body {
   .float-slow,
   .float-slower,
   .spin-slow,
-  .mascot-float {
+  .mascot-float,
+  .late {
     animation: none;
     opacity: 1;
   }

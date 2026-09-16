@@ -16,8 +16,45 @@ cualquier sesión puede leerlo:
 desde el chat de Judo Marketing y los buenos pasan aquí. Nadie edita este
 archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
+> **Ojo con la rama.** En este repo NO existe `master`. GitHub redirige esa
+> URL a la rama por defecto, así que el `raw` de arriba contesta 200 y parece
+> que todo está bien — pero `git push origin master` crearía una rama nueva y
+> divergente. Se empuja a **la rama por defecto**, que hoy es
+> `claude/judo-marketing-redesign-ci2rj5`. Lo comprueba
+> `git ls-remote --heads origin`.
+
+**Novedades** (lo último que cambió, para el que ya lo había leído):
+
+| Fecha | Qué cambió |
+| --- | --- |
+| 2026-08-29 | **Sección 0 nueva: Judo Marketing es una empresa de Florida.** Ley de Florida, tribunales de Miami-Dade, brechas por FIPA, horario Eastern, cobros en USD, mercado base Miami. Aplica a todos los proyectos. |
+
 La paleta y los logos de la marca Judo Marketing en sí están en `BRAND.md`;
-esto es lo otro: cómo se diseña un sitio **para un cliente**.
+esto es lo otro: cómo se diseña un sitio **para un cliente**. Y si la duda es
+en qué chat se pide un cambio cuando algo se ve en un sitio pero los datos
+vienen de otro, eso está en `QUIEN-HACE-QUE.md`.
+
+---
+
+## 0. Dónde está Judo Marketing (dato fijo)
+
+**Judo Marketing es una empresa de Florida, Estados Unidos.** Sede en Miami:
+66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130. No es un detalle de
+contacto: cambia decisiones en todos los proyectos.
+
+| Qué | Cómo cae en el trabajo |
+| --- | --- |
+| **Ley aplicable** | Estado de Florida. Jurisdicción para disputas: Miami-Dade County. Todo contrato, política o aviso legal que se escriba para un sitio nuestro se rige por Florida salvo que el cliente imponga otra cosa por escrito. |
+| **Brechas de datos** | Aplica la ley de notificación de brechas de Florida (FIPA). Si un sitio guarda datos personales, el plan de incidentes se escribe contra esa regla, no contra el GDPR por defecto. |
+| **Autoridades** | Una solicitud de datos con jurisdicción sobre nosotros es de Florida / EE. UU. El procedimiento está en `legal/solicitudes-de-autoridades.md` y en la sección 20 de la Política de Servicio. |
+| **Zona horaria** | Eastern (`America/New_York`). Horarios, cortes de facturación, envíos de correo y cron jobs se piensan en Eastern, no en UTC a secas. |
+| **Idioma** | Miami es bilingüe de verdad. Español e inglés al mismo nivel, sin “versión traducida”. El selector EN/ES no es un extra. |
+| **SEO local** | El mercado base es Miami / South Florida. Ciudad y estado van en títulos, descripciones y en el `LocalBusiness` del sitio; `areaServed` incluye Miami y Florida. |
+| **Impuestos y pagos** | Facturación en USD, procesamiento por Stripe con entidad en EE. UU. Los precios se muestran en dólares sin conversión automática. |
+
+Un cliente puede estar en cualquier parte —hay sitios nuestros fuera de
+Florida—, pero **la empresa que firma, cobra y responde es de Florida.** Ante
+la duda de qué ley o qué huso horario usar, es Florida.
 
 ---
 
@@ -50,9 +87,29 @@ variable — así se lee como sistema y no como decisiones sueltas (patrón
 
 **Dos tipografías, con papeles claros.** Una display con carácter para
 titulares + una sans tranquila para el cuerpo: Anton + Inter (Pachy), Domine
-(ART), Poppins (Judo). Máximo una tercera como acento manuscrito y solo si el
-rubro lo pide (Caveat en Pachy para el "ahora en tu casa"). Tres familias
-trabajando es el tope; cuatro es ruido.
+(ART), Poppins + Inter (Judo). Máximo una tercera como acento manuscrito y
+solo si el rubro lo pide (Caveat en Pachy para el "ahora en tu casa"). Tres
+familias trabajando es el tope; cuatro es ruido.
+
+Y la display se queda ARRIBA. Una geométrica puesta a hacer de cuerpo se lee
+ancha y rebotada en párrafos, etiquetas y tablas — el propio judomarketing.net
+tuvo a Poppins haciendo las dos cosas hasta que se separaron los papeles. Al
+ponerla en grande, tracking negativo: al espaciado por defecto se ve suelta,
+con huecos entre letras que no están en el diseño de la fuente.
+
+**Lo que se mueve comparte un compás.** Un pulso base y todas las duraciones
+como múltiplos enteros de él: así las piezas vuelven a coincidir cada tantos
+ciclos y se percibe un latido debajo. Con duraciones sueltas —7s, 10s, 40s,
+5s— nada se reencuentra nunca y un montón de cosas moviéndose se lee como
+ruido, no como algo vivo. Es la misma idea que la serie de espaciado: una
+escala, no números inventados uno por uno.
+
+En judomarketing.net el pulso es 2,4s; los flotantes van a ×2, ×3, ×4 y ×16,
+las entradas se escalonan en dieciseisavos (0,15s) y los resplandores laten
+en el pulso base, cada uno en su fase para que una fila no respire como un
+bloque. La curva de los bucles es sinusoidal (`cubic-bezier(.37,0,.63,1)`):
+no se detiene del todo en los extremos, que es lo que separa una respiración
+de un vaivén de máquina.
 
 **El kicker encima del titular: lugar + prueba + velocidad.** En mayúsculas
 pequeñas: "SOUTHWEST FLORIDA · FREE ESTIMATES · WE ANSWER FAST",
@@ -103,10 +160,143 @@ protagonista que dice la acción del negocio: "Ordenar", "Quick Estimate",
 8. **`www` o pelado: decidir y redirigir.** melanieosorio.com solo contesta
    con www y eso rompió las capturas del showcase. El dominio que no sea el
    principal redirige al que sí.
+9. **Se mide, no se mira.** El contraste, el peso de un video y el tamaño
+   real de un icono se comprueban con un número. Casos reales: un amarillo
+   que "se veía bien" daba 3,09:1 sobre blanco (el mínimo legible es 4,5:1);
+   un icono perfecto a 72px era una mancha a los 27px a los que de verdad se
+   muestra. Y al poner cualquier textura de fondo, recalcular el texto que
+   cae encima contra el píxel del trazo, no contra la variable.
+10. **El comentario no es prueba; la captura sí.** Ya pasó: un CSS decía que
+    estaba "concentrando" los colores de la marca mientras hacía lo
+    contrario. Todo criterio de diseño se confirma mirando el render.
+11. **La tipografía equilibra la marca, no la repite.** Usar la fuente del
+    logo en todos los titulares costó una versión entera de un sitio. Logo
+    alegre → tipografía seria; el registro juguetón se queda en el logo.
+12. **Manda lo que alguien recordaría del logo al día siguiente** — casi
+    nunca es el texto ni el color más grande del archivo. Y el color de
+    acción es UNO: si también pinta enlaces e iconos, deja de señalar.
+13. **El material real manda sobre la plantilla.** Mirar todas las fotos y
+    videos del cliente ANTES de componer, y preguntar cuál es la prueba de
+    lo que hace el negocio: esa va primero y grande. Elegir el clip que cabe
+    en el hueco costó una portada que no decía nada. Y al cambiar una
+    imagen, cambiar el texto que la acompaña y su `alt`.
+14. **Una sola serie de espaciado.** Cuando el cliente dice que algo se ve
+    "rústico" y no sabe señalar qué, casi siempre es esto: doce huecos
+    inventados uno por uno, ninguno relacionado. Una serie (4/8/12/16/24/
+    32/48/64/96) repartida por jerarquía: el hueco crece con la importancia
+    del corte.
+15. **En el schema, quien construyó el sitio va en `creator`, no en
+    `sameAs`.** `sameAs` es para otras páginas del MISMO negocio (su
+    Instagram, su Google); meter ahí al hermano o a Judo es una afirmación
+    falsa.
 
 ---
 
-## 3. El esqueleto de home que funciona
+## 3. Reglas de construcción (de Judito-Ads y JuditoWEBS)
+
+Diseño aparte: esto es lo que rompe un sitio ya entregado.
+
+**Lo que falla en silencio es lo que hay que cazar.** Es el patrón que más se
+repite en los aportes, con tres caras distintas:
+
+1. **Supabase no avisa cuando RLS bloquea.** Responde OK con cero filas
+   tocadas. Mirando solo `error`, el panel canta éxito sin haber hecho nada.
+   Toda escritura de administración lleva `.select()` y se comprueba que
+   volvió al menos una fila. (Pasó en el admin: «Deshabilitar» y «Borrar»
+   daban ✓ verde sin cambiar nada.)
+2. **Que un ajuste se guarde no significa que se use.** Hay que seguirlo
+   hasta el final: pantalla → base de datos → el motor que lo aplica. Los
+   intereses del público se elegían, se guardaban y salían en el resumen,
+   pero el motor nunca se los mandaba a Meta. Meses a medias sin un error en
+   pantalla.
+3. **La interfaz miente por omisión:** enseña la promesa, no el resultado.
+
+**El servidor de desarrollo no prueba nada.** En Next.js App Router, un
+manejador de eventos (`onError`, `onClick`) dentro de un componente de
+SERVIDOR revienta la página entera en producción, y `next dev` no lo detecta.
+Antes de publicar, `next build` + `next start` de verdad.
+
+**Zonas horarias: preguntar en cuál agrupa el servicio externo.** Con
+`toISOString()` se calcula el día UTC; si el servicio usa otro huso, las
+cifras de hoy salen en cero y se pierde el primer día. Meta agrupa el gasto
+en la zona de la cuenta publicitaria.
+
+**Safari en iPhone no dispara los eventos de carga de un `<video>` que no se
+está reproduciendo.** Cualquier cosa que espere `loadeddata` se cuelga para
+siempre. `playsInline` + un `play()/pause()` de arranque, escuchar también
+`loadedmetadata`, y SIEMPRE un tope de tiempo que suelte la interfaz.
+
+**El honeypot se acepta en el esquema y se descarta después.** Si el
+validador rechaza el campo trampa lleno, el bot lee "reintenta" y la rama que
+descarta el spam queda muerta. Y el éxito falso debe ser idéntico carácter
+por carácter al real, o el bot compara respuestas y aprende.
+
+**`.env*` en `.gitignore` también ignora `.env.example`.** Hace falta
+`!.env.example` después del patrón, o el repo llega sin registro de qué
+variables configurar. `git check-ignore -v` engaña; la prueba real es
+`git add --dry-run`.
+
+**Permisos de Meta: semanas de antelación.** Una app en modo Desarrollo solo
+deja entrar a quien tenga rol en ella; los demás ven «Función no disponible»
+y parece fallo nuestro. Pasar a Live y el App Review se empiezan antes de
+tener clientes esperando. Y un portafolio de negocio con restricción
+publicitaria no puede ni conectar la app — eso se apela aparte.
+
+**Next.js 16 rompe patrones que se escriben por inercia:** `middleware.ts` →
+`proxy.ts`; `params` y `searchParams` son Promises; `images.domains` →
+`remotePatterns`; `next.config` ya no acepta `eslint`. El más traicionero es
+`images.qualities`, que vale `[75]` por defecto: un `quality={90}` no da
+error, se degrada en silencio. Next trae sus docs en
+`node_modules/next/dist/docs/`.
+
+**Un puente entre apps se prueba el viaje entero, no cada lado por su
+cuenta.** Y el lado que llama debe distinguir «me dijeron que no» de «no me
+contestaron»: son problemas distintos y se arreglan en sitios distintos. Los
+botones de suspender y eliminar del portal estuvieron listos días antes que
+el `POST` del otro lado; cada clic salía 405 y parecía un fallo del portal.
+
+**Al dar de baja algo que mueve dinero, el orden es la función.** Primero se
+corta el gasto —anuncios, cobros— y solo después se toca el registro. Si el
+gasto no se puede cortar, la baja se **niega** y dice por qué: una baja a
+medias deja anuncios corriendo sin dueño y cobros a un cliente que ya no
+existe, y nadie se entera hasta ver la factura. Y baja lógica antes que
+borrado físico, que el historial de facturación no se recupera.
+
+### Asistentes de IA (de Juditos)
+
+**El modelo nunca es la fuente de verdad del dinero ni de los hechos.** La
+herramienta que registra un pedido ignora el precio que diga el bot y lo saca
+del catálogo; la que agenda una cita comprueba el solape en la base antes de
+aceptar. Un modelo puede regalar un descuento o prometer un hueco ocupado con
+toda seguridad, y el cliente lo va a exigir. **Al prompt se le da la vuelta
+hablando; a un `SELECT` no.**
+
+**Las notas internas del sistema no van como un mensaje más de la
+conversación.** Si el motor decide si contestar mirando «¿el último mensaje es
+del contacto?», una nota de error guardada al final vuelve esa respuesta un
+«no» y todos los reintentos se saltan en silencio, para siempre: el trabajo
+queda marcado como hecho y el cliente nunca recibe respuesta. Filtrar las
+notas internas antes de esa comprobación.
+
+**En el prompt cacheado no entra nada que cambie entre mensajes** — ni la
+fecha, ni la hora, ni el nombre del contacto. La caché funciona por prefijo
+exacto: un byte distinto invalida todo lo que viene detrás y se paga el
+prompt entero otra vez, cada mensaje. Lo estable (negocio, tono, reglas,
+catálogo) en el `system`; lo variable en el mensaje del usuario. Se comprueba
+en `cache_read_input_tokens`: si sale cero mensaje tras mensaje, algo
+variable se coló.
+
+**El bot del cliente es vía de captación con tres reglas, y un problema sin
+ellas.** (1) Dice quién lo construyó **solo si le preguntan**: meterlo en
+saludos y despedidas convierte el servicio del cliente en publicidad nuestra.
+(2) No habla del modelo ni de su proveedor — el crédito es de la casa, no de
+la tecnología. (3) No finge ser humano; si le preguntan si es un bot, lo
+dice: además de honesto, varios países ya lo exigen por ley. Y un interruptor
+por cliente, que siempre habrá uno que quiera marca blanca.
+
+---
+
+## 4. El esqueleto de home que funciona
 
 El orden que se repite en los sitios que mejor convierten:
 
@@ -123,7 +313,7 @@ principal alcanzable sin hacer zoom.
 
 ---
 
-## 4. Dirección de arte por rubro (del portafolio)
+## 5. Dirección de arte por rubro (del portafolio)
 
 | Rubro | La jugada | Referencia |
 |---|---|---|
@@ -138,7 +328,18 @@ principal alcanzable sin hacer zoom.
 
 ---
 
-## 5. Checklist antes de entregar
+## 6. El cerebro profundo del kit
+
+Las sesiones del kit de construcción llevan su propia memoria en
+`kit/cerebro/` (rama `claude/kit-cerebro` hasta que se una): `METODO.md` (el
+orden de las decisiones de diseño), `MODERNO.md` (técnicas actuales con su
+código y sus trampas), `VERIFICACION.md` (los scripts de comprobación),
+`ERRORES.md` (los errores cometidos de verdad, con lo que costó cada uno) y
+`PROMPTS.md`. Este archivo cura lo general; el detalle técnico vive allá.
+
+---
+
+## 7. Checklist antes de entregar
 
 - [ ] Metadata y OpenGraph en los dos idiomas; JSON-LD del rubro.
 - [ ] Favicon y `<title>` con oficio (marca + qué hace + dónde).
@@ -150,4 +351,7 @@ principal alcanzable sin hacer zoom.
       visible en showcase + categoría + descripción ES/EN.
 - [ ] Botón "📡 Avisar ahora" del portal después de publicar (IndexNow para
       Bing/Yandex; Google va por Search Console).
+- [ ] `next build` + `next start` corrido de verdad, no solo `next dev`.
+- [ ] Cada escritura de administración comprobada contra la base: que la fila
+      cambió, no que el botón dijo ✓.
 - [ ] Revisado en teléfono de verdad, no solo achicando la ventana.

@@ -34,14 +34,14 @@ export default function AboutPage({
         <h1 className="hero-in text-4xl font-bold sm:text-6xl">{t("title")}</h1>
         <p
           className="hero-in mt-3 text-xl text-judo-lilac"
-          style={{ animationDelay: "0.15s" }}
+          style={{ animationDelay: "calc(var(--tiempo) * 1)" }}
         >
           {t("subtitle")}
         </p>
         {/* El texto vive en una caja sólida: las líneas animadas molestan al leer */}
         <div
           className="hero-in mx-auto mt-8 max-w-2xl rounded-2xl border border-judo-lilac/15 bg-[#0e0e16] p-6 text-left shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)] sm:p-8"
-          style={{ animationDelay: "0.3s" }}
+          style={{ animationDelay: "calc(var(--tiempo) * 2)" }}
         >
           <p className="leading-relaxed text-judo-fog/80">{t("intro")}</p>
           <p className="mt-4 leading-relaxed text-judo-fog/80">{t("intro2")}</p>
@@ -51,7 +51,7 @@ export default function AboutPage({
       <section className="mx-auto max-w-5xl px-6 py-12 pb-24">
         <div className="grid gap-6 md:grid-cols-3">
           {sections.map((section, i) => (
-            <Reveal key={section.title} delay={i * 120}>
+            <Reveal key={section.title} paso={i}>
               <TiltCard className="h-full p-7">
                 <span className="text-3xl font-bold text-judo-purple/60">
                   {String(i + 1).padStart(2, "0")}

@@ -75,6 +75,8 @@ export async function sendBrandedEmail(
     /** Invitación de calendario: Gmail la agrega sola a Google Calendar. */
     invitacion?: string;
     replyTo?: string;
+    /** Archivos que viajan con el correo, por ejemplo un contrato en PDF. */
+    adjuntos?: { nombre: string; contenido: Buffer; tipo?: string }[];
   }
 ): Promise<boolean> {
   if (!isEmailConfigured()) return false;
@@ -90,6 +92,15 @@ export async function sendBrandedEmail(
     subject,
     html,
     replyTo: extras?.replyTo,
+    ...(extras?.adjuntos?.length
+      ? {
+          attachments: extras.adjuntos.map((a) => ({
+            filename: a.nombre,
+            content: a.contenido,
+            contentType: a.tipo ?? "application/pdf",
+          })),
+        }
+      : {}),
     ...(extras?.invitacion
       ? {
           icalEvent: {
