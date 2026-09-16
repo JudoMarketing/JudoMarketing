@@ -164,7 +164,10 @@
         "Clases virtuales",
         "Integraciones a tu medida",
         "Escalable y seguro"
-      ]
+      ],
+      "custom": "Precio a la medida",
+      "customNote": "Cada proyecto se cotiza aparte. Hablemos.",
+      "customShort": "precio a la medida"
     },
     "apps": {
       "name": "Apps de teléfono",
@@ -236,7 +239,7 @@
       "items": [
         {
           "q": "¿Cuánto cuesta una página web con Judo Marketing?",
-          "a": "Nuestros websites funcionan por suscripción mensual: Websites Esenciales desde {essential} al mes (tiendas online, citas, servicios), Websites Complejos desde {complex} (delivery, logística, integraciones) y Apps para Teléfonos desde {apps}. Todo incluye diseño, soporte, mantenimiento y tu propio panel de control."
+          "a": "Nuestros websites funcionan por suscripción mensual: Websites Esenciales desde {essential} al mes (tiendas online, citas, servicios) y Apps para Teléfonos desde {apps}. Los Websites Complejos (delivery, logística, integraciones) tienen {complex}: se cotizan en una cita. Todo incluye diseño, soporte, mantenimiento y tu propio panel de control."
         },
         {
           "q": "¿Cuánto tardan en entregar mi website?",
@@ -259,6 +262,12 @@
           "a": "Hosting, mantenimiento, seguridad y respaldos diarios, soporte, y tu portal de administrador para controlar tu contenido, usuarios y ventas desde un solo lugar."
         }
       ]
+    },
+    "chooser": {
+      "cta": "Contáctanos",
+      "title": "¿Cómo prefieres empezar?",
+      "book": "Agendar una cita",
+      "form": "Contarnos tu proyecto"
     }
   },
   "login": {

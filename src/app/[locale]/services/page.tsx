@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { use } from "react";
 import { Link } from "@/i18n/navigation";
 import Reveal from "@/components/Reveal";
+import EleccionContacto from "@/components/EleccionContacto";
 import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
 import { pageMetadata } from "@/lib/seo";
 import { precioTexto, PRECIO_JUDITOADS, PRECIO_ASISTENTE, PRECIO_ASISTENTE_PRO } from "@/lib/pricing";
@@ -52,7 +53,7 @@ export default function ServicesPage({
     q: faq.q,
     a: faq.a
       .replace("{essential}", precioTexto("essential"))
-      .replace("{complex}", precioTexto("complex"))
+      .replace("{complex}", t("complex.customShort"))
       .replace("{apps}", precioTexto("apps")),
   }));
 
@@ -128,13 +129,24 @@ export default function ServicesPage({
                   <p className="mt-1 text-sm text-judo-fog/60">
                     {t(`${plan}.tagline`)}
                   </p>
-                  <p className="mt-5">
-                    <span className="align-top text-sm text-judo-fog/50">
-                      {t("from")}{" "}
-                    </span>
-                    <span className="display-num text-5xl font-bold">{precioTexto(plan)}</span>
-                    <span style={{ color: "var(--svc-luz)" }}>{t("perMonth")}</span>
-                  </p>
+                  {/* Los complejos no llevan precio: cada uno se cotiza en
+                      persona, y el costo cambia mucho de un proyecto a otro. */}
+                  {plan === "complex" ? (
+                    <p className="mt-5">
+                      <span className="display text-3xl font-bold">{t("complex.custom")}</span>
+                      <span className="mt-1 block text-sm text-judo-fog/55">
+                        {t("complex.customNote")}
+                      </span>
+                    </p>
+                  ) : (
+                    <p className="mt-5">
+                      <span className="align-top text-sm text-judo-fog/50">
+                        {t("from")}{" "}
+                      </span>
+                      <span className="display-num text-5xl font-bold">{precioTexto(plan)}</span>
+                      <span style={{ color: "var(--svc-luz)" }}>{t("perMonth")}</span>
+                    </p>
+                  )}
                   <ul className="mt-6 flex-1 space-y-2.5">
                     {features.map((feature) => (
                       <li key={feature} className="svc-check text-sm text-judo-fog/80">
@@ -142,12 +154,16 @@ export default function ServicesPage({
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    href={{ pathname: "/pay", query: { plan } }}
-                    className="svc-btn mt-7"
-                  >
-                    {t("start")} →
-                  </Link>
+                  {plan === "complex" ? (
+                    <EleccionContacto className="mt-7" />
+                  ) : (
+                    <Link
+                      href={{ pathname: "/pay", query: { plan } }}
+                      className="svc-btn mt-7"
+                    >
+                      {t("start")} →
+                    </Link>
+                  )}
                 </div>
               </Reveal>
             );

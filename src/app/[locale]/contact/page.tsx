@@ -79,8 +79,9 @@ export default function ContactPage({
           </p>
         </div>
 
-        {/* Cita por videollamada */}
-        <Reveal className="mt-12">
+        {/* Cita por videollamada. El ancla la usan los websites complejos:
+            "agendar una cita" cae aquí directo. */}
+        <Reveal className="mt-12 scroll-mt-24" id="agendar">
           <TiltCard className="p-7 sm:p-9">
             <BookingWidget />
           </TiltCard>

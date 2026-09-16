@@ -164,7 +164,10 @@
         "Virtual classes",
         "Custom integrations",
         "Scalable and secure"
-      ]
+      ],
+      "custom": "Custom pricing",
+      "customNote": "Every project is quoted on its own. Let's talk.",
+      "customShort": "custom pricing"
     },
     "apps": {
       "name": "Phone apps",
@@ -236,7 +239,7 @@
       "items": [
         {
           "q": "How much does a website cost with Judo Marketing?",
-          "a": "Our websites work as a monthly subscription: Essential Websites from {essential} a month (online stores, bookings, services), Complex Websites from {complex} (delivery, logistics, integrations), and Mobile Apps from {apps}. Everything includes design, support, maintenance, and your own admin panel."
+          "a": "Our websites work as a monthly subscription: Essential Websites from {essential} a month (online stores, bookings, services) and Mobile Apps from {apps}. Complex Websites (delivery, logistics, integrations) have {complex}: they are quoted on a call. Everything includes design, support, maintenance, and your own admin panel."
         },
         {
           "q": "How long does it take to deliver my website?",
@@ -259,6 +262,12 @@
           "a": "Hosting, maintenance, security and daily backups, support, and your admin portal to control your content, users, and sales from one place."
         }
       ]
+    },
+    "chooser": {
+      "cta": "Contact us",
+      "title": "How would you like to start?",
+      "book": "Book a call",
+      "form": "Tell us about your project"
     }
   },
   "login": {
