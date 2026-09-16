@@ -49,5 +49,10 @@ Reglas:
 1. Importar este repo en Vercel con `master` como rama de producción
    (Settings → Git → Production Branch). Las demás ramas salen como preview.
 2. Framework preset: Next.js — sin configuración extra.
-3. Variables de entorno: ver `.env.example`.
+3. Variables de entorno: ver `.env.example`. Todas van en el ambiente
+   Production. En Preview van solo `NEXT_PUBLIC_SUPABASE_URL` y
+   `NEXT_PUBLIC_SUPABASE_ANON_KEY` (sin ellas el build de una vista previa
+   falla con "supabaseUrl is required"). La service role key y las llaves de
+   Stripe y Google nunca van en Preview: una vista previa tendría acceso
+   total a la base de producción.
 4. Aplicar `supabase/migrations/0001_init.sql` en el SQL Editor de Supabase.
