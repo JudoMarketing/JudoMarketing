@@ -330,8 +330,8 @@ principal alcanzable sin hacer zoom.
 ## 6. El cerebro profundo del kit
 
 Las sesiones del kit de construcción llevan su propia memoria en
-`kit/cerebro/` (archivado en la etiqueta `archivo/kit-cerebro`; se trae con
-`git checkout archivo/kit-cerebro -- kit/cerebro`): `METODO.md` (el
+`kit/cerebro/` (archivado en la rama `archivo/kit-cerebro`; se trae con
+`git checkout origin/archivo/kit-cerebro -- kit/cerebro`): `METODO.md` (el
 orden de las decisiones de diseño), `MODERNO.md` (técnicas actuales con su
 código y sus trampas), `VERIFICACION.md` (los scripts de comprobación),
 `ERRORES.md` (los errores cometidos de verdad, con lo que costó cada uno) y

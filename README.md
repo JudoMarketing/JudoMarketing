@@ -39,8 +39,10 @@ Reglas:
 - Nada llega a judomarketing.net hasta que su rama se une a `master` desde el
   chat de Judo Marketing (`git merge juditoads`, por ejemplo). Empujar a
   `juditoads` o `juditos` no cambia producción por sí solo.
-- Las ramas viejas no se borraron a ciegas: quedaron como etiquetas
-  `archivo/<nombre>`. Se recuperan con `git checkout -b <nombre> archivo/<nombre>`.
+- Las ramas viejas no se borraron a ciegas: quedaron como ramas de archivo
+  `archivo/<nombre>` (`archivo/judiwebs`, `archivo/kit-cerebro`,
+  `archivo/footer-dos-sitios`). No se trabaja sobre ellas; se recuperan con
+  `git checkout -b <nombre> origin/archivo/<nombre>`.
 
 ## Deploy (Vercel)
 

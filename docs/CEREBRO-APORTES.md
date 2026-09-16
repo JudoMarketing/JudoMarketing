@@ -991,8 +991,8 @@ producción en el idioma equivocado sin que nadie lo viera.
 cerradas. `master` contiene todo lo del rediseño y es la rama de producción
 (Vercel → Settings → Git → Production Branch = `master`). Quedan cuatro ramas
 de trabajo: `master` (Judo Marketing), `juditoads`, `juditos` y
-`ads-and-sell-strategies`. Las ramas viejas se archivaron como etiquetas
-`archivo/...`; no se perdió nada. Lo que se empuja a `juditoads` o `juditos`
+`ads-and-sell-strategies`. Las ramas viejas se archivaron como ramas
+`archivo/...` (sin trabajo nuevo encima); no se perdió nada. Lo que se empuja a `juditoads` o `juditos`
 no sale a producción hasta que se une a `master`.
 **Evidencia:** durante dos semanas Vercel desplegó desde
 `claude/judo-marketing-redesign-ci2rj5` mientras GitHub decía que la default
