@@ -31,6 +31,15 @@ create table if not exists leads (
   website         text,
   -- Correo elegido para escribirle (el mejor que se encontró en su website).
   email           text,
+  -- De dónde salió el lead: 'places' (Google) o 'sunbiz' (registro de Florida).
+  fuente          text not null default 'places' check (fuente in ('places', 'sunbiz')),
+  -- Lo que dice Sunbiz cuando el lead viene de ahí: número de documento,
+  -- fecha de registro, quién figura al frente y a dónde le llega el correo
+  -- postal. Es la única forma de contactar a un negocio sin presencia en línea.
+  sunbiz_numero   text,
+  sunbiz_fecha    date,
+  oficial         text,
+  direccion_postal text,
   -- Rubro según Google (restaurant, plumber, car_repair...) y nuestra lectura.
   tipo_google     text,
   rubro           text,
@@ -80,10 +89,22 @@ create table if not exists leads_corridas (
   creado_en       timestamptz not null default now()
 );
 
+-- Archivos diarios de Sunbiz que ya se procesaron, para no repetir ninguno.
+create table if not exists leads_archivos (
+  archivo         text primary key,
+  registros       integer not null default 0,
+  en_zona         integer not null default 0,
+  candidatos      integer not null default 0,
+  procesado_en    timestamptz not null default now()
+);
+
+create index if not exists leads_sunbiz_idx on leads (sunbiz_numero);
+
 -- Solo el servidor (service role) toca estas tablas. Sin políticas, la anon
 -- key no puede leer ni escribir nada aquí.
 alter table leads enable row level security;
 alter table leads_corridas enable row level security;
+alter table leads_archivos enable row level security;
 
 create or replace function leads_touch() returns trigger as $$
 begin

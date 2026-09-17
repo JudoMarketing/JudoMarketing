@@ -281,6 +281,72 @@ export async function buscarNegocios(
   return { candidatos: [...vistos.values()], consultas, aviso };
 }
 
+/**
+ * Busca UN negocio por nombre y ciudad, para saber si un registro de Sunbiz
+ * existe en Google. Solo campos básicos (SKU barato); el detalle (website,
+ * teléfono) se pide aparte y solo para los que interesan.
+ */
+export async function buscarPorNombre(
+  nombre: string,
+  ciudad: string,
+  zip: string
+): Promise<{ place_id: string; nombre: string; direccion: string; mismo_zip: boolean } | null> {
+  const llave = process.env.GOOGLE_PLACES_API_KEY;
+  if (!llave) throw new Error("Falta GOOGLE_PLACES_API_KEY");
+  const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": llave,
+      "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress",
+    },
+    body: JSON.stringify({
+      textQuery: `${nombre} ${ciudad} FL`,
+      pageSize: 3,
+      languageCode: "en",
+      regionCode: "US",
+    }),
+  });
+  const datos = (await res.json()) as RespuestaPlaces;
+  if (!res.ok) throw new Error(`Places respondió ${res.status}: ${datos.error?.message ?? "sin detalle"}`);
+  const limpio = (t: string) =>
+    t.toUpperCase().replace(/\b(LLC|L\.L\.C\.?|INC\.?|CORP\.?|CORPORATION|CO\.?|LTD\.?|THE)\b/g, "").replace(/[^A-Z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+  const buscado = limpio(nombre);
+  const palabras = buscado.split(" ").filter((w) => w.length > 2);
+  for (const p of datos.places ?? []) {
+    const encontrado = limpio(p.displayName?.text ?? "");
+    const coincidencias = palabras.filter((w) => encontrado.includes(w)).length;
+    // La mayoría de las palabras significativas del nombre tienen que estar.
+    if (palabras.length === 0 || coincidencias / palabras.length < 0.6) continue;
+    const direccion = p.formattedAddress ?? "";
+    return { place_id: p.id, nombre: p.displayName?.text ?? "", direccion, mismo_zip: direccion.includes(zip) };
+  }
+  return null;
+}
+
+/** Website, teléfono y reseñas de un negocio ya identificado. */
+export async function detallePlace(placeId: string): Promise<Omit<Candidato, "place_id" | "nombre" | "direccion">> {
+  const llave = process.env.GOOGLE_PLACES_API_KEY;
+  if (!llave) throw new Error("Falta GOOGLE_PLACES_API_KEY");
+  const res = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, {
+    headers: {
+      "X-Goog-Api-Key": llave,
+      "X-Goog-FieldMask": "nationalPhoneNumber,websiteUri,rating,userRatingCount,primaryType,types,googleMapsUri,businessStatus",
+    },
+  });
+  const p = (await res.json()) as NonNullable<RespuestaPlaces["places"]>[number] & { error?: { message?: string } };
+  if (!res.ok) throw new Error(`Places respondió ${res.status}: ${p.error?.message ?? "sin detalle"}`);
+  return {
+    telefono: p.nationalPhoneNumber ?? null,
+    website: p.websiteUri ?? null,
+    rating: p.rating ?? null,
+    resenas: p.userRatingCount ?? null,
+    tipo_google: p.primaryType ?? null,
+    tipos: p.types ?? [],
+    maps: p.googleMapsUri ?? null,
+  };
+}
+
 // ------------------------------------------------------------------ envío
 
 export type Borrador = {

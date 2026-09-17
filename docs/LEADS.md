@@ -1,9 +1,39 @@
 # Prospección por correo
 
-Cada lunes, miércoles y viernes una sesión automática toma un código postal
-de Miami, encuentra hasta 100 negocios, estudia sus websites, elige hasta 20
-que pueden necesitar un website o una app, y les escribe un correo personal
-firmado por Junior con dos botones: agendar una llamada y ver el showcase.
+Cada lunes, miércoles y viernes una sesión automática busca negocios de
+Miami y Broward que pueden necesitar un website, una app o un sistema,
+estudia lo que tienen en línea, elige hasta 20 y les escribe un correo
+personal firmado por Junior con dos botones: agendar una llamada y ver el
+showcase. Los que no se pueden contactar por correo salen en una lista para
+llamar, escribir por WhatsApp o mandar carta.
+
+El objetivo son los negocios chicos y medianos con un sistema flojo o sin
+sistema: los que Google todavía no conoce, los que solo tienen Facebook, los
+que dependen del teléfono o de las apps de delivery, los que llevan años
+operando con una página de plantilla. No los que ya tienen todo resuelto.
+
+## De dónde salen los negocios
+
+Tres fuentes, que se complementan:
+
+| Fuente | Qué trae | Quién lo hace |
+| --- | --- | --- |
+| **Google Places** (`buscar.mjs`) | Hasta 100 negocios establecidos de un código postal, con website y teléfono. Es la fuente de los que llevan tiempo operando y ya tienen clientes. | Script |
+| **Sunbiz** (`sunbiz.mjs`) | Todas las empresas registradas en Florida, por archivo diario: las de esta semana (recién abiertas) y las de hace 2 y 3 años (con tiempo operando). Se cruzan con Google para saber si existen en línea. | Script |
+| **Internet** | Para los candidatos buenos sin correo: buscar en la web el negocio o su dueño (Facebook, Instagram, Yelp, directorios) para encontrar correo o WhatsApp, y para entender mejor qué hacen. | La sesión, con su herramienta de búsqueda web |
+
+Sunbiz no publica correos ni teléfonos: da el nombre del negocio, su
+dirección, quién lo registró y a dónde le llega el correo postal. Por eso
+cada registro se busca en Google por nombre: si tiene website se estudia
+como cualquier otro; si tiene perfil sin website queda con teléfono; si no
+existe en Google queda como **sin presencia**, que es el cliente ideal y el
+más difícil de contactar. Esos van en el informe con el nombre de la persona
+y la dirección postal.
+
+Los negocios recién registrados llegan con la señal `registrado_hace_dias`;
+los de hace años, con `registrado_hace_2_años` o `_3_años`. Un negocio con
+tres años y sin website no es un descuido: es alguien que factura sin sistema
+y ya sabe lo que le cuesta.
 
 Este documento es tres cosas: el manual de Junior, la guía que sigue la
 sesión automática para elegir y escribir, y el registro de por qué está
@@ -44,19 +74,34 @@ Por qué así y no de otra forma:
 1. `git pull` de `master`, leer este documento completo.
 2. `node scripts/leads/buscar.mjs --zip auto --salida <carpeta temporal>/leads.json`.
    Elige el siguiente zip de `scripts/leads/zips.json` (el primero que no se
-   corrió en 60 días), pide los negocios, visita sus websites y guarda todo.
-3. Leer el JSON. Trae `candidatos_para_escribir` (con correo, ordenados por
-   puntaje) y `para_llamar_o_whatsapp` (sin correo pero con teléfono).
-4. Elegir hasta 20 según los criterios de abajo y escribir un borrador por
+   corrió en 60 días), pide los negocios a Google, visita sus websites y
+   guarda todo.
+3. `node scripts/leads/sunbiz.mjs --salida <carpeta temporal>/sunbiz.json`.
+   Baja los archivos diarios de Sunbiz que falten (los nuevos y los de hace
+   2 y 3 años), filtra nuestra zona y los nombres que dicen a qué se dedica
+   el negocio, los cruza con Google y guarda todo.
+4. Leer los dos JSON. Traen `candidatos_para_escribir` (con correo, por
+   puntaje), `para_llamar_o_whatsapp` / `con_google_sin_website` (teléfono
+   sin correo) y `sin_presencia` (solo Sunbiz: persona y dirección postal).
+5. **Buscar en internet** los mejores candidatos sin correo (hasta 15 por
+   corrida): el nombre del negocio con la ciudad, el nombre de la persona con
+   el negocio, `site:facebook.com` o `site:instagram.com` con el nombre. Si
+   aparece un correo del negocio, guardarlo con
+   `POST /api/leads {accion:"actualizar", lead_id, email}` y ya cuenta como
+   candidato. Si aparece un WhatsApp o una página de Facebook, anotarlo con
+   `notas` para el informe. Solo correos que claramente son del negocio;
+   nunca correos personales de terceros ni direcciones adivinadas.
+6. Elegir hasta 20 según los criterios de abajo y escribir un borrador por
    cada uno, en un JSON con el formato de `scripts/leads/enviar.mjs`.
-5. `node scripts/leads/enviar.mjs --borradores <carpeta temporal>/borradores.json`.
+7. `node scripts/leads/enviar.mjs --borradores <carpeta temporal>/borradores.json`.
    Si el script rechaza un borrador (raya larga, promesa, largo), corregirlo
-   y volver a correr. No se manda nada hasta que los 20 pasen.
-6. Terminar con un informe corto para Junior: zip y zona, cuántos negocios,
-   cuántos con correo, cuántos enviados y en qué modo, los 20 con una línea
-   de por qué cada uno, y la lista de negocios sin website con teléfono
-   (esos son los mejores clientes y hay que llamarlos o escribirles por
-   WhatsApp a mano).
+   y volver a correr. No se manda nada hasta que todos pasen.
+8. Terminar con un informe corto para Junior: zip y zona; archivos de Sunbiz
+   procesados; cuántos negocios por fuente, cuántos con correo, cuántos
+   enviados y en qué modo; los enviados con una línea de por qué cada uno; la
+   lista de negocios con teléfono y sin correo (para llamar o WhatsApp); y la
+   lista de negocios sin presencia en línea con la persona al frente y su
+   dirección postal (para carta o para buscarlos a mano).
 
 ## Cómo se elige a quién escribir
 
@@ -80,6 +125,17 @@ Señales fuertes (casi siempre se escribe):
 
 Señales de contexto (no deciden solas): `sin_https`, `titulo_generico`,
 `casi_sin_contenido`, `sin_whatsapp`.
+
+Señales de Sunbiz:
+
+- `sin_presencia_en_google` con `registrado_hace_2_años` o `_3_años`: lleva
+  años facturando sin existir en internet. Si se le encuentra correo o
+  WhatsApp buscando en la web, es el primero de la lista.
+- `sin_presencia_en_google` con `registrado_hace_dias`: acaba de abrir. Vale
+  escribirle solo si el nombre deja claro el rubro y se encontró un contacto
+  del negocio; el correo habla de arrancar bien, no de arreglar nada.
+- `sin_website` (tiene perfil de Google, no website): buen candidato; el
+  correo se apoya en lo que dice su perfil (reseñas, rubro, zona).
 
 No se escribe a:
 
@@ -119,8 +175,13 @@ resumen del sitio dice el nombre del dueño, se usa: `Hola, Carlos.`
 **Cuerpo, tres párrafos, entre 90 y 180 palabras en total:**
 
 1. *Lo que vimos.* Una observación concreta y verificable de su negocio (del
-   resumen del sitio o de las señales) y el problema que eso le trae. Sin
-   halagos vacíos y sin inventar: si no lo vimos, no se dice.
+   resumen del sitio, de su perfil de Google, de su registro o de las
+   señales) y el problema que eso le trae. Sin halagos vacíos y sin inventar:
+   si no lo vimos, no se dice. A un negocio recién registrado no se le dice
+   que le falta algo: se le dice que arrancar con el sistema puesto sale más
+   barato que arreglarlo después. A uno con años y sin website se le habla
+   de lo que ya sabe: los clientes que llaman y no encuentran, el tiempo que
+   se va en el teléfono.
 2. *Quiénes somos y qué haríamos.* Junior, Judo Marketing, Miami. La solución
    concreta para ese problema, en una o dos frases, y que ya lo hicimos para
    negocios de su rubro (el showcase tiene comida, servicios, tiendas,
@@ -208,6 +269,20 @@ de Doral y...").
 >
 > PS: If WhatsApp is easier, message me at +1 305 934 9981.
 
+**Ejemplo en español (negocio de Sunbiz con años operando, sin website, correo hallado en su Facebook):**
+
+> Asunto: Family Circle Cleaning, sin depender del teléfono
+>
+> Hola, Mirna.
+>
+> Encontré Family Circle Cleaning en el registro de empresas de Florida y en Facebook, pero no en Google ni con una página propia. Eso significa que cada cliente nuevo llega por recomendación o por teléfono, y que quien busca "limpieza en Weston" en Google encuentra a otro.
+>
+> Me llamo Junior y dirijo Judo Marketing, en Miami. Hacemos websites y sistemas para negocios de servicios: una página que aparece en Google con su Perfil de Empresa conectado, cotización y reserva en línea, y un panel donde ves la semana de tu cuadrilla y lo que hay que cobrar. En el botón de abajo puedes ver lo que hicimos para otros negocios de servicios.
+>
+> Me gustaría tomar 20 minutos contigo para entender cómo manejas hoy los clientes y decirte con honestidad qué te conviene. Para nuestros primeros 100 clientes el precio es bastante accesible, y me gustaría que fueras una de ellas.
+>
+> PS: Si prefieres WhatsApp, escríbeme al +1 305 934 9981.
+
 ## Formato del archivo de borradores
 
 ```json
@@ -278,10 +353,15 @@ Candados propios, en el servidor:
    apagada. Cuando los pasos 1 a 4 estén, encenderla. Corre lunes, miércoles
    y viernes a las 10 de la mañana de Miami y manda un aviso al terminar.
 
+Sunbiz no necesita configuración: el usuario público lo publica el propio
+Estado en su página de descargas y va en `scripts/leads/sunbiz.mjs`. Si el
+Estado lo cambia, se pone el nuevo en `SUNBIZ_USER` y `SUNBIZ_PASS`.
+
 Comprobación antes de encender: con `LEADS_SECRET` exportado en una terminal,
 
 ```bash
 node scripts/leads/buscar.mjs --zip 33130 --salida /tmp/leads.json
+node scripts/leads/sunbiz.mjs --sin-api --nuevos 1
 ```
 
 tiene que terminar con "Listo. N encontrados...". Si dice "falta aplicar la
@@ -332,15 +412,19 @@ cambiarlo también en la rutina (Settings → Routines).
 > sin nadie mirando, y al final dejas un informe. Pasos: (1) `git pull` en
 > `master` y lee completo `docs/LEADS.md`; todo lo que hagas sigue ese
 > documento. (2) Corre `node scripts/leads/buscar.mjs --zip auto --salida
-> <tu carpeta temporal>/leads.json`. Si falla, no improvises: el informe dice
-> qué falló y qué paso de configuración falta. (3) Lee el JSON, elige hasta
-> 20 negocios según la sección "Cómo se elige" y escribe un borrador por
-> cada uno según "Cómo se escribe", en el formato de "Formato del archivo de
-> borradores". Cada correo habla de ese negocio en concreto, con lo que se
-> vio en su website, en su idioma, sin raya larga y sin promesas. (4) Corre
-> `node scripts/leads/enviar.mjs --borradores <archivo>`. Si rechaza
-> borradores, corrígelos y repite hasta que pasen. (5) Termina con el informe
-> para Junior: zip y zona, encontrados, con correo, enviados y modo, la lista
-> de los 20 con negocio, rubro y una línea de por qué, y la lista de negocios
-> sin website con teléfono para llamar o escribir por WhatsApp. No toques
-> nada más del repositorio ni hagas commits.
+> <tu carpeta temporal>/leads.json` y después `node scripts/leads/sunbiz.mjs
+> --salida <tu carpeta temporal>/sunbiz.json`. Si uno falla, no improvises:
+> sigue con el otro y el informe dice qué falló y qué paso de configuración
+> falta. (3) Lee los dos JSON. Para los mejores candidatos sin correo (hasta
+> 15), busca en internet el negocio o la persona al frente; si encuentras un
+> correo del negocio, guárdalo con la acción `actualizar`. (4) Elige hasta 20
+> según "Cómo se elige" y escribe un borrador por cada uno según "Cómo se
+> escribe". Cada correo habla de ese negocio en concreto, con lo que se vio,
+> en su idioma, sin raya larga y sin promesas. (5) Corre `node
+> scripts/leads/enviar.mjs --borradores <archivo>`. Si rechaza borradores,
+> corrígelos y repite hasta que pasen. (6) Termina con el informe para
+> Junior: zip y zona, archivos de Sunbiz, encontrados por fuente, con correo,
+> enviados y modo, los enviados con negocio, rubro y una línea de por qué, la
+> lista de negocios con teléfono y sin correo, y la lista sin presencia con
+> la persona y su dirección postal. No toques nada más del repositorio ni
+> hagas commits.

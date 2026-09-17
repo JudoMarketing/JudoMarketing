@@ -46,7 +46,7 @@ function args() {
 
 // ----------------------------------------------------------------- API
 
-async function api(metodo, ruta, cuerpo) {
+export async function api(metodo, ruta, cuerpo) {
   if (!SECRETO) throw new Error("Falta LEADS_SECRET en el entorno");
   const res = await fetch(`${SITE}/api/leads${ruta}`, {
     method: metodo,
@@ -260,7 +260,7 @@ export async function estudiarSitio(website, tipoGoogle = "") {
   return r;
 }
 
-function puntuar(c, estudio) {
+export function puntuar(c, estudio) {
   let p = 0;
   const s = new Set(estudio.senales);
   if (s.has("sin_website")) p += 4;
@@ -282,7 +282,7 @@ function puntuar(c, estudio) {
   return p;
 }
 
-async function enLotes(items, n, fn) {
+export async function enLotes(items, n, fn) {
   const salida = new Array(items.length);
   let i = 0;
   await Promise.all(
@@ -387,7 +387,10 @@ async function main() {
   );
 }
 
-main().catch((e) => {
-  console.error("Error:", e.message);
-  process.exit(1);
-});
+// Solo corre cuando se ejecuta directo; sunbiz.mjs importa estudiarSitio de aquí.
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((e) => {
+    console.error("Error:", e.message);
+    process.exit(1);
+  });
+}

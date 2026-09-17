@@ -6,9 +6,13 @@
 //
 //   GET  ?corridas=1            últimas corridas (para rotar el zip)
 //   GET  ?zip=33130             leads de ese zip con su estado
+//   GET  ?archivos=1            archivos diarios de Sunbiz ya procesados
 //   POST {accion:"buscar"}      negocios de un zip según Google Places
+//   POST {accion:"buscar_nombre"} ¿existe este negocio (de Sunbiz) en Google? y su detalle
+//   POST {accion:"archivo"}     marca un archivo de Sunbiz como procesado
 //   POST {accion:"guardar"}     guarda lo investigado (upsert por place_id)
 //   POST {accion:"enviar"}      manda los borradores, con todos los candados
+//   POST {accion:"actualizar"}  completa un lead (correo hallado en internet, rubro, nota)
 //   POST {accion:"descartar"}   marca leads que no se van a escribir
 //   POST {accion:"corrida"}     deja registro de la corrida
 
@@ -16,7 +20,9 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   autorizado,
   buscarNegocios,
+  buscarPorNombre,
   clienteServicio,
+  detallePlace,
   enviarBorradores,
   secretoLeads,
   type Borrador,
@@ -64,6 +70,15 @@ export async function GET(req: NextRequest) {
       if (error) throw error;
       return NextResponse.json({ corridas: data ?? [] });
     }
+    if (req.nextUrl.searchParams.get("archivos")) {
+      const { data, error } = await supabase
+        .from("leads_archivos")
+        .select("archivo, registros, en_zona, candidatos, procesado_en")
+        .order("archivo", { ascending: false })
+        .limit(400);
+      if (error) throw error;
+      return NextResponse.json({ archivos: data ?? [] });
+    }
     if (zip) {
       const { data, error } = await supabase
         .from("leads")
@@ -96,6 +111,11 @@ type LeadEntrante = {
   senales?: string[];
   resumen_sitio?: string | null;
   puntaje?: number;
+  fuente?: "places" | "sunbiz";
+  sunbiz_numero?: string | null;
+  sunbiz_fecha?: string | null;
+  oficial?: string | null;
+  direccion_postal?: string | null;
 };
 
 export async function POST(req: NextRequest) {
@@ -140,6 +160,36 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    if (accion === "buscar_nombre") {
+      const nombre = String(cuerpo.nombre ?? "").trim();
+      const ciudad = String(cuerpo.ciudad ?? "").trim();
+      const zip = String(cuerpo.zip ?? "").trim();
+      if (!nombre || !/^\d{5}$/.test(zip)) {
+        return NextResponse.json({ error: "faltan nombre y zip" }, { status: 400 });
+      }
+      const hallado = await buscarPorNombre(nombre, ciudad, zip);
+      if (!hallado) return NextResponse.json({ en_google: false });
+      const detalle = cuerpo.detalle === false ? null : await detallePlace(hallado.place_id);
+      return NextResponse.json({ en_google: true, ...hallado, detalle });
+    }
+
+    if (accion === "archivo") {
+      const archivo = String(cuerpo.archivo ?? "");
+      if (!/^\d{8}c\.txt$/.test(archivo)) {
+        return NextResponse.json({ error: "archivo inválido" }, { status: 400 });
+      }
+      const supabase = clienteServicio();
+      const { error } = await supabase.from("leads_archivos").upsert({
+        archivo,
+        registros: Number(cuerpo.registros ?? 0),
+        en_zona: Number(cuerpo.en_zona ?? 0),
+        candidatos: Number(cuerpo.candidatos ?? 0),
+        procesado_en: new Date().toISOString(),
+      });
+      if (error) throw error;
+      return NextResponse.json({ ok: true });
+    }
+
     if (accion === "guardar") {
       const entrantes = (cuerpo.leads ?? []) as LeadEntrante[];
       if (!Array.isArray(entrantes) || entrantes.length === 0 || entrantes.length > 200) {
@@ -172,6 +222,11 @@ export async function POST(req: NextRequest) {
           senales: Array.isArray(l.senales) ? l.senales.slice(0, 20) : [],
           resumen_sitio: l.resumen_sitio?.slice(0, 1200) ?? null,
           puntaje: Number.isFinite(l.puntaje) ? Number(l.puntaje) : 0,
+          fuente: l.fuente === "sunbiz" ? "sunbiz" : "places",
+          sunbiz_numero: l.sunbiz_numero ?? null,
+          sunbiz_fecha: l.sunbiz_fecha && /^\d{4}-\d{2}-\d{2}$/.test(l.sunbiz_fecha) ? l.sunbiz_fecha : null,
+          oficial: l.oficial?.slice(0, 120) ?? null,
+          direccion_postal: l.direccion_postal?.slice(0, 200) ?? null,
         };
         const previo = porPlace.get(l.place_id);
         if (!previo) {
@@ -212,6 +267,39 @@ export async function POST(req: NextRequest) {
       }
       const resultado = await enviarBorradores(borradores);
       return NextResponse.json(resultado);
+    }
+
+    if (accion === "actualizar") {
+      // La sesión encontró algo más tarde (un correo buscando en internet, el
+      // rubro, una nota). Solo sobre leads sin historia de envío.
+      const id = String(cuerpo.lead_id ?? "");
+      if (!id) return NextResponse.json({ error: "falta lead_id" }, { status: 400 });
+      const cambios: Record<string, unknown> = {};
+      const email = typeof cuerpo.email === "string" ? cuerpo.email.trim().toLowerCase() : null;
+      if (email) {
+        if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) {
+          return NextResponse.json({ error: "correo inválido" }, { status: 400 });
+        }
+        cambios.email = email;
+        cambios.estado = "nuevo";
+      }
+      if (typeof cuerpo.rubro === "string") cambios.rubro = cuerpo.rubro.slice(0, 80);
+      if (typeof cuerpo.notas === "string") cambios.notas = cuerpo.notas.slice(0, 1000);
+      if (typeof cuerpo.idioma === "string" && ["es", "en"].includes(cuerpo.idioma)) cambios.idioma = cuerpo.idioma;
+      if (Object.keys(cambios).length === 0) {
+        return NextResponse.json({ error: "nada que actualizar" }, { status: 400 });
+      }
+      const supabase = clienteServicio();
+      const { data, error } = await supabase
+        .from("leads")
+        .update(cambios)
+        .eq("id", id)
+        .in("estado", ["nuevo", "sin_correo"])
+        .select("id, estado, email")
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return NextResponse.json({ error: "lead no existe o ya tiene historia" }, { status: 404 });
+      return NextResponse.json({ lead: data });
     }
 
     if (accion === "descartar") {
