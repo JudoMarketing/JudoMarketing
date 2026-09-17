@@ -347,6 +347,147 @@ export async function detallePlace(placeId: string): Promise<Omit<Candidato, "pl
   };
 }
 
+// ------------------------------------------------------- informe público
+
+export type Competidor = { nombre: string; rating: number | null; resenas: number | null };
+
+/**
+ * En qué puesto sale un negocio en Google Maps para una búsqueda de su zona,
+ * y quiénes van delante. Es el mismo orden que Places devuelve para esa
+ * consulta: real, aunque el orden exacto varía según desde dónde se busque.
+ */
+export async function posicionEnMaps(
+  consulta: string,
+  zip: string,
+  placeId: string
+): Promise<{ consulta: string; posicion: number | null; revisados: number; primeros: Competidor[] }> {
+  const llave = process.env.GOOGLE_PLACES_API_KEY;
+  if (!llave) throw new Error("Falta GOOGLE_PLACES_API_KEY");
+  const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": llave,
+      "X-Goog-FieldMask": "places.id,places.displayName,places.rating,places.userRatingCount",
+    },
+    body: JSON.stringify({ textQuery: `${consulta} in ${zip}`, pageSize: 20, languageCode: "en", regionCode: "US" }),
+  });
+  const datos = (await res.json()) as RespuestaPlaces;
+  if (!res.ok) throw new Error(`Places respondió ${res.status}: ${datos.error?.message ?? "sin detalle"}`);
+  const lista = datos.places ?? [];
+  const i = lista.findIndex((p) => p.id === placeId);
+  return {
+    consulta: `${consulta} in ${zip}`,
+    posicion: i >= 0 ? i + 1 : null,
+    revisados: lista.length,
+    primeros: lista.slice(0, 3).map((p) => ({ nombre: p.displayName?.text ?? "", rating: p.rating ?? null, resenas: p.userRatingCount ?? null })),
+  };
+}
+
+export type ResultadoPageSpeed = {
+  url: string;
+  estrategia: "mobile" | "desktop";
+  puntajes: { rendimiento: number | null; seo: number | null; accesibilidad: number | null; buenas_practicas: number | null };
+  metricas: { lcp: string | null; fcp: string | null; cls: string | null; tbt: string | null; velocidad: string | null };
+  auditorias: Record<string, boolean | null>;
+  crux: { categoria: string; lcp: string | null; cls: string | null; inp: string | null } | null;
+};
+
+/** Lo que Google mide de una página (Lighthouse), tal cual PageSpeed Insights. */
+export async function pageSpeed(url: string, estrategia: "mobile" | "desktop" = "mobile"): Promise<ResultadoPageSpeed> {
+  const llave = process.env.GOOGLE_PAGESPEED_API_KEY ?? process.env.GOOGLE_PLACES_API_KEY;
+  if (!llave) throw new Error("Falta GOOGLE_PAGESPEED_API_KEY o GOOGLE_PLACES_API_KEY");
+  const q = new URLSearchParams({ url, strategy: estrategia, key: llave });
+  for (const c of ["performance", "seo", "accessibility", "best-practices"]) q.append("category", c);
+  const res = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?${q}`, { signal: AbortSignal.timeout(100_000) });
+  const datos = (await res.json()) as {
+    error?: { message?: string };
+    lighthouseResult?: {
+      categories?: Record<string, { score: number | null }>;
+      audits?: Record<string, { score: number | null; displayValue?: string }>;
+    };
+    loadingExperience?: { overall_category?: string; metrics?: Record<string, { category?: string; percentile?: number }> };
+  };
+  if (!res.ok) throw new Error(`PageSpeed respondió ${res.status}: ${datos.error?.message ?? "sin detalle"}`);
+  const cat = datos.lighthouseResult?.categories ?? {};
+  const a = datos.lighthouseResult?.audits ?? {};
+  const puntaje = (k: string) => (cat[k]?.score == null ? null : Math.round((cat[k].score as number) * 100));
+  const valor = (k: string) => a[k]?.displayValue ?? null;
+  const pasa = (k: string) => (a[k]?.score == null ? null : a[k].score === 1);
+  const cx = datos.loadingExperience;
+  const ms = (k: string) => {
+    const p = cx?.metrics?.[k]?.percentile;
+    return p == null ? null : k === "CUMULATIVE_LAYOUT_SHIFT_SCORE" ? (p / 100).toFixed(2) : `${(p / 1000).toFixed(1)} s`;
+  };
+  return {
+    url,
+    estrategia,
+    puntajes: { rendimiento: puntaje("performance"), seo: puntaje("seo"), accesibilidad: puntaje("accessibility"), buenas_practicas: puntaje("best-practices") },
+    metricas: { lcp: valor("largest-contentful-paint"), fcp: valor("first-contentful-paint"), cls: valor("cumulative-layout-shift"), tbt: valor("total-blocking-time"), velocidad: valor("speed-index") },
+    auditorias: {
+      viewport: pasa("viewport"),
+      titulo: pasa("document-title"),
+      meta_descripcion: pasa("meta-description"),
+      rastreable: pasa("is-crawlable"),
+      alt_imagenes: pasa("image-alt"),
+      https: pasa("is-on-https"),
+      enlaces_descriptivos: pasa("link-text"),
+      texto_legible: pasa("font-size"),
+      botones_tocables: pasa("tap-targets"),
+    },
+    crux: cx?.overall_category
+      ? { categoria: cx.overall_category, lcp: ms("LARGEST_CONTENTFUL_PAINT_MS"), cls: ms("CUMULATIVE_LAYOUT_SHIFT_SCORE"), inp: ms("INTERACTION_TO_NEXT_PAINT") }
+      : null,
+  };
+}
+
+/**
+ * En qué puesto sale el dominio del negocio en la búsqueda web de Google
+ * para una consulta. Usa un Programmable Search Engine configurado para
+ * buscar en toda la web (GOOGLE_CSE_ID); sin eso, se informa como no
+ * configurado y el informe omite esa línea.
+ */
+export async function posicionWeb(
+  consulta: string,
+  dominio: string,
+  idioma: "es" | "en" = "en"
+): Promise<{ configurado: boolean; consulta: string; posicion: number | null; revisados: number; primeros: string[] }> {
+  const cx = process.env.GOOGLE_CSE_ID;
+  const llave = process.env.GOOGLE_CSE_API_KEY ?? process.env.GOOGLE_PLACES_API_KEY;
+  if (!cx || !llave) return { configurado: false, consulta, posicion: null, revisados: 0, primeros: [] };
+  const dom = dominio.replace(/^www\./, "").toLowerCase();
+  const enlaces: string[] = [];
+  for (const start of [1, 11]) {
+    const q = new URLSearchParams({ key: llave, cx, q: consulta, gl: "us", hl: idioma, num: "10", start: String(start) });
+    const res = await fetch(`https://www.googleapis.com/customsearch/v1?${q}`);
+    const datos = (await res.json()) as { error?: { message?: string }; items?: Array<{ link: string }> };
+    if (!res.ok) throw new Error(`Custom Search respondió ${res.status}: ${datos.error?.message ?? "sin detalle"}`);
+    enlaces.push(...(datos.items ?? []).map((i) => i.link));
+    if (enlaces.some((l) => l.toLowerCase().includes(dom))) break;
+    if ((datos.items ?? []).length < 10) break;
+  }
+  const i = enlaces.findIndex((l) => {
+    try {
+      return new URL(l).hostname.replace(/^www\./, "").toLowerCase() === dom;
+    } catch {
+      return false;
+    }
+  });
+  return {
+    configurado: true,
+    consulta,
+    posicion: i >= 0 ? i + 1 : null,
+    revisados: enlaces.length,
+    primeros: enlaces.slice(0, 3).map((l) => {
+      try {
+        return new URL(l).hostname.replace(/^www\./, "");
+      } catch {
+        return l;
+      }
+    }),
+  };
+}
+
 // ------------------------------------------------------------------ envío
 
 export type Borrador = {
@@ -358,6 +499,8 @@ export type Borrador = {
   ps?: string;
   /** Nuestra lectura del rubro, para guardarla con el lead. */
   rubro?: string;
+  /** El informe de presencia en línea, en PDF (base64), cuando el negocio tiene website. */
+  adjunto?: { nombre: string; base64: string };
 };
 
 export type ResultadoEnvio = {
@@ -389,6 +532,10 @@ function validarBorrador(b: Borrador): string | null {
   if (palabras > 260) return `cuerpo demasiado largo (${palabras} palabras)`;
   if (/[—–]/.test([b.asunto, b.saludo, ...b.parrafos, b.ps ?? ""].join(" "))) {
     return "lleva raya larga; se escribe con comas o puntos";
+  }
+  if (b.adjunto) {
+    if (!/^[\w.-]+\.pdf$/i.test(b.adjunto.nombre)) return "el adjunto tiene que ser un .pdf con nombre simple";
+    if (b.adjunto.base64.length > 2_000_000) return "adjunto de más de 1,5 MB";
   }
   return null;
 }
@@ -481,6 +628,9 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
         from: remitente(),
         replyTo: direccionRespuestas(),
         texto,
+        adjuntos: b.adjunto
+          ? [{ nombre: b.adjunto.nombre, contenido: Buffer.from(b.adjunto.base64, "base64"), tipo: "application/pdf" }]
+          : undefined,
         headers: {
           "List-Unsubscribe": `<${correo.urlBaja}>, <mailto:${direccionRespuestas()}?subject=baja>`,
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",

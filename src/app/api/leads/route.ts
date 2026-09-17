@@ -11,7 +11,10 @@
 //   POST {accion:"buscar_nombre"} ¿existe este negocio (de Sunbiz) en Google? y su detalle
 //   POST {accion:"archivo"}     marca un archivo de Sunbiz como procesado
 //   POST {accion:"guardar"}     guarda lo investigado (upsert por place_id)
-//   POST {accion:"enviar"}      manda los borradores, con todos los candados
+//   POST {accion:"posicion"}    puesto del negocio en Google Maps para una búsqueda
+//   POST {accion:"pagespeed"}   lo que Google mide de su página (PageSpeed Insights)
+//   POST {accion:"posicion_web"} puesto de su dominio en la búsqueda web (si hay CSE)
+//   POST {accion:"enviar"}      manda los borradores (con PDF adjunto opcional), con todos los candados
 //   POST {accion:"actualizar"}  completa un lead (correo hallado en internet, rubro, nota)
 //   POST {accion:"descartar"}   marca leads que no se van a escribir
 //   POST {accion:"corrida"}     deja registro de la corrida
@@ -24,6 +27,9 @@ import {
   clienteServicio,
   detallePlace,
   enviarBorradores,
+  pageSpeed,
+  posicionEnMaps,
+  posicionWeb,
   secretoLeads,
   type Borrador,
 } from "@/lib/leads";
@@ -258,6 +264,32 @@ export async function POST(req: NextRequest) {
         salida.push({ ...data, nuevo: false });
       }
       return NextResponse.json({ leads: salida });
+    }
+
+    if (accion === "posicion") {
+      const consulta = String(cuerpo.consulta ?? "").trim().slice(0, 80);
+      const zip = String(cuerpo.zip ?? "").trim();
+      const placeId = String(cuerpo.place_id ?? "").trim();
+      if (!consulta || !/^\d{5}$/.test(zip) || !placeId) {
+        return NextResponse.json({ error: "faltan consulta, zip y place_id" }, { status: 400 });
+      }
+      return NextResponse.json(await posicionEnMaps(consulta, zip, placeId));
+    }
+
+    if (accion === "pagespeed") {
+      const url = String(cuerpo.url ?? "").trim();
+      if (!/^https?:\/\/[^\s]+$/.test(url)) return NextResponse.json({ error: "url inválida" }, { status: 400 });
+      const estrategia = cuerpo.estrategia === "desktop" ? "desktop" : "mobile";
+      return NextResponse.json(await pageSpeed(url, estrategia));
+    }
+
+    if (accion === "posicion_web") {
+      const consulta = String(cuerpo.consulta ?? "").trim().slice(0, 80);
+      const dominio = String(cuerpo.dominio ?? "").trim().toLowerCase();
+      if (!consulta || !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(dominio)) {
+        return NextResponse.json({ error: "faltan consulta y dominio" }, { status: 400 });
+      }
+      return NextResponse.json(await posicionWeb(consulta, dominio, cuerpo.idioma === "es" ? "es" : "en"));
     }
 
     if (accion === "enviar") {

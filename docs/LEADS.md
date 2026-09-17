@@ -91,12 +91,27 @@ Por qué así y no de otra forma:
    candidato. Si aparece un WhatsApp o una página de Facebook, anotarlo con
    `notas` para el informe. Solo correos que claramente son del negocio;
    nunca correos personales de terceros ni direcciones adivinadas.
-6. Elegir hasta 20 según los criterios de abajo y escribir un borrador por
-   cada uno, en un JSON con el formato de `scripts/leads/enviar.mjs`.
-7. `node scripts/leads/enviar.mjs --borradores <carpeta temporal>/borradores.json`.
+6. Elegir hasta 20 según los criterios de abajo.
+7. **Informe de presencia en línea** para los elegidos que tienen website:
+   `node scripts/leads/informe.mjs --leads <carpeta>/leads.json,<carpeta>/sunbiz.json --ids <ids separados por coma> --salida <carpeta>/informes`.
+   Genera un PDF de una página por negocio con datos públicos y reales:
+   velocidad y SEO técnico según PageSpeed de Google, puesto en Google Maps
+   para dos búsquedas de su zona y quiénes van delante (con sus reseñas),
+   puesto en la búsqueda web (si está configurado), y lo que se ve en su
+   propio sitio (título, descripción, celular, candado, datos estructurados,
+   sitemap, botón de llamada, redes, pedidos en línea, antigüedad del
+   dominio). Cierra con tres recomendaciones y el regalo del Perfil de
+   Empresa de Google. Deja `informes.json` con los números de cada uno.
+   Lo que no se pudo medir sale como "no disponible"; nunca se inventa. Si
+   `informes.json` trae `avisos` (PageSpeed sin llave, por ejemplo), el
+   correo no cita ese dato.
+8. Escribir un borrador por cada uno, en un JSON con el formato de
+   `scripts/leads/enviar.mjs`. En los que llevan informe, `adjunto_pdf` es la
+   ruta del PDF.
+9. `node scripts/leads/enviar.mjs --borradores <carpeta temporal>/borradores.json`.
    Si el script rechaza un borrador (raya larga, promesa, largo), corregirlo
    y volver a correr. No se manda nada hasta que todos pasen.
-8. Terminar con un informe corto para Junior: zip y zona; archivos de Sunbiz
+10. Terminar con un informe corto para Junior: zip y zona; archivos de Sunbiz
    procesados; cuántos negocios por fuente, cuántos con correo, cuántos
    enviados y en qué modo; los enviados con una línea de por qué cada uno; la
    lista de negocios con teléfono y sin correo (para llamar o WhatsApp); y la
@@ -190,6 +205,16 @@ resumen del sitio dice el nombre del dueño, se usa: `Hola, Carlos.`
 3. *El siguiente paso.* 20 minutos de llamada para entender cómo operan y
    decirles con honestidad qué les conviene. Que para los primeros 100
    clientes el precio es bastante accesible y nos gustaría que fueran uno.
+   Y el regalo: al contratar cualquier servicio, les configuramos y
+   optimizamos su Perfil de Empresa de Google sin costo.
+
+**Cuando el negocio tiene website y lleva informe adjunto:** el párrafo 1
+cita uno o dos números del informe, los que más duelen y sean ciertos (de
+`informes.json`: puesto en Maps, velocidad en celular, reseñas frente a los
+tres primeros, descripción ausente). El párrafo 2 o el 3 dice en una frase
+que va adjunto un informe de una página con lo que Google ve hoy de su
+negocio, hecho con datos públicos, y que lo lean con calma. No se citan
+datos que el informe marque como no disponibles.
 
 **PS (opcional, una línea):** el WhatsApp, `+1 305 934 9981`, para quien
 prefiere escribir a agendar.
@@ -299,11 +324,36 @@ de Doral y...").
       "asunto": "los pedidos de La Carreta, sin comisión",
       "saludo": "Hola, equipo de La Carreta.",
       "parrafos": ["...", "...", "..."],
-      "ps": "Si prefieren WhatsApp, escríbanme al +1 305 934 9981."
+      "ps": "Si prefieren WhatsApp, escríbanme al +1 305 934 9981.",
+      "adjunto_pdf": "/carpeta/informes/informe-la-carreta.pdf"
     }
   ]
 }
 ```
+
+## El informe de presencia en línea
+
+Una página, PDF, con la marca. Lo genera `scripts/leads/informe.mjs` para
+cada negocio elegido que tiene website, y va adjunto al correo. Lo que
+muestra, y de dónde sale cada dato:
+
+| Bloque | Datos | Fuente |
+| --- | --- | --- |
+| Cuatro tarjetas | Velocidad en celular (0 a 100), SEO técnico (0 a 100), puesto en Google Maps, reseñas | PageSpeed Insights y Google Places |
+| Cómo te encuentran | Puesto para dos búsquedas de su zona (por rubro y zip, por rubro y barrio), los tres primeros con sus reseñas frente al negocio, puesto en la búsqueda web si hay buscador configurado | Google Places y Custom Search |
+| Tu página web | LCP, CLS, TBT, antigüedad del dominio y doce chequeos con ✓ o ✗ (título, descripción, encabezado, celular, candado, imágenes descritas, datos estructurados, sitemap, robots, llamada o WhatsApp, redes, pedidos en línea) | PageSpeed, el propio sitio, RDAP |
+| Lo primero que haríamos | Tres recomendaciones generadas por reglas a partir de lo anterior | Reglas en `informe.mjs` |
+| Regalo | Perfil de Empresa de Google configurado y optimizado sin costo al contratar cualquier servicio | Texto fijo |
+
+Reglas: nada se inventa; lo que no se midió dice "no disponible". Los
+puestos en Google se presentan como lo que son: el orden que Google
+devuelve para esa búsqueda desde un servidor, que varía según desde dónde
+busque cada persona. El pie del informe lo dice.
+
+Google Business Profile como regalo: es la promesa que hacemos en el
+correo y en el PDF. Al cerrar un cliente, lo primero que se entrega es el
+perfil (categorías, fotos, horarios, servicios, publicaciones y respuesta
+a reseñas), sin cargo aparte.
 
 ## Candados y ley
 
@@ -331,12 +381,23 @@ Candados propios, en el servidor:
 
 1. **Supabase:** SQL Editor → pegar `supabase/migrations/0027_leads.sql` → Run.
 2. **Google Cloud** (el mismo proyecto de la cuenta de servicio): APIs y
-   servicios → Biblioteca → "Places API (New)" → Habilitar. Credenciales →
-   Crear credencial → Clave de API → restringirla a "Places API (New)".
+   servicios → Biblioteca → habilitar **"Places API (New)"** y **"PageSpeed
+   Insights API"**. Credenciales → Crear credencial → Clave de API →
+   restringirla a esas dos APIs. PageSpeed es gratis (25.000 consultas al
+   día); Places cobra por consulta después del nivel gratuito.
+
+   Opcional, para que el informe diga en qué puesto sale la página en la
+   búsqueda web de Google (no solo en Maps): en
+   programmablesearchengine.google.com crear un buscador que busque en
+   **toda la web**, copiar su ID (`cx`), habilitar "Custom Search API" en la
+   misma clave, y poner `GOOGLE_CSE_ID` en Vercel. 100 consultas gratis al
+   día; cada informe usa una o dos. Sin esto, el informe omite esa línea.
 3. **Vercel** → judo-marketing → Settings → Environment Variables, solo en
    Production:
    - `LEADS_SECRET`: 32 caracteres aleatorios (`openssl rand -base64 32`).
-   - `GOOGLE_PLACES_API_KEY`: la clave del paso 2.
+   - `GOOGLE_PLACES_API_KEY`: la clave del paso 2 (sirve también para
+     PageSpeed; si se prefiere una clave aparte, `GOOGLE_PAGESPEED_API_KEY`).
+   - `GOOGLE_CSE_ID` (opcional): el ID del buscador programable.
    - `LEADS_MODO`: `prueba`.
    - `LEADS_CORREO_PRUEBA`: el correo donde Junior quiere ver las pruebas.
    - `LEADS_FROM` (opcional): `"Junior Osorio" <junior@judomarketing.net>` si
@@ -360,9 +421,14 @@ Estado lo cambia, se pone el nuevo en `SUNBIZ_USER` y `SUNBIZ_PASS`.
 Comprobación antes de encender: con `LEADS_SECRET` exportado en una terminal,
 
 ```bash
+npm ci
 node scripts/leads/buscar.mjs --zip 33130 --salida /tmp/leads.json
 node scripts/leads/sunbiz.mjs --sin-api --nuevos 1
+node scripts/leads/informe.mjs --url https://www.judomarketing.net --nombre "Judo Marketing" --zip 33130 --salida /tmp/informes
 ```
+
+El último genera un PDF del propio sitio de Judo con PageSpeed y Maps de
+verdad: si sale con los cuatro números arriba, todo está conectado.
 
 tiene que terminar con "Listo. N encontrados...". Si dice "falta aplicar la
 migración" es el paso 1; si Places responde 403 o "API key not valid" es el
@@ -418,13 +484,17 @@ cambiarlo también en la rutina (Settings → Routines).
 > falta. (3) Lee los dos JSON. Para los mejores candidatos sin correo (hasta
 > 15), busca en internet el negocio o la persona al frente; si encuentras un
 > correo del negocio, guárdalo con la acción `actualizar`. (4) Elige hasta 20
-> según "Cómo se elige" y escribe un borrador por cada uno según "Cómo se
-> escribe". Cada correo habla de ese negocio en concreto, con lo que se vio,
-> en su idioma, sin raya larga y sin promesas. (5) Corre `node
+> según "Cómo se elige". (5) Para los elegidos con website, genera el
+> informe PDF con `node scripts/leads/informe.mjs --leads <los dos json>
+> --ids <ids> --salida <carpeta>/informes` y lee `informes.json`. (6)
+> Escribe un borrador por cada uno según "Cómo se escribe"; los que llevan
+> informe citan uno o dos de sus números, dicen que va adjunto y llevan
+> `adjunto_pdf`. Cada correo habla de ese negocio en concreto, con lo que
+> se vio, en su idioma, sin raya larga y sin promesas. (7) Corre `node
 > scripts/leads/enviar.mjs --borradores <archivo>`. Si rechaza borradores,
-> corrígelos y repite hasta que pasen. (6) Termina con el informe para
+> corrígelos y repite hasta que pasen. (8) Termina con el informe para
 > Junior: zip y zona, archivos de Sunbiz, encontrados por fuente, con correo,
-> enviados y modo, los enviados con negocio, rubro y una línea de por qué, la
-> lista de negocios con teléfono y sin correo, y la lista sin presencia con
-> la persona y su dirección postal. No toques nada más del repositorio ni
-> hagas commits.
+> enviados (cuántos con PDF) y modo, los enviados con negocio, rubro y una
+> línea de por qué, la lista de negocios con teléfono y sin correo, y la
+> lista sin presencia con la persona y su dirección postal. No toques nada
+> más del repositorio ni hagas commits.

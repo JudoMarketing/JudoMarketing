@@ -13,14 +13,20 @@
  *   "resumen": "texto corto de la corrida para el registro",
  *   "borradores": [
  *     { "lead_id": "uuid", "idioma": "es", "rubro": "restaurante",
- *       "asunto": "...", "saludo": "...", "parrafos": ["...", "..."], "ps": "..." }
+ *       "asunto": "...", "saludo": "...", "parrafos": ["...", "..."], "ps": "...",
+ *       "adjunto_pdf": "/ruta/al/informe.pdf" }
  *   ]
  * }
+ *
+ * adjunto_pdf es opcional: el informe de presencia en línea que genera
+ * scripts/leads/informe.mjs para los negocios con website. Los correos con
+ * adjunto salen en lotes de 4 para no pasar el tamaño máximo de petición.
  *
  * Entorno: LEADS_SECRET (obligatorio), LEADS_SITE (opcional).
  */
 
 import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 const SITE = (process.env.LEADS_SITE ?? "https://www.judomarketing.net").replace(/\/$/, "");
 const SECRETO = process.env.LEADS_SECRET;
@@ -61,6 +67,9 @@ async function main() {
   const borradores = archivo.borradores ?? [];
   if (!borradores.length) throw new Error("El archivo no trae borradores");
   if (borradores.length > 20) throw new Error(`Son ${borradores.length} borradores; el máximo por corrida es 20`);
+  for (const b of borradores) {
+    if (b.adjunto_pdf) await readFile(b.adjunto_pdf).catch(() => { throw new Error(`No existe el adjunto ${b.adjunto_pdf}`); });
+  }
 
   let conProblemas = 0;
   for (const b of borradores) {
@@ -75,7 +84,35 @@ async function main() {
     process.exit(1);
   }
 
-  const { modo, resultados } = await api({ accion: "enviar", borradores });
+  // Adjuntos a base64, y envío por lotes (4 con adjunto por petición).
+  const listos = [];
+  for (const b of borradores) {
+    const { adjunto_pdf, ...resto } = b;
+    if (adjunto_pdf) {
+      const contenido = await readFile(adjunto_pdf);
+      if (contenido.length > 1_500_000) throw new Error(`${adjunto_pdf} pesa ${Math.round(contenido.length / 1024)} KB; el máximo es 1.500 KB`);
+      resto.adjunto = { nombre: path.basename(adjunto_pdf).replace(/[^\w.-]/g, "_"), base64: contenido.toString("base64") };
+    }
+    listos.push(resto);
+  }
+  const lotes = [];
+  let actual = [];
+  for (const b of listos) {
+    actual.push(b);
+    if (actual.length >= (actual.some((x) => x.adjunto) ? 4 : 20)) {
+      lotes.push(actual);
+      actual = [];
+    }
+  }
+  if (actual.length) lotes.push(actual);
+
+  let modo = "prueba";
+  const resultados = [];
+  for (const lote of lotes) {
+    const r = await api({ accion: "enviar", borradores: lote });
+    modo = r.modo;
+    resultados.push(...r.resultados);
+  }
   const ok = resultados.filter((r) => r.ok);
   const mal = resultados.filter((r) => !r.ok);
   console.log(`Modo ${modo}: ${ok.length} enviados, ${mal.length} rechazados.`);

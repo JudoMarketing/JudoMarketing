@@ -99,7 +99,7 @@ const CONSTRUCTORES = [
 
 const SOCIALES = /^(https?:\/\/)?(www\.)?(facebook|instagram|linktr\.ee|tiktok|yelp|m\.facebook|business\.site|google\.com\/maps)/i;
 
-function textoVisible(html) {
+export function textoVisible(html) {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
@@ -116,14 +116,14 @@ function textoVisible(html) {
     .trim();
 }
 
-function meta(html, nombre) {
+export function meta(html, nombre) {
   const m =
     html.match(new RegExp(`<meta[^>]+name=["']${nombre}["'][^>]+content=["']([^"']*)["']`, "i")) ||
     html.match(new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+name=["']${nombre}["']`, "i"));
   return m ? m[1].trim() : "";
 }
 
-async function traer(url) {
+export async function traer(url) {
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), TIEMPO_PAGINA_MS);
   try {
