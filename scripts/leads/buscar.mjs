@@ -279,6 +279,12 @@ export function puntuar(c, estudio) {
   if (s.has("sin_whatsapp")) p += 1;
   if (c.resenas != null && c.resenas >= 20 && c.resenas <= 400) p += 1; // negocio real, todavía chico
   if (c.rating != null && c.rating >= 4.2) p += 1; // buen negocio con mala presencia: el mejor cliente
+  // Un negocio con miles de reseñas ya tiene quien le resuelva todo: no es
+  // nuestro cliente aunque a su página le falte algo.
+  if (c.resenas != null && c.resenas > 800) {
+    p -= 3;
+    estudio.senales.push("muy_establecido");
+  }
   return p;
 }
 

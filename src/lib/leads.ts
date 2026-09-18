@@ -316,10 +316,17 @@ export async function buscarPorNombre(
   for (const p of datos.places ?? []) {
     const encontrado = limpio(p.displayName?.text ?? "");
     const coincidencias = palabras.filter((w) => encontrado.includes(w)).length;
-    // La mayoría de las palabras significativas del nombre tienen que estar.
-    if (palabras.length === 0 || coincidencias / palabras.length < 0.6) continue;
+    // Casi todas las palabras significativas del nombre tienen que estar
+    // (todas si son tres o menos), y la dirección tiene que ser del mismo zip
+    // o de la misma ciudad. "Family Circle Cleaning" de Weston no es "Family
+    // cleaning services" de Pembroke Pines.
+    const minimo = palabras.length <= 3 ? palabras.length : Math.ceil(palabras.length * 0.75);
+    if (palabras.length === 0 || coincidencias < minimo) continue;
     const direccion = p.formattedAddress ?? "";
-    return { place_id: p.id, nombre: p.displayName?.text ?? "", direccion, mismo_zip: direccion.includes(zip) };
+    const mismoZip = direccion.includes(zip);
+    const mismaCiudad = ciudad.length > 2 && direccion.toLowerCase().includes(ciudad.toLowerCase());
+    if (!mismoZip && !mismaCiudad) continue;
+    return { place_id: p.id, nombre: p.displayName?.text ?? "", direccion, mismo_zip: mismoZip };
   }
   return null;
 }
