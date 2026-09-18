@@ -268,7 +268,8 @@ async function main() {
     archivos: resumenArchivos,
     revisados: filas.length,
     no_revisados_por_tope: Math.max(0, candidatos.length - aRevisar.length),
-    candidatos_para_escribir: leads.filter((l) => l.email && l.estado === "nuevo"),
+    candidatos_para_escribir: leads.filter((l) => l.email && l.estado === "nuevo" && !l.senales.some((x) => x.startsWith("ya_tiene_") || x === "muy_establecido")),
+    ya_equipados: leads.filter((l) => l.senales.some((x) => x.startsWith("ya_tiene_") || x === "muy_establecido")).map((l) => ({ id: l.id, nombre: l.nombre, senales: l.senales })),
     con_google_sin_website: leads.filter((l) => !l.email && l.telefono),
     sin_presencia: leads.filter((l) => !l.email && !l.telefono && !l.senales.includes("google_no_verificado")),
     // No se pudo preguntar a Google (error de red o del sitio): no se sabe si existen.

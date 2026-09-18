@@ -106,7 +106,8 @@ Por qué así y no de otra forma:
    Empresa de Google. Deja `informes.json` con los números de cada uno.
    Lo que no se pudo medir sale como "no disponible"; nunca se inventa. Si
    `informes.json` trae `avisos` (PageSpeed sin llave, por ejemplo), el
-   correo no cita ese dato.
+   correo no cita ese dato. Si trae `apto: false`, ese negocio no se
+   escribe: se descarta con `{accion:"descartar"}` y el `motivo_no_apto`.
 8. Escribir un borrador por cada uno, en un JSON con el formato de
    `scripts/leads/enviar.mjs`. En los que llevan informe, `adjunto_pdf` es la
    ruta del PDF.
@@ -156,6 +157,23 @@ Señales de Sunbiz:
 
 No se escribe a:
 
+- **Quien ya tiene infraestructura.** Es la regla que más importa: no se
+  gasta tiempo ni dinero en negocios que ya tienen plataforma de membresías,
+  reservas, pedidos o gestión (Mindbody, Glofox, Vagaro, Booksy, Toast,
+  ChowNow, Shopify, Zocdoc, Clio, Jobber y las demás que detecta
+  `buscar.mjs`, señal `ya_tiene_plataforma`), ni en los que venden,
+  cobran membresías o reservan desde su propia página (señal
+  `ya_tiene_sistema`: dos o más rutas propias de membresía, tienda,
+  reservas, pedidos o portal), ni en los gigantes de su zona (más de 800
+  reseñas, `muy_establecido`). Los scripts los sacan de
+  `candidatos_para_escribir` y los dejan en `ya_equipados`; el informe los
+  marca `apto: false`. Nunca se les escribe, aunque a su página le falte
+  algo. Comprobado con casos reales: Gallo 8 Gym (membresías y tienda
+  propias) y La Carreta (pedidos por Toast) quedan fuera.
+- Negocios que salen entre los tres primeros de Maps con página rápida y sin
+  fallos graves: `apto: false` en `informes.json`. Están bien; que
+  Gallo 8 Gym sea el número uno de Little Havana con 146 reseñas y un sitio
+  de 94 puntos no es una oportunidad, es un cliente de otro.
 - Cadenas, franquicias, gobierno, iglesias, escuelas públicas, hospitales,
   bancos (el sitio ya filtra la mayoría; si uno se cuela, se descarta).
 - Negocios con website propio, moderno, con pedidos o citas en línea y sin
@@ -477,7 +495,11 @@ Es el texto de la rutina en Claude Code. Si se cambia aquí, hay que
 cambiarlo también en la rutina (Settings → Routines).
 
 > Eres la sesión de prospección por correo de Judo Marketing. Trabajas solo,
-> sin nadie mirando, y al final dejas un informe. Pasos: (1) `git pull` en
+> sin nadie mirando, y al final dejas un informe. Regla número uno: solo se
+> escribe a negocios que nos necesitan; nunca a quien ya tiene
+> infraestructura (`ya_equipados`, `apto: false`), ni a los gigantes de su
+> zona, ni a quien está arriba en Maps con página rápida y sin fallos
+> graves. Pasos: (1) `git pull` en
 > `master` y lee completo `docs/LEADS.md`; todo lo que hagas sigue ese
 > documento. (2) Corre `node scripts/leads/buscar.mjs --zip auto --salida
 > <tu carpeta temporal>/leads.json` y después `node scripts/leads/sunbiz.mjs

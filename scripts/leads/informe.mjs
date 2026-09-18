@@ -491,11 +491,22 @@ export async function informe(lead, opciones) {
   await aPdf(html(t, datos, logoB64, idioma), archivo);
 
   const m1 = datos.maps[0];
+  const fallos = Object.entries(datos.auditoria?.chequeos ?? {}).filter(([, v]) => v === false).map(([k]) => k);
+  const fallosGraves = fallos.filter((k) => ["viewport", "https", "titulo", "meta_descripcion", "pedidos", "contacto"].includes(k));
+  const rendimiento = datos.pagespeed?.puntajes?.rendimiento;
+  const arriba = m1?.posicion != null && m1.posicion <= 3;
+  // No es apto quien ya tiene plataforma integrada, o quien está arriba en
+  // Maps con una página rápida y sin fallos graves: no nos necesita.
+  const plataformas = (lead.senales ?? []).filter((x) => x.startsWith("ya_tiene_"));
+  const apto = plataformas.length === 0 && !(arriba && (rendimiento == null || rendimiento >= 75) && fallosGraves.length === 0) && !(lead.senales ?? []).includes("muy_establecido");
+  const motivo_no_apto = !apto ? (plataformas.length ? `ya usa ${plataformas[0].split(":")[1]}` : (lead.senales ?? []).includes("muy_establecido") ? "gigante de su zona" : "arriba en Maps con página rápida y sin fallos graves") : null;
   return {
     lead_id: lead.id ?? null,
     nombre: lead.nombre,
     archivo,
     idioma,
+    apto,
+    motivo_no_apto,
     resumen: {
       velocidad_celular: datos.pagespeed?.puntajes?.rendimiento ?? null,
       seo: datos.pagespeed?.puntajes?.seo ?? null,
@@ -506,7 +517,7 @@ export async function informe(lead, opciones) {
       resenas: datos.resenas,
       primeros: m1?.primeros ?? [],
       dominio_desde: datos.auditoria?.dominio_desde ?? null,
-      fallos: Object.entries(datos.auditoria?.chequeos ?? {}).filter(([, v]) => v === false).map(([k]) => k),
+      fallos,
       recomendaciones: datos.recomendaciones,
     },
     avisos: datos.avisos,

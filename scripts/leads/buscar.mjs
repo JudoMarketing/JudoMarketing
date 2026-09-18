@@ -120,6 +120,67 @@ const CONSTRUCTORES = [
 
 const SOCIALES = /^(https?:\/\/)?(www\.)?(facebook|instagram|linktr\.ee|tiktok|yelp|m\.facebook|business\.site|google\.com\/maps)/i;
 
+// Plataformas que resuelven lo que nosotros venderíamos. Si el sitio ya las
+// tiene integradas, el negocio no nos necesita: fuera de la lista.
+const PLATAFORMAS = [
+  ["Mindbody", /mindbodyonline|mindbody\.io|widgets\.mindbody/i],
+  ["Glofox", /glofox/i],
+  ["Zen Planner", /zenplanner/i],
+  ["Wodify", /wodify/i],
+  ["PushPress", /pushpress/i],
+  ["GymMaster", /gymmaster/i],
+  ["ClubReady", /clubready/i],
+  ["ABC Fitness", /abcfitness|abcfinancial|myiclubonline/i],
+  ["Mariana Tek", /marianatek/i],
+  ["Vagaro", /vagaro\.com/i],
+  ["Booksy", /booksy\.com/i],
+  ["Fresha", /fresha\.com/i],
+  ["GlossGenius", /glossgenius/i],
+  ["StyleSeat", /styleseat/i],
+  ["Boulevard", /joinblvd|blvd\.co/i],
+  ["Mangomint", /mangomint/i],
+  ["Acuity", /acuityscheduling|app\.squarespacescheduling/i],
+  ["Square Appointments", /squareup\.com\/appointments|square\.site\/book/i],
+  ["Calendly", /calendly\.com/i],
+  ["Setmore", /setmore/i],
+  ["Schedulicity", /schedulicity/i],
+  ["SimplyBook", /simplybook/i],
+  ["Toast", /toasttab\.com/i],
+  ["ChowNow", /chownow/i],
+  ["Olo", /\bolo\.com|\.olo\.com/i],
+  ["Popmenu", /popmenu/i],
+  ["Menufy", /menufy/i],
+  ["Slice", /slicelife/i],
+  ["Clover Online", /clover\.com\/online-ordering|cloveronline/i],
+  ["Square Online", /square\.site|squareup\.com\/us\/en\/online/i],
+  ["Resy", /resy\.com/i],
+  ["OpenTable", /opentable/i],
+  ["SevenRooms", /sevenrooms/i],
+  ["Tock", /exploretock/i],
+  ["Shopify", /cdn\.shopify\.com|myshopify/i],
+  ["WooCommerce", /woocommerce|wc-cart|wc-checkout/i],
+  ["BigCommerce", /bigcommerce/i],
+  ["Ecwid", /ecwid/i],
+  ["Wix Stores", /wix-stores|wixstores/i],
+  ["Zocdoc", /zocdoc/i],
+  ["NexHealth", /nexhealth/i],
+  ["Jane", /jane\.app|janeapp/i],
+  ["SimplePractice", /simplepractice/i],
+  ["Tebra", /tebra|patientpop|kareo/i],
+  ["Healthie", /gethealthie/i],
+  ["Clio", /clio\.com|clioconnect/i],
+  ["Lawmatics", /lawmatics/i],
+  ["Housecall Pro", /housecallpro/i],
+  ["Jobber", /getjobber|jobber\.com/i],
+  ["ServiceTitan", /servicetitan/i],
+  ["Workiz", /workiz/i],
+  ["HubSpot", /hs-scripts\.com|hsforms/i],
+];
+
+function plataformasEn(html) {
+  return PLATAFORMAS.filter(([, re]) => re.test(html)).map(([n]) => n);
+}
+
 export function textoVisible(html) {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -276,6 +337,22 @@ export async function estudiarSitio(website, tipoGoogle = "") {
   if (esServicio && !/book|appointment|agenda|cita|schedule|reservar|calendly|square|vagaro|booksy|zocdoc/i.test(t)) r.senales.push("servicio_sin_citas_en_linea");
   if (esTienda && !/cart|carrito|checkout|comprar|add to|shop now|tienda en l|catalog|cat[aá]logo/i.test(t)) r.senales.push("tienda_sin_venta_en_linea");
   if (!/whatsapp|wa\.me/i.test(inicio.html)) r.senales.push("sin_whatsapp");
+  const plataformas = plataformasEn(html);
+  if (plataformas.length) r.senales.push(`ya_tiene_plataforma:${plataformas.slice(0, 3).join("+")}`);
+  // Sistema propio: el sitio tiene sus propias rutas de venta, membresía,
+  // reserva o pedido (dos tipos distintos como mínimo). Gallo 8 Gym vende
+  // membresías y mercancía desde su página sin ninguna plataforma conocida.
+  const rutasSistema = new Set();
+  for (const m of inicio.html.matchAll(/href=["']([^"'#]+)["']/gi)) {
+    const ruta = m[1].toLowerCase();
+    if (/^https?:\/\//.test(ruta) && !ruta.startsWith(new URL(inicio.url).origin)) continue;
+    if (/\/(join|signup|sign-up|register|membership|memberships|pricing|plans)\b/.test(ruta)) rutasSistema.add("membresia");
+    if (/\/(checkout|cart|shop|store|products?)\b/.test(ruta)) rutasSistema.add("tienda");
+    if (/\/(book|booking|schedule|appointments?|reserve|reservations?)\b/.test(ruta)) rutasSistema.add("reservas");
+    if (/\/(order|ordering|menu\/order|delivery)\b/.test(ruta)) rutasSistema.add("pedidos");
+    if (/\/(login|account|portal|my-account|dashboard|app)\b/.test(ruta)) rutasSistema.add("portal");
+  }
+  if (rutasSistema.size >= 2) r.senales.push(`ya_tiene_sistema:${[...rutasSistema].join("+")}`);
 
   const descripcion = meta(inicio.html, "description");
   const h1 = textoVisible((inicio.html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || [])[1] ?? "");
@@ -311,6 +388,7 @@ export function puntuar(c, estudio) {
     p -= 3;
     estudio.senales.push("muy_establecido");
   }
+  if ([...s].some((x) => x.startsWith("ya_tiene_plataforma") || x.startsWith("ya_tiene_sistema"))) p -= 6;
   return p;
 }
 
@@ -398,8 +476,12 @@ async function main() {
     })
     .sort((x, y) => y.puntaje - x.puntaje);
 
-  const conCorreo = leads.filter((l) => l.email && l.estado === "nuevo");
-  const sinCorreo = leads.filter((l) => !l.email);
+  // Quien ya tiene plataforma integrada o miles de reseñas no es candidato:
+  // va a una lista aparte para que nadie le escriba por error.
+  const equipado = (l) => l.senales.some((x) => x.startsWith("ya_tiene_") || x === "muy_establecido");
+  const conCorreo = leads.filter((l) => l.email && l.estado === "nuevo" && !equipado(l));
+  const sinCorreo = leads.filter((l) => !l.email && !equipado(l));
+  const yaEquipados = leads.filter(equipado);
   const yaConocidos = candidatos.length - aEstudiar.length;
 
   const salida = {
@@ -412,6 +494,8 @@ async function main() {
     sin_correo: sinCorreo.length,
     candidatos_para_escribir: conCorreo,
     para_llamar_o_whatsapp: sinCorreo.filter((l) => l.telefono).slice(0, 25),
+    // No se les escribe: ya tienen infraestructura o son gigantes de su zona.
+    ya_equipados: yaEquipados.map((l) => ({ id: l.id, nombre: l.nombre, senales: l.senales.filter((x) => x.startsWith("ya_tiene") || x === "muy_establecido") })),
   };
   await writeFile(a.salida, JSON.stringify(salida, null, 2));
   console.error(
