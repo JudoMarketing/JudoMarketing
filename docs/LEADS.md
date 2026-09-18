@@ -82,7 +82,9 @@ Por qué así y no de otra forma:
    el negocio, los cruza con Google y guarda todo.
 4. Leer los dos JSON. Traen `candidatos_para_escribir` (con correo, por
    puntaje), `para_llamar_o_whatsapp` / `con_google_sin_website` (teléfono
-   sin correo) y `sin_presencia` (solo Sunbiz: persona y dirección postal).
+   sin correo), `sin_presencia` (solo Sunbiz: persona y dirección postal) y
+   `sin_verificar` (Sunbiz: no se pudo preguntar a Google; no cuentan como
+   sin presencia).
 5. **Buscar en internet** los mejores candidatos sin correo (hasta 15 por
    corrida): el nombre del negocio con la ciudad, el nombre de la persona con
    el negocio, `site:facebook.com` o `site:instagram.com` con el nombre. Si

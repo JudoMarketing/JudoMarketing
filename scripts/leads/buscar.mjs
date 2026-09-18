@@ -48,17 +48,34 @@ function args() {
 
 export async function api(metodo, ruta, cuerpo) {
   if (!SECRETO) throw new Error("Falta LEADS_SECRET en el entorno");
-  const res = await fetch(`${SITE}/api/leads${ruta}`, {
-    method: metodo,
-    headers: {
-      Authorization: `Bearer ${SECRETO}`,
-      "Content-Type": "application/json",
-    },
-    body: cuerpo ? JSON.stringify(cuerpo) : undefined,
-  });
-  const datos = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(`${metodo} /api/leads${ruta} → ${res.status}: ${datos.error ?? "sin detalle"}`);
-  return datos;
+  // Vercel a veces contesta 403 o 429 a una ráfaga de peticiones iguales, y
+  // PageSpeed puede tardar más de lo que el sitio espera: se reintenta tres
+  // veces con pausa antes de darlo por perdido.
+  let ultimo = null;
+  for (const espera of [0, 2000, 6000, 15000]) {
+    if (espera) await new Promise((r) => setTimeout(r, espera));
+    let res;
+    try {
+      res = await fetch(`${SITE}/api/leads${ruta}`, {
+        method: metodo,
+        headers: {
+          Authorization: `Bearer ${SECRETO}`,
+          "Content-Type": "application/json",
+          "User-Agent": UA,
+        },
+        body: cuerpo ? JSON.stringify(cuerpo) : undefined,
+      });
+    } catch (e) {
+      ultimo = new Error(`${metodo} /api/leads${ruta} → red: ${e.message}`);
+      continue;
+    }
+    const datos = await res.json().catch(() => ({}));
+    if (res.ok) return datos;
+    const detalle = typeof datos.error === "string" ? datos.error : datos.error?.message ?? "sin detalle";
+    ultimo = new Error(`${metodo} /api/leads${ruta} → ${res.status}: ${detalle}`);
+    if (![403, 429, 500, 502, 503, 504].includes(res.status)) break;
+  }
+  throw ultimo;
 }
 
 /** El primer zip de la rotación que no se corrió en los últimos 60 días. */

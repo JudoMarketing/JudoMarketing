@@ -217,8 +217,9 @@ async function main() {
     let estudio = { email: null, idioma: null, constructor: null, senales: [], resumen: null, urlFinal: null };
     if (google?.en_google && google.detalle?.website) estudio = await estudiarSitio(google.detalle.website, google.detalle.tipo_google ?? "");
     else if (google?.en_google) estudio.senales.push("sin_website");
+    else if (google?.error) estudio.senales.push("google_no_verificado");
     else estudio.senales.push("sin_presencia_en_google");
-    process.stderr.write(`  ${k + 1}/${aRevisar.length} ${c.nombre.slice(0, 40)} → ${google?.en_google ? (google.detalle?.website ? "website" : "google sin website") : "sin presencia"}${estudio.email ? " ✓ " + estudio.email : ""}\n`);
+    process.stderr.write(`  ${k + 1}/${aRevisar.length} ${c.nombre.slice(0, 40)} → ${google?.en_google ? (google.detalle?.website ? "website" : "google sin website") : google?.error ? "no verificado (" + google.error.slice(0, 60) + ")" : "sin presencia"}${estudio.email ? " ✓ " + estudio.email : ""}\n`);
     return { c, google, estudio };
   });
 
@@ -269,11 +270,13 @@ async function main() {
     no_revisados_por_tope: Math.max(0, candidatos.length - aRevisar.length),
     candidatos_para_escribir: leads.filter((l) => l.email && l.estado === "nuevo"),
     con_google_sin_website: leads.filter((l) => !l.email && l.telefono),
-    sin_presencia: leads.filter((l) => !l.email && !l.telefono),
+    sin_presencia: leads.filter((l) => !l.email && !l.telefono && !l.senales.includes("google_no_verificado")),
+    // No se pudo preguntar a Google (error de red o del sitio): no se sabe si existen.
+    sin_verificar: leads.filter((l) => l.senales.includes("google_no_verificado")),
   };
   await writeFile(a.salida, JSON.stringify(salida, null, 2));
   console.error(
-    `Listo. ${filas.length} revisados: ${salida.candidatos_para_escribir.length} con correo, ${salida.con_google_sin_website.length} en Google sin website (teléfono), ${salida.sin_presencia.length} sin presencia en línea. Guardado en ${a.salida}`
+    `Listo. ${filas.length} revisados: ${salida.candidatos_para_escribir.length} con correo, ${salida.con_google_sin_website.length} en Google sin website (teléfono), ${salida.sin_presencia.length} sin presencia en línea, ${salida.sin_verificar.length} sin verificar. Guardado en ${a.salida}`
   );
 }
 
