@@ -19,7 +19,7 @@
  *   4. Guarda todo en la base a través del sitio y deja un JSON para la
  *      sesión.
  *
- *   node scripts/leads/sunbiz.mjs --salida /ruta/sunbiz.json [--nuevos 3] [--historicos 2,3] [--max 150]
+ *   node scripts/leads/sunbiz.mjs --salida /ruta/sunbiz.json [--nuevos 3] [--historicos 2,3] [--max 200]
  *   node scripts/leads/sunbiz.mjs --sin-api --nuevos 1     (prueba: solo baja, filtra y muestra)
  *
  * Entorno: LEADS_SECRET (obligatorio salvo --sin-api), LEADS_SITE (opcional).
@@ -57,7 +57,7 @@ function args() {
     salida: leer("--salida"),
     nuevos: Number(leer("--nuevos", 3)),
     historicos: String(leer("--historicos", "2,3")).split(",").map(Number).filter(Boolean),
-    maximo: Number(leer("--max", 150)),
+    maximo: Number(leer("--max", 200)),
     sinApi: a.includes("--sin-api"),
   };
 }
@@ -152,7 +152,7 @@ function rubroDe(nombre) {
 async function main() {
   const a = args();
   if (!a.sinApi && !a.salida) {
-    console.error("Uso: node scripts/leads/sunbiz.mjs --salida /ruta/sunbiz.json [--nuevos 3] [--historicos 2,3] [--max 150] [--sin-api]");
+    console.error("Uso: node scripts/leads/sunbiz.mjs --salida /ruta/sunbiz.json [--nuevos 3] [--historicos 2,3] [--max 200] [--sin-api]");
     process.exit(2);
   }
   const zips = new Map(JSON.parse(await readFile(path.join(AQUI, "zips.json"), "utf8")).zips.map((z) => [z.zip, z.zona]));
@@ -201,8 +201,11 @@ async function main() {
     return;
   }
 
-  // Google, por nombre. Tope para no gastar de más en Places.
-  const aRevisar = candidatos.slice(0, a.maximo);
+  // Google, por nombre. Tope para no gastar de más en Places. Primero los que
+  // llevan años (son los que más probablemente existen en Google y facturan
+  // sin sistema); los recién registrados, después.
+  const ordenados = [...candidatos.filter((c) => c.clase !== "nuevo"), ...candidatos.filter((c) => c.clase === "nuevo")];
+  const aRevisar = ordenados.slice(0, a.maximo);
   console.error(`Preguntando a Google por ${aRevisar.length} negocios...`);
   const revisados = await enLotes(aRevisar, 4, async (c, k) => {
     let google = null;
