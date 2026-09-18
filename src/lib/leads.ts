@@ -18,21 +18,26 @@
  *                            (debe ser un alias "Send mail as" de la cuenta SMTP)
  *   LEADS_REPLY_TO           a dónde llegan las respuestas
  *   LEADS_MAX_DIA            tope de correos reales por día (20 por defecto)
+ *   LEADS_COPIA              copia oculta de cada correo que sale, para auditar
+ *                            (admin@judomarketing.net por defecto; vacío para no copiar)
  */
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { sendBrandedEmail } from "@/lib/email";
 import {
+  enlacesProspecto,
   htmlProspecto,
   textoProspecto,
   type IdiomaCorreo,
 } from "@/lib/leads-correo";
 
 const SITIO = "https://www.judomarketing.net";
-const DIAS_SIN_REPETIR = 120;
 
+// Un correo por negocio, y nunca más. Sin recontacto: a quien ya se le
+// escribió no se le vuelve a escribir, ni contestó ni pidió baja ni nada.
 export const ESTADOS_QUE_NO_SE_ESCRIBEN = new Set([
+  "enviado",
   "baja",
   "rebotado",
   "respondio",
@@ -81,6 +86,44 @@ function firmaBaja(email: string): string {
 export function urlBaja(email: string, idioma: IdiomaCorreo): string {
   const e = Buffer.from(email.trim().toLowerCase()).toString("base64url");
   return `${SITIO}/api/leads/baja?e=${e}&t=${firmaBaja(email)}&l=${idioma}`;
+}
+
+// ------------------------------------------------------------------ clics
+
+function firmaClic(leadId: string, accion: string): string {
+  const secreto = secretoLeads();
+  if (!secreto) throw new Error("Falta LEADS_SECRET");
+  return createHmac("sha256", secreto).update(`clic|${leadId}|${accion}`).digest("base64url").slice(0, 24);
+}
+
+/** Los dos botones del correo pasan por el sitio para saber qué negocio hizo clic. */
+export function enlacesConSeguimiento(leadId: string, idioma: IdiomaCorreo, zip: string) {
+  const directo = enlacesProspecto(idioma, zip);
+  const url = (accion: "contacto" | "showcase") =>
+    `${SITIO}/api/leads/clic?l=${encodeURIComponent(leadId)}&a=${accion}&t=${firmaClic(leadId, accion)}&i=${idioma}&z=${encodeURIComponent(zip)}`;
+  return { contacto: url("contacto"), showcase: url("showcase"), directo };
+}
+
+export function verificarClic(l: string | null, a: string | null, t: string | null): { leadId: string; accion: "contacto" | "showcase" } | null {
+  if (!l || !t || (a !== "contacto" && a !== "showcase")) return null;
+  if (!/^[0-9a-f-]{36}$/i.test(l)) return null;
+  const esperada = Buffer.from(firmaClic(l, a));
+  const recibida = Buffer.from(t);
+  if (esperada.length !== recibida.length || !timingSafeEqual(esperada, recibida)) return null;
+  return { leadId: l, accion: a };
+}
+
+/** Anota el clic en las señales del lead (sin migración nueva) y no falla nunca. */
+export async function registrarClic(leadId: string, accion: string): Promise<void> {
+  try {
+    const supabase = clienteServicio();
+    const { data } = await supabase.from("leads").select("senales").eq("id", leadId).maybeSingle();
+    const senales: string[] = Array.isArray(data?.senales) ? data!.senales : [];
+    senales.push(`clic:${accion}:${new Date().toISOString().slice(0, 16)}Z`);
+    await supabase.from("leads").update({ senales: senales.slice(-60) }).eq("id", leadId);
+  } catch (e) {
+    console.error("leads/clic: no se pudo anotar", leadId, (e as Error).message);
+  }
 }
 
 /** Devuelve el correo si la firma es válida; null si el enlace fue manipulado. */
@@ -495,6 +538,44 @@ export async function posicionWeb(
   };
 }
 
+// ---------------------------------------------------------------- reporte
+
+/** Bajas, clics, respuestas y envíos: lo que Junior audita. */
+export async function reporte(desde?: string) {
+  const supabase = clienteServicio();
+  const limite = desde && !Number.isNaN(Date.parse(desde)) ? new Date(desde).toISOString() : null;
+  const { data, error } = await supabase
+    .from("leads")
+    .select("id, nombre, email, zip, rubro, estado, enviado_en, baja_en, senales, notas")
+    .in("estado", ["enviado", "baja", "rebotado", "respondio", "cliente"])
+    .order("enviado_en", { ascending: false })
+    .limit(2000);
+  if (error) throw error;
+  const filas = data ?? [];
+  const clicsDe = (f: { senales: unknown }) =>
+    (Array.isArray(f.senales) ? (f.senales as string[]) : [])
+      .filter((x) => x.startsWith("clic:"))
+      .map((x) => {
+        const [, accion, en] = x.split(":");
+        return { accion, en: x.slice(x.indexOf(":", 6) + 1) || en };
+      });
+  const reciente = (fecha: string | null) => !limite || (fecha != null && fecha >= limite);
+  const enviados = filas.filter((f) => f.enviado_en && reciente(f.enviado_en));
+  const bajas = filas.filter((f) => f.estado === "baja" && reciente(f.baja_en)).map((f) => ({ nombre: f.nombre, email: f.email, zip: f.zip, rubro: f.rubro, enviado_en: f.enviado_en, baja_en: f.baja_en }));
+  const clics = filas
+    .map((f) => ({ nombre: f.nombre, email: f.email, zip: f.zip, rubro: f.rubro, estado: f.estado, enviado_en: f.enviado_en, clics: clicsDe(f).filter((c) => reciente(c.en)) }))
+    .filter((f) => f.clics.length > 0);
+  const respondieron = filas.filter((f) => ["respondio", "cliente"].includes(f.estado)).map((f) => ({ nombre: f.nombre, email: f.email, estado: f.estado, notas: f.notas }));
+  return {
+    desde: limite,
+    enviados: { total: enviados.length, por_dia: Object.entries(enviados.reduce((a: Record<string, number>, f) => ((a[String(f.enviado_en).slice(0, 10)] = (a[String(f.enviado_en).slice(0, 10)] ?? 0) + 1), a), {})).sort() },
+    bajas,
+    clics,
+    respondieron,
+    rebotados: filas.filter((f) => f.estado === "rebotado").length,
+  };
+}
+
 // ------------------------------------------------------------------ envío
 
 export type Borrador = {
@@ -529,6 +610,11 @@ function direccionRespuestas(): string {
   return process.env.LEADS_REPLY_TO ?? "admin@judomarketing.net";
 }
 
+function copiaOculta(): string | undefined {
+  const c = process.env.LEADS_COPIA ?? "admin@judomarketing.net";
+  return c.trim() ? c.trim() : undefined;
+}
+
 function validarBorrador(b: Borrador): string | null {
   if (!b.lead_id || !b.asunto || !b.saludo || !Array.isArray(b.parrafos) || b.parrafos.length === 0) {
     return "borrador incompleto";
@@ -536,7 +622,8 @@ function validarBorrador(b: Borrador): string | null {
   if (b.idioma !== "es" && b.idioma !== "en") return "idioma inválido";
   if (b.asunto.length > 90) return "asunto de más de 90 caracteres";
   const palabras = b.parrafos.join(" ").split(/\s+/).length;
-  if (palabras > 260) return `cuerpo demasiado largo (${palabras} palabras)`;
+  if (palabras > 170) return `cuerpo demasiado largo (${palabras} palabras; máximo 170)`;
+  if (palabras < 40) return `cuerpo demasiado corto (${palabras} palabras)`;
   if (/[—–]/.test([b.asunto, b.saludo, ...b.parrafos, b.ps ?? ""].join(" "))) {
     return "lleva raya larga; se escribe con comas o puntos";
   }
@@ -605,11 +692,8 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
       continue;
     }
     if (lead.enviado_en) {
-      const dias = (Date.now() - new Date(lead.enviado_en).getTime()) / 86_400_000;
-      if (dias < DIAS_SIN_REPETIR) {
-        resultados.push({ lead_id: b.lead_id, ok: false, motivo: `ya se le escribió hace ${Math.floor(dias)} días` });
-        continue;
-      }
+      resultados.push({ lead_id: b.lead_id, ok: false, motivo: "ya se le escribió; sin recontacto" });
+      continue;
     }
     if (!prueba && enviadosHoy >= tope) {
       resultados.push({ lead_id: b.lead_id, ok: false, motivo: `tope diario de ${tope} alcanzado` });
@@ -624,6 +708,10 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
       ps: b.ps,
       zip: lead.zip as string,
       urlBaja: urlBaja(lead.email, b.idioma),
+      enlaces: (() => {
+        const e = enlacesConSeguimiento(lead.id as string, b.idioma, lead.zip as string);
+        return { contacto: e.contacto, showcase: e.showcase };
+      })(),
     };
     const html = htmlProspecto(correo);
     const texto = textoProspecto(correo);
@@ -634,6 +722,7 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
       const salio = await sendBrandedEmail(destinatario, asunto, html, {
         from: remitente(),
         replyTo: direccionRespuestas(),
+        bcc: copiaOculta(),
         texto,
         adjuntos: b.adjunto
           ? [{ nombre: b.adjunto.nombre, contenido: Buffer.from(b.adjunto.base64, "base64"), tipo: "application/pdf" }]

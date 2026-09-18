@@ -27,6 +27,8 @@ export type CorreoProspecto = {
   zip: string;
   /** Enlace firmado para darse de baja. */
   urlBaja: string;
+  /** Enlaces de los botones con seguimiento por negocio; si faltan, van los directos. */
+  enlaces?: { contacto: string; showcase: string };
 };
 
 const SITIO = "https://www.judomarketing.net";
@@ -81,7 +83,7 @@ export function enlacesProspecto(idioma: IdiomaCorreo, zip: string) {
 /** Versión en texto plano: la leen los clientes sin HTML y los filtros de spam la valoran. */
 export function textoProspecto(c: CorreoProspecto): string {
   const t = TEXTOS[c.idioma];
-  const enlaces = enlacesProspecto(c.idioma, c.zip);
+  const enlaces = c.enlaces ?? enlacesProspecto(c.idioma, c.zip);
   const lineas = [
     c.saludo,
     "",
@@ -103,7 +105,7 @@ export function textoProspecto(c: CorreoProspecto): string {
 
 export function htmlProspecto(c: CorreoProspecto): string {
   const t = TEXTOS[c.idioma];
-  const enlaces = enlacesProspecto(c.idioma, c.zip);
+  const enlaces = c.enlaces ?? enlacesProspecto(c.idioma, c.zip);
   const parrafos = c.parrafos
     .map(
       (p) =>

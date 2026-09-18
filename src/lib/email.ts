@@ -83,6 +83,8 @@ export async function sendBrandedEmail(
     headers?: Record<string, string>;
     /** Versión en texto plano del mismo correo. */
     texto?: string;
+    /** Copia oculta, por ejemplo para auditar los correos de prospección. */
+    bcc?: string;
   }
 ): Promise<boolean> {
   if (!isEmailConfigured()) return false;
@@ -98,6 +100,7 @@ export async function sendBrandedEmail(
     subject,
     html,
     text: extras?.texto,
+    bcc: extras?.bcc,
     headers: extras?.headers,
     replyTo: extras?.replyTo,
     ...(extras?.adjuntos?.length

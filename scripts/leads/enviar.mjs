@@ -49,8 +49,8 @@ function revisarLocal(b) {
   if (/[—–]/.test(todo)) problemas.push("raya larga");
   if (/\b(garantiz|guarantee|100% seguro|primer lugar en google|#1 on google|first page of google)\b/i.test(todo)) problemas.push("promesa que no se puede cumplir");
   const palabras = (b.parrafos ?? []).join(" ").split(/\s+/).length;
-  if (palabras < 60) problemas.push(`muy corto (${palabras} palabras)`);
-  if (palabras > 220) problemas.push(`muy largo (${palabras} palabras)`);
+  if (palabras < 45) problemas.push(`muy corto (${palabras} palabras)`);
+  if (palabras > 125) problemas.push(`muy largo (${palabras} palabras; la guía pide entre 60 y 110)`);
   if ((b.asunto ?? "").length > 70) problemas.push("asunto largo");
   if (/[!]{2,}|GRATIS|FREE!!!|\$\$\$/.test(todo)) problemas.push("suena a spam");
   return problemas;

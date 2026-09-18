@@ -6,6 +6,7 @@
 //
 //   GET  ?corridas=1            últimas corridas (para rotar el zip)
 //   GET  ?zip=33130             leads de ese zip con su estado
+//   GET  ?reporte=1[&desde=ISO] bajas, clics, respuestas y envíos (auditoría)
 //   GET  ?archivos=1            archivos diarios de Sunbiz ya procesados
 //   POST {accion:"buscar"}      negocios de un zip según Google Places
 //   POST {accion:"buscar_nombre"} ¿existe este negocio (de Sunbiz) en Google? y su detalle
@@ -30,6 +31,7 @@ import {
   pageSpeed,
   posicionEnMaps,
   posicionWeb,
+  reporte,
   secretoLeads,
   type Borrador,
 } from "@/lib/leads";
@@ -75,6 +77,9 @@ export async function GET(req: NextRequest) {
         .limit(60);
       if (error) throw error;
       return NextResponse.json({ corridas: data ?? [] });
+    }
+    if (req.nextUrl.searchParams.get("reporte")) {
+      return NextResponse.json(await reporte(req.nextUrl.searchParams.get("desde") ?? undefined));
     }
     if (req.nextUrl.searchParams.get("archivos")) {
       const { data, error } = await supabase

@@ -207,37 +207,28 @@ Mal: `¡Haz crecer tu negocio HOY!` · `Propuesta de servicios de marketing digi
 **Saludo:** `Hola, equipo de {negocio}.` o `Hi, {negocio} team.` Si el
 resumen del sitio dice el nombre del dueño, se usa: `Hola, Carlos.`
 
-**Cuerpo, tres párrafos, entre 90 y 180 palabras en total:**
+**Cuerpo: entre 60 y 110 palabras, en dos o tres párrafos cortos.** Corto,
+humano y directo. Se ataca el dolor y se vende la solución; nada más.
 
-1. *Lo que vimos.* Una observación concreta y verificable de su negocio (del
-   resumen del sitio, de su perfil de Google, de su registro o de las
-   señales) y el problema que eso le trae. Sin halagos vacíos y sin inventar:
-   si no lo vimos, no se dice. A un negocio recién registrado no se le dice
-   que le falta algo: se le dice que arrancar con el sistema puesto sale más
-   barato que arreglarlo después. A uno con años y sin website se le habla
-   de lo que ya sabe: los clientes que llaman y no encuentran, el tiempo que
-   se va en el teléfono.
-2. *Quiénes somos y qué haríamos.* Junior, Judo Marketing, Miami. La solución
-   concreta para ese problema, en una o dos frases, y que ya lo hicimos para
-   negocios de su rubro (el showcase tiene comida, servicios, tiendas,
-   industria, educación, automotriz y construcción). Que el botón de abajo
-   enseña ese trabajo.
-3. *El siguiente paso.* 20 minutos de llamada para entender cómo operan y
-   decirles con honestidad qué les conviene. Que para los primeros 100
-   clientes el precio es bastante accesible y nos gustaría que fueran uno.
-   Y el regalo: al contratar cualquier servicio, les configuramos y
-   optimizamos su Perfil de Empresa de Google sin costo.
+1. *El dolor, de entrada.* Una o dos frases con el hecho concreto que vimos
+   y lo que le cuesta. Sin "espero que estés bien", sin presentarse antes
+   del problema. "Cada pedido que te entra por DoorDash deja 15 a 30 por
+   ciento en la app, y tu página no tiene pedidos propios."
+2. *La solución, en dos frases.* "Soy Junior, de Judo Marketing, en Miami."
+   y lo que le haríamos, concreto y en sus palabras: la página donde el
+   cliente pide y paga directo, la agenda en línea, el panel. Si va
+   informe, una frase: "Te adjunto una página con lo que Google ve hoy de
+   tu negocio."
+3. *El cierre, en una frase o dos.* Pedir 20 minutos esta semana. Que para
+   los primeros 100 clientes el precio es accesible y que al contratar le
+   configuramos su Perfil de Empresa de Google sin costo.
 
-**Cuando el negocio tiene website y lleva informe adjunto:** el párrafo 1
-cita uno o dos números del informe, los que más duelen y sean ciertos (de
-`informes.json`: puesto en Maps, velocidad en celular, reseñas frente a los
-tres primeros, descripción ausente). El párrafo 2 o el 3 dice en una frase
-que va adjunto un informe de una página con lo que Google ve hoy de su
-negocio, hecho con datos públicos, y que lo lean con calma. No se citan
-datos que el informe marque como no disponibles.
+**PS (opcional, una línea):** `WhatsApp +1 305 934 9981.`
 
-**PS (opcional, una línea):** el WhatsApp, `+1 305 934 9981`, para quien
-prefiere escribir a agendar.
+**Cuando lleva informe adjunto:** el dolor del párrafo 1 sale de
+`informes.json` con uno o dos números, los que más duelen y sean ciertos
+(puesto en Maps, segundos de carga en celular, reseñas frente a los tres
+primeros). Nunca un dato marcado como no disponible.
 
 **Lo que ofrece Judo Marketing, por rubro** (para elegir la solución, no para
 listarla en el correo; en el correo va una sola):
@@ -288,45 +279,45 @@ de Doral y...").
 
 **Ejemplo en español (restaurante sin pedidos en línea):**
 
-> Asunto: los pedidos de La Carreta, sin comisión
+> Asunto: los pedidos de La Esquina, sin comisión
 >
-> Hola, equipo de La Carreta.
+> Hola, equipo de La Esquina.
 >
-> Vi su página buscando restaurantes en Little Havana y me quedé con una duda: ¿los pedidos a domicilio les llegan por apps como DoorDash? Cada una se queda con entre 15 y 30 por ciento, y ese margen suele ser justo el que falta a fin de mes.
+> Cada pedido que les entra por DoorDash deja entre 15 y 30 por ciento en la app, y su página no tiene pedidos propios. Hoy no hay otra puerta.
 >
-> Me llamo Junior y dirijo Judo Marketing, aquí en Miami. Hacemos websites y apps para negocios como el suyo: una página propia donde el cliente pide y paga directo, con el menú, los horarios y un panel desde el que ustedes controlan todo. Ya lo hicimos para otros restaurantes de la ciudad y en el botón de abajo pueden ver ese trabajo.
+> Soy Junior, de Judo Marketing, en Miami. Les montamos una página donde el cliente pide y paga directo, con el menú vivo y un panel para controlarlo todo. Ya lo hicimos para otros restaurantes de la ciudad.
 >
-> Me gustaría tomar 20 minutos con ustedes para entender cómo operan hoy y decirles con honestidad qué les conviene. Para nuestros primeros 100 clientes el precio es bastante accesible, y me gustaría que fueran uno de ellos.
+> ¿Me dan 20 minutos esta semana? Para nuestros primeros 100 clientes el precio es accesible, y al contratar les configuramos su Perfil de Empresa de Google sin costo.
 >
-> PS: Si prefieren WhatsApp, escríbanme al +1 305 934 9981 y coordinamos por ahí.
+> PS: WhatsApp +1 305 934 9981.
 
-**Ejemplo en inglés (taller sin citas en línea):**
+**Ejemplo en inglés (bufete con informe adjunto, datos reales):**
 
-> Subject: a question about Brickell Auto Care
+> Subject: NERO Immigration Law isn't on Maps
 >
-> Hi, Brickell Auto Care team.
+> Hi, NERO Immigration Law team.
 >
-> I came across your shop while looking at auto repair businesses in Brickell. Your reviews are strong, but I noticed there's no way to book an appointment online, so every new customer still has to call during business hours.
+> Search "lawyer Little Havana" on Google Maps and you're not in the top 20. Your site takes 6.7 seconds to load on a phone. With a 4.8 rating, those are clients going to firms with worse reviews than yours.
 >
-> My name is Junior and I run Judo Marketing here in Miami. We build websites and apps for businesses like yours: online booking, quote requests, reminders by text, and an admin panel where you see the whole week at a glance. You can see what we've built for other service businesses with the button below.
+> I'm Junior, from Judo Marketing in Miami. We'd build you a fast site with online intake and scheduling, and fix what keeps you off Maps. The one page report attached shows what Google sees today.
 >
-> I'd like to take 20 minutes to understand how you handle jobs today and tell you honestly what would help. For our first 100 clients the pricing is very accessible, and I'd like you to be one of them.
+> Can I get 20 minutes this week? For our first 100 clients pricing is accessible, and we set up your Google Business Profile at no cost when you sign up.
 >
-> PS: If WhatsApp is easier, message me at +1 305 934 9981.
+> PS: WhatsApp +1 305 934 9981.
 
 **Ejemplo en español (negocio de Sunbiz con años operando, sin website, correo hallado en su Facebook):**
 
-> Asunto: Family Circle Cleaning, sin depender del teléfono
+> Asunto: Family Circle Cleaning no aparece en Google
 >
 > Hola, Mirna.
 >
-> Encontré Family Circle Cleaning en el registro de empresas de Florida y en Facebook, pero no en Google ni con una página propia. Eso significa que cada cliente nuevo llega por recomendación o por teléfono, y que quien busca "limpieza en Weston" en Google encuentra a otro.
+> Family Circle Cleaning lleva dos años registrada y no existe en Google ni tiene página. Quien busca "limpieza en Weston" encuentra a otra empresa, y cada cliente nuevo les llega solo por recomendación.
 >
-> Me llamo Junior y dirijo Judo Marketing, en Miami. Hacemos websites y sistemas para negocios de servicios: una página que aparece en Google con su Perfil de Empresa conectado, cotización y reserva en línea, y un panel donde ves la semana de tu cuadrilla y lo que hay que cobrar. En el botón de abajo puedes ver lo que hicimos para otros negocios de servicios.
+> Soy Junior, de Judo Marketing, en Miami. Les hacemos una página que aparece en Google, con cotización y reserva en línea y un panel donde ven la semana de la cuadrilla.
 >
-> Me gustaría tomar 20 minutos contigo para entender cómo manejas hoy los clientes y decirte con honestidad qué te conviene. Para nuestros primeros 100 clientes el precio es bastante accesible, y me gustaría que fueras una de ellas.
+> ¿Tienes 20 minutos esta semana? Para nuestros primeros 100 clientes el precio es accesible, y al contratar te configuramos tu Perfil de Empresa de Google sin costo.
 >
-> PS: Si prefieres WhatsApp, escríbeme al +1 305 934 9981.
+> PS: WhatsApp +1 305 934 9981.
 
 ## Formato del archivo de borradores
 
@@ -387,12 +378,18 @@ exigen y cómo lo cumplimos:
 | Dirección postal física | Va en el pie de cada correo |
 | Forma clara de darse de baja | Enlace firmado en el pie, un clic, sin formulario, más cabecera `List-Unsubscribe` para el botón de Gmail y Yahoo |
 | Honrar la baja en 10 días hábiles | Es inmediata: el lead queda `baja` y el servidor nunca vuelve a enviarle |
+| Saber quién hizo clic | Los dos botones pasan por `/api/leads/clic` con el id del negocio firmado; el clic se anota en el lead y se redirige a la página real |
 | Decir por qué recibe el correo | El pie dice que su negocio aparece en Google en esa zona |
 
 Candados propios, en el servidor:
 
 - Tope de 20 correos reales por día (`LEADS_MAX_DIA`).
-- Nunca dos correos al mismo negocio en 120 días.
+- Copia oculta de cada correo que sale a `LEADS_COPIA`
+  (admin@judomarketing.net): Junior ve exactamente lo que recibió cada
+  negocio, con su PDF, para auditar.
+- **Sin recontacto, nunca.** Un negocio recibe un solo correo en su vida.
+  Ni seguimiento, ni segundo intento, ni aunque cambie de zip. Si contesta,
+  la conversación la sigue Junior a mano.
 - Nunca a `baja`, `rebotado`, `respondio`, `cliente` ni `descartado`.
 - Modo prueba por defecto: hasta que `LEADS_MODO=real`, todo va al correo de
   prueba con el destinatario real en el asunto.
@@ -464,6 +461,22 @@ Lo que no guste se corrige en este documento, en la sección de escritura, y
 la siguiente corrida ya sale distinta. Cuando dos corridas seguidas salgan
 bien, `LEADS_MODO=real` en Vercel y Redeploy.
 
+## Auditoría: bajas, clics y respuestas
+
+`GET /api/leads?reporte=1` (con el secreto) devuelve, y opcionalmente
+desde una fecha (`&desde=2026-09-21`):
+
+- `enviados`: cuántos salieron y por día.
+- `bajas`: quién pidió no recibir más correos, con fecha.
+- `clics`: quién hizo clic en "Agenda una llamada" o "Ver nuestro trabajo",
+  cuántas veces y cuándo.
+- `respondieron`: los marcados a mano como `respondio` o `cliente`.
+- `rebotados`: cuántos correos no existían.
+
+Cada corrida automática lo incluye al final de su informe (desde la
+corrida anterior), y Junior puede pedirlo en el chat cuando quiera.
+Además, cada correo que sale llega en copia oculta a `LEADS_COPIA`.
+
 ## Qué mirar cada semana
 
 - **Respuestas** en el buzón de `LEADS_REPLY_TO`. Cada respuesta se contesta
@@ -516,9 +529,11 @@ cambiarlo también en la rutina (Settings → Routines).
 > `adjunto_pdf`. Cada correo habla de ese negocio en concreto, con lo que
 > se vio, en su idioma, sin raya larga y sin promesas. (7) Corre `node
 > scripts/leads/enviar.mjs --borradores <archivo>`. Si rechaza borradores,
-> corrígelos y repite hasta que pasen. (8) Termina con el informe para
+> corrígelos y repite hasta que pasen. (8) Pide `GET /api/leads?reporte=1
+> &desde=<fecha de la corrida anterior>` y termina con el informe para
 > Junior: zip y zona, archivos de Sunbiz, encontrados por fuente, con correo,
 > enviados (cuántos con PDF) y modo, los enviados con negocio, rubro y una
-> línea de por qué, la lista de negocios con teléfono y sin correo, y la
-> lista sin presencia con la persona y su dirección postal. No toques nada
-> más del repositorio ni hagas commits.
+> línea de por qué, las bajas y los clics desde la corrida anterior, la
+> lista de negocios con teléfono y sin correo, y la lista sin presencia con
+> la persona y su dirección postal. No toques nada más del repositorio ni
+> hagas commits.
