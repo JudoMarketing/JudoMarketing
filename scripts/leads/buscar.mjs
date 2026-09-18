@@ -80,7 +80,11 @@ async function siguienteZip() {
 // ------------------------------------------------------------- scraping
 
 const CORREOS_BASURA =
-  /(noreply|no-reply|donotreply|do-not-reply|postmaster|abuse|mailer-daemon|privacy|unsubscribe|example\.|sentry|wixpress|wix\.com|godaddy|squarespace|wordpress|w3\.org|schema\.org|yourdomain|yourname|domain\.com|email\.com$|@sentry|@2x|\.(png|jpg|jpeg|gif|svg|webp)$|^[0-9a-f]{20,}@)/i;
+  /(noreply|no-reply|donotreply|do-not-reply|postmaster|abuse|bugreport|bug@|mailer-daemon|privacy|unsubscribe|example\.|sentry|wixpress|wix\.com|godaddy|squarespace|wordpress|w3\.org|schema\.org|yourdomain|yourname|domain\.com|email\.com$|@sentry|@2x|moatable|placester|realgeeks|kvcore|\.(png|jpg|jpeg|gif|svg|webp)$|^[0-9a-f]{20,}@|[{}\\|<>])/i;
+
+// Correos de la agencia que hizo la página, no del negocio: si el dominio no
+// es el del sitio y suena a agencia, no sirve para escribirle al dueño.
+const DOMINIO_AGENCIA = /(creative|agency|agencia|media|design|studio|marketing|digital|webdev|seo|hosting|develop)/i;
 
 const CONSTRUCTORES = [
   ["wix", /wixstatic\.com|wix\.com|_wixCIDX|wixsite/i],
@@ -147,7 +151,12 @@ function extraerCorreos(html, dominio) {
   const encontrados = new Set();
   for (const m of html.matchAll(/mailto:([^"'?\s<>]+)/gi)) encontrados.add(decodeURIComponent(m[1]).toLowerCase());
   for (const m of html.matchAll(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi)) encontrados.add(m[0].toLowerCase());
-  const limpios = [...encontrados].filter((e) => !CORREOS_BASURA.test(e) && e.length < 80);
+  const limpios = [...encontrados].filter((e) => {
+    if (CORREOS_BASURA.test(e) || e.length > 80) return false;
+    const dom = e.split("@")[1] ?? "";
+    if (dominio && dom !== dominio && !dom.endsWith("." + dominio) && DOMINIO_AGENCIA.test(dom)) return false;
+    return true;
+  });
   const puntaje = (e) => {
     let p = 0;
     if (dominio && e.endsWith("@" + dominio)) p += 5;
