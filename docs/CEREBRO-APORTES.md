@@ -999,3 +999,55 @@ no sale a producción hasta que se une a `master`.
 era `master`. Los aportes que fueron a `master` no se desplegaban y los
 cambios del rediseño no estaban en la default. Una sola rama de producción,
 y que sea la default, corta ese doble camino.
+
+---
+
+### 2026-09-20 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando el que audita dice «no funciona», lo primero es
+reconstruir SU camino, no el nuestro. El revisor de Meta entra por la
+portada, sin credenciales, sin saber dónde está nada, y con una cuenta sin
+rol en la app. Recorrido así, el portal fallaba tres veces antes de llegar a
+nada: el login con Facebook estaba escondido detrás de nuestra contraseña,
+el botón pedía permisos que a esa cuenta no se le conceden, y una sesión de
+una cuenta borrada dejaba la app en bucle. Ninguna de las tres se veía
+desde dentro, con la cuenta del dueño, que tiene rol y contraseña. Regla:
+antes de mandar algo a un tercero que lo va a probar, probarlo como él —
+navegador limpio, sin cuenta, sin rol— y aceptar cada «no lo encuentro»
+como un fallo real, no como torpeza del revisor.
+**Evidencia:** la violación 7.a «Facebook Login is broken or app is not
+accessible». Se puso «Continuar con Facebook» en la puerta pidiendo solo lo
+aprobado, se separó la petición de permisos de anuncios y se hizo tolerante
+a lo que Meta no conceda, y se cerró el bucle de la sesión fantasma. El
+recorrido del revisor quedó como prueba automática (47 comprobaciones).
+
+---
+
+### 2026-09-20 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** «pedir todo de una vez» es cómodo para el código y caro
+para la persona. Un diálogo que pide siete permisos sirve solo a quien puede
+concederlos todos; a los demás les rompe la entrada entera, y la app ni se
+entera de cuáles faltaron. Lo robusto es pedir en dos tandas —lo mínimo para
+entrar, y el resto cuando de verdad hace falta— y, al volver, PREGUNTAR qué
+se concedió en vez de darlo por hecho. Con eso, un permiso que falta se
+convierte en una frase con nombre («Meta no concedió: ads_read») en lugar
+de en un error crudo, y el mismo código sirve al revisor sin rol, al cliente
+que desmarcó una casilla, y al dueño que tiene todo.
+**Evidencia:** el callback de Meta preguntaba /me/adaccounts sin saber si
+tenía ads_read; ahora lee /me/permissions, guarda la lista en la conexión y
+solo llama a lo que puede. Catorce casos contra la base, incluido «Meta
+lento: no se supo qué concedió → se intenta todo, como antes».
+
+---
+
+### 2026-09-20 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un identificador que viaja por la URL y vuelve no es un
+`state`: es una invitación. El state del OAuth era el id del usuario a
+secas; quien lo conociera podía armar un enlace de vuelta con su propio
+código y dejarle enganchado un Facebook ajeno a la cuenta de otro. Un state
+de verdad prueba dos cosas: que lo escribimos nosotros (firma) y que lo
+escribimos en ESE navegador (nonce en cookie). Y cuando el mismo callback
+sirve a dos viajes (entrar y conectar), el propósito va dentro del state,
+firmado, no en la URL donde cualquiera lo cambia.
+**Evidencia:** src/lib/oauth-estado.ts, con sus dieciséis formas de fallar
+probadas: sin firma, con otro secreto, caducado, sin nonce, con nonce
+ajeno, sin propósito.
