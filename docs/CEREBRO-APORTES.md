@@ -999,3 +999,93 @@ no sale a producción hasta que se une a `master`.
 era `master`. Los aportes que fueron a `master` no se desplegaban y los
 cambios del rediseño no estaban en la default. Una sola rama de producción,
 y que sea la default, corta ese doble camino.
+
+---
+
+### 2026-09-21 · Juditos · App Review de Meta
+**Qué aprendimos:** «el revisor no encuentra el login» no se arregla con
+instrucciones cuando el login de verdad no existe desde fuera. Juditos no
+tenía puerta propia: /login mandaba al acceso con correo de JuditoADS, y el
+diálogo de Facebook de la app JUDITOS solo se abría desde el back office,
+para el equipo. Con una cuenta sin rol, sin contraseña y sin que nadie le
+prepare nada, el revisor no llegaba a ningún diálogo de esta app: eso es
+7.a aunque el código del OAuth esté perfecto. La regla: si una app tiene
+su propia app de Meta, tiene su propia puerta con «Continuar con Facebook»
+en la primera pantalla, aunque las cuentas vivan en otro portal. Y las
+cuentas compartidas no son excusa: el otro portal expone un puente que
+recibe el token de Facebook, pregunta a Meta de qué app es (/app) y de
+quién es (/me), y devuelve la sesión de la casa. Sin secreto compartido:
+el token es la credencial, igual que la cookie lo era en el puente de ida.
+**Evidencia:** la app JUDITOS llevaba 0 llamadas a la API en 30 días
+(`call_volume`), porque nadie había podido completar nunca el OAuth. Y no
+era solo la puerta: cada salida del callback se construía con `new
+URL(ruta, request.url)`, que dentro de una función de Vercel lleva el host
+interno del despliegue. En producción, sin sesión, el arranque del OAuth
+mandaba a `ai-assistants-ashy.vercel.app/login`, que es la pantalla de
+acceso de Vercel. Un revisor habría visto un login de Vercel y habría
+cerrado el caso. Ahora todas las salidas van con `x-forwarded-host` y el
+prefijo, y hay un recorrido de 59 comprobaciones contra `next start`
+(`pruebas/puerta.e2e.mjs`) que lo fija.
+
+---
+
+### 2026-09-21 · Juditos · App Review de Meta
+**Qué aprendimos:** los ids de Facebook son por app. La misma persona tiene
+un id distinto en la app de anuncios y en la de mensajes, así que «ya
+entró con Facebook en JuditoADS» no sirve para reconocerla en Juditos:
+hacen falta dos columnas (`facebookUserId`, `facebookJuditosId`) y dos
+comprobantes de alta distintos, con una marca de origen dentro para que el
+de una puerta no valga en la otra. Enlazar por correo tampoco: cualquiera
+con un Facebook se quedaría con la cuenta de otro. La única identidad que
+cruza apps es el correo que la persona escribe, y ese solo se acepta si
+está libre.
+**Evidencia:** la prueba del puente que más costó escribir fue la que
+comprueba que un token de la app de JuditoADS NO entra por el puente de
+Juditos, y que el comprobante de alta de una puerta no vale en la otra.
+Las dos habrían pasado sin querer con una sola columna.
+
+---
+
+### 2026-09-21 · Juditos · App Review de Meta
+**Qué aprendimos:** un permiso que la app no puede enseñar en video no se
+pide, aunque el código lo use. Meta exige por permiso un screencast y una
+llamada real en 30 días; los de WhatsApp necesitan una cuenta de WhatsApp
+Business conectada, que la app todavía no monta. Pedirlos «por si acaso»
+es un «could not reproduce» seguro que arrastra al resto del envío. La
+lista de permisos se parte en tandas revisables (`SCOPES_MENSAJES`,
+`SCOPES_WHATSAPP`) y una variable decide cuál se pide hoy; la pantalla del
+cliente solo echa en falta lo que se pidió. Y al revés: dos permisos que el
+código sí usaba (`pages_read_user_content`, `pages_manage_engagement`) no
+estaban en el envío. La lista del envío se saca del código, en las dos
+direcciones, nunca de memoria.
+**Evidencia:** el envío en borrador de JUDITOS tenía los tres de WhatsApp
+y le faltaban los dos de comentarios. `public_profile` estaba en
+`access_level: none`: sin «Get advanced access», el botón de entrar con
+Facebook no habría funcionado para el propio revisor.
+
+---
+
+### 2026-09-21 · Juditos · Next.js
+**Qué aprendimos:** la primera vez que alguien del equipo entra, el layout
+y la página preguntan «¿quién es?» a la vez, y un buscar-y-crear en
+paralelo choca contra el índice único del correo con un 500 en la primera
+pantalla. Quien lo prueba desde dentro nunca lo ve: la segunda vez el
+usuario ya existe. Todo «buscar o crear» de una petición va con upsert, y
+la función que responde «¿quién es?» va en `cache()` de React para que
+dentro de la misma petición se conteste una sola vez.
+**Evidencia:** lo encontró el recorrido con sesión del dueño en una base
+recién sembrada: `Unique constraint failed on User_email_key` en
+/clientes. En producción no había pasado porque el dueño ya estaba creado.
+
+---
+
+### 2026-09-21 · Juditos · pruebas con navegador
+**Qué aprendimos:** Playwright no intercepta el destino de una redirección:
+`page.route` solo ve la primera petición, y el 307 hacia facebook.com se
+sigue de verdad, sin red, hasta el timeout. Para comprobar «un clic lleva
+al diálogo de Facebook» se intercepta la ruta de arranque, se hace el fetch
+con `maxRedirects: 0`, y se entrega una página con el `Location` dentro.
+Se comprueba el destino sin salir a internet.
+**Evidencia:** treinta segundos de `waitForURL` colgado, y detrás un
+`next start` huérfano con el stdout en pipe que dejó la prueba sin
+terminar de escribir su salida.
