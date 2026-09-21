@@ -366,7 +366,8 @@
       "errorTaken": "Someone just grabbed that time. Please pick another one.",
       "errorSlot": "That time is no longer available. Please pick another.",
       "errorGeneric": "We couldn't book it. Try again or message us on WhatsApp.",
-      "joinLink": "Your link:"
+      "joinLink": "Your link:",
+      "smsConsent": "I agree to receive text messages (SMS) from Judo Marketing about my appointment and inquiries. Message frequency varies; message and data rates may apply. Reply STOP to opt out, HELP for help. Not required to book. See the Service Policy."
     },
     "instagramDesc": "See our day-to-day work",
     "facebookDesc": "Updates and new clients"

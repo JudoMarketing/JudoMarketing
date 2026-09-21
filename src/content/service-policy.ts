@@ -13,7 +13,7 @@ export const policyContent: Record<
   { effective: string; sections: PolicySection[] }
 > = {
   en: {
-    effective: "Effective Date: 08/28/2026",
+    effective: "Effective Date: 09/21/2026",
     sections: [
       {
         title: "1. Agreement",
@@ -89,14 +89,19 @@ export const policyContent: Record<
       {
         title: "12. Privacy and Data Protection",
         body: [
-          "Judo Marketing collects basic business and contact information (name, business name, email, phone, billing and service information) from visitors, prospects, and clients, through forms, communications, and service delivery. Information is used to provide and manage services, respond to inquiries, send service and promotional communications (subject to opt-out), and maintain business records. Information is not sold. Information is shared only with service providers needed to deliver the work (hosting, payment processing, software platforms), to comply with law, or to protect Judo Marketing's rights.",
+          "Judo Marketing collects basic business and contact information (name, business name, email, phone, billing and service information) from visitors, prospects, and clients, through forms, communications, and service delivery. Information is used to provide and manage services, respond to inquiries, send service and promotional communications (subject to opt-out), and maintain business records. Information is not sold. Information is shared only with service providers needed to deliver the work (hosting, payment processing, software platforms), to comply with law, or to protect Judo Marketing's rights. Mobile phone numbers and SMS opt-in consent are never sold, rented, or shared with third parties or affiliates for their marketing or promotional purposes. Text messaging originator opt-in data and consent are shared only with the vendors that deliver our messages (the messaging platform and carriers), and only to send the messages you agreed to receive.",
           "Safeguards include encrypted systems, access controls, and limited personnel access. Sensitive information processed for a project is deleted after 90 days unless retention is required for legal, billing, security, or active-service purposes. If a security incident creates a legal notification obligation, Judo Marketing will provide notices required by applicable law, including Florida breach-notification requirements. For healthcare or regulated clients, HIPAA-compliant and encrypted platforms are used when applicable; a Business Associate Agreement must be signed before any protected health information is processed, and clients must not send PHI through unsecured channels or without a signed BAA. Judo Marketing provides business-to-business services and does not knowingly collect personal information from children under 13. Requests for access, correction, deletion, or opt-out: admin@judomarketing.net.",
         ],
       },
       {
-        title: "13. Communications and Opt-Out",
+        title: "13. Communications, SMS Program, and Opt-Out",
         body: [
-          'By contacting Judo Marketing or providing contact information, you agree that Judo Marketing may contact you by email, phone, text, or social media about inquiries, services, and related business matters, including occasional promotional messages. You may opt out of promotional communications at any time by replying "unsubscribe" or "STOP," or by contacting admin@judomarketing.net. Service-related and transactional communications (billing, security, legal notices, appointment reminders) continue after a promotional opt-out. Message and data rates may apply to SMS.',
+          'By contacting Judo Marketing or providing contact information, you agree that Judo Marketing may contact you by email, phone, text, or social media about inquiries, services, and related business matters, including occasional promotional messages. You may opt out of promotional communications at any time by replying "unsubscribe" or "STOP," or by contacting admin@judomarketing.net. Service-related and transactional communications (billing, security, legal notices, appointment reminders) continue after a promotional opt-out.',
+          'SMS / text messaging program. Judo Marketing sends text messages under the program name "Judo Marketing" to people who have opted in. Messages may include appointment confirmations and reminders, replies to your inquiries, service and billing notices, and, only if you agreed to them, occasional offers.',
+          "Consent. You opt in by checking the SMS consent box on one of our web forms, by texting us first, or by giving us your mobile number and asking us to text you. Consent to receive text messages is not a condition of purchasing any service.",
+          "Frequency and rates. Message frequency varies depending on your inquiries and services. Message and data rates may apply. Carriers are not liable for delayed or undelivered messages.",
+          "Opt-out and help. Reply STOP to any message to stop receiving texts; you will receive one final confirmation message. Reply HELP for help, or contact admin@judomarketing.net or +1 305 934 9981.",
+          "Your data. Mobile numbers and opt-in consent are not shared with third parties for marketing (see Section 12). This Policy is our privacy policy for the program.",
         ],
       },
       {
@@ -167,7 +172,7 @@ export const policyContent: Record<
     ],
   },
   es: {
-    effective: "Fecha efectiva: 08/28/2026",
+    effective: "Fecha efectiva: 09/21/2026",
     sections: [
       {
         title: "1. Acuerdo",
@@ -243,14 +248,19 @@ export const policyContent: Record<
       {
         title: "12. Privacidad y protección de datos",
         body: [
-          "Judo Marketing recolecta información básica de negocio y contacto (nombre, nombre del negocio, email, teléfono, información de facturación y servicio) de visitantes, prospectos y clientes, mediante formularios, comunicaciones y la prestación del servicio. La información se usa para prestar y gestionar servicios, responder consultas, enviar comunicaciones de servicio y promocionales (con derecho a opt-out) y mantener registros de negocio. La información no se vende. Solo se comparte con proveedores necesarios para el trabajo (hosting, procesamiento de pagos, plataformas de software), para cumplir la ley o para proteger los derechos de Judo Marketing.",
+          "Judo Marketing recolecta información básica de negocio y contacto (nombre, nombre del negocio, email, teléfono, información de facturación y servicio) de visitantes, prospectos y clientes, mediante formularios, comunicaciones y la prestación del servicio. La información se usa para prestar y gestionar servicios, responder consultas, enviar comunicaciones de servicio y promocionales (con derecho a opt-out) y mantener registros de negocio. La información no se vende. Solo se comparte con proveedores necesarios para el trabajo (hosting, procesamiento de pagos, plataformas de software), para cumplir la ley o para proteger los derechos de Judo Marketing. Los números de teléfono móvil y el consentimiento para recibir SMS nunca se venden, alquilan ni comparten con terceros o afiliados para sus fines de marketing o promoción. Los datos de opt-in de mensajería de texto se comparten únicamente con los proveedores que entregan nuestros mensajes (la plataforma de mensajería y los operadores), y solo para enviar los mensajes que aceptaste recibir.",
           "Las salvaguardas incluyen sistemas cifrados, controles de acceso y personal limitado. La información sensible procesada para un proyecto se elimina a los 90 días salvo que deba retenerse por razones legales, de facturación, seguridad o servicio activo. Si un incidente de seguridad crea obligación legal de notificación, Judo Marketing dará los avisos que exija la ley, incluidas las reglas de notificación de brechas de Florida. Para clientes de salud o regulados se usan plataformas cifradas y compatibles con HIPAA cuando aplique; debe firmarse un Business Associate Agreement antes de procesar información de salud protegida, y los clientes no deben enviarla por canales inseguros ni sin BAA firmado. Judo Marketing presta servicios entre negocios y no recolecta a sabiendas información de menores de 13 años. Solicitudes de acceso, corrección, eliminación u opt-out: admin@judomarketing.net.",
         ],
       },
       {
-        title: "13. Comunicaciones y opt-out",
+        title: "13. Comunicaciones, programa de SMS y opt-out",
         body: [
-          'Al contactar a Judo Marketing o dar tu información de contacto, aceptas que Judo Marketing pueda contactarte por email, teléfono, mensaje de texto o redes sociales sobre consultas, servicios y asuntos de negocio relacionados, incluidos mensajes promocionales ocasionales. Puedes salir de las comunicaciones promocionales en cualquier momento respondiendo "unsubscribe" o "STOP", o escribiendo a admin@judomarketing.net. Las comunicaciones de servicio y transaccionales (facturación, seguridad, avisos legales, recordatorios de citas) continúan después del opt-out promocional. Pueden aplicar tarifas de mensajería según tu operador.',
+          'Al contactar a Judo Marketing o dar tu información de contacto, aceptas que Judo Marketing pueda contactarte por email, teléfono, mensaje de texto o redes sociales sobre consultas, servicios y asuntos de negocio relacionados, incluidos mensajes promocionales ocasionales. Puedes salir de las comunicaciones promocionales en cualquier momento respondiendo "unsubscribe" o "STOP", o escribiendo a admin@judomarketing.net. Las comunicaciones de servicio y transaccionales (facturación, seguridad, avisos legales, recordatorios de citas) continúan después del opt-out promocional.',
+          'Programa de mensajes de texto (SMS). Judo Marketing envía mensajes de texto bajo el nombre de programa "Judo Marketing" a quienes dieron su consentimiento. Los mensajes pueden ser confirmaciones y recordatorios de citas, respuestas a tus consultas, avisos de servicio y facturación y, solo si lo aceptaste, ofertas ocasionales.',
+          "Consentimiento. Das tu consentimiento marcando la casilla de SMS en uno de nuestros formularios web, escribiéndonos primero por texto, o dándonos tu número móvil y pidiéndonos que te escribamos. Aceptar mensajes de texto no es condición para contratar ningún servicio.",
+          "Frecuencia y tarifas. La frecuencia de los mensajes varía según tus consultas y servicios. Pueden aplicar tarifas de mensajes y datos de tu operador. Los operadores no son responsables por mensajes demorados o no entregados.",
+          "Opt-out y ayuda. Responde STOP a cualquier mensaje para dejar de recibir textos; recibirás un último mensaje de confirmación. Responde HELP para ayuda, o escribe a admin@judomarketing.net o llama al +1 305 934 9981.",
+          "Tus datos. Los números móviles y el consentimiento no se comparten con terceros para marketing (ver sección 12). Esta Política es nuestra política de privacidad para el programa.",
         ],
       },
       {

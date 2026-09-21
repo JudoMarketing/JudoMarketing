@@ -45,6 +45,7 @@ export default function BookingWidget() {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [telefono, setTelefono] = useState("");
+  const [smsConsent, setSmsConsent] = useState(false);
   const [nota, setNota] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -182,6 +183,7 @@ export default function BookingWidget() {
           name: nombre,
           email: correo,
           phone: telefono,
+          smsConsent: Boolean(telefono.trim()) && smsConsent,
           note: nota,
           locale,
         }),
@@ -409,6 +411,20 @@ export default function BookingWidget() {
             placeholder={t("phone")}
             className={inputClass}
           />
+          {/* Consentimiento de SMS: sin marcar por defecto y no obligatorio,
+              que es lo que exige el registro de mensajería (10DLC). Queda
+              guardado con la cita, con fecha, para poder demostrarlo. */}
+          {telefono.trim() && (
+            <label className="flex items-start gap-3 text-xs leading-relaxed text-judo-fog/60">
+              <input
+                type="checkbox"
+                checked={smsConsent}
+                onChange={(e) => setSmsConsent(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-[#7b2dff]"
+              />
+              <span>{t("smsConsent")}</span>
+            </label>
+          )}
           <textarea
             maxLength={400}
             rows={2}

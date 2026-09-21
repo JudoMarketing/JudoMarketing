@@ -2,7 +2,7 @@
 
 One unified policy for services, subscriptions, websites, apps, digital products, virtual assistants, marketing packages, privacy, and communications.
 
-Effective Date: 08/28/2026
+Effective Date: 09/21/2026
 
 ## 1. Agreement
 
@@ -136,7 +136,11 @@ manage services, respond to inquiries, send service and promotional communicatio
 (subject to opt-out), and maintain business records. **Information is not sold.**
 Information is shared only with service providers needed to deliver the work (hosting,
 payment processing, software platforms), to comply with law, or to protect Judo
-Marketing's rights.
+Marketing's rights. **Mobile phone numbers and SMS opt-in consent are never sold,
+rented, or shared with third parties or affiliates for their marketing or promotional
+purposes.** Text messaging originator opt-in data and consent are shared only with
+the vendors that deliver our messages (for example, the messaging platform and
+carriers), and only to send the messages you agreed to receive.
 
 Safeguards include encrypted systems, access controls, and limited personnel access.
 Sensitive information processed for a project is deleted after 90 days unless retention
@@ -150,7 +154,7 @@ without a signed BAA. Judo Marketing provides business-to-business services and 
 knowingly collect personal information from children under 13. Requests for access,
 correction, deletion, or opt-out: admin@judomarketing.net.
 
-## 13. Communications and Opt-Out
+## 13. Communications, SMS Program, and Opt-Out
 
 By contacting Judo Marketing or providing contact information, you agree that Judo
 Marketing may contact you by email, phone, text, or social media about inquiries,
@@ -158,7 +162,24 @@ services, and related business matters, including occasional promotional message
 may opt out of promotional communications at any time by replying "unsubscribe" or
 "STOP," or by contacting admin@judomarketing.net. Service-related and transactional
 communications (billing, security, legal notices, appointment reminders) continue after
-a promotional opt-out. Message and data rates may apply to SMS.
+a promotional opt-out.
+
+**SMS / text messaging program.** Judo Marketing sends text messages under the program
+name "Judo Marketing" to people who have opted in. Messages may include appointment
+confirmations and reminders, replies to your inquiries, service and billing notices,
+and, only if you agreed to them, occasional offers.
+
+- **Consent.** You opt in by checking the SMS consent box on one of our web forms, by
+  texting us first, or by giving us your mobile number and asking us to text you.
+  Consent to receive text messages is not a condition of purchasing any service.
+- **Frequency.** Message frequency varies depending on your inquiries and services.
+- **Rates.** Message and data rates may apply. Carriers are not liable for delayed or
+  undelivered messages.
+- **Opt-out.** Reply **STOP** to any message to stop receiving texts. You will receive one
+  final confirmation message. You can also write to admin@judomarketing.net.
+- **Help.** Reply **HELP** for help, or contact admin@judomarketing.net or +1 305 934 9981.
+- **Your data.** Mobile numbers and opt-in consent are not shared with third parties for
+  marketing (see Section 12). This Policy is our privacy policy for the program.
 
 ## 14. Communication Channel
 

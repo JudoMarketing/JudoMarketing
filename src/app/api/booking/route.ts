@@ -143,6 +143,7 @@ export async function POST(req: NextRequest) {
     name?: string;
     email?: string;
     phone?: string;
+    smsConsent?: boolean;
     note?: string;
     locale?: string;
   } | null;
@@ -154,6 +155,8 @@ export async function POST(req: NextRequest) {
   const nombre = cuerpo.name.trim();
   const correo = cuerpo.email.trim().toLowerCase();
   const telefono = cuerpo.phone?.trim().slice(0, 40) || null;
+  // Solo cuenta si hay teléfono y la casilla vino marcada de verdad
+  const smsConsent = Boolean(telefono) && cuerpo.smsConsent === true;
   const nota = cuerpo.note?.trim().slice(0, 400) || null;
   const locale = cuerpo.locale === "en" ? "en" : "es";
 
@@ -209,6 +212,8 @@ export async function POST(req: NextRequest) {
       name: nombre,
       email: correo,
       phone: telefono,
+      sms_consent: smsConsent,
+      sms_consent_at: smsConsent ? new Date().toISOString() : null,
       note: nota,
       locale,
     })

@@ -366,7 +366,8 @@
       "errorTaken": "Alguien tomó esa hora hace un instante. Elige otra, por favor.",
       "errorSlot": "Esa hora ya no está disponible. Elige otra.",
       "errorGeneric": "No pudimos agendar la cita. Inténtalo de nuevo o escríbenos por WhatsApp.",
-      "joinLink": "Tu enlace:"
+      "joinLink": "Tu enlace:",
+      "smsConsent": "Acepto recibir mensajes de texto (SMS) de Judo Marketing sobre mi cita y mis consultas. Frecuencia variable; pueden aplicar tarifas de mensajes y datos. Responde STOP para salir, HELP para ayuda. No es obligatorio para agendar. Ver la Política de Servicio."
     },
     "instagramDesc": "Mira nuestro trabajo del día a día",
     "facebookDesc": "Novedades y clientes nuevos"
