@@ -1089,3 +1089,22 @@ Se comprueba el destino sin salir a internet.
 **Evidencia:** treinta segundos de `waitForURL` colgado, y detrás un
 `next start` huérfano con el stdout en pipe que dejó la prueba sin
 terminar de escribir su salida.
+
+---
+
+### 2026-09-21 · Juditos · despliegue en Vercel
+**Qué aprendimos:** una variable de entorno que existe en el panel no es
+una variable que tenga valor. Al crear el proyecto se dejaron declaradas
+todas las del `.env.example`, y dos secretos (`SESSION_SECRET`,
+`ENCRYPTION_KEY`) se quedaron vacíos desde entonces: el panel los enseña
+como puestos, la app los lee como ausentes, y nadie lo nota hasta que una
+ruta los necesita. Para saberlo sin abrir el panel: comparar `createdAt`
+con `updatedAt` en la API de Vercel (un secreto nunca actualizado desde la
+creación es un marcador vacío), y que la comprobación de salud diga por
+separado si cada secreto está puesto. Y que el código no dependa de uno
+solo cuando hay otro equivalente: la firma del OAuth cae a
+`ENCRYPTION_KEY` si falta `SESSION_SECRET`.
+**Evidencia:** el arranque de «Continuar con Facebook» daba 500 vacío en
+producción por `SESSION_SECRET` vacía, y conectar una página habría fallado
+al cifrar el token por `ENCRYPTION_KEY` vacía. Las dos se rellenaron desde
+la API el mismo día; la salud ahora enseña `secretos` y `sessionSecret`.
