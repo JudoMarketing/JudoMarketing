@@ -1,8 +1,5 @@
-Aquí van las tres imágenes del landing judomarketing.net/judimental,
-con estos nombres exactos y en este orden:
+Las tres imágenes-botón del landing judomarketing.net/judimental, en este orden:
 
-  1.png   2.png   3.png
+  1.png  App Store      2.png  Google Play      3.png  Home (judomarketing.net)
 
-(PNG con fondo transparente o negro; JPG también sirve si se cambia la
-extensión en src/content/judimental-promo.ts). Las que hay ahora son
-marcadores de posición.
+Los enlaces de cada una están en src/content/judimental-promo.ts.
