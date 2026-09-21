@@ -18,6 +18,8 @@ export default function robots(): MetadataRoute.Robots {
         // Enlaces de aceptación de contratos: privados, uno por cliente
         "/acepto/",
         "/es/acepto/",
+        // Landing de promoción: solo para quien tenga el enlace
+        "/judimental",
       ],
     },
     sitemap: "https://www.judomarketing.net/sitemap.xml",

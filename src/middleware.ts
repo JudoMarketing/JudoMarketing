@@ -53,5 +53,6 @@ export const config = {
   // son otras apps (rewrites en next.config.ts) y el middleware de idiomas
   // no debe tocarlas — si las toca, /juditos acaba redirigido a /es/juditos
   // y la app no carga.
-  matcher: "/((?!api|trpc|reparar|juditoads|juditos|_next|_vercel).*)",
+  // judimental es el landing de promoción, con su propio layout y sin idiomas.
+  matcher: "/((?!api|trpc|reparar|juditoads|juditos|judimental|_next|_vercel).*)",
 };
