@@ -367,7 +367,8 @@
       "errorSlot": "Esa hora ya no está disponible. Elige otra.",
       "errorGeneric": "No pudimos agendar la cita. Inténtalo de nuevo o escríbenos por WhatsApp.",
       "joinLink": "Tu enlace:",
-      "smsConsent": "Acepto recibir mensajes de texto (SMS) de Judo Marketing sobre mi cita y mis consultas. Frecuencia variable; pueden aplicar tarifas de mensajes y datos. Responde STOP para salir, HELP para ayuda. No es obligatorio para agendar. Ver la Política de Servicio."
+      "smsConsent": "Acepto recibir mensajes de texto (SMS) de Judo Marketing sobre mi cita y mis consultas. Frecuencia variable; pueden aplicar tarifas de mensajes y datos. Responde STOP para salir, HELP para ayuda. No es obligatorio para agendar.",
+      "smsPolicy": "Política de Servicio y Privacidad"
     },
     "instagramDesc": "Mira nuestro trabajo del día a día",
     "facebookDesc": "Novedades y clientes nuevos"

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import {
   DIAS_A_FUTURO,
   TZ,
@@ -422,7 +423,17 @@ export default function BookingWidget() {
                 onChange={(e) => setSmsConsent(e.target.checked)}
                 className="mt-0.5 h-4 w-4 shrink-0 accent-[#7b2dff]"
               />
-              <span>{t("smsConsent")}</span>
+              <span>
+                {t("smsConsent")}{" "}
+                <Link
+                  href={{ pathname: "/legal", hash: "seccion-13" }}
+                  className="text-judo-lilac underline"
+                  target="_blank"
+                >
+                  {t("smsPolicy")}
+                </Link>
+                .
+              </span>
             </label>
           )}
           <textarea
