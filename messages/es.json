@@ -334,7 +334,9 @@
       "email": "Tu email o teléfono",
       "message": "Cuéntanos sobre tu proyecto…",
       "send": "Enviar mensaje",
-      "hint": "Se abrirá tu app de correo para enviar el mensaje a admin@judomarketing.net"
+      "hint": "Se abrirá tu app de correo para enviar el mensaje a admin@judomarketing.net",
+      "smsNotice": "Al dar un número de teléfono y enviar el formulario, consientes en que te contactemos por mensaje de texto (SMS) y aceptas nuestra Política de Privacidad. La frecuencia de los mensajes puede variar. Pueden aplicar tarifas de mensajes y datos. Responde STOP para dejar de recibir mensajes. Responde HELP para más información.",
+      "smsPolicy": "Política de Privacidad"
     },
     "whatsapp": "WhatsApp",
     "whatsappDesc": "Respuesta rápida",
@@ -367,8 +369,8 @@
       "errorSlot": "Esa hora ya no está disponible. Elige otra.",
       "errorGeneric": "No pudimos agendar la cita. Inténtalo de nuevo o escríbenos por WhatsApp.",
       "joinLink": "Tu enlace:",
-      "smsConsent": "Acepto recibir mensajes de texto (SMS) de Judo Marketing sobre mi cita y mis consultas. Frecuencia variable; pueden aplicar tarifas de mensajes y datos. Responde STOP para salir, HELP para ayuda. No es obligatorio para agendar.",
-      "smsPolicy": "Política de Servicio y Privacidad"
+      "smsConsent": "Al dar un número de teléfono y enviar el formulario, consientes en que te contactemos por mensaje de texto (SMS) y aceptas nuestra Política de Privacidad. La frecuencia de los mensajes puede variar. Pueden aplicar tarifas de mensajes y datos. Responde STOP para dejar de recibir mensajes. Responde HELP para más información. El consentimiento no es obligatorio para agendar.",
+      "smsPolicy": "Política de Privacidad"
     },
     "instagramDesc": "Mira nuestro trabajo del día a día",
     "facebookDesc": "Novedades y clientes nuevos"

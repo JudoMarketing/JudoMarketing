@@ -334,7 +334,9 @@
       "email": "Your email or phone",
       "message": "Tell us about your project…",
       "send": "Send message",
-      "hint": "Your email app will open to send the message to admin@judomarketing.net"
+      "hint": "Your email app will open to send the message to admin@judomarketing.net",
+      "smsNotice": "By providing a telephone number and submitting the form, you are consenting to be contacted by SMS text message and agreeing to our Privacy Policy. Message frequency may vary. Message and data rates may apply. Reply STOP to opt out of further messaging. Reply HELP for more information.",
+      "smsPolicy": "Privacy Policy"
     },
     "whatsapp": "WhatsApp",
     "whatsappDesc": "Fast response",
@@ -367,8 +369,8 @@
       "errorSlot": "That time is no longer available. Please pick another.",
       "errorGeneric": "We couldn't book it. Try again or message us on WhatsApp.",
       "joinLink": "Your link:",
-      "smsConsent": "I agree to receive text messages (SMS) from Judo Marketing about my appointment and inquiries. Message frequency varies; message and data rates may apply. Reply STOP to opt out, HELP for help. Not required to book.",
-      "smsPolicy": "Service & Privacy Policy"
+      "smsConsent": "By providing a telephone number and submitting the form, you are consenting to be contacted by SMS text message and agreeing to our Privacy Policy. Message frequency may vary. Message and data rates may apply. Reply STOP to opt out of further messaging. Reply HELP for more information. Consent is not required to book.",
+      "smsPolicy": "Privacy Policy"
     },
     "instagramDesc": "See our day-to-day work",
     "facebookDesc": "Updates and new clients"

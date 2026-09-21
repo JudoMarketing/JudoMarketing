@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 /**
  * Formulario de contacto. Por ahora abre el correo del visitante con el
@@ -52,6 +53,19 @@ export default function ContactForm() {
         {t("send")} →
       </button>
       <p className="text-center text-xs text-judo-fog/40">{t("hint")}</p>
+      {/* Aviso de SMS con la redacción que piden las operadoras (10DLC):
+          este formulario también recibe teléfonos. */}
+      <p className="text-xs leading-relaxed text-judo-fog/45">
+        {t("smsNotice")}{" "}
+        <Link
+          href={{ pathname: "/legal", hash: "seccion-13" }}
+          className="text-judo-lilac underline"
+          target="_blank"
+        >
+          {t("smsPolicy")}
+        </Link>
+        .
+      </p>
     </form>
   );
 }
