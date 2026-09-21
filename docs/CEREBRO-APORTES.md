@@ -1073,3 +1073,8 @@ de enviar, comprobar que la acción pasa a `in_progress`: si sigue en
 de «Resolve violation: pending» a «in_progress» el 21 de septiembre, con 25
 días de plazo. El prompt reutilizable para preparar otra app está en la
 conversación de JuditoADS (prompt-juditos-app-review.txt).
+**Y un matiz que cuesta un rechazo:** «a ese correo me llega todo» no es
+«correo verificado». Meta manda avisos al Contact Email sin verificarlo;
+la bandera `contact_email_verified` es otra cosa, se enciende con un enlace
+de confirmación desde el panel, y solo se ve por la API. Antes de decir
+«está hecho», leerla.
