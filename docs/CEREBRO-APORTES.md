@@ -1051,3 +1051,25 @@ firmado, no en la URL donde cualquiera lo cambia.
 **Evidencia:** src/lib/oauth-estado.ts, con sus dieciséis formas de fallar
 probadas: sin firma, con otro secreto, caducado, sin nonce, con nonce
 ajeno, sin propósito.
+
+---
+
+### 2026-09-21 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** una violación de Meta («Platform Term 7.a — Facebook
+Login is broken or app is not accessible») no se contesta: se resuelve y
+DESPUÉS se contesta. Congela el App Review (`can_submit: false`), da 30 días
+y solo admite respuesta desde Compliance Center → «Resolve violation», con
+el correo de contacto de la app verificado. Contestar con la puerta rota es
+un segundo rechazo; contestar con un video viejo que enseña la puerta rota
+es peor, porque te contradice. El orden que funcionó: reproducir el fallo
+como el revisor (sin credenciales, sin rol), arreglarlo en código con
+pruebas, verificarlo en producción con `curl` y el user-agent
+`facebookexternalhit`, y solo entonces rellenar los cinco campos del
+formulario con la URL exacta de la puerta, pasos pantalla a pantalla,
+credenciales secundarias de una cuenta de prueba y un video nuevo. Después
+de enviar, comprobar que la acción pasa a `in_progress`: si sigue en
+`pending`, no se envió.
+**Evidencia:** `devtools_compliance status` de la app 3110235295833588 pasó
+de «Resolve violation: pending» a «in_progress» el 21 de septiembre, con 25
+días de plazo. El prompt reutilizable para preparar otra app está en la
+conversación de JuditoADS (prompt-juditos-app-review.txt).
