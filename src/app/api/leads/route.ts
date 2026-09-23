@@ -4,7 +4,8 @@
 // esta ruta con el secreto LEADS_SECRET. El secreto vive en Vercel y en el
 // entorno de la sesión, nunca en el navegador ni en el repo.
 //
-//   GET  ?corridas=1            últimas corridas (para rotar el zip)
+//   GET  ?corridas=1            últimas corridas, con su resumen y aprendizajes
+//                               (para rotar el zip y para que la sesión recuerde)
 //   GET  ?zip=33130             leads de ese zip con su estado
 //   GET  ?reporte=1[&desde=ISO] bajas, clics, respuestas y envíos (auditoría)
 //   GET  ?archivos=1            archivos diarios de Sunbiz ya procesados
@@ -36,7 +37,7 @@ import {
   type Borrador,
 } from "@/lib/leads";
 
-// Places tarda entre 10 y 30 llamadas por zip; el envío, hasta 20 correos.
+// Places tarda entre 10 y 30 llamadas por zip; el envío, hasta 10 correos.
 export const maxDuration = 120;
 
 function rechazar(req: NextRequest): NextResponse | null {
@@ -72,7 +73,7 @@ export async function GET(req: NextRequest) {
     if (req.nextUrl.searchParams.get("corridas")) {
       const { data, error } = await supabase
         .from("leads_corridas")
-        .select("zip, encontrados, con_correo, enviados, modo, creado_en")
+        .select("zip, encontrados, con_correo, enviados, modo, resumen, creado_en")
         .order("creado_en", { ascending: false })
         .limit(60);
       if (error) throw error;

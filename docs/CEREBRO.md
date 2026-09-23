@@ -26,6 +26,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-09-23 | **Prospección: 10 negocios al día, todos los días** (antes 20, tres veces por semana). La sesión automática lee los aprendizajes de las corridas anteriores (`leads_corridas.resumen`) antes de elegir y deja los suyos al terminar. Criterio en `LEADS.md`, sección "Aprender de cada corrida". |
 | 2026-08-29 | **Sección 0 nueva: Judo Marketing es una empresa de Florida.** Ley de Florida, tribunales de Miami-Dade, brechas por FIPA, horario Eastern, cobros en USD, mercado base Miami. Aplica a todos los proyectos. |
 
 La paleta y los logos de la marca Judo Marketing en sí están en `BRAND.md`;

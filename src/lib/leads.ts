@@ -17,7 +17,7 @@
  *   LEADS_FROM               remitente, ej. "Junior Osorio <junior@judomarketing.net>"
  *                            (debe ser un alias "Send mail as" de la cuenta SMTP)
  *   LEADS_REPLY_TO           a dónde llegan las respuestas
- *   LEADS_MAX_DIA            tope de correos reales por día (20 por defecto)
+ *   LEADS_MAX_DIA            tope de correos reales por día (10 por defecto)
  *   LEADS_COPIA              copia oculta de cada correo que sale, para auditar
  *                            (admin@judomarketing.net por defecto; vacío para no copiar)
  */
@@ -647,7 +647,7 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
   const supabase = clienteServicio();
   const prueba = modoPrueba();
   const correoPrueba = process.env.LEADS_CORREO_PRUEBA ?? "admin@judomarketing.net";
-  const tope = Number(process.env.LEADS_MAX_DIA ?? 20);
+  const tope = Number(process.env.LEADS_MAX_DIA ?? 10);
   const resultados: ResultadoEnvio[] = [];
 
   if (borradores.length > tope) {

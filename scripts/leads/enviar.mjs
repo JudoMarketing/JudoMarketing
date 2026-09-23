@@ -11,6 +11,7 @@
  * {
  *   "zip": "33130", "encontrados": 100, "con_correo": 38,
  *   "resumen": "texto corto de la corrida para el registro",
+ *   "aprendizajes": ["lo que esta corrida enseñó y la siguiente debe saber"],
  *   "borradores": [
  *     { "lead_id": "uuid", "idioma": "es", "rubro": "restaurante",
  *       "asunto": "...", "saludo": "...", "parrafos": ["...", "..."], "ps": "...",
@@ -22,6 +23,10 @@
  * scripts/leads/informe.mjs para los negocios con website. Los correos con
  * adjunto salen en lotes de 4 para no pasar el tamaño máximo de petición.
  *
+ * aprendizajes es la memoria entre corridas: se guarda junto al resumen en
+ * leads_corridas y la siguiente sesión lo lee con GET /api/leads?corridas=1
+ * antes de elegir. Máximo 10 negocios por corrida: una corrida al día.
+ *
  * Entorno: LEADS_SECRET (obligatorio), LEADS_SITE (opcional).
  */
 
@@ -30,6 +35,9 @@ import path from "node:path";
 
 const SITE = (process.env.LEADS_SITE ?? "https://www.judomarketing.net").replace(/\/$/, "");
 const SECRETO = process.env.LEADS_SECRET;
+// Diez negocios por día, elegidos con criterio. Diez buenos valen más que
+// veinte regulares: cada correo ignorado baja la reputación del dominio.
+const MAX_POR_CORRIDA = 10;
 
 async function api(cuerpo) {
   if (!SECRETO) throw new Error("Falta LEADS_SECRET en el entorno");
@@ -66,7 +74,7 @@ async function main() {
   const archivo = JSON.parse(await readFile(ruta, "utf8"));
   const borradores = archivo.borradores ?? [];
   if (!borradores.length) throw new Error("El archivo no trae borradores");
-  if (borradores.length > 20) throw new Error(`Son ${borradores.length} borradores; el máximo por corrida es 20`);
+  if (borradores.length > MAX_POR_CORRIDA) throw new Error(`Son ${borradores.length} borradores; el máximo por corrida es ${MAX_POR_CORRIDA}`);
   for (const b of borradores) {
     if (b.adjunto_pdf) await readFile(b.adjunto_pdf).catch(() => { throw new Error(`No existe el adjunto ${b.adjunto_pdf}`); });
   }
@@ -99,7 +107,7 @@ async function main() {
   let actual = [];
   for (const b of listos) {
     actual.push(b);
-    if (actual.length >= (actual.some((x) => x.adjunto) ? 4 : 20)) {
+    if (actual.length >= (actual.some((x) => x.adjunto) ? 4 : MAX_POR_CORRIDA)) {
       lotes.push(actual);
       actual = [];
     }
@@ -120,15 +128,21 @@ async function main() {
   for (const r of mal) console.log(`  ✗ ${r.lead_id}: ${r.motivo}`);
 
   if (archivo.zip) {
+    // El resumen y los aprendizajes quedan en leads_corridas: es lo que la
+    // siguiente corrida lee para no repetir errores y afinar el criterio.
+    const aprendizajes = (archivo.aprendizajes ?? []).filter((x) => typeof x === "string" && x.trim());
+    const resumen = [archivo.resumen ?? "", aprendizajes.length ? "Aprendizajes: " + aprendizajes.map((x) => x.trim()).join(" · ") : ""]
+      .filter(Boolean)
+      .join("\n");
     await api({
       accion: "corrida",
       zip: archivo.zip,
       encontrados: archivo.encontrados ?? 0,
       con_correo: archivo.con_correo ?? 0,
       enviados: modo === "real" ? ok.length : 0,
-      resumen: archivo.resumen ?? "",
+      resumen,
     });
-    console.log("Corrida registrada.");
+    console.log(`Corrida registrada${aprendizajes.length ? ` con ${aprendizajes.length} aprendizajes` : ""}.`);
   }
 }
 
