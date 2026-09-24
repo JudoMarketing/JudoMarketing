@@ -1115,3 +1115,26 @@ incompletos.
 de Instagram y pruebas/instagram.test.mts (25 comprobaciones, incluidos los
 casos en que NO debe reintentar); barrido de las nueve pantallas en inglés
 con un detector de español que primero se probó contra el portal en español.
+
+---
+
+### 2026-09-24 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** si el sistema ya sabe que una combinación va a fallar,
+un aviso que deja seguir no sirve: es el mismo error que Meta dará después,
+solo que antes. La regla de «qué objetivo sale con qué anuncio» vivía en
+tres sitios (asistente, servidor, publicación) y cada uno tenía su propia
+versión. El asistente avisaba de Instagram + Tráfico en amarillo pero dejaba
+continuar; el servidor lo guardaba; Meta lo rechazaba al activar con su texto
+en crudo. Arreglo: un solo módulo que responde ok / falta un dato / bloqueado
++ alternativas, y los tres lo consultan. Bloquear o pedir el dato que falta
+en el paso donde se elige, nunca al final. Y dos trampas pequeñas: una
+función que valida «¿es una URL válida?» puede decir que sí a una cadena
+vacía (hay que exigir primero que exista); y los importes en Meta van en la
+unidad mínima de cada moneda: COP, CLP, JPY y parecidas no llevan centavos,
+así que multiplicar siempre por 100 envía 100 veces el presupuesto.
+**Evidencia:** Judito-Ads 6f51a93. src/lib/compatibilidad.ts;
+pruebas/compatibilidad.test.mts, 76 comprobaciones, incluida una que exige
+que el guard haga cero llamadas a Meta; una mutación de la regla la hizo
+fallar. Recorrido en navegador, 21/21: el botón Siguiente avanzaba con la web
+vacía hasta que se exigió que existiera. Error original: subcode 1815676,
+«Non-Website ads are not allowed in Ad Set with Website Destination Type».
