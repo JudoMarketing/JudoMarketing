@@ -1,14 +1,20 @@
 #!/usr/bin/env node
 /**
- * Investigación de un código postal: pide los negocios al sitio (que los
- * saca de Google Places), visita el website de cada uno, encuentra su
+ * Investigación de una zona (un zip de Florida o una ciudad de Estados
+ * Unidos, España, Reino Unido o Alemania): pide los negocios al sitio (que
+ * los saca de Google Places), visita el website de cada uno, encuentra su
  * correo y las señales de que le falta algo, y guarda todo en la base a
  * través del sitio. Deja un JSON con lo que la sesión necesita para elegir
  * a quién escribirle.
  *
+ *   node scripts/leads/buscar.mjs --pais us --zip auto --salida /ruta/leads-us.json
+ *   node scripts/leads/buscar.mjs --pais es --zip auto --salida /ruta/leads-es.json
  *   node scripts/leads/buscar.mjs --zip 33130 --salida /ruta/leads.json
- *   node scripts/leads/buscar.mjs --zip auto  --salida /ruta/leads.json
+ *   node scripts/leads/buscar.mjs --zip uk:leeds --salida /ruta/leads.json
  *   node scripts/leads/buscar.mjs --solo-sitio https://ejemplo.com   (depuración)
+ *
+ * Las zonas y su orden están en scripts/leads/zonas.json (--zip auto toma,
+ * del país pedido, la primera que no se corrió en 60 días).
  *
  * Entorno: LEADS_SECRET (obligatorio), LEADS_SITE (opcional, por defecto
  * https://www.judomarketing.net).
@@ -38,6 +44,7 @@ function args() {
   };
   return {
     zip: leer("--zip"),
+    pais: leer("--pais"),
     salida: leer("--salida"),
     maximo: Number(leer("--max") ?? 100),
     soloSitio: leer("--solo-sitio"),
@@ -78,20 +85,47 @@ export async function api(metodo, ruta, cuerpo) {
   throw ultimo;
 }
 
-/** El primer zip de la rotación que no se corrió en los últimos 60 días. */
-async function siguienteZip() {
-  const lista = JSON.parse(await readFile(path.join(AQUI, "zips.json"), "utf8")).zips;
+// ---------------------------------------------------------------- zonas
+
+/** Los países con sus zonas, tal cual scripts/leads/zonas.json. */
+export async function cargarPaises() {
+  return JSON.parse(await readFile(path.join(AQUI, "zonas.json"), "utf8")).paises;
+}
+
+/** La zona con ese id, con su país y la configuración del país; null si no existe. */
+export function zonaPorId(paises, id) {
+  for (const [pais, p] of Object.entries(paises)) {
+    const z = p.zonas.find((z) => z.id === id);
+    if (z) return { ...z, pais, config: p };
+  }
+  if (/^\d{5}$/.test(id)) return { id, nombre: id, consulta: id, verificar: [id], pais: "us", config: paises.us };
+  return null;
+}
+
+/** La primera zona del país que no se corrió en los últimos 60 días. */
+async function siguienteZona(pais) {
+  const paises = await cargarPaises();
+  const p = paises[pais];
+  if (!p) throw new Error(`País desconocido: ${pais}. Los que hay: ${Object.keys(paises).join(", ")}`);
   const { corridas } = await api("GET", "?corridas=1");
   const limite = Date.now() - DIAS_ROTACION * 86_400_000;
   const recientes = new Set(
     corridas.filter((c) => new Date(c.creado_en).getTime() > limite).map((c) => c.zip)
   );
-  const libre = lista.find((z) => !recientes.has(z.zip));
-  if (libre) return libre;
-  // Todos corridos hace poco: el que lleva más tiempo sin tocarse.
+  const libre = p.zonas.find((z) => !recientes.has(z.id));
+  if (libre) return { ...libre, pais, config: p };
+  // Todas corridas hace poco: la que lleva más tiempo sin tocarse.
   const ultima = new Map();
   for (const c of corridas) if (!ultima.has(c.zip)) ultima.set(c.zip, c.creado_en);
-  return [...lista].sort((a, b) => new Date(ultima.get(a.zip) ?? 0) - new Date(ultima.get(b.zip) ?? 0))[0];
+  const z = [...p.zonas].sort((a, b) => new Date(ultima.get(a.id) ?? 0) - new Date(ultima.get(b.id) ?? 0))[0];
+  return { ...z, pais, config: p };
+}
+
+/** Un número estable por zona, para rotar el orden de los rubros entre zonas. */
+function semillaDe(id) {
+  let h = 0;
+  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) % 1_000_003;
+  return h;
 }
 
 // ------------------------------------------------------------- scraping
@@ -416,21 +450,36 @@ async function main() {
     return;
   }
   if (!a.zip || !a.salida) {
-    console.error("Uso: node scripts/leads/buscar.mjs --zip 33130|auto --salida /ruta/leads.json [--max 100]");
+    console.error("Uso: node scripts/leads/buscar.mjs --pais us|es|uk|de --zip auto --salida /ruta/leads.json [--max 100]\n     node scripts/leads/buscar.mjs --zip 33130|us:austin-tx|es:sevilla --salida /ruta/leads.json");
     process.exit(2);
   }
 
-  let zona = null;
-  let zip = a.zip;
-  if (zip === "auto") {
-    const z = await siguienteZip();
-    zip = z.zip;
-    zona = z.zona;
+  let zona;
+  if (a.zip === "auto") {
+    zona = await siguienteZona(a.pais ?? "us");
+  } else {
+    zona = zonaPorId(await cargarPaises(), a.zip);
+    if (!zona) {
+      console.error(`La zona ${a.zip} no está en scripts/leads/zonas.json`);
+      process.exit(2);
+    }
   }
-  console.error(`Zip ${zip}${zona ? ` (${zona})` : ""}: pidiendo negocios a Google Places...`);
+  const zip = zona.id;
+  const pais = zona.pais;
+  // El idioma del correo: en Estados Unidos, el del website del negocio; en
+  // los demás países, el del país (España en español, aunque el sitio esté
+  // en inglés).
+  const idiomaPais = zona.config.idioma;
+  console.error(`${zona.config.nombre} · ${zona.nombre} (${zip}): pidiendo negocios a Google Places...`);
 
-  const semilla = Number(zip.slice(-2));
-  const { candidatos, consultas, aviso } = await api("POST", "", { accion: "buscar", zip, maximo: a.maximo, semilla });
+  const semilla = semillaDe(zip);
+  const { candidatos, consultas, aviso } = await api("POST", "", {
+    accion: "buscar",
+    zip,
+    zona: { id: zona.id, consulta: zona.consulta, verificar: zona.verificar },
+    maximo: a.maximo,
+    semilla,
+  });
   if (aviso) console.error("Aviso de Places:", aviso);
   console.error(`${candidatos.length} negocios en ${consultas} consultas. Visitando websites...`);
 
@@ -448,6 +497,7 @@ async function main() {
     place_id: c.place_id,
     nombre: c.nombre,
     zip,
+    pais,
     direccion: c.direccion,
     telefono: c.telefono,
     website: e.urlFinal ?? c.website,
@@ -455,7 +505,7 @@ async function main() {
     tipo_google: c.tipo_google,
     rating: c.rating,
     resenas: c.resenas,
-    idioma: e.idioma,
+    idioma: idiomaPais === "auto" ? e.idioma : idiomaPais,
     constructor: e.constructor,
     senales: e.senales,
     resumen_sitio: e.resumen,
@@ -486,7 +536,9 @@ async function main() {
 
   const salida = {
     zip,
-    zona,
+    pais,
+    zona: zona.nombre,
+    idioma: idiomaPais,
     fecha: new Date().toISOString(),
     encontrados: candidatos.length,
     ya_conocidos: yaConocidos,

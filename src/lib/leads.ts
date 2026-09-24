@@ -34,6 +34,48 @@ import {
 
 const SITIO = "https://www.judomarketing.net";
 
+// ---------------------------------------------------------------- países
+
+export type Pais = "us" | "es" | "uk" | "de";
+
+/**
+ * Lo que cambia por país al hablar con Google y al escribir. El idioma
+ * "auto" es el del website del negocio (Estados Unidos: inglés o español);
+ * en los demás países se escribe en el idioma del país.
+ */
+export const PAISES: Record<Pais, { nombre: string; languageCode: string; regionCode: string; gl: string; idioma: IdiomaCorreo | "auto" }> = {
+  us: { nombre: "Estados Unidos", languageCode: "en", regionCode: "US", gl: "us", idioma: "auto" },
+  es: { nombre: "España", languageCode: "es", regionCode: "ES", gl: "es", idioma: "es" },
+  uk: { nombre: "Reino Unido", languageCode: "en-GB", regionCode: "GB", gl: "uk", idioma: "en" },
+  de: { nombre: "Alemania", languageCode: "de", regionCode: "DE", gl: "de", idioma: "de" },
+};
+
+/** Una zona es un zip de Florida ("33130") o "país:ciudad" ("us:austin-tx", "es:sevilla"). */
+export const ZONA_RE = /^(\d{5}|(us|es|uk|de):[a-z0-9-]{2,60})$/;
+
+export function paisDeZona(zip: string): Pais {
+  const m = /^(us|es|uk|de):/.exec(zip);
+  return m ? (m[1] as Pais) : "us";
+}
+
+/** Lo que la sesión manda para buscar: la zona tal cual está en scripts/leads/zonas.json. */
+export type Zona = { id: string; consulta: string; verificar: string[] };
+
+export function zonaValida(z: unknown): z is Zona {
+  const o = z as Zona;
+  return (
+    !!o &&
+    typeof o.id === "string" &&
+    ZONA_RE.test(o.id) &&
+    typeof o.consulta === "string" &&
+    o.consulta.length > 0 &&
+    o.consulta.length <= 120 &&
+    Array.isArray(o.verificar) &&
+    o.verificar.length > 0 &&
+    o.verificar.every((v) => typeof v === "string" && v.length > 0 && v.length <= 60)
+  );
+}
+
 // Un correo por negocio, y nunca más. Sin recontacto: a quien ya se le
 // escribió no se le vuelve a escribir, ni contestó ni pidió baja ni nada.
 export const ESTADOS_QUE_NO_SE_ESCRIBEN = new Set([
@@ -251,18 +293,21 @@ type RespuestaPlaces = {
 };
 
 /**
- * Hasta `maximo` negocios operativos de un código postal, sin cadenas ni
- * entidades que no son clientes. Cuesta una llamada a Places por página
- * (20 resultados); un zip completo son entre 10 y 30 llamadas.
+ * Hasta `maximo` negocios operativos de una zona (un zip de Florida o una
+ * ciudad de cualquiera de los países), sin cadenas ni entidades que no son
+ * clientes. Cuesta una llamada a Places por página (20 resultados); una zona
+ * completa son entre 10 y 30 llamadas.
  */
 export async function buscarNegocios(
-  zip: string,
+  zona: Zona,
   maximo = 100,
   semilla = 0
 ): Promise<{ candidatos: Candidato[]; consultas: number; aviso?: string }> {
   const llave = process.env.GOOGLE_PLACES_API_KEY;
   if (!llave) throw new Error("Falta GOOGLE_PLACES_API_KEY");
 
+  const pais = PAISES[paisDeZona(zona.id)];
+  const verificar = zona.verificar.map((v) => v.toLowerCase());
   const vistos = new Map<string, Candidato>();
   let consultas = 0;
   let aviso: string | undefined;
@@ -281,10 +326,10 @@ export async function buscarNegocios(
           "X-Goog-FieldMask": CAMPOS_PLACES,
         },
         body: JSON.stringify({
-          textQuery: `${rubro} in ${zip}`,
+          textQuery: `${rubro} in ${zona.consulta}`,
           pageSize: 20,
-          languageCode: "en",
-          regionCode: "US",
+          languageCode: pais.languageCode,
+          regionCode: pais.regionCode,
           ...(pageToken ? { pageToken } : {}),
         }),
       });
@@ -296,8 +341,10 @@ export async function buscarNegocios(
       for (const p of datos.places ?? []) {
         if (vistos.has(p.id)) continue;
         const direccion = p.formattedAddress ?? "";
-        // Places entiende "in 33130" como zona, no como filtro: comprobamos el zip.
-        if (!direccion.includes(zip)) continue;
+        // Places entiende "in 33130" o "in Sevilla" como zona, no como
+        // filtro: comprobamos que la dirección sea de ahí.
+        const dir = direccion.toLowerCase();
+        if (!verificar.some((v) => dir.includes(v))) continue;
         if (p.businessStatus && p.businessStatus !== "OPERATIONAL") continue;
         const tipos = p.types ?? [];
         if (tipos.some((t) => TIPOS_FUERA.has(t))) continue;
@@ -409,10 +456,13 @@ export type Competidor = { nombre: string; rating: number | null; resenas: numbe
 export async function posicionEnMaps(
   consulta: string,
   zip: string,
-  placeId: string
+  placeId: string,
+  lugar?: string
 ): Promise<{ consulta: string; posicion: number | null; revisados: number; primeros: Competidor[] }> {
   const llave = process.env.GOOGLE_PLACES_API_KEY;
   if (!llave) throw new Error("Falta GOOGLE_PLACES_API_KEY");
+  const pais = PAISES[paisDeZona(zip)];
+  const donde = lugar?.trim() || zip;
   const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
     method: "POST",
     headers: {
@@ -420,14 +470,14 @@ export async function posicionEnMaps(
       "X-Goog-Api-Key": llave,
       "X-Goog-FieldMask": "places.id,places.displayName,places.rating,places.userRatingCount",
     },
-    body: JSON.stringify({ textQuery: `${consulta} in ${zip}`, pageSize: 20, languageCode: "en", regionCode: "US" }),
+    body: JSON.stringify({ textQuery: `${consulta} in ${donde}`, pageSize: 20, languageCode: pais.languageCode, regionCode: pais.regionCode }),
   });
   const datos = (await res.json()) as RespuestaPlaces;
   if (!res.ok) throw new Error(`Places respondió ${res.status}: ${datos.error?.message ?? "sin detalle"}`);
   const lista = datos.places ?? [];
   const i = lista.findIndex((p) => p.id === placeId);
   return {
-    consulta: `${consulta} in ${zip}`,
+    consulta: `${consulta} in ${donde}`,
     posicion: i >= 0 ? i + 1 : null,
     revisados: lista.length,
     primeros: lista.slice(0, 3).map((p) => ({ nombre: p.displayName?.text ?? "", rating: p.rating ?? null, resenas: p.userRatingCount ?? null })),
@@ -500,7 +550,8 @@ export async function pageSpeed(url: string, estrategia: "mobile" | "desktop" = 
 export async function posicionWeb(
   consulta: string,
   dominio: string,
-  idioma: "es" | "en" = "en"
+  idioma: IdiomaCorreo = "en",
+  pais: Pais = "us"
 ): Promise<{ configurado: boolean; consulta: string; posicion: number | null; revisados: number; primeros: string[] }> {
   const cx = process.env.GOOGLE_CSE_ID;
   const llave = process.env.GOOGLE_CSE_API_KEY ?? process.env.GOOGLE_PLACES_API_KEY;
@@ -508,7 +559,7 @@ export async function posicionWeb(
   const dom = dominio.replace(/^www\./, "").toLowerCase();
   const enlaces: string[] = [];
   for (const start of [1, 11]) {
-    const q = new URLSearchParams({ key: llave, cx, q: consulta, gl: "us", hl: idioma, num: "10", start: String(start) });
+    const q = new URLSearchParams({ key: llave, cx, q: consulta, gl: PAISES[pais].gl, hl: idioma, num: "10", start: String(start) });
     const res = await fetch(`https://www.googleapis.com/customsearch/v1?${q}`);
     const datos = (await res.json()) as { error?: { message?: string }; items?: Array<{ link: string }> };
     if (!res.ok) throw new Error(`Custom Search respondió ${res.status}: ${datos.error?.message ?? "sin detalle"}`);
@@ -587,6 +638,8 @@ export type Borrador = {
   ps?: string;
   /** Nuestra lectura del rubro, para guardarla con el lead. */
   rubro?: string;
+  /** Cómo se nombra la zona en el pie del correo ("Brickell", "Sevilla"). */
+  lugar?: string;
   /** El informe de presencia en línea, en PDF (base64), cuando el negocio tiene website. */
   adjunto?: { nombre: string; base64: string };
 };
@@ -619,8 +672,9 @@ function validarBorrador(b: Borrador): string | null {
   if (!b.lead_id || !b.asunto || !b.saludo || !Array.isArray(b.parrafos) || b.parrafos.length === 0) {
     return "borrador incompleto";
   }
-  if (b.idioma !== "es" && b.idioma !== "en") return "idioma inválido";
+  if (b.idioma !== "es" && b.idioma !== "en" && b.idioma !== "de") return "idioma inválido";
   if (b.asunto.length > 90) return "asunto de más de 90 caracteres";
+  if (b.lugar && b.lugar.length > 80) return "lugar de más de 80 caracteres";
   const palabras = b.parrafos.join(" ").split(/\s+/).length;
   if (palabras > 170) return `cuerpo demasiado largo (${palabras} palabras; máximo 170)`;
   if (palabras < 40) return `cuerpo demasiado corto (${palabras} palabras)`;
@@ -636,9 +690,9 @@ function validarBorrador(b: Borrador): string | null {
 
 /**
  * Manda los borradores. Cada lead pasa por los candados: existe, tiene
- * correo, no está de baja ni contestó, no se le escribió en los últimos 120
- * días, y no se pasa el tope diario. En modo prueba todo va a
- * LEADS_CORREO_PRUEBA y el lead no cambia de estado.
+ * correo, no está de baja ni contestó, nunca se le escribió, y no se pasa
+ * el tope diario de su país (LEADS_MAX_DIA por país). En modo prueba todo
+ * va a LEADS_CORREO_PRUEBA y el lead no cambia de estado.
  */
 export async function enviarBorradores(borradores: Borrador[]): Promise<{
   modo: "prueba" | "real";
@@ -650,22 +704,13 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
   const tope = Number(process.env.LEADS_MAX_DIA ?? 10);
   const resultados: ResultadoEnvio[] = [];
 
-  if (borradores.length > tope) {
-    return {
-      modo: prueba ? "prueba" : "real",
-      resultados: [{ lead_id: "*", ok: false, motivo: `más de ${tope} borradores en una corrida` }],
-    };
-  }
-
+  // Cuántos salieron hoy en cada país: el tope es por país, no global.
   const inicioDia = new Date();
   inicioDia.setUTCHours(0, 0, 0, 0);
-  let enviadosHoy = 0;
+  const enviadosHoy: Record<Pais, number> = { us: 0, es: 0, uk: 0, de: 0 };
   if (!prueba) {
-    const { count } = await supabase
-      .from("leads")
-      .select("id", { count: "exact", head: true })
-      .gte("enviado_en", inicioDia.toISOString());
-    enviadosHoy = count ?? 0;
+    const { data } = await supabase.from("leads").select("zip").gte("enviado_en", inicioDia.toISOString()).limit(500);
+    for (const f of data ?? []) enviadosHoy[paisDeZona(String(f.zip))]++;
   }
 
   for (const b of borradores) {
@@ -695,8 +740,9 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
       resultados.push({ lead_id: b.lead_id, ok: false, motivo: "ya se le escribió; sin recontacto" });
       continue;
     }
-    if (!prueba && enviadosHoy >= tope) {
-      resultados.push({ lead_id: b.lead_id, ok: false, motivo: `tope diario de ${tope} alcanzado` });
+    const pais = paisDeZona(lead.zip as string);
+    if (!prueba && enviadosHoy[pais] >= tope) {
+      resultados.push({ lead_id: b.lead_id, ok: false, motivo: `tope diario de ${tope} alcanzado en ${PAISES[pais].nombre}` });
       continue;
     }
 
@@ -707,6 +753,7 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
       parrafos: b.parrafos,
       ps: b.ps,
       zip: lead.zip as string,
+      lugar: b.lugar,
       urlBaja: urlBaja(lead.email, b.idioma),
       enlaces: (() => {
         const e = enlacesConSeguimiento(lead.id as string, b.idioma, lead.zip as string);
@@ -742,7 +789,7 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
     }
 
     if (!prueba) {
-      enviadosHoy++;
+      enviadosHoy[pais]++;
       await supabase
         .from("leads")
         .update({
@@ -751,6 +798,8 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
           asunto: b.asunto,
           cuerpo: texto,
           idioma: b.idioma,
+          borrador: null,
+          borrador_en: null,
           ...(b.rubro ? { rubro: b.rubro } : {}),
         })
         .eq("id", b.lead_id);
@@ -759,4 +808,133 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
   }
 
   return { modo: prueba ? "prueba" : "real", resultados };
+}
+
+// ------------------------------------------------ borradores y envío diario
+
+const BUCKET_LEADS = "leads";
+const DIAS_VIGENCIA_BORRADOR = 3;
+
+/**
+ * Guarda los borradores en el lead (y el PDF en Storage) sin mandar nada.
+ * La sesión automática corre en un modo que no le permite mandar correos
+ * reales; el envío lo hace el sitio desde /api/leads/cron. Mismos candados
+ * que el envío: solo leads nuevos, con correo, nunca escritos.
+ */
+export async function guardarBorradores(borradores: Borrador[]): Promise<{ resultados: ResultadoEnvio[] }> {
+  const supabase = clienteServicio();
+  const resultados: ResultadoEnvio[] = [];
+  for (const b of borradores) {
+    const invalido = validarBorrador(b);
+    if (invalido) {
+      resultados.push({ lead_id: b.lead_id, ok: false, motivo: invalido });
+      continue;
+    }
+    const { data: lead } = await supabase.from("leads").select("id, email, estado, enviado_en").eq("id", b.lead_id).maybeSingle();
+    if (!lead) {
+      resultados.push({ lead_id: b.lead_id, ok: false, motivo: "lead no existe" });
+      continue;
+    }
+    if (!lead.email) {
+      resultados.push({ lead_id: b.lead_id, ok: false, motivo: "lead sin correo" });
+      continue;
+    }
+    if (ESTADOS_QUE_NO_SE_ESCRIBEN.has(lead.estado) || lead.enviado_en) {
+      resultados.push({ lead_id: b.lead_id, ok: false, motivo: lead.enviado_en ? "ya se le escribió; sin recontacto" : `estado ${lead.estado}` });
+      continue;
+    }
+    let informePath: string | null = null;
+    if (b.adjunto) {
+      informePath = `${b.lead_id}/${b.adjunto.nombre}`;
+      const { error } = await supabase.storage
+        .from(BUCKET_LEADS)
+        .upload(informePath, Buffer.from(b.adjunto.base64, "base64"), { contentType: "application/pdf", upsert: true });
+      if (error) {
+        resultados.push({ lead_id: b.lead_id, ok: false, motivo: `no se pudo guardar el PDF: ${error.message} (¿falta la migración 0028?)` });
+        continue;
+      }
+    }
+    const { error } = await supabase
+      .from("leads")
+      .update({
+        borrador: { idioma: b.idioma, asunto: b.asunto, saludo: b.saludo, parrafos: b.parrafos, ps: b.ps ?? null, rubro: b.rubro ?? null, lugar: b.lugar ?? null },
+        borrador_en: new Date().toISOString(),
+        informe_path: informePath,
+        ...(b.rubro ? { rubro: b.rubro } : {}),
+      })
+      .eq("id", b.lead_id);
+    if (error) {
+      resultados.push({ lead_id: b.lead_id, ok: false, motivo: `${error.message} (¿falta la migración 0028?)` });
+      continue;
+    }
+    resultados.push({ lead_id: b.lead_id, ok: true, a: lead.email as string });
+  }
+  return { resultados };
+}
+
+/**
+ * Manda los borradores pendientes (de los últimos 3 días), por país y con
+ * los topes de siempre. Lo llama el cron de Vercel una vez al día. Lo que
+ * no pudo salir por tope se queda para mañana; lo que falló por otra razón
+ * se descarta del borrador y queda anotado en el lead.
+ */
+export async function enviarPendientes(): Promise<{
+  modo: "prueba" | "real";
+  pendientes: number;
+  enviados: Record<Pais, number>;
+  resultados: Array<ResultadoEnvio & { nombre: string; pais: Pais }>;
+}> {
+  const supabase = clienteServicio();
+  const desde = new Date(Date.now() - DIAS_VIGENCIA_BORRADOR * 86_400_000).toISOString();
+  const { data, error } = await supabase
+    .from("leads")
+    .select("id, nombre, zip, email, estado, enviado_en, borrador, borrador_en, informe_path")
+    .not("borrador", "is", null)
+    .is("enviado_en", null)
+    .gte("borrador_en", desde)
+    .order("borrador_en", { ascending: true })
+    .limit(200);
+  if (error) throw error;
+  const filas = data ?? [];
+
+  const borradores: Borrador[] = [];
+  const nombres = new Map<string, { nombre: string; pais: Pais }>();
+  for (const f of filas) {
+    const b = f.borrador as Omit<Borrador, "lead_id" | "adjunto">;
+    let adjunto: Borrador["adjunto"];
+    if (f.informe_path) {
+      const { data: pdf } = await supabase.storage.from(BUCKET_LEADS).download(f.informe_path as string);
+      if (pdf) adjunto = { nombre: String(f.informe_path).split("/").pop() ?? "informe.pdf", base64: Buffer.from(await pdf.arrayBuffer()).toString("base64") };
+    }
+    borradores.push({ lead_id: f.id as string, idioma: b.idioma, asunto: b.asunto, saludo: b.saludo, parrafos: b.parrafos, ps: b.ps ?? undefined, rubro: b.rubro ?? undefined, lugar: b.lugar ?? undefined, adjunto });
+    nombres.set(f.id as string, { nombre: f.nombre as string, pais: paisDeZona(f.zip as string) });
+  }
+
+  const { modo, resultados } = borradores.length ? await enviarBorradores(borradores) : { modo: modoPrueba() ? ("prueba" as const) : ("real" as const), resultados: [] };
+  const enviados: Record<Pais, number> = { us: 0, es: 0, uk: 0, de: 0 };
+  for (const r of resultados) {
+    const n = nombres.get(r.lead_id);
+    if (!n) continue;
+    if (r.ok) {
+      enviados[n.pais]++;
+      if (modo === "prueba") await supabase.from("leads").update({ borrador: null, borrador_en: null }).eq("id", r.lead_id);
+      continue;
+    }
+    // Sin cupo hoy: se queda para mañana. Cualquier otra causa: fuera.
+    if (r.motivo?.startsWith("tope diario") || r.motivo?.startsWith("SMTP")) continue;
+    await supabase
+      .from("leads")
+      .update({ borrador: null, borrador_en: null, notas: `borrador descartado: ${r.motivo}` })
+      .eq("id", r.lead_id);
+  }
+  // Los PDF de lo que ya salió no hacen falta más.
+  const enviadosPaths = filas.filter((f) => f.informe_path && resultados.some((r) => r.ok && r.lead_id === f.id)).map((f) => f.informe_path as string);
+  if (enviadosPaths.length && modo === "real") await supabase.storage.from(BUCKET_LEADS).remove(enviadosPaths);
+
+  return {
+    modo,
+    pendientes: filas.length,
+    enviados,
+    resultados: resultados.map((r) => ({ ...r, nombre: nombres.get(r.lead_id)?.nombre ?? "", pais: nombres.get(r.lead_id)?.pais ?? "us" })),
+  };
 }

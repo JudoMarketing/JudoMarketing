@@ -11,7 +11,7 @@
  * degradados ni fuentes web: Gmail, Outlook y Apple Mail lo pintan igual.
  */
 
-export type IdiomaCorreo = "es" | "en";
+export type IdiomaCorreo = "es" | "en" | "de";
 
 export type CorreoProspecto = {
   idioma: IdiomaCorreo;
@@ -23,8 +23,10 @@ export type CorreoProspecto = {
   parrafos: string[];
   /** Posdata opcional. */
   ps?: string;
-  /** Código postal por el que se encontró al negocio (va en el pie). */
+  /** Zona por la que se encontró al negocio: "33130", "us:austin-tx", "es:sevilla" (va en el UTM). */
   zip: string;
+  /** Cómo se nombra esa zona en el pie ("Brickell", "Austin, TX", "Sevilla"). Si falta, va el zip. */
+  lugar?: string;
   /** Enlace firmado para darse de baja. */
   urlBaja: string;
   /** Enlaces de los botones con seguimiento por negocio; si faltan, van los directos. */
@@ -57,6 +59,18 @@ const TEXTOS = {
       `I'm writing because ${negocio} shows up on Google in the ${zip} area and I think we can help.`,
     baja: "If you'd rather not hear from me again, let me know here",
     bajaFin: "and I won't write again.",
+    rutaContacto: "/contact",
+    rutaShowcase: "/showcase",
+  },
+  de: {
+    agenda: "Gespräch mit mir vereinbaren",
+    trabajo: "Unsere Arbeit ansehen",
+    cargo: "Director, Judo Marketing",
+    ciudad: "Miami, Florida",
+    porque: (negocio: string, zip: string) =>
+      `Ich schreibe Ihnen, weil ${negocio} bei Google im Raum ${zip} erscheint und ich glaube, dass wir helfen können.`,
+    baja: "Wenn Sie keine weiteren E-Mails von mir möchten, sagen Sie es mir hier",
+    bajaFin: "und ich schreibe nicht mehr.",
     rutaContacto: "/contact",
     rutaShowcase: "/showcase",
   },
@@ -96,7 +110,7 @@ export function textoProspecto(c: CorreoProspecto): string {
     t.cargo,
     `${SITIO} · ${TELEFONO}`,
     "",
-    t.porque(c.negocio, c.zip),
+    t.porque(c.negocio, c.lugar ?? c.zip),
     `${t.baja}: ${c.urlBaja}`,
     `Judo Marketing · ${DIRECCION}`,
   ];
@@ -195,8 +209,8 @@ export function htmlProspecto(c: CorreoProspecto): string {
         <tr>
           <td style="padding:22px 10px 0;font-family:Arial,Helvetica,sans-serif;">
             <p style="margin:0 0 8px;color:#6b6b7a;font-size:12px;line-height:1.6;">
-              ${escapar(t.porque(c.negocio, c.zip))}
-              ${t.baja.replace(/dímelo aquí|let me know here/, (m) => `<a href="${c.urlBaja}" style="color:#a855f7;text-decoration:underline;">${m}</a>`)} ${t.bajaFin}
+              ${escapar(t.porque(c.negocio, c.lugar ?? c.zip))}
+              ${t.baja.replace(/dímelo aquí|let me know here|sagen Sie es mir hier/, (m) => `<a href="${c.urlBaja}" style="color:#a855f7;text-decoration:underline;">${m}</a>`)} ${t.bajaFin}
             </p>
             <p style="margin:0;color:#55556a;font-size:11px;line-height:1.6;">Judo Marketing · ${DIRECCION}</p>
           </td>

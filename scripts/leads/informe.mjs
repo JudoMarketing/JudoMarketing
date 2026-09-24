@@ -436,8 +436,22 @@ async function aPdf(contenido, destino) {
 export async function informe(lead, opciones) {
   const idioma = lead.idioma === "es" ? "es" : "en";
   const t = T[idioma];
-  const zonas = new Map(JSON.parse(await readFile(path.join(AQUI, "zips.json"), "utf8")).zips.map((z) => [z.zip, z.zona]));
-  const zona = zonas.get(lead.zip) ?? lead.zip;
+  // La zona del lead (zip de Florida o ciudad de cualquier país): de dónde
+  // es, cómo se le pregunta a Google y cómo se nombra en el informe.
+  const paises = JSON.parse(await readFile(path.join(AQUI, "zonas.json"), "utf8")).paises;
+  let zona = null;
+  let pais = "us";
+  for (const [k, p] of Object.entries(paises)) {
+    const z = p.zonas.find((z) => z.id === lead.zip);
+    if (z) {
+      zona = z;
+      pais = k;
+      break;
+    }
+  }
+  const esZip = /^\d{5}$/.test(lead.zip);
+  const lugar = zona?.consulta ?? lead.zip;
+  const ciudad = (zona?.nombre ?? lead.zip).split(/[,(\/]/)[0].trim();
   const consulta = consultaDe(lead);
 
   const auditoria = lead.website ? await auditar(lead.website) : { ok: false };
@@ -466,9 +480,13 @@ export async function informe(lead, opciones) {
     }
     const placeId = lead.place_id && !String(lead.place_id).startsWith("sunbiz:") ? lead.place_id : null;
     if (placeId) {
-      for (const [q, etiqueta] of [[consulta, `${consulta} ${lead.zip}`], [`${consulta} ${zona.split("/")[0].trim()}`, `${consulta} ${zona.split("/")[0].trim()}`]]) {
+      // En un zip: por el zip y por el barrio. En una ciudad: por la ciudad.
+      const busquedas = esZip
+        ? [[consulta, lead.zip, `${consulta} ${lead.zip}`], [`${consulta} ${ciudad}`, lead.zip, `${consulta} ${ciudad}`]]
+        : [[consulta, lugar, `${consulta} ${ciudad}`]];
+      for (const [q, donde, etiqueta] of busquedas) {
         try {
-          const r = await api("POST", "", { accion: "posicion", consulta: q, zip: lead.zip, place_id: placeId });
+          const r = await api("POST", "", { accion: "posicion", consulta: q, zip: lead.zip, lugar: donde, place_id: placeId });
           datos.maps.push({ ...r, etiqueta });
         } catch (e) {
           datos.avisos.push(`posicion: ${e.message}`);
@@ -477,7 +495,7 @@ export async function informe(lead, opciones) {
     }
     if (auditoria.ok) {
       try {
-        datos.web = await api("POST", "", { accion: "posicion_web", consulta: `${consulta} ${zona.split("/")[0].trim()}`, dominio: auditoria.dominio, idioma });
+        datos.web = await api("POST", "", { accion: "posicion_web", consulta: `${consulta} ${ciudad}`, dominio: auditoria.dominio, idioma, pais });
       } catch (e) {
         datos.avisos.push(`posicion_web: ${e.message}`);
       }

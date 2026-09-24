@@ -4,8 +4,9 @@
 // esta ruta con el secreto LEADS_SECRET. El secreto vive en Vercel y en el
 // entorno de la sesión, nunca en el navegador ni en el repo.
 //
-//   GET  ?corridas=1            últimas corridas, con su resumen y aprendizajes
-//                               (para rotar el zip y para que la sesión recuerde)
+//   GET  ?corridas=1            últimas 400 corridas (para rotar la zona)
+//   GET  ?memoria=1             últimas 21 corridas con su resumen y aprendizajes
+//                               (lo que la sesión lee antes de elegir)
 //   GET  ?zip=33130             leads de ese zip con su estado
 //   GET  ?reporte=1[&desde=ISO] bajas, clics, respuestas y envíos (auditoría)
 //   GET  ?archivos=1            archivos diarios de Sunbiz ya procesados
@@ -16,7 +17,9 @@
 //   POST {accion:"posicion"}    puesto del negocio en Google Maps para una búsqueda
 //   POST {accion:"pagespeed"}   lo que Google mide de su página (PageSpeed Insights)
 //   POST {accion:"posicion_web"} puesto de su dominio en la búsqueda web (si hay CSE)
-//   POST {accion:"enviar"}      manda los borradores (con PDF adjunto opcional), con todos los candados
+//   POST {accion:"borradores"}  guarda los borradores (con PDF) para que el sitio los mande solo
+//                               desde /api/leads/cron; es lo que usa la sesión automática
+//   POST {accion:"enviar"}      manda los borradores ahora mismo, con todos los candados
 //   POST {accion:"actualizar"}  completa un lead (correo hallado en internet, rubro, nota)
 //   POST {accion:"descartar"}   marca leads que no se van a escribir
 //   POST {accion:"corrida"}     deja registro de la corrida
@@ -29,12 +32,17 @@ import {
   clienteServicio,
   detallePlace,
   enviarBorradores,
+  guardarBorradores,
   pageSpeed,
+  paisDeZona,
   posicionEnMaps,
   posicionWeb,
   reporte,
   secretoLeads,
+  zonaValida,
+  ZONA_RE,
   type Borrador,
+  type Pais,
 } from "@/lib/leads";
 
 // Places tarda entre 10 y 30 llamadas por zip; el envío, hasta 10 correos.
@@ -71,13 +79,27 @@ export async function GET(req: NextRequest) {
   const zip = req.nextUrl.searchParams.get("zip");
   try {
     if (req.nextUrl.searchParams.get("corridas")) {
+      // Para rotar las zonas: hasta 400 corridas (a 3 por día son más de
+      // los 60 días de la rotación), sin el resumen para que pese poco.
       const { data, error } = await supabase
         .from("leads_corridas")
-        .select("zip, encontrados, con_correo, enviados, modo, resumen, creado_en")
+        .select("zip, encontrados, con_correo, enviados, modo, creado_en")
         .order("creado_en", { ascending: false })
-        .limit(60);
+        .limit(400);
       if (error) throw error;
       return NextResponse.json({ corridas: data ?? [] });
+    }
+    if (req.nextUrl.searchParams.get("memoria")) {
+      // Lo que la sesión lee antes de elegir: los resúmenes y aprendizajes
+      // de las últimas corridas.
+      const { data, error } = await supabase
+        .from("leads_corridas")
+        .select("zip, enviados, modo, resumen, creado_en")
+        .not("resumen", "is", null)
+        .order("creado_en", { ascending: false })
+        .limit(21);
+      if (error) throw error;
+      return NextResponse.json({ memoria: data ?? [] });
     }
     if (req.nextUrl.searchParams.get("reporte")) {
       return NextResponse.json(await reporte(req.nextUrl.searchParams.get("desde") ?? undefined));
@@ -145,12 +167,18 @@ export async function POST(req: NextRequest) {
   try {
     if (accion === "buscar") {
       const zip = String(cuerpo.zip ?? "").trim();
-      if (!/^\d{5}$/.test(zip)) {
-        return NextResponse.json({ error: "zip debe tener 5 dígitos" }, { status: 400 });
+      if (!ZONA_RE.test(zip)) {
+        return NextResponse.json({ error: "zip debe ser un zip de 5 dígitos o una zona país:ciudad (scripts/leads/zonas.json)" }, { status: 400 });
+      }
+      // Un zip de Florida se busca tal cual; una ciudad trae su consulta y
+      // las palabras que verifican la dirección.
+      const zona = zonaValida(cuerpo.zona) ? cuerpo.zona : /^\d{5}$/.test(zip) ? { id: zip, consulta: zip, verificar: [zip] } : null;
+      if (!zona || zona.id !== zip) {
+        return NextResponse.json({ error: "falta zona {id, consulta, verificar} para esa ciudad" }, { status: 400 });
       }
       const maximo = Math.min(Number(cuerpo.maximo ?? 100), 150);
       const semilla = Number(cuerpo.semilla ?? 0);
-      const { candidatos, consultas, aviso } = await buscarNegocios(zip, maximo, semilla);
+      const { candidatos, consultas, aviso } = await buscarNegocios(zona, maximo, semilla);
 
       // Qué candidatos ya conocemos, para que la sesión no repita trabajo.
       const supabase = clienteServicio();
@@ -217,11 +245,12 @@ export async function POST(req: NextRequest) {
 
       const salida: Array<{ id: string; place_id: string; estado: string; email: string | null; nuevo: boolean }> = [];
       for (const l of entrantes) {
-        if (!l.place_id || !l.nombre || !/^\d{5}$/.test(l.zip ?? "")) continue;
+        if (!l.place_id || !l.nombre || !ZONA_RE.test(l.zip ?? "")) continue;
         const email = l.email?.trim().toLowerCase() || null;
         const investigado = {
           nombre: l.nombre.slice(0, 200),
           zip: l.zip,
+          pais: paisDeZona(l.zip) as Pais,
           direccion: l.direccion ?? null,
           telefono: l.telefono ?? null,
           website: l.website ?? null,
@@ -229,7 +258,7 @@ export async function POST(req: NextRequest) {
           rubro: l.rubro ?? null,
           rating: l.rating ?? null,
           resenas: l.resenas ?? null,
-          idioma: l.idioma ?? null,
+          idioma: l.idioma && ["es", "en", "de"].includes(l.idioma) ? l.idioma : null,
           constructor: l.constructor ?? null,
           senales: Array.isArray(l.senales) ? l.senales.slice(0, 20) : [],
           resumen_sitio: l.resumen_sitio?.slice(0, 1200) ?? null,
@@ -276,10 +305,11 @@ export async function POST(req: NextRequest) {
       const consulta = String(cuerpo.consulta ?? "").trim().slice(0, 80);
       const zip = String(cuerpo.zip ?? "").trim();
       const placeId = String(cuerpo.place_id ?? "").trim();
-      if (!consulta || !/^\d{5}$/.test(zip) || !placeId) {
+      const lugar = typeof cuerpo.lugar === "string" ? cuerpo.lugar.slice(0, 120) : undefined;
+      if (!consulta || !ZONA_RE.test(zip) || !placeId) {
         return NextResponse.json({ error: "faltan consulta, zip y place_id" }, { status: 400 });
       }
-      return NextResponse.json(await posicionEnMaps(consulta, zip, placeId));
+      return NextResponse.json(await posicionEnMaps(consulta, zip, placeId, lugar));
     }
 
     if (accion === "pagespeed") {
@@ -295,15 +325,20 @@ export async function POST(req: NextRequest) {
       if (!consulta || !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(dominio)) {
         return NextResponse.json({ error: "faltan consulta y dominio" }, { status: 400 });
       }
-      return NextResponse.json(await posicionWeb(consulta, dominio, cuerpo.idioma === "es" ? "es" : "en"));
+      const idioma = cuerpo.idioma === "es" ? "es" : cuerpo.idioma === "de" ? "de" : "en";
+      const pais = typeof cuerpo.pais === "string" && ["us", "es", "uk", "de"].includes(cuerpo.pais) ? (cuerpo.pais as Pais) : "us";
+      return NextResponse.json(await posicionWeb(consulta, dominio, idioma, pais));
     }
 
-    if (accion === "enviar") {
+    if (accion === "enviar" || accion === "borradores") {
       const borradores = (cuerpo.borradores ?? []) as Borrador[];
       if (!Array.isArray(borradores) || borradores.length === 0) {
         return NextResponse.json({ error: "borradores vacío" }, { status: 400 });
       }
-      const resultado = await enviarBorradores(borradores);
+      if (borradores.length > 40) {
+        return NextResponse.json({ error: "máximo 40 borradores por petición" }, { status: 400 });
+      }
+      const resultado = accion === "enviar" ? await enviarBorradores(borradores) : await guardarBorradores(borradores);
       return NextResponse.json(resultado);
     }
 
@@ -366,7 +401,7 @@ export async function POST(req: NextRequest) {
         modo: (process.env.LEADS_MODO ?? "prueba") === "real" ? "real" : "prueba",
         resumen: String(cuerpo.resumen ?? "").slice(0, 4000) || null,
       };
-      if (!/^\d{5}$/.test(fila.zip)) {
+      if (!ZONA_RE.test(fila.zip)) {
         return NextResponse.json({ error: "zip inválido" }, { status: 400 });
       }
       const { error } = await supabase.from("leads_corridas").insert(fila);

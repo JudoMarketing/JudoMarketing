@@ -1,15 +1,21 @@
 #!/usr/bin/env node
 /**
- * Manda los borradores que la sesión escribió y deja registro de la corrida.
- * El envío real lo hace el sitio (/api/leads), que aplica los candados:
- * nada a quien pidió baja, nada dos veces en 120 días, tope diario, y en
- * modo prueba todo va al correo de prueba en vez de al negocio.
+ * Entrega los borradores que la sesión escribió y deja registro de la corrida.
  *
- *   node scripts/leads/enviar.mjs --borradores /ruta/borradores.json
+ * Por defecto los GUARDA en el sitio (accion "borradores"): el sitio los
+ * manda solo, una vez al día, desde /api/leads/cron (9:30 AM de Miami), con
+ * los candados: nada a quien pidió baja, un solo correo por negocio en la
+ * vida, tope diario por país, y en modo prueba todo va al correo de prueba.
+ * Así la sesión automática, que no puede mandar correos reales, deja el
+ * trabajo listo y el envío lo hace el servidor.
+ *
+ *   node scripts/leads/enviar.mjs --borradores /ruta/borradores-us.json
+ *   node scripts/leads/enviar.mjs --borradores /ruta/borradores.json --ahora   (manda ya)
  *
  * Formato del archivo:
  * {
- *   "zip": "33130", "encontrados": 100, "con_correo": 38,
+ *   "zip": "33130", "pais": "us", "zona": "Downtown Miami",
+ *   "encontrados": 100, "con_correo": 38,
  *   "resumen": "texto corto de la corrida para el registro",
  *   "aprendizajes": ["lo que esta corrida enseñó y la siguiente debe saber"],
  *   "borradores": [
@@ -24,8 +30,9 @@
  * adjunto salen en lotes de 4 para no pasar el tamaño máximo de petición.
  *
  * aprendizajes es la memoria entre corridas: se guarda junto al resumen en
- * leads_corridas y la siguiente sesión lo lee con GET /api/leads?corridas=1
- * antes de elegir. Máximo 10 negocios por corrida: una corrida al día.
+ * leads_corridas y la siguiente sesión lo lee con GET /api/leads?memoria=1
+ * antes de elegir. Máximo 10 negocios por corrida: una corrida por país y
+ * por día. "zona" es el nombre legible de la zona; va en el pie del correo.
  *
  * Entorno: LEADS_SECRET (obligatorio), LEADS_SITE (opcional).
  */
@@ -67,12 +74,14 @@ function revisarLocal(b) {
 async function main() {
   const i = process.argv.indexOf("--borradores");
   const ruta = i >= 0 ? process.argv[i + 1] : null;
+  const ahora = process.argv.includes("--ahora");
   if (!ruta) {
-    console.error("Uso: node scripts/leads/enviar.mjs --borradores /ruta/borradores.json");
+    console.error("Uso: node scripts/leads/enviar.mjs --borradores /ruta/borradores.json [--ahora]");
     process.exit(2);
   }
   const archivo = JSON.parse(await readFile(ruta, "utf8"));
   const borradores = archivo.borradores ?? [];
+  const lugar = typeof archivo.zona === "string" ? archivo.zona.split("/")[0].trim().slice(0, 80) : undefined;
   if (!borradores.length) throw new Error("El archivo no trae borradores");
   if (borradores.length > MAX_POR_CORRIDA) throw new Error(`Son ${borradores.length} borradores; el máximo por corrida es ${MAX_POR_CORRIDA}`);
   for (const b of borradores) {
@@ -96,6 +105,7 @@ async function main() {
   const listos = [];
   for (const b of borradores) {
     const { adjunto_pdf, ...resto } = b;
+    if (lugar && !resto.lugar) resto.lugar = lugar;
     if (adjunto_pdf) {
       const contenido = await readFile(adjunto_pdf);
       if (contenido.length > 1_500_000) throw new Error(`${adjunto_pdf} pesa ${Math.round(contenido.length / 1024)} KB; el máximo es 1.500 KB`);
@@ -117,13 +127,14 @@ async function main() {
   let modo = "prueba";
   const resultados = [];
   for (const lote of lotes) {
-    const r = await api({ accion: "enviar", borradores: lote });
-    modo = r.modo;
+    const r = await api({ accion: ahora ? "enviar" : "borradores", borradores: lote });
+    if (r.modo) modo = r.modo;
     resultados.push(...r.resultados);
   }
   const ok = resultados.filter((r) => r.ok);
   const mal = resultados.filter((r) => !r.ok);
-  console.log(`Modo ${modo}: ${ok.length} enviados, ${mal.length} rechazados.`);
+  if (ahora) console.log(`Modo ${modo}: ${ok.length} enviados, ${mal.length} rechazados.`);
+  else console.log(`${ok.length} borradores guardados, ${mal.length} rechazados. El sitio los manda hoy a las 9:30 AM de Miami (/api/leads/cron).`);
   for (const r of ok) console.log(`  ✓ ${r.lead_id} → ${r.a}`);
   for (const r of mal) console.log(`  ✗ ${r.lead_id}: ${r.motivo}`);
 
@@ -131,7 +142,12 @@ async function main() {
     // El resumen y los aprendizajes quedan en leads_corridas: es lo que la
     // siguiente corrida lee para no repetir errores y afinar el criterio.
     const aprendizajes = (archivo.aprendizajes ?? []).filter((x) => typeof x === "string" && x.trim());
-    const resumen = [archivo.resumen ?? "", aprendizajes.length ? "Aprendizajes: " + aprendizajes.map((x) => x.trim()).join(" · ") : ""]
+    const resumen = [
+      archivo.zona ? `${archivo.pais ?? "us"} · ${archivo.zona}` : "",
+      ahora ? "" : `${ok.length} borradores guardados para el envío del sitio`,
+      archivo.resumen ?? "",
+      aprendizajes.length ? "Aprendizajes: " + aprendizajes.map((x) => x.trim()).join(" · ") : "",
+    ]
       .filter(Boolean)
       .join("\n");
     await api({
@@ -139,7 +155,7 @@ async function main() {
       zip: archivo.zip,
       encontrados: archivo.encontrados ?? 0,
       con_correo: archivo.con_correo ?? 0,
-      enviados: modo === "real" ? ok.length : 0,
+      enviados: ahora && modo === "real" ? ok.length : 0,
       resumen,
     });
     console.log(`Corrida registrada${aprendizajes.length ? ` con ${aprendizajes.length} aprendizajes` : ""}.`);

@@ -1,14 +1,29 @@
 # Prospección por correo
 
-Cada día una sesión automática busca negocios de Miami y Broward que
-pueden necesitar un website, una app o un sistema, estudia lo que tienen en
-línea, elige **10** y les escribe un correo personal firmado por Junior con
-dos botones: agendar una llamada y ver el showcase. Los que no se pueden
-contactar por correo salen en una lista para llamar, escribir por WhatsApp
-o mandar carta.
+Cada día una sesión automática busca negocios que pueden necesitar un
+website, una app o un sistema en **tres países**: Estados Unidos, España y
+Reino Unido. En cada uno toma una zona (un código postal de Florida o una
+ciudad), estudia lo que tienen en línea, elige **10** y les deja escrito un
+correo personal firmado por Junior con dos botones: agendar una llamada y
+ver el showcase. El sitio manda esos correos solo, a las 9:30 de la mañana
+de Miami. Los que no se pueden contactar por correo salen en una lista para
+llamar, escribir por WhatsApp o mandar carta.
 
-Diez al día, todos los días, es la meta desde el 23 de septiembre de 2026.
-Diez es el techo, no la cuota: si en una corrida solo hay siete que de
+| País | Zonas | Idioma del correo | Por día |
+| --- | --- | --- | --- |
+| Estados Unidos (`us`) | Los 44 códigos postales de Florida primero (ahí se cruza Sunbiz) y después todas las ciudades de más de 25.000 habitantes, de mayor a menor | El del website del negocio (inglés o español) | 10 |
+| España (`es`) | Ciudades de más de 50.000 habitantes | Español, siempre | 10 |
+| Reino Unido (`uk`) | Ciudades de más de 25.000 habitantes | Inglés | 10 |
+| Alemania (`de`) | Ciudades de más de 25.000 habitantes | Alemán | **0: cargada pero apagada** (ver "Candados y ley") |
+
+Las zonas están en `scripts/leads/zonas.json` (3.400 en total, generadas
+con `scripts/leads/generar_zonas.py` a partir de GeoNames). Por país, cada
+corrida toma la primera zona que no se corrió en 60 días, en el orden del
+archivo. Para encender Alemania o cambiar un cupo, se edita `diarios` en
+ese archivo y la rutina.
+
+Diez por país, todos los días, es la meta desde el 24 de septiembre de
+2026. Diez es el techo, no la cuota: si en una corrida solo hay siete que de
 verdad nos necesitan, salen siete. La corrida del 23 de septiembre eligió 7
 de 300 revisados y estuvo bien elegida; lo que se mantiene es ese criterio,
 no el número.
@@ -24,8 +39,8 @@ Tres fuentes, que se complementan:
 
 | Fuente | Qué trae | Quién lo hace |
 | --- | --- | --- |
-| **Google Places** (`buscar.mjs`) | Hasta 100 negocios establecidos de un código postal, con website y teléfono. Es la fuente de los que llevan tiempo operando y ya tienen clientes. | Script |
-| **Sunbiz** (`sunbiz.mjs`) | Todas las empresas registradas en Florida, por archivo diario: las de esta semana (recién abiertas) y las de hace 2 y 3 años (con tiempo operando). Se cruzan con Google para saber si existen en línea. | Script |
+| **Google Places** (`buscar.mjs`) | Hasta 100 negocios establecidos de una zona (un zip de Florida o una ciudad de cualquiera de los países), con website y teléfono. Es la fuente de los que llevan tiempo operando y ya tienen clientes. | Script |
+| **Sunbiz** (`sunbiz.mjs`, solo Estados Unidos) | Todas las empresas registradas en Florida, por archivo diario: las de esta semana (recién abiertas) y las de hace 2 y 3 años (con tiempo operando). Se cruzan con Google para saber si existen en línea. | Script |
 | **Internet** | Para los candidatos buenos sin correo: buscar en la web el negocio o su dueño (Facebook, Instagram, Yelp, directorios) para encontrar correo o WhatsApp, y para entender mejor qué hacen. | La sesión, con su herramienta de búsqueda web |
 
 Sunbiz no publica correos ni teléfonos: da el nombre del negocio, su
@@ -50,21 +65,33 @@ montado así.
 ```
 Sesión automática (Claude Code, cada día)         judomarketing.net (Vercel)
 ────────────────────────────────────────────      ──────────────────────────
-1. buscar.mjs  ── pide negocios del zip ────────▶  /api/leads {buscar}   ──▶ Google Places
+Por cada país (us, es, uk):
+1. buscar.mjs  ── pide negocios de la zona ─────▶  /api/leads {buscar}   ──▶ Google Places
                ◀─ 100 candidatos ───────────────
 2.             visita cada website (correo, señales, resumen)
 3.             ── guarda lo investigado ────────▶  /api/leads {guardar}  ──▶ Supabase (leads)
 4. la sesión lee lo aprendido en corridas anteriores, elige 10 y escribe 10 borradores
-5. enviar.mjs  ── manda los borradores ─────────▶  /api/leads {enviar}   ──▶ SMTP de Google Workspace
-                                                   candados: baja, 120 días, tope diario, modo prueba
+5. enviar.mjs  ── GUARDA los borradores ────────▶  /api/leads {borradores} ─▶ Supabase (leads.borrador, PDF en Storage)
 6.             ── registra la corrida ──────────▶  /api/leads {corrida}  ──▶ Supabase (leads_corridas)
                   con resumen y aprendizajes         (la memoria de la siguiente corrida)
+
+Después, el sitio solo (cron de Vercel, 9:30 AM de Miami):
+7. /api/leads/cron ── manda los borradores pendientes ──▶ SMTP de Google Workspace
+                      candados: baja, un correo por negocio en la vida, tope por país, modo prueba
+                   ── le manda a Junior el resumen del envío por correo
 
 El dueño del negocio hace clic en "no más correos" ──▶ /api/leads/baja ──▶ estado 'baja' para siempre
 ```
 
 Por qué así y no de otra forma:
 
+- **La sesión no manda correos: los deja listos y el sitio los manda.** La
+  sesión automática corre en un modo de permisos ("auto") que se niega a
+  ejecutar acciones con efecto en el mundo real, como mandar un correo a un
+  negocio, diga lo que diga el prompt. Así se perdió la corrida del 23 de
+  septiembre de 2026: 7 correos escritos y ninguno enviado. Guardar un
+  borrador en nuestra base sí lo permite. Por eso el envío vive en el sitio
+  (`/api/leads/cron`), que corre a hora fija y le avisa a Junior por correo.
 - **La sesión no tiene SMTP ni base de datos.** Desde la nube de Claude no
   se abren los puertos de correo, y no queremos la llave de Supabase en más
   sitios de los necesarios. La sesión conoce un solo secreto (`LEADS_SECRET`)
@@ -79,17 +106,20 @@ Por qué así y no de otra forma:
 ## Lo que hace cada corrida
 
 1. `git pull` de `master`, leer este documento completo, y leer la memoria:
-   `GET /api/leads?corridas=1` trae las últimas corridas con su `resumen` y
+   `GET /api/leads?memoria=1` trae las últimas corridas con su `resumen` y
    sus aprendizajes. Lo que dicen manda sobre el impulso del momento (ver
-   "Aprender de cada corrida").
-2. `node scripts/leads/buscar.mjs --zip auto --salida <carpeta temporal>/leads.json`.
-   Elige el siguiente zip de `scripts/leads/zips.json` (el primero que no se
-   corrió en 60 días), pide los negocios a Google, visita sus websites y
-   guarda todo.
-3. `node scripts/leads/sunbiz.mjs --salida <carpeta temporal>/sunbiz.json`.
+   "Aprender de cada corrida"). Los pasos 2 a 9 se repiten por país, en el
+   orden us, es, uk, cada uno en su carpeta.
+2. `node scripts/leads/buscar.mjs --pais <país> --zip auto --salida <carpeta>/<país>/leads.json`.
+   Elige la siguiente zona del país en `scripts/leads/zonas.json` (la
+   primera que no se corrió en 60 días), pide los negocios a Google, visita
+   sus websites y guarda todo. Deja `idioma` ya decidido: España siempre
+   `es`, Reino Unido `en`, Estados Unidos el del website.
+3. Solo en Estados Unidos: `node scripts/leads/sunbiz.mjs --salida <carpeta>/us/sunbiz.json`.
    Baja los archivos diarios de Sunbiz que falten (los nuevos y los de hace
-   2 y 3 años), filtra nuestra zona y los nombres que dicen a qué se dedica
-   el negocio, los cruza con Google y guarda todo.
+   2 y 3 años), filtra los zips de Florida (`scripts/leads/zips.json`) y los
+   nombres que dicen a qué se dedica el negocio, los cruza con Google y
+   guarda todo.
 4. Leer los dos JSON. Traen `candidatos_para_escribir` (con correo, por
    puntaje), `para_llamar_o_whatsapp` / `con_google_sin_website` (teléfono
    sin correo), `sin_presencia` (solo Sunbiz: persona y dirección postal) y
@@ -120,18 +150,22 @@ Por qué así y no de otra forma:
    correo no cita ese dato. Si trae `apto: false`, ese negocio no se
    escribe: se descarta con `{accion:"descartar"}` y el `motivo_no_apto`.
 8. Escribir un borrador por cada uno, en un JSON con el formato de
-   `scripts/leads/enviar.mjs`. En los que llevan informe, `adjunto_pdf` es la
-   ruta del PDF. En `aprendizajes` van las dos o tres cosas que esta corrida
-   enseñó (ver "Aprender de cada corrida").
-9. `node scripts/leads/enviar.mjs --borradores <carpeta temporal>/borradores.json`.
+   `scripts/leads/enviar.mjs`, con `zip`, `pais` y `zona` tal cual salieron
+   de `buscar.mjs`. En los que llevan informe, `adjunto_pdf` es la ruta del
+   PDF. En `aprendizajes` van las dos o tres cosas que esta corrida enseñó
+   (ver "Aprender de cada corrida").
+9. `node scripts/leads/enviar.mjs --borradores <carpeta>/<país>/borradores.json`.
+   Guarda los borradores en el sitio (no manda nada) y registra la corrida.
    Si el script rechaza un borrador (raya larga, promesa, largo), corregirlo
-   y volver a correr. No se manda nada hasta que todos pasen.
-10. Terminar con un informe corto para Junior: zip y zona; archivos de Sunbiz
-   procesados; cuántos negocios por fuente, cuántos con correo, cuántos
-   enviados y en qué modo; los enviados con una línea de por qué cada uno; la
-   lista de negocios con teléfono y sin correo (para llamar o WhatsApp); y la
-   lista de negocios sin presencia en línea con la persona al frente y su
-   dirección postal (para carta o para buscarlos a mano).
+   y volver a correr.
+10. Terminar con un informe corto para Junior, por país: zona; archivos de
+   Sunbiz procesados; cuántos negocios por fuente, cuántos con correo,
+   cuántos borradores guardados; los elegidos con una línea de por qué cada
+   uno; la lista de negocios con teléfono y sin correo (para llamar o
+   WhatsApp); y la lista de negocios sin presencia en línea con la persona
+   al frente y su dirección postal (para carta o para buscarlos a mano).
+   Los correos salen a las 9:30 AM de Miami y Junior recibe el resumen del
+   envío por correo.
 
 ## Cómo se elige a quién escribir
 
@@ -238,7 +272,7 @@ que se repite y cómo se mejora.
 - **Dominio expirado o "for sale"**: el negocio pagó una página y la perdió.
   Se le escribe pronto, antes de que otro lo haga, y se le dice tal cual lo
   que se ve al entrar a su dirección.
-- **Leer la memoria antes de elegir.** `GET /api/leads?corridas=1` trae los
+- **Leer la memoria antes de elegir.** `GET /api/leads?memoria=1` trae los
   resúmenes y aprendizajes de las corridas anteriores. Si una corrida
   anterior aprendió algo sobre un rubro, una zona o un tipo de señal, esta
   corrida lo aplica. Si la corrida anterior fue del mismo zip, esta no
@@ -264,7 +298,13 @@ Un correo de Junior a un dueño de negocio. No un boletín, no una plantilla
 con el nombre pegado. La prueba: si se lee en voz alta suena como algo que
 una persona escribiría a otra en diez minutos.
 
-**Idioma:** el del website del negocio (`idioma`). Si no se pudo saber, inglés.
+**Idioma:** el que trae el lead en `idioma`, que `buscar.mjs` decide por
+país: España siempre en español (Junior lo pidió así, aunque el sitio del
+negocio esté en inglés), Reino Unido en inglés, Estados Unidos en el idioma
+del website del negocio (si no se pudo saber, inglés). El español de España
+no es el de Miami: "vosotros" no, pero tampoco "ustedes" forzado; se
+escribe en un español neutro, de tú, y con las palabras de allá: "móvil",
+"reservas", "pedidos a domicilio", "autónomo", "negocio local".
 
 **Asunto:** entre 4 y 8 palabras, en minúsculas naturales, que nombre al
 negocio o la cosa concreta que vimos. Nada de signos de exclamación,
@@ -392,6 +432,8 @@ de Doral y...").
 ```json
 {
   "zip": "33135",
+  "pais": "us",
+  "zona": "Little Havana",
   "encontrados": 100,
   "con_correo": 38,
   "resumen": "Little Havana: muchos restaurantes con menú en PDF y sin pedidos en línea. 10 elegidos, 3 comida, 3 servicios, 2 tiendas, 2 de Sunbiz.",
@@ -423,7 +465,7 @@ muestra, y de dónde sale cada dato:
 | Bloque | Datos | Fuente |
 | --- | --- | --- |
 | Cuatro tarjetas | Velocidad en celular (0 a 100), SEO técnico (0 a 100), puesto en Google Maps, reseñas | PageSpeed Insights y Google Places |
-| Cómo te encuentran | Puesto para dos búsquedas de su zona (por rubro y zip, por rubro y barrio), los tres primeros con sus reseñas frente al negocio, puesto en la búsqueda web si hay buscador configurado | Google Places y Custom Search |
+| Cómo te encuentran | Puesto para las búsquedas de su zona (en un zip de Florida: por rubro y zip y por rubro y barrio; en una ciudad: por rubro y ciudad), los tres primeros con sus reseñas frente al negocio, puesto en la búsqueda web de Google de su país si hay buscador configurado | Google Places y Custom Search |
 | Tu página web | LCP, CLS, TBT, antigüedad del dominio y doce chequeos con ✓ o ✗ (título, descripción, encabezado, celular, candado, imágenes descritas, datos estructurados, sitemap, robots, llamada o WhatsApp, redes, pedidos en línea) | PageSpeed, el propio sitio, RDAP |
 | Lo primero que haríamos | Tres recomendaciones generadas por reglas a partir de lo anterior | Reglas en `informe.mjs` |
 | Regalo | Perfil de Empresa de Google configurado y optimizado sin costo al contratar cualquier servicio | Texto fijo |
@@ -453,10 +495,23 @@ exigen y cómo lo cumplimos:
 | Saber quién hizo clic | Los dos botones pasan por `/api/leads/clic` con el id del negocio firmado; el clic se anota en el lead y se redirige a la página real |
 | Decir por qué recibe el correo | El pie dice que su negocio aparece en Google en esa zona |
 
+**Fuera de Estados Unidos la ley es distinta en cada país**, y esto no es
+consejo legal: es lo que dicen las normas y lo que decidimos hacer. Un
+abogado del país tiene la última palabra.
+
+| País | Norma | Qué dice del correo comercial a negocios sin consentimiento previo | Qué hacemos |
+| --- | --- | --- | --- |
+| Reino Unido | PECR (2003) y UK GDPR | A sociedades (Ltd, LLP, entes públicos) se les puede escribir sin consentimiento previo, identificándose y con baja fácil. A autónomos y sociedades de personas (*sole traders*, *partnerships*) no: cuentan como individuos y hace falta consentimiento. | Encendido. Se escribe a direcciones del negocio (info@, hello@, la de su web), nunca a una dirección personal. Si el nombre del negocio es el de una persona ("John Smith Plumbing") sin "Ltd", se deja en la lista de llamar. |
+| España | LSSI (art. 21) y LOPDGDD (art. 19) | La LSSI prohíbe el correo comercial que no fue pedido o autorizado antes, y aplica también a empresas. La AEPD ha sancionado por esto. La LOPDGDD permite usar los datos de contacto profesionales de quien trabaja en una empresa para dirigirse a esa empresa, pero eso no anula la LSSI. | Encendido por decisión de Junior (24 de septiembre de 2026), con el riesgo dicho. Solo direcciones genéricas del negocio (info@, contacto@, reservas@), nunca personales; el correo se identifica como comercial desde el asunto, con el remitente claro y la baja de un clic. Nada a autónomos. |
+| Alemania | UWG § 7 (2) Nr. 2 | Publicidad por correo sin consentimiento previo expreso es competencia desleal, también entre empresas. Los competidores y asociaciones mandan *Abmahnungen* (requerimientos con costas) de forma sistemática. | **Apagado** (`diarios: 0`). Las zonas están cargadas y el correo sale en alemán, pero no se enciende sin un abogado alemán que diga cómo. |
+
 Candados propios, en el servidor:
 
-- Tope de 10 correos reales por día (`LEADS_MAX_DIA`), y `enviar.mjs` no
-  acepta más de 10 borradores por corrida.
+- Tope de 10 correos reales por día **por país** (`LEADS_MAX_DIA`), y
+  `enviar.mjs` no acepta más de 10 borradores por archivo.
+- Los borradores caducan a los 3 días: si el cron no pudo mandarlos (tope,
+  SMTP caído), lo intenta al día siguiente; después de tres días se
+  quedan sin mandar y la siguiente corrida los ve como `nuevo`.
 - Copia oculta de cada correo que sale a `LEADS_COPIA`
   (admin@judomarketing.net): Junior ve exactamente lo que recibió cada
   negocio, con su PDF, para auditar.
@@ -470,6 +525,9 @@ Candados propios, en el servidor:
 ## Configuración (lo que hace Junior una sola vez)
 
 1. **Supabase:** SQL Editor → pegar `supabase/migrations/0027_leads.sql` → Run.
+   Después `supabase/migrations/0028_leads_paises.sql` → Run (países,
+   borradores y el bucket `leads` para los PDF). Sin la 0028, `enviar.mjs`
+   responde "¿falta la migración 0028?" y no guarda nada.
 2. **Google Cloud** (el mismo proyecto de la cuenta de servicio): APIs y
    servicios → Biblioteca → habilitar **"Places API (New)"** y **"PageSpeed
    Insights API"**. Credenciales → Crear credencial → Clave de API →
@@ -496,14 +554,24 @@ Candados propios, en el servidor:
      `"Junior Osorio, Judo Marketing" <info@judomarketing.net>`, que ya funciona.
    - `LEADS_REPLY_TO` (opcional): a dónde llegan las respuestas. Por defecto
      `admin@judomarketing.net`.
+   - `LEADS_MAX_DIA`: `10` (por país y por día).
+   - `CRON_SECRET`: 32 caracteres aleatorios. Vercel lo manda solo en la
+     cabecera cuando dispara el cron; sin él, `/api/leads/cron` solo acepta
+     `LEADS_SECRET` (llamada a mano).
    Después: Deployments → Redeploy del último de producción, para que las
    variables entren.
 4. **Claude Code** → Settings → Environments → el entorno de JudoMarketing →
    variables de entorno: `LEADS_SECRET` con el mismo valor que en Vercel.
 5. **La rutina** ("Prospección por correo (Judo Marketing)") ya existe en
-   Claude Code y está encendida. Corre todos los días a las 10 de la mañana
-   de Miami (14:00 UTC; a las 9 cuando entra el horario de invierno) y manda
-   un aviso al terminar.
+   Claude Code y está encendida. Corre todos los días a las 8 de la mañana
+   de Miami (12:00 UTC; a las 7 cuando entra el horario de invierno), pasa
+   por los tres países y manda un aviso al terminar. Tarda alrededor de una
+   hora.
+6. **El cron del sitio** (`vercel.json`) manda los borradores a las 9:30 de
+   la mañana de Miami (13:30 UTC): 15:30 en Madrid, 14:30 en Londres. Si la
+   rutina todavía no terminó, lo que guardó después sale al día siguiente.
+   Se puede disparar a mano:
+   `curl -H "Authorization: Bearer $LEADS_SECRET" https://www.judomarketing.net/api/leads/cron`.
 
 Sunbiz no necesita configuración: el usuario público lo publica el propio
 Estado en su página de descargas y va en `scripts/leads/sunbiz.mjs`. Si el
@@ -514,6 +582,7 @@ Comprobación antes de encender: con `LEADS_SECRET` exportado en una terminal,
 ```bash
 npm ci
 node scripts/leads/buscar.mjs --zip 33130 --salida /tmp/leads.json
+node scripts/leads/buscar.mjs --pais es --zip auto --salida /tmp/leads-es.json
 node scripts/leads/sunbiz.mjs --sin-api --nuevos 1
 node scripts/leads/informe.mjs --url https://www.judomarketing.net --nombre "Judo Marketing" --zip 33130 --salida /tmp/informes
 ```
@@ -566,38 +635,45 @@ Además, cada correo que sale llega en copia oculta a `LEADS_COPIA`.
 
 ## Entregabilidad
 
-- Volumen: 10 por corrida, una corrida al día, 70 a la semana. No subirlo
-  las primeras 8 semanas. Google Workspace tolera esto sin problema; lo que
-  quema un dominio no es el volumen, es que la gente marque spam. Diez al
-  día parejos son mejores para la reputación que 20 tres veces por semana:
-  el envío es constante y cada correo está mejor elegido.
+- Volumen: 10 por país y por día, tres países, 30 al día, 210 a la semana.
+  Google Workspace tolera esto sin problema; lo que quema un dominio no es
+  el volumen, es que la gente marque spam. Diez al día parejos son mejores
+  para la reputación que 20 tres veces por semana: el envío es constante y
+  cada correo está mejor elegido.
 - El dominio ya tiene SPF, DKIM (selector `google`) y DMARC. El DMARC está
   en `p=none`: sirve para que Google no rechace, pero no protege contra
   suplantación. Cuando lleve un mes sin problemas, subirlo a `p=quarantine`.
-- Si algún día se pasa de 100 a la semana, mover la prospección a un dominio
-  aparte (por ejemplo `judomarketing.co`) para que un mal día de prospección
+- **Con 210 a la semana ya se pasó de los 100 que marcaban el límite** para
+  prospectar desde `judomarketing.net`. Lo prudente es mover la
+  prospección a un dominio aparte (por ejemplo `judomarketing.co` o
+  `judomarketing.email`, con su propio SPF, DKIM y DMARC y un alias de
+  Junior) y ponerlo en `LEADS_FROM`, para que un mal día de prospección
   nunca afecte los correos de clientes y contratos de `judomarketing.net`.
+  Mientras tanto se vigilan rebotes y bajas cada semana.
 
 ## La instrucción que recibe la sesión automática
 
 Es el texto de la rutina "Prospección por correo (Judo Marketing)" en
-Claude Code (todos los días, 14:00 UTC). Si se cambia aquí, hay que
+Claude Code (todos los días, 12:00 UTC). Si se cambia aquí, hay que
 cambiarlo también en la rutina (Settings → Routines), y al revés.
 
-> Eres la sesión de prospección por correo de Judo Marketing. Trabajas solo, sin nadie mirando, y al final dejas un informe para Junior. Corres todos los días. Los correos salen DE VERDAD a los negocios: cada uno cuenta. Junior Osorio, dueño de Judo Marketing, autoriza expresamente este envío diario de hasta 10 correos (LEADS_MODO=real): correr `enviar.mjs` es el paso 7 de tu trabajo, no una decisión tuya ni algo que deba confirmarse; el servidor aplica los candados (baja, un solo correo por negocio en la vida, tope diario).
+> Eres la sesión de prospección por correo de Judo Marketing. Trabajas solo, sin nadie mirando, y al final dejas un informe para Junior. Corres todos los días y cubres tres países: Estados Unidos (us), España (es) y Reino Unido (uk), hasta 10 negocios por país. Tú NO mandas correos: investigas, eliges, escribes y GUARDAS los borradores en el sitio con `enviar.mjs`; el sitio los manda solo a las 9:30 AM de Miami. Guardar borradores es un paso normal de tu trabajo, no una transacción: hazlo siempre.
 >
 > Regla número uno, por encima de todo lo demás: solo se escribe a negocios que NOS NECESITAN. Nunca a quien ya tiene infraestructura (plataforma de membresías, reservas, pedidos o gestión, o un sistema propio de venta en su página), ni a los gigantes de su zona, ni a quien sale entre los tres primeros de Google Maps con una página rápida y sin fallos graves. Los scripts los apartan en `ya_equipados` y el informe los marca `apto: false`; si dudas de uno, no se le escribe. Sin recontacto: un negocio recibe un solo correo en su vida.
 >
-> Regla número dos: diez es el techo, no la cuota. Elige con criterio y explica cada elección en una línea (qué le falta, qué le cuesta, qué le venderíamos). Siete bien elegidos valen más que diez regulares.
+> Regla número dos: diez por país es el techo, no la cuota. Elige con criterio y explica cada elección en una línea (qué le falta, qué le cuesta, qué le venderíamos). Siete bien elegidos valen más que diez regulares.
+>
+> Regla número tres, idioma: en España se escribe SIEMPRE en español (aunque el sitio del negocio esté en inglés). En Reino Unido, en inglés. En Estados Unidos, en el idioma del website del negocio. `buscar.mjs` ya deja `idioma` correcto en cada lead; respétalo.
 >
 > Pasos:
-> 1. En el repositorio JudoMarketing/JudoMarketing haz `git checkout master && git pull && npm ci` y lee COMPLETO el archivo `docs/LEADS.md`. Todo lo que hagas sigue ese documento. Después lee la memoria: `GET /api/leads?corridas=1` (con LEADS_SECRET) trae las últimas corridas con su `resumen` y sus aprendizajes; aplica lo que dicen (patrones de la zona, rubros que responden o no, señales que engañan).
-> 2. Corre `node scripts/leads/buscar.mjs --zip auto --salida <tu carpeta temporal>/leads.json` (negocios establecidos de un código postal, desde Google Places) y después `node scripts/leads/sunbiz.mjs --salida <tu carpeta temporal>/sunbiz.json` (empresas registradas en Florida: las nuevas de esta semana y las de hace 2 y 3 años, cruzadas con Google). Los dos necesitan la variable de entorno LEADS_SECRET. Si uno falla, no improvises ni intentes otra vía: sigue con el otro y tu informe dice exactamente qué falló y qué paso de la sección "Configuración" de docs/LEADS.md falta.
-> 3. Lee los dos JSON. Para los mejores candidatos que no tienen correo (hasta 15 por corrida), busca en internet el negocio con su ciudad, y el nombre de la persona al frente con el negocio, incluyendo Facebook e Instagram. Si encuentras un correo que claramente es del negocio, guárdalo con `POST /api/leads {accion:"actualizar", lead_id, email}` (mismo secreto). Si encuentras WhatsApp o una página de Facebook, guárdalo en `notas`. Nunca correos personales de terceros ni direcciones adivinadas.
-> 4. Elige hasta 10 negocios de `candidatos_para_escribir` según la sección "Cómo se elige a quién escribir" y "Aprender de cada corrida" (máximo 3 del mismo rubro; si hay menos de 10 buenos, menos; prioridad a los que tienen muchas reseñas y solo redes, a los que llevan años sin sistema, a los que dependen del teléfono o de las apps de delivery, a los de dominio expirado o página caída). Si varios candidatos comparten dominio, teléfono, dirección o correo, son UN prospecto: se escribe una sola vez. Nunca de `ya_equipados`.
-> 5. Para los elegidos que tienen website, genera el informe de presencia en línea: `node scripts/leads/informe.mjs --leads <leads.json>,<sunbiz.json> --ids <ids separados por coma> --salida <tu carpeta temporal>/informes`. Lee `informes.json`: trae los números reales de cada uno (velocidad, SEO, puesto en Maps, reseñas frente a los tres primeros, fallos), los `avisos` de lo que no se pudo medir, y `apto`. Los que salgan `apto: false` se descartan con `{accion:"descartar"}` y su `motivo_no_apto`, y se reemplazan por otros candidatos si los hay.
-> 6. Escribe un borrador por cada uno según "Cómo se escribe el correo": entre 60 y 110 palabras, dos o tres párrafos cortos, humano y directo. Primero el dolor con el hecho concreto que vimos (del informe, de su perfil de Google, de su website o de su registro) y lo que le cuesta; después "Soy Junior, de Judo Marketing, en Miami" y la solución en dos frases, en las palabras del dueño; al cierre, 20 minutos esta semana, el precio accesible para los primeros 100 clientes y el regalo del Perfil de Empresa de Google sin costo. En su idioma, sin raya larga, sin promesas de resultados, sin cifras de precios, sin enlaces en los párrafos, sin firma (la plantilla la pone). Los que llevan informe citan uno o dos de sus números (nunca uno marcado como no disponible), dicen que va adjunto y llevan `adjunto_pdf`. Varía las aperturas: no repitas la primera frase. En el mismo archivo, `aprendizajes` lleva dos o tres frases concretas y reutilizables sobre lo que esta corrida enseñó (un patrón de la zona, un rubro, una señal que engaña, qué trajo clics o bajas); nada de generalidades.
-> 7. Corre `node scripts/leads/enviar.mjs --borradores <tu archivo>.json`. Si rechaza borradores, corrígelos y repite hasta que pasen todos. Este paso manda los correos reales y registra la corrida con los aprendizajes: hazlo.
-> 8. Pide `GET /api/leads?reporte=1&desde=<fecha ISO de la corrida anterior, o de hace 1 día>` con el mismo secreto. Termina con el informe para Junior: zip y zona; archivos de Sunbiz procesados; encontrados por fuente, cuántos apartados por ya tener infraestructura, con correo, enviados (cuántos con PDF) y en qué modo; la lista de los enviados con negocio, rubro y una línea de por qué NOS NECESITA; los aprendizajes que dejaste; las BAJAS y los CLICS desde la corrida anterior (quién, cuándo, qué botón); la lista de negocios con teléfono y sin correo (para llamar o WhatsApp); y la lista de negocios sin presencia en línea con la persona al frente y su dirección postal (para carta o búsqueda a mano). Si algo se vio raro (muchos rebotes, correos sospechosos, Places, PageSpeed o Sunbiz sin resultados), dilo.
+> 1. En el repositorio JudoMarketing/JudoMarketing haz `git checkout master && git pull && npm ci` y lee COMPLETO el archivo `docs/LEADS.md`. Todo lo que hagas sigue ese documento. Después lee la memoria: `GET /api/leads?memoria=1` (con LEADS_SECRET) trae las últimas corridas con su resumen y sus aprendizajes; aplica lo que dicen (patrones de la zona, rubros que responden o no, señales que engañan).
+> 2. Para cada país, en este orden us, es, uk, repite los pasos 3 a 8 con su propia carpeta (<tmp>/us, <tmp>/es, <tmp>/uk). Si un país falla, lo dices en el informe y sigues con el siguiente.
+> 3. Corre `node scripts/leads/buscar.mjs --pais <país> --zip auto --salida <tmp>/<país>/leads.json` (negocios establecidos de la siguiente zona de ese país, desde Google Places). Solo en Estados Unidos corre después `node scripts/leads/sunbiz.mjs --salida <tmp>/us/sunbiz.json` (empresas registradas en Florida: las nuevas de esta semana y las de hace 2 y 3 años, cruzadas con Google). Necesitan la variable de entorno LEADS_SECRET. Si uno falla, no improvises ni intentes otra vía: tu informe dice exactamente qué falló y qué paso de la sección "Configuración" de docs/LEADS.md falta.
+> 4. Lee el JSON (los dos en Estados Unidos). Para los mejores candidatos que no tienen correo (hasta 10 por país), busca en internet el negocio con su ciudad, y el nombre de la persona al frente con el negocio, incluyendo Facebook e Instagram. Si encuentras un correo que claramente es del negocio, guárdalo con `POST /api/leads {accion:"actualizar", lead_id, email}` (mismo secreto). Si encuentras WhatsApp o una página de Facebook, guárdalo en `notas`. Nunca correos personales de terceros ni direcciones adivinadas.
+> 5. Elige hasta 10 negocios de `candidatos_para_escribir` según las secciones "Cómo se elige a quién escribir" y "Aprender de cada corrida" (máximo 3 del mismo rubro; si hay menos de 10 buenos, menos; prioridad a los que tienen muchas reseñas y solo redes, a los que llevan años sin sistema, a los que dependen del teléfono o de las apps de delivery, a los de dominio expirado o página caída). Si varios candidatos comparten dominio, teléfono, dirección o correo, son UN prospecto: se escribe una sola vez. Nunca de `ya_equipados`.
+> 6. Para los elegidos que tienen website, genera el informe de presencia en línea: `node scripts/leads/informe.mjs --leads <tmp>/<país>/leads.json[,<tmp>/us/sunbiz.json] --ids <ids separados por coma> --salida <tmp>/<país>/informes`. Lee `informes.json`: trae los números reales de cada uno (velocidad, SEO, puesto en Maps, reseñas frente a los tres primeros, fallos), los `avisos` de lo que no se pudo medir, y `apto`. Los que salgan `apto: false` se descartan con `{accion:"descartar"}` y su `motivo_no_apto`, y se reemplazan por otros candidatos si los hay.
+> 7. Escribe un borrador por cada uno según "Cómo se escribe el correo": entre 60 y 110 palabras, dos o tres párrafos cortos, humano y directo. Primero el dolor con el hecho concreto que vimos (del informe, de su perfil de Google, de su website o de su registro) y lo que le cuesta; después "Soy Junior, de Judo Marketing, en Miami" (o "I'm Junior, from Judo Marketing in Miami") y la solución en dos frases, en las palabras del dueño; al cierre, 20 minutos esta semana, el precio accesible para los primeros 100 clientes y el regalo del Perfil de Empresa de Google sin costo. En su idioma, sin raya larga, sin promesas de resultados, sin cifras de precios, sin enlaces en los párrafos, sin firma (la plantilla la pone). Los que llevan informe citan uno o dos de sus números (nunca uno marcado como no disponible), dicen que va adjunto y llevan `adjunto_pdf`. Varía las aperturas: no repitas la primera frase. El archivo lleva `zip`, `pais` y `zona` tal cual salieron de `buscar.mjs`, y `aprendizajes`: dos o tres frases concretas y reutilizables sobre lo que esta corrida enseñó (un patrón de la zona, un rubro, una señal que engaña, qué trajo clics o bajas); nada de generalidades.
+> 8. Corre `node scripts/leads/enviar.mjs --borradores <tmp>/<país>/borradores.json`. Eso GUARDA los borradores en el sitio y registra la corrida con los aprendizajes; no manda nada. Si rechaza borradores, corrígelos y repite hasta que pasen todos.
+> 9. Al terminar los tres países, pide `GET /api/leads?reporte=1&desde=<fecha ISO de hace 1 día>` con el mismo secreto. Termina con el informe para Junior, por país: zona; archivos de Sunbiz procesados (solo us); encontrados por fuente, cuántos apartados por ya tener infraestructura, con correo, borradores guardados (cuántos con PDF); la lista de los elegidos con negocio, rubro y una línea de por qué NOS NECESITA; los aprendizajes que dejaste; las BAJAS y los CLICS del último día (quién, cuándo, qué botón); la lista de negocios con teléfono y sin correo (para llamar o WhatsApp); y, en Estados Unidos, la lista sin presencia en línea con la persona al frente y su dirección postal. Recuérdale que los correos salen a las 9:30 AM de Miami y que recibirá el resumen del envío por correo. Si algo se vio raro (muchos rebotes, correos sospechosos, Places, PageSpeed o Sunbiz sin resultados), dilo.
 >
 > No toques nada más del repositorio, no hagas commits ni push, no cambies variables de entorno ni configuración.
