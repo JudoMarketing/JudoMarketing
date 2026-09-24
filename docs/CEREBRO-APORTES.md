@@ -1078,3 +1078,40 @@ conversación de JuditoADS (prompt-juditos-app-review.txt).
 la bandera `contact_email_verified` es otra cosa, se enciende con un enlace
 de confirmación desde el panel, y solo se ve por la API. Antes de decir
 «está hecho», leerla.
+
+---
+
+### 2026-09-24 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** «el caso de uso está permitido, pero el video no enseña
+el recorrido completo» es el rechazo más común del App Review, y se evita
+con un guion, no con más texto. Meta mira tres cosas en el video: el login
+completo, el diálogo donde la persona CONCEDE ese permiso, y la app usándolo
+de punta a punta, todo en inglés y con subtítulos que explican cada botón.
+Dos trampas que lo arruinan sin que se note al grabar: si la app ya está
+autorizada en ese Facebook, el diálogo no vuelve a enseñar los permisos
+(hay que quitarla antes en Settings → Business integrations); y cualquier
+texto que se quedó escrito a mano en el otro idioma sale en todas las
+tomas. Un solo video con rótulos «PART 1…4» subido en todos los permisos,
+y cada texto diciendo qué parte mirar, le ahorra al revisor buscar.
+**Evidencia:** ads_management, ads_read e instagram_basic rechazados el
+24-sep con «Screencast Not Aligned with Use Case Details»; los cuatro de
+página, aprobados en el mismo envío. El revisor de instagram_basic pidió
+literalmente la cuenta con su @, sus campos de perfil leídos en vivo y su
+lista de publicaciones rotulada: la app hacía solo lo último, a medias.
+
+---
+
+### 2026-09-24 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** antes de proponer «quita ese permiso», buscar en el
+código TODAS las llamadas que protege. Recomendé quitar instagram_basic
+creyendo que solo servía para mostrar el @ en el anuncio; también leía la
+lista de publicaciones de Instagram para promocionarlas, y quitarlo habría
+matado esa función. Y al revés: pedir campos que dependen de un permiso no
+aprobado puede hacer que Meta rechace la llamada entera (el cliente se
+queda sin páginas). El arreglo es volver a pedir sin esos campos, pero solo
+si el fallo es de permiso: un Meta lento no es motivo para guardar datos
+incompletos.
+**Evidencia:** Judito-Ads 2cc1dcc — fetchUserPages con respaldo sin campos
+de Instagram y pruebas/instagram.test.mts (25 comprobaciones, incluidos los
+casos en que NO debe reintentar); barrido de las nueve pantallas en inglés
+con un detector de español que primero se probó contra el portal en español.
