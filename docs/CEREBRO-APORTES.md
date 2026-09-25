@@ -1138,3 +1138,28 @@ que el guard haga cero llamadas a Meta; una mutación de la regla la hizo
 fallar. Recorrido en navegador, 21/21: el botón Siguiente avanzaba con la web
 vacía hasta que se exigió que existiera. Error original: subcode 1815676,
 «Non-Website ads are not allowed in Ad Set with Website Destination Type».
+
+---
+
+### 2026-09-25 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un botón que tarda (publicar en una API externa) no
+necesita solo una pantalla de carga: necesita un candado en el servidor. Con
+el botón gris y nada más, la gente recarga, abre otra pestaña o vuelve y lo
+pulsa de nuevo. Mientras tanto la campaña seguía en «borrador», así que cada
+clic la publicaba otra vez en la cuenta del cliente. Arreglo en tres
+piezas. (1) Una marca «publicando desde» que se reclama con UN UPDATE
+condicionado (donde sigue en borrador y nadie la marcó, o la marca caducó),
+para que de dos peticiones a la vez solo pase una. Se suelta si falla, y
+caduca sola por si la función muere a mitad. (2) La página que se abre a
+mitad ve la marca y enseña la misma espera en vez del botón. (3) La pantalla
+de carga no se cierra al llegar la respuesta, sino cuando la página ya
+muestra el estado nuevo. Si se cerraba antes, reaparecía un instante el
+botón viejo, listo para otro clic. De paso: todo fetch de un botón necesita
+try/catch. Un corte de red dejaba el botón gris para siempre. Y lo que se
+guarda DESPUÉS de publicar va fuera del try de publicar: si fallaba,
+contestaba «no se pudo publicar» con la campaña ya creada.
+**Evidencia:** Judito-Ads 780702b. pruebas/activar-una-vez.test.mts: dos
+reclamos a la vez → solo uno; al quitar la condición, la prueba falla.
+Recorrido en navegador, 34/34: segundo Activar contra la ruta real → 409
+sin tocar Meta; tras el éxito el botón viejo no reaparece; al volver a
+mitad se ve la espera y se actualiza sola.
