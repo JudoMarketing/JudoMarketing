@@ -26,6 +26,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-09-25 | **Auditoría completa de judomarketing.net** en `AUDITORIA-JUDO-MARKETING.md`: notas por área, evidencia, plan de 90 días y lo que ya se corrigió (fondo animado solo en la primera pantalla, iconos, cabeceras de seguridad, redirecciones del sitio viejo, imagen para compartir, portafolio a una columna en teléfono). |
 | 2026-09-25 | **Prospección: España apagada (LSSI) y Reino Unido solo a sociedades Ltd** (señal `sociedad_uk` en `buscar.mjs`). Quedan Estados Unidos y Reino Unido, 10 por país al día. |
 | 2026-09-24 | **Prospección en tres países: Estados Unidos, España y Reino Unido, 10 por país al día** (Alemania cargada, apagada por ley). Zonas en `scripts/leads/zonas.json` (3.400 ciudades). La sesión ya no manda: guarda los borradores y el sitio los manda a las 9:30 AM de Miami desde `/api/leads/cron`. Migración 0028. Ley por país en `LEADS.md`, "Candados y ley". |
 | 2026-09-23 | **Prospección: 10 negocios al día, todos los días** (antes 20, tres veces por semana). La sesión automática lee los aprendizajes de las corridas anteriores (`leads_corridas.resumen`) antes de elegir y deja los suyos al terminar. Criterio en `LEADS.md`, sección "Aprender de cada corrida". |

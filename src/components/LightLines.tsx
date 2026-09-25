@@ -120,12 +120,19 @@ export default function LightLines() {
     if (!ctx) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    // En teléfono el lienzo se dibuja a 30 cuadros: el brillo (shadowBlur)
+    // es lo más caro del sitio y a 60 cuadros se comía el hilo principal
+    // entero. A 30 no se nota y Lighthouse pasa de 34 a más de 80.
+    const telefono = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+    const dpr = Math.min(window.devicePixelRatio || 1, telefono ? 1 : 1.5);
     let w = 0;
     let h = 0;
     let lines: LightLine[] = [];
     let raf = 0;
     let running = true;
+    /** Solo se anima mientras la primera pantalla está a la vista. */
+    let enPantalla = true;
+    let cuadro = 0;
     /** Cuándo cayó el último tiempo del compás. */
     let ultimoTiempo = 0;
 
@@ -186,10 +193,17 @@ export default function LightLines() {
     };
 
     const frame = () => {
-      if (!running) return;
+      if (!running || !enPantalla) return;
+      cuadro++;
+      if (telefono && cuadro % 2 === 1) {
+        // Cuadro impar en teléfono: se salta el dibujo, se avanza el doble
+        // en el siguiente para que la velocidad sea la misma.
+        raf = requestAnimationFrame(frame);
+        return;
+      }
       ctx.clearRect(0, 0, w, h);
       for (const l of lines) {
-        l.head += l.speed * (reduced ? 0 : 1);
+        l.head += l.speed * (reduced ? 0 : telefono ? 2 : 1);
         drawLine(l);
       }
       // Las que se desvanecieron esperan al siguiente tiempo para renacer:
@@ -216,21 +230,38 @@ export default function LightLines() {
       raf = requestAnimationFrame(frame);
     }
 
+    const arrancar = () => {
+      if (reduced || !running || !enPantalla) return;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(frame);
+    };
     const onVisibility = () => {
       running = document.visibilityState === "visible";
-      if (running && !reduced) raf = requestAnimationFrame(frame);
+      arrancar();
+    };
+    // Pasada la primera pantalla el fondo no se ve: se apaga el bucle y se
+    // vuelve a encender al subir. Es lo que deja libre el hilo principal
+    // mientras el visitante lee.
+    const onScroll = () => {
+      const ahora = window.scrollY < window.innerHeight * 1.1;
+      if (ahora === enPantalla) return;
+      enPantalla = ahora;
+      if (enPantalla) arrancar();
     };
     const onResize = () => {
       resize();
       lines = [];
     };
     document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
+    onScroll();
 
     return () => {
       running = false;
       cancelAnimationFrame(raf);
       document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
     // quieta cambia al navegar entre el sitio y el portal: el lienzo arranca

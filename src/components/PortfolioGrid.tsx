@@ -80,7 +80,7 @@ export default function PortfolioGrid({
       )}
 
       {/* Tres por fila en cualquier pantalla */}
-      <div className="grid grid-cols-3 gap-3 sm:gap-5">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {visibles.map((trabajo, i) => (
           <Reveal key={trabajo.dominio} paso={i}>
             <a
@@ -105,22 +105,22 @@ export default function PortfolioGrid({
                 />
                 {/* Un borrador se puede enseñar, pero se dice que lo es */}
                 {trabajo.enDesarrollo && (
-                  <span className="absolute top-1.5 left-1.5 rounded-full bg-amber-400 px-2 py-0.5 text-[9px] font-bold tracking-wide text-judo-black uppercase sm:top-2.5 sm:left-2.5 sm:text-[10px]">
+                  <span className="absolute top-2.5 left-2.5 rounded-full bg-amber-400 px-2 py-0.5 text-[11px] font-bold tracking-wide text-judo-black uppercase">
                     {t("wip")}
                   </span>
                 )}
               </div>
 
               <div className="flex flex-1 flex-col gap-1 p-2.5 sm:gap-1.5 sm:p-4">
-                <h2 className="line-clamp-2 text-[13px] leading-tight font-semibold sm:text-base">
+                <h2 className="line-clamp-2 text-base leading-tight font-semibold">
                   {trabajo.nombre}
                 </h2>
                 {trabajo.descripcion[locale] && (
-                  <p className="line-clamp-3 text-[10px] leading-snug text-judo-fog/55 sm:line-clamp-2 sm:text-xs">
+                  <p className="line-clamp-2 text-sm leading-snug text-judo-fog/65 sm:text-xs">
                     {trabajo.descripcion[locale]}
                   </p>
                 )}
-                <span className="mt-auto pt-1.5 text-[10px] font-semibold text-judo-lilac sm:text-xs">
+                <span className="mt-auto pt-1.5 text-sm font-semibold text-judo-lilac sm:text-xs">
                   {t("visit")} ↗
                 </span>
               </div>

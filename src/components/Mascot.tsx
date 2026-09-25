@@ -148,13 +148,13 @@ export default function Mascot() {
           <div className="mt-2 flex flex-col items-stretch gap-1.5">
             <button
               onClick={() => cerrarOferta("/juditoads")}
-              className="rounded-full bg-judo-purple px-3 py-1 text-xs font-semibold text-white transition hover:bg-judo-lilac"
+              className="min-h-9 rounded-full bg-judo-purple px-3 py-2 text-xs font-semibold text-white transition hover:bg-judo-lilac"
             >
               {t("juditoYes")}
             </button>
             <button
               onClick={() => cerrarOferta()}
-              className="rounded-full border border-judo-purple px-3 py-1 text-xs font-semibold text-judo-lilac transition hover:bg-judo-purple/15"
+              className="min-h-9 rounded-full border border-judo-purple px-3 py-2 text-xs font-semibold text-judo-lilac transition hover:bg-judo-purple/15"
             >
               {t("juditoNo")}
             </button>

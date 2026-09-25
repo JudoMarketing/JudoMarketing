@@ -24,7 +24,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   const titulo =
-    "mb-3 text-xs font-semibold tracking-wider text-judo-fog/40 uppercase";
+    "mb-3 text-xs font-semibold tracking-wider text-judo-fog/60 uppercase";
   const enlace = "text-judo-fog/60 transition hover:text-judo-lilac";
 
   return (
@@ -108,7 +108,7 @@ export default function Footer() {
         </div>
 
         {/* Línea final */}
-        <div className="mt-12 flex flex-col items-center gap-3 border-t border-judo-lilac/10 pt-6 text-xs text-judo-fog/45 sm:flex-row sm:justify-between">
+        <div className="mt-12 flex flex-col items-center gap-3 border-t border-judo-lilac/10 pt-6 text-xs text-judo-fog/60 sm:flex-row sm:justify-between">
           <p>
             © {year} Judo Marketing. {t("rights")}
           </p>

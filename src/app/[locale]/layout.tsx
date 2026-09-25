@@ -1,4 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+
+/** Color de la barra del navegador en teléfono: el negro de la marca. */
+export const viewport: Viewport = { themeColor: "#0b0b12" };
 import { precioDesde } from "@/lib/pricing";
 import { Poppins, Inter } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
@@ -77,7 +80,18 @@ export async function generateMetadata({
     // diciendo "soy la portada", y Google las marcaba como duplicados. Cada
     // página declara el suyo: las públicas con pageMetadata(), las privadas
     // con noindex.
-    icons: { icon: "/brand/logo-black.jpg" },
+    // Iconos de verdad: .ico para navegadores y el buscador, PNG para
+    // Android, apple-touch-icon para "añadir a inicio" en iPhone, y el
+    // manifest que los declara. Se generan del logo (public/).
+    icons: {
+      icon: [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+        { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+      ],
+      apple: "/apple-touch-icon.png",
+    },
+    manifest: "/manifest.webmanifest",
     // Verificación de cada buscador. Se pegan en Vercel y aparecen solas;
     // sin ellas el sitio funciona igual, solo que no puedes ver sus reportes.
     verification: {
@@ -112,8 +126,16 @@ export default async function LocaleLayout({
   }
   setRequestLocale(locale);
 
+  // Conexiones que todas las páginas abren de todos modos (Analytics y
+  // Supabase): anunciarlas ahorra unos 300 ms en teléfono.
+  const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
   return (
     <html lang={locale} className={`${poppins.variable} ${inter.variable}`}>
+      <head>
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        {supabase ? <link rel="preconnect" href={new URL(supabase).origin} crossOrigin="" /> : null}
+      </head>
       <body className="min-h-screen antialiased">
         <JsonLd locale={locale} />
         <ChunkGuard />

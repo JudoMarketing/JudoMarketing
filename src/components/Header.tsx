@@ -44,11 +44,14 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-judo-lilac/15 bg-judo-black/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link href="/" className="flex shrink-0 items-center gap-2">
+          {/* El nombre lo pone el span de abajo; el alt vacío evita leerlo dos
+              veces. 56 px es el tamaño real en pantalla (antes pedía 120 y
+              el navegador bajaba una imagen de 256). */}
           <Image
             src="/brand/logo-white-transparent.png"
-            alt="Judo Marketing"
-            width={120}
-            height={120}
+            alt=""
+            width={56}
+            height={56}
             priority
             className="h-11 w-11 object-contain sm:h-14 sm:w-14"
           />

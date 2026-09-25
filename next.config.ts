@@ -75,11 +75,38 @@ const nextConfig: NextConfig = {
       { source: "/es/portafolio", destination: "/es/showcase", permanent: true },
       { source: "/es/portfolio", destination: "/es/showcase", permanent: true },
       { source: "/es/datos", destination: "/es/intake", permanent: true },
+
+      // Direcciones del sitio anterior (Wix) que Google todavía tiene en su
+      // índice en septiembre de 2026. Cada una lleva a lo que la reemplaza,
+      // de forma permanente, para que Google pase el valor y deje de mostrar
+      // páginas que ya no existen.
+      { source: "/contact-judo", destination: "/contact", permanent: true },
+      { source: "/contact-us", destination: "/contact", permanent: true },
+      { source: "/about-us", destination: "/about", permanent: true },
+      { source: "/home", destination: "/", permanent: true },
+      { source: "/web-design", destination: "/services", permanent: true },
+      { source: "/social-media-marketing", destination: "/juditoads", permanent: true },
+      { source: "/ai-marketing", destination: "/juditos", permanent: true },
+      { source: "/pricing", destination: "/services", permanent: true },
+      { source: "/blog", destination: "/", permanent: true },
+      { source: "/blog/:path*", destination: "/", permanent: true },
     ];
   },
 
   async headers() {
     return [
+      // Cabeceras de seguridad para todo el sitio. Sin CSP todavía: el sitio
+      // carga Stripe, Turnstile, Meta y Google y hay que probarla en modo
+      // reporte antes de imponerla.
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(self)" },
+        ],
+      },
       // Los PDFs no pueden llevar <link rel="canonical">, y Google marcó la
       // política en PDF como "duplicado sin canonical" de /legal, que dice lo
       // mismo en HTML. Un PDF sí puede decirlo por cabecera. El contrato no

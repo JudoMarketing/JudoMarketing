@@ -13,7 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { en: "/legal", es: "/es/legal", priority: 0.3 },
   ];
 
-  return routes.flatMap(({ es, en, priority }) =>
+  const bilingues = routes.flatMap(({ es, en, priority }) =>
     [en, es].map((path) => ({
       url: `${BASE}${path}`,
       lastModified: new Date(),
@@ -24,4 +24,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       },
     }))
   );
+
+  // Las páginas públicas de los dos productos viven en apps aparte (bajo
+  // /juditoads y /juditos) y no tienen sitemap propio: se anuncian desde
+  // aquí para que Google las encuentre como parte del sitio.
+  const productos = ["/juditoads", "/juditos"].map((path) => ({
+    url: `${BASE}${path}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
+
+  return [...bilingues, ...productos];
 }

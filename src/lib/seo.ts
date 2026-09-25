@@ -158,6 +158,13 @@ export function pageMetadata(page: PageKey, locale: string): Metadata {
         "x-default": `${SITE_URL}${paths.en}`,
       },
     },
-    openGraph: { title, description },
+    // La imagen es la que hace que WhatsApp, Facebook y LinkedIn muestren
+    // una vista previa al pegar el enlace; sin ella la tarjeta sale vacía.
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}${paths[loc]}`,
+      images: [{ url: "/brand/og-thumbnail.jpg", width: 1200, height: 800 }],
+    },
   };
 }

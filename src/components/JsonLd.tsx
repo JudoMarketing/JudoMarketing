@@ -43,6 +43,7 @@ export default function JsonLd({ locale }: { locale: string }) {
         PERFIL_GOOGLE,
         "https://www.instagram.com/judo.marketing/",
         "https://www.facebook.com/Judomarketi/",
+        "https://github.com/JudoMarketing",
       ],
       knowsLanguage: ["es", "en"],
       areaServed: ["Miami", "Florida", "United States", "Latin America"],
