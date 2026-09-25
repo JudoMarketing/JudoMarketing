@@ -55,7 +55,7 @@ PAISES = {
                consulta=lambda r: f"{r['nombre']}, {r['adm']}, USA",
                nombre_z=lambda r: f"{r['nombre']}, {r['adm']}",
                sid=lambda r: f"{slug(r['ascii'])}-{r['adm'].lower()}"),
-    "es": dict(nombre="España", cc="ES", minpop=50000, idioma="es", languageCode="es", regionCode="ES", diarios=10, sunbiz=False,
+    "es": dict(nombre="España", cc="ES", minpop=50000, idioma="es", languageCode="es", regionCode="ES", diarios=0, sunbiz=False,
                consulta=lambda r: ", ".join(x for x in [r["nombre"], ES.get(r["adm"], ""), "España"] if x),
                nombre_z=lambda r: f"{r['nombre']} ({ES.get(r['adm'], '')})",
                sid=lambda r: slug(r["ascii"])),

@@ -388,6 +388,14 @@ export async function estudiarSitio(website, tipoGoogle = "") {
   }
   if (rutasSistema.size >= 2) r.senales.push(`ya_tiene_sistema:${[...rutasSistema].join("+")}`);
 
+  // Reino Unido: solo se escribe a sociedades (Ltd, LLP, PLC). La ley obliga
+  // a las sociedades a poner en su web el nombre con "Ltd"/"Limited", el
+  // número de registro o "Registered in England"; si nada de eso aparece,
+  // se trata como autónomo y no se le escribe.
+  if (/\b(ltd|limited|llp|plc)\b|company (number|no\.?|reg(istration)?\.? ?(number|no\.?))|registered in (england|wales|scotland|northern ireland)|registered (office|company)/i.test(html)) {
+    r.senales.push("sociedad_uk");
+  }
+
   const descripcion = meta(inicio.html, "description");
   const h1 = textoVisible((inicio.html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || [])[1] ?? "");
   r.resumen = [titulo && `Título: ${titulo}`, descripcion && `Descripción: ${descripcion}`, h1 && `Encabezado: ${h1}`, `Texto: ${texto.slice(0, 600)}`]
@@ -529,8 +537,12 @@ async function main() {
   // Quien ya tiene plataforma integrada o miles de reseñas no es candidato:
   // va a una lista aparte para que nadie le escriba por error.
   const equipado = (l) => l.senales.some((x) => x.startsWith("ya_tiene_") || x === "muy_establecido");
-  const conCorreo = leads.filter((l) => l.email && l.estado === "nuevo" && !equipado(l));
-  const sinCorreo = leads.filter((l) => !l.email && !equipado(l));
+  // Reino Unido: a autónomos y sociedades de personas no se les escribe
+  // (PECR). Solo pasa a candidato quien demostró ser sociedad en su web.
+  const noEsSociedadUk = (l) => pais === "uk" && !l.senales.includes("sociedad_uk");
+  const conCorreo = leads.filter((l) => l.email && l.estado === "nuevo" && !equipado(l) && !noEsSociedadUk(l));
+  const sinCorreo = leads.filter((l) => !l.email && !equipado(l) && !noEsSociedadUk(l));
+  const sinSociedadUk = leads.filter((l) => noEsSociedadUk(l) && !equipado(l));
   const yaEquipados = leads.filter(equipado);
   const yaConocidos = candidatos.length - aEstudiar.length;
 
@@ -548,10 +560,13 @@ async function main() {
     para_llamar_o_whatsapp: sinCorreo.filter((l) => l.telefono).slice(0, 25),
     // No se les escribe: ya tienen infraestructura o son gigantes de su zona.
     ya_equipados: yaEquipados.map((l) => ({ id: l.id, nombre: l.nombre, senales: l.senales.filter((x) => x.startsWith("ya_tiene") || x === "muy_establecido") })),
+    // Reino Unido: no se pudo comprobar que sean sociedad (Ltd); no se les
+    // escribe por correo. Quedan para llamar si tienen teléfono.
+    ...(pais === "uk" ? { sin_sociedad_uk: sinSociedadUk.map((l) => ({ id: l.id, nombre: l.nombre, telefono: l.telefono, website: l.website })) } : {}),
   };
   await writeFile(a.salida, JSON.stringify(salida, null, 2));
   console.error(
-    `Listo. ${candidatos.length} encontrados (${yaConocidos} ya conocidos), ${conCorreo.length} con correo para escribir, ${sinCorreo.length} sin correo. Guardado en ${a.salida}`
+    `Listo. ${candidatos.length} encontrados (${yaConocidos} ya conocidos), ${conCorreo.length} con correo para escribir, ${sinCorreo.length} sin correo${pais === "uk" ? `, ${sinSociedadUk.length} sin comprobar que sean Ltd` : ""}. Guardado en ${a.salida}`
   );
 }
 
