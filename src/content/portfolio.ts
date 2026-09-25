@@ -32,7 +32,7 @@ export type Trabajo = {
 // (migración 0023). Si se agrega una categoría, va en las cuatro.
 export const CATEGORIAS: { id: Categoria; es: string; en: string }[] = [
   { id: "food", es: "Comida y restaurantes", en: "Food & Restaurants" },
-  { id: "delivery", es: "Delivery apps", en: "Delivery apps" },
+  { id: "delivery", es: "Mobile apps", en: "Mobile apps" },
   { id: "tiendas", es: "Tiendas online", en: "Online stores" },
   { id: "servicios", es: "Servicios", en: "Services" },
   { id: "fundaciones", es: "Fundaciones y ONG", en: "Nonprofits" },
