@@ -1163,3 +1163,30 @@ reclamos a la vez → solo uno; al quitar la condición, la prueba falla.
 Recorrido en navegador, 34/34: segundo Activar contra la ruta real → 409
 sin tocar Meta; tras el éxito el botón viejo no reaparece; al volver a
 mitad se ve la espera y se actualiza sola.
+
+---
+
+### 2026-09-25 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** si el idioma de una página pública depende solo de una
+cookie, para Google esa versión no existe. Google entra sin cookies y ve
+siempre el idioma por defecto. Arreglo: cada idioma de las páginas públicas
+en su propia dirección (/juditoads y /juditoads/es, como el sitio padre con
+/es), con canonical, hreflang (en, es, x-default) y el sitemap que las
+nombra. A las personas se les puede redirigir por su cookie; a Google
+nunca. Tres trampas que solo aparecieron al probar en el navegador:
+(1) El selector de idioma no puede ser un <Link> de Next entre dos páginas
+que comparten layout: el layout no se vuelve a pintar, y el <html lang> y
+los textos de los componentes cliente se quedan en el idioma anterior.
+Tiene que ser un <a> normal, que además es un enlace que Google sigue.
+(2) Quien entra por /es tiene que quedar con el español guardado. Si no, al
+pulsar «Iniciar sesión» la página sale en inglés por la cookie vieja,
+mezclada con componentes en español.
+(3) Las canonical, absolutas y con www, sin barra final: la versión sin www y
+la barra final redirigen, y una canonical que redirige confunde a Google.
+Lo que el SEO promete (precio, días gratis) tiene que salir de las mismas
+cifras que cobra el sistema, con una prueba que lo exija.
+**Evidencia:** Judito-Ads 57d08fe. pruebas/seo.test.mts (41 comprobaciones).
+Producción revisada como Googlebot, 31/31: /juditoads/es con <html lang=es> y
+contenido en español sin cookie; sitemap con hreflang; login noindex. El
+robots.txt de judomarketing.net todavía no nombra /juditoads/sitemap.xml:
+Google solo lee el robots de la raíz del dominio.
