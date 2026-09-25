@@ -250,9 +250,13 @@ h1,
 }
 
 /* ── Entrada del hero ──────────────────────────────────────────────── */
+/* Arranca en 0.01 y no en 0 a propósito: con opacidad 0 el navegador no
+   "pinta" el titular y Google no lo cuenta como el elemento principal de la
+   página (LCP); se lo atribuía al globo de la mascota, que aparece tarde. A
+   0.01 es invisible igual, pero cuenta desde el primer cuadro. */
 @keyframes heroUp {
   from {
-    opacity: 0;
+    opacity: 0.01;
     transform: translateY(28px);
   }
   to {
@@ -262,7 +266,7 @@ h1,
 }
 
 .hero-in {
-  opacity: 0;
+  opacity: 0.01;
   /* Un tercio de pulso. Los escalonados van en múltiplos de --tiempo. */
   animation: heroUp calc(var(--pulso) / 3) var(--curva-entrada) forwards;
 }

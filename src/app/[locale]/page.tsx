@@ -4,7 +4,7 @@ import { Suspense, use } from "react";
 import { Link } from "@/i18n/navigation";
 import TiltCard from "@/components/TiltCard";
 import Reveal from "@/components/Reveal";
-import CommunityReviews from "@/components/CommunityReviews";
+import ResenasComunidad from "@/components/ResenasComunidad";
 import { PERFIL_GOOGLE } from "@/components/SocialLinks";
 import ListoOverlay from "@/components/ListoOverlay";
 import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
@@ -297,8 +297,11 @@ export default function HomePage({
             </Reveal>
           ))}
         </div>
-        {/* Reseñas aprobadas de visitantes + botón discreto para enviar una */}
-        <CommunityReviews />
+        {/* Reseñas aprobadas de visitantes (leídas en el servidor) + botón
+            discreto para enviar una */}
+        <Suspense fallback={null}>
+          <ResenasComunidad />
+        </Suspense>
       </section>
 
       {/* ── DIRECCIÓN / VISÍTANOS ────────────────────────────────── */}

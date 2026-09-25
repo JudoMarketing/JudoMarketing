@@ -1,24 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./ui";
 import TiltCard from "./TiltCard";
+import type { Resena } from "@/lib/resenas";
 
 /**
  * Reseñas enviadas por visitantes: muestra las aprobadas por Administración
  * a continuación de las fijas, y un botón pequeño y discreto para enviar
  * una nueva (queda pendiente de moderación, nada se publica solo).
+ *
+ * Las aprobadas llegan ya leídas desde el servidor (ver lib/resenas.ts). El
+ * envío va por REST directo, con la clave pública y las reglas de la base
+ * (RLS): así la portada no carga la librería de Supabase.
  */
 
-type ReviewRow = { id: string; name: string; place: string; body: string };
-
-export default function CommunityReviews() {
+export default function CommunityReviews({ aprobadas }: { aprobadas: Resena[] }) {
   const t = useTranslations("reviews");
-  const supabase = getSupabase();
 
-  const [approved, setApproved] = useState<ReviewRow[]>([]);
+  const approved = aprobadas;
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [place, setPlace] = useState("");
@@ -27,30 +28,30 @@ export default function CommunityReviews() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from("reviews")
-        .select("id,name,place,body")
-        .eq("status", "aprobada")
-        .order("created_at", { ascending: false })
-        .limit(9);
-      setApproved((data as ReviewRow[]) ?? []);
-    })().catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const { error: err } = await supabase.from("reviews").insert({
-      name: name.trim(),
-      place: place.trim(),
-      body: body.trim(),
-    });
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const llave = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    let ok = false;
+    try {
+      const res = await fetch(`${url}/rest/v1/reviews`, {
+        method: "POST",
+        headers: {
+          apikey: llave ?? "",
+          Authorization: `Bearer ${llave ?? ""}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({ name: name.trim(), place: place.trim(), body: body.trim() }),
+      });
+      ok = res.ok;
+    } catch {
+      ok = false;
+    }
     setLoading(false);
-    if (err) {
+    if (!ok) {
       setError(t("formError"));
       return;
     }

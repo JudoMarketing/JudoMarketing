@@ -124,7 +124,9 @@ export default function LightLines() {
     // es lo más caro del sitio y a 60 cuadros se comía el hilo principal
     // entero. A 30 no se nota y Lighthouse pasa de 34 a más de 80.
     const telefono = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
-    const dpr = Math.min(window.devicePixelRatio || 1, telefono ? 1 : 1.5);
+    // A 1 píxel por punto: el brillo desenfocado no gana nada con más y el
+    // lienzo pinta la mitad de píxeles.
+    const dpr = 1;
     let w = 0;
     let h = 0;
     let lines: LightLine[] = [];
@@ -164,7 +166,7 @@ export default function LightLines() {
       if (alpha <= 0.01) return;
 
       ctx.beginPath();
-      const steps = 36;
+      const steps = telefono ? 24 : 36;
       for (let i = 0; i <= steps; i++) {
         const p = bezier(l, t0 + ((t1 - t0) * i) / steps);
         if (i === 0) ctx.moveTo(p.x, p.y);
@@ -172,12 +174,24 @@ export default function LightLines() {
       }
       ctx.globalCompositeOperation = "lighter";
       ctx.strokeStyle = l.color;
-      ctx.globalAlpha = alpha;
-      ctx.lineWidth = l.width;
       ctx.lineCap = "round";
-      ctx.shadowColor = l.color;
-      ctx.shadowBlur = 18;
-      ctx.stroke();
+      if (telefono) {
+        // En teléfono el desenfoque real (shadowBlur) cuesta más que todo el
+        // resto de la página junto. El halo se imita con un trazo ancho y
+        // tenue debajo del trazo fino: se ve igual y cuesta casi nada.
+        ctx.globalAlpha = alpha * 0.22;
+        ctx.lineWidth = l.width * 4;
+        ctx.stroke();
+        ctx.globalAlpha = alpha;
+        ctx.lineWidth = l.width;
+        ctx.stroke();
+      } else {
+        ctx.globalAlpha = alpha;
+        ctx.lineWidth = l.width;
+        ctx.shadowColor = l.color;
+        ctx.shadowBlur = 14;
+        ctx.stroke();
+      }
 
       // Punta brillante
       if (l.head <= 1) {

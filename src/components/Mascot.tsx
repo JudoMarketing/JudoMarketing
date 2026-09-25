@@ -41,9 +41,13 @@ export default function Mascot() {
   const [chatOpen, setChatOpen] = useState(false);
   const [blink, setBlink] = useState(false);
 
-  // Oferta de JuditoADS en la primera visita
+  // Oferta de JuditoADS en la primera visita, a los 8 segundos: que el
+  // visitante lea el hero primero, y que el globo no sea lo último que se
+  // pinta en la carga (Google lo tomaba como el elemento principal).
   useEffect(() => {
-    if (!safeGet(VISTO_KEY)) setBubble("judito");
+    if (safeGet(VISTO_KEY)) return;
+    const id = setTimeout(() => setBubble("judito"), 8000);
+    return () => clearTimeout(id);
   }, []);
 
   // Parpadeo natural
