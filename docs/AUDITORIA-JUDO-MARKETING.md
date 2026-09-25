@@ -16,7 +16,7 @@ mismo día está marcado **[hecho]**. Lo que depende de Junior está marcado
 
 | Área | Nota | Lo que pesa |
 | --- | --- | --- |
-| Velocidad en teléfono | **3/10** | Home 34/100, Servicios 46, Portafolio 36, Contacto 37. Las páginas de producto (Juditos 92, JuditoADS 81) demuestran que el sitio puede volar: el problema es el fondo animado, que corre en todas las páginas. |
+| Velocidad en teléfono | **3/10 → 6/10 el mismo día** | Al empezar: Home 34/100, Servicios 46, Portafolio 36, Contacto 37. Al cerrar el día, con las correcciones ya en producción: Home 68 (80 en español), Portafolio 63, Servicios 53, Contacto 52. Las páginas de producto (Juditos 92, JuditoADS 81) marcan hasta dónde se puede llegar. |
 | SEO técnico | 7/10 | Títulos, descripciones, canónicas, hreflang, sitemap, robots y datos estructurados bien. Faltan favicon de verdad, imagen para compartir en las páginas internas y canónica en /juditos y /juditoads. |
 | Google: qué muestra de nosotros | **2/10** | Google todavía enseña el sitio viejo ("A.I & Social Media Marketing Agency", /contact-judo que ya no existe). Bing no nos tiene. Buscar "Judo Marketing Miami" trae clubes de judo. |
 | Presencia local (Maps y directorios) | **2/10** | Perfil de Google con dirección de buzón (PMB), que Google no permite. Cero fichas en Clutch, DesignRush, Sortlist, Yelp, BBB, Apple Maps, Bing Places. |
@@ -88,12 +88,44 @@ grande de lo que se ve (42 KB de más); faltan `preconnect` a Supabase y a
 Google; tres scripts de analítica a la vez (GA4, Vercel Analytics, Speed
 Insights); el `<html lang>` está bien y no hay CLS (0 en todas).
 
-**Estrategia:** el fondo solo se anima mientras la primera pantalla está a la
-vista y a 30 cuadros en teléfono **[hecho]**; se pausa al hacer scroll, al
-cambiar de pestaña y con "reducir movimiento". Preconnect a Supabase y GA
-**[hecho]**. Logo del header al tamaño real **[hecho]**. Meta: 85 o más en
-móvil en las seis páginas. Después de eso, y solo si hace falta, quitar el
-brillo del canvas en teléfono y dejar un solo proveedor de analítica.
+**Lo que se hizo el mismo día [hecho]:**
+
+- El fondo solo se anima mientras la primera pantalla está a la vista; se
+  pausa al hacer scroll, al cambiar de pestaña y con "reducir movimiento".
+  En teléfono va a 30 cuadros, a 1 píxel por punto, y el brillo se imita
+  con un trazo ancho y tenue en vez del desenfoque real (que costaba más
+  que toda la página junta). En escritorio se conserva el desenfoque.
+- El titular del hero ahora cuenta como elemento principal (LCP): arrancaba
+  en opacidad 0 y Google se lo atribuía al globo de la mascota, que aparece
+  tarde. El globo, además, sale a los 8 segundos y no de inmediato.
+- Las reseñas de visitantes se leen en el servidor: la portada ya no baja
+  la librería de Supabase (50 KB de JavaScript, la pieza más pesada).
+- Preconnect a Supabase y a Google; logo del header a su tamaño real.
+
+**Resultado, medido en producción con la misma herramienta:**
+
+| Página (teléfono) | Antes | Después | TBT antes → después |
+| --- | --- | --- | --- |
+| Home (en) | 34 | **68** | 97 s → 0,6 s |
+| Home (es) | 46 | **80** | 105 s → 0,2 s |
+| Portafolio | 36 | **63** | 105 s → 0,3 s |
+| Servicios | 46 | **53** | 85 s → 0,6 s |
+| Contacto | 37 | **52** | 71 s → 0,7 s |
+| Home escritorio | 53 | 59 | 12,6 s → 9,1 s |
+
+Accesibilidad subió a 100 en cinco de las seis páginas.
+
+**Lo que falta para llegar a 85 o más:** el LCP en teléfono sigue entre
+4,5 y 6 segundos porque el texto del hero entra con animación escalonada
+(Google lo cuenta cuando termina de aparecer), y Servicios, Portafolio y
+Contacto pintan su primer texto más tarde que la portada aunque las cuatro
+ya se sirven pregeneradas desde la caché de Vercel (0,2 s de respuesta):
+hay que mirar qué CSS y fuentes bloquean ahí. Siguiente paso: acortar la
+entrada del hero a un solo pulso, revisar ese bloqueo, y en escritorio usar
+el mismo brillo barato que en teléfono si Junior acepta el cambio de
+aspecto (ahí el desenfoque real todavía cuesta 9 segundos de bloqueo en la
+máquina lenta de Google). Después, dejar un solo proveedor de analítica
+(hoy son tres).
 
 ### 2.2 Google enseña el sitio viejo
 
@@ -377,7 +409,7 @@ ellos, nunca.
 
 | Métrica | Hoy | Meta |
 | --- | --- | --- |
-| Lighthouse móvil, home | 34 | 85 o más en las seis páginas |
+| Lighthouse móvil, home | 34 (68 al cerrar el día) | 85 o más en las seis páginas |
 | URLs indexadas por Google | 12 (y viejas) | 40, todas nuevas |
 | Clics desde Google al mes (Search Console) | casi cero | 300 |
 | "diseño web Miami" / "web design Miami" | fuera del top 100 | top 20 |
