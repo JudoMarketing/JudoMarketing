@@ -3729,7 +3729,7 @@ export default function AdminPortal() {
 // base (migración 0023). Si se agrega una categoría, se agrega en las cuatro.
 const CATEGORIAS_PORTAFOLIO = [
   { id: "food", nombre: "Comida y restaurantes" },
-  { id: "delivery", nombre: "Apps de delivery" },
+  { id: "delivery", nombre: "Delivery apps" },
   { id: "tiendas", nombre: "Tiendas online" },
   { id: "servicios", nombre: "Servicios" },
   { id: "fundaciones", nombre: "Fundaciones y ONG" },
