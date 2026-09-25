@@ -57,7 +57,11 @@ async function dominioQueContesta(dominio: string): Promise<string> {
       redirect: "follow",
       signal: AbortSignal.timeout(4000),
     });
-    const destino = new URL(res.url).hostname;
+    // Se conserva la ruta: un sitio alojado en una carpeta
+    // (judomarketing.github.io/GeraldMarket) no es su dominio raíz, y la foto
+    // del raíz es una página de error.
+    const final = new URL(res.url);
+    const destino = `${final.hostname}${final.pathname}`.replace(/\/+$/, "");
     return destino || dominio;
   } catch {
     return dominio;
