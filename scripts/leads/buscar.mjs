@@ -392,9 +392,13 @@ export async function estudiarSitio(website, tipoGoogle = "") {
   // a las sociedades a poner en su web el nombre con "Ltd"/"Limited", el
   // número de registro o "Registered in England"; si nada de eso aparece,
   // se trata como autónomo y no se le escribe.
-  if (/\b(ltd|limited|llp|plc)\b|company (number|no\.?|reg(istration)?\.? ?(number|no\.?))|registered in (england|wales|scotland|northern ireland)|registered (office|company)/i.test(html)) {
-    r.senales.push("sociedad_uk");
-  }
+  // Se mira el texto visible (no el código fuente, que trae "Wix.com Ltd" y
+  // cosas así de terceros), y se descarta la mención cuando es del
+  // constructor de la página y no del negocio.
+  const textoTodo = textoVisible(html);
+  const menciones = [...textoTodo.matchAll(/\b(ltd|limited|llp|plc)\b|company (number|no\.?|reg(istration)?\.? ?(number|no\.?))|registered in (england|wales|scotland|northern ireland)|registered (office|company)/gi)];
+  const deTercero = (m) => /\b(wix|squarespace|godaddy|shopify|weebly|jimdo|site123|strikingly|webflow|yell|thomson local|checkatrade|trustpilot|google|facebook|meta platforms)\b[^.]{0,40}$/i.test(textoTodo.slice(Math.max(0, m.index - 60), m.index));
+  if (menciones.some((m) => !deTercero(m))) r.senales.push("sociedad_uk");
 
   const descripcion = meta(inicio.html, "description");
   const h1 = textoVisible((inicio.html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || [])[1] ?? "");
