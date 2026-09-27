@@ -26,6 +26,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-09-27 | **Prospección: los 10 mejores de cada zona y correo de venta honesto.** La sesión automática ya no toca `enviar.mjs` (la rutina se quedaba colgada en un permiso): ahora guarda con `scripts/leads/guardar.mjs`, que solo escribe en nuestra base; `enviar.mjs` queda para envío manual. Si una zona no da 10 buenos se corre la siguiente el mismo día. El correo pasa a 90 a 160 palabras en 4 partes: el hecho, quiénes somos y qué haríamos, por qué lo decimos (a nuestros clientes les fue mejor, el dinero bien dirigido, crecer contigo) y el cierre. Guía en `LEADS.md`. |
 | 2026-09-25 | **Auditoría semanal automática** (`AUDITORIA-RUTINA.md`, rutina de los lunes): mide velocidad, SEO técnico, Google y Bing, correo y seguridad; corrige lo mecánico y deja el informe en `docs/auditorias/`. Metas por trimestre hasta 2028. |
 | 2026-09-25 | **Auditoría completa de judomarketing.net** en `AUDITORIA-JUDO-MARKETING.md`: notas por área, evidencia, plan de 90 días y lo que ya se corrigió (fondo animado solo en la primera pantalla, iconos, cabeceras de seguridad, redirecciones del sitio viejo, imagen para compartir, portafolio a una columna en teléfono). |
 | 2026-09-25 | **Prospección: España apagada (LSSI) y Reino Unido solo a sociedades Ltd** (señal `sociedad_uk` en `buscar.mjs`). Quedan Estados Unidos y Reino Unido, 10 por país al día. |
