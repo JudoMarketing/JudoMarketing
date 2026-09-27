@@ -6,7 +6,10 @@
  * que cambia por lead (saludo, párrafos, idioma) llega por parámetro; lo que
  * es fijo (logo, botones, firma, pie legal) vive aquí.
  *
- * Diseño: tarjeta oscura con la paleta de la marca, tablas e inline styles
+ * Diseño: tarjeta clara (fondo blanco, texto oscuro, botones morados) con
+ * el logo en su cuadro negro. Antes era oscura y algunos clientes de correo
+ * la pintaban con fondo blanco, dejando invisible el logo blanco. Tablas e
+ * inline styles
  * porque es lo único que los clientes de correo respetan de verdad. Sin
  * degradados ni fuentes web: Gmail, Outlook y Apple Mail lo pintan igual.
  */
@@ -123,11 +126,11 @@ export function htmlProspecto(c: CorreoProspecto): string {
   const parrafos = c.parrafos
     .map(
       (p) =>
-        `<p style="margin:0 0 16px;color:#e4e4ec;font-size:16px;line-height:1.65;font-family:Arial,Helvetica,sans-serif;">${escapar(p)}</p>`
+        `<p style="margin:0 0 16px;color:#2a2838;font-size:16px;line-height:1.65;font-family:Arial,Helvetica,sans-serif;">${escapar(p)}</p>`
     )
     .join("");
   const ps = c.ps
-    ? `<p style="margin:18px 0 0;color:#b9b9c8;font-size:15px;line-height:1.6;font-family:Arial,Helvetica,sans-serif;"><strong style="color:#e4e4ec;">PS:</strong> ${escapar(c.ps)}</p>`
+    ? `<p style="margin:18px 0 0;color:#4a4858;font-size:15px;line-height:1.6;font-family:Arial,Helvetica,sans-serif;"><strong style="color:#15131f;">PS:</strong> ${escapar(c.ps)}</p>`
     : "";
   // Lo primero que el cliente de correo enseña junto al asunto, sin abrir el
   // mensaje. Va oculto en el cuerpo.
@@ -138,13 +141,11 @@ export function htmlProspecto(c: CorreoProspecto): string {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="color-scheme" content="dark" />
-<meta name="supported-color-schemes" content="dark" />
 <title>Judo Marketing</title>
 </head>
-<body style="margin:0;padding:0;background-color:#0b0b12;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#0b0b12;">${preheader}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0b0b12" style="background-color:#0b0b12;">
+<body style="margin:0;padding:0;background-color:#f4f3f8;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#f4f3f8;">${preheader}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f4f3f8" style="background-color:#f4f3f8;">
   <tr>
     <td align="center" style="padding:32px 12px;">
       <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">
@@ -156,12 +157,12 @@ export function htmlProspecto(c: CorreoProspecto): string {
               <tr>
                 <td valign="middle" style="padding-right:12px;">
                   <a href="${SITIO}" style="text-decoration:none;">
-                    <img src="${SITIO}/brand/logo-white-transparent.png" width="44" height="44" alt="Judo Marketing" style="display:block;border:0;" />
+                    <img src="${SITIO}/brand/logo-black.jpg" width="44" height="44" alt="Judo Marketing" style="display:block;border:0;border-radius:10px;" />
                   </a>
                 </td>
                 <td valign="middle" style="font-family:Arial,Helvetica,sans-serif;">
-                  <span style="display:block;color:#f5f5f7;font-size:16px;font-weight:bold;letter-spacing:0.2px;">Judo Marketing</span>
-                  <span style="display:block;color:#8a8a9c;font-size:12px;">Build Trust, Create Value</span>
+                  <span style="display:block;color:#15131f;font-size:16px;font-weight:bold;letter-spacing:0.2px;">Judo Marketing</span>
+                  <span style="display:block;color:#6b6b7a;font-size:12px;">Build Trust, Create Value</span>
                 </td>
               </tr>
             </table>
@@ -170,8 +171,8 @@ export function htmlProspecto(c: CorreoProspecto): string {
 
         <!-- Tarjeta -->
         <tr>
-          <td bgcolor="#11111a" style="background-color:#11111a;border:1px solid #2c2444;border-radius:18px;padding:34px 30px 30px;">
-            <p style="margin:0 0 18px;color:#f5f5f7;font-size:17px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;">${escapar(c.saludo)}</p>
+          <td bgcolor="#ffffff" style="background-color:#ffffff;border:1px solid #e4e0f0;border-radius:18px;padding:34px 30px 30px;">
+            <p style="margin:0 0 18px;color:#15131f;font-size:17px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;">${escapar(c.saludo)}</p>
             ${parrafos}
             ${ps}
 
@@ -182,21 +183,21 @@ export function htmlProspecto(c: CorreoProspecto): string {
                   <a href="${enlaces.contacto}" style="display:inline-block;padding:13px 26px;color:#ffffff;font-weight:bold;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;">${t.agenda}</a>
                 </td>
                 <td style="width:12px;"></td>
-                <td style="border:1px solid #a855f7;border-radius:999px;">
-                  <a href="${enlaces.showcase}" style="display:inline-block;padding:12px 24px;color:#d9b8ff;font-weight:bold;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;">${t.trabajo}</a>
+                <td style="border:1px solid #7b2dff;border-radius:999px;">
+                  <a href="${enlaces.showcase}" style="display:inline-block;padding:12px 24px;color:#5b21b6;font-weight:bold;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;">${t.trabajo}</a>
                 </td>
               </tr>
             </table>
 
             <!-- Firma -->
-            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:26px;border-top:1px solid #26263a;width:100%;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:26px;border-top:1px solid #e8e6f0;width:100%;">
               <tr>
                 <td style="padding-top:20px;font-family:Arial,Helvetica,sans-serif;">
-                  <span style="display:block;color:#f5f5f7;font-size:15px;font-weight:bold;">Junior Osorio</span>
-                  <span style="display:block;color:#a855f7;font-size:13px;margin-top:2px;">${t.cargo}</span>
-                  <span style="display:block;color:#8a8a9c;font-size:13px;margin-top:6px;">
-                    <a href="${SITIO}" style="color:#c9c9d4;text-decoration:none;">www.judomarketing.net</a>
-                    &nbsp;·&nbsp; <a href="tel:+13059349981" style="color:#c9c9d4;text-decoration:none;">${TELEFONO}</a>
+                  <span style="display:block;color:#15131f;font-size:15px;font-weight:bold;">Junior Osorio</span>
+                  <span style="display:block;color:#6d28d9;font-size:13px;margin-top:2px;">${t.cargo}</span>
+                  <span style="display:block;color:#6b6b7a;font-size:13px;margin-top:6px;">
+                    <a href="${SITIO}" style="color:#4a4858;text-decoration:none;">www.judomarketing.net</a>
+                    &nbsp;·&nbsp; <a href="tel:+13059349981" style="color:#4a4858;text-decoration:none;">${TELEFONO}</a>
                     &nbsp;·&nbsp; ${t.ciudad}
                   </span>
                 </td>
@@ -210,9 +211,9 @@ export function htmlProspecto(c: CorreoProspecto): string {
           <td style="padding:22px 10px 0;font-family:Arial,Helvetica,sans-serif;">
             <p style="margin:0 0 8px;color:#6b6b7a;font-size:12px;line-height:1.6;">
               ${escapar(t.porque(c.negocio, c.lugar ?? c.zip))}
-              ${t.baja.replace(/dímelo aquí|let me know here|sagen Sie es mir hier/, (m) => `<a href="${c.urlBaja}" style="color:#a855f7;text-decoration:underline;">${m}</a>`)} ${t.bajaFin}
+              ${t.baja.replace(/dímelo aquí|let me know here|sagen Sie es mir hier/, (m) => `<a href="${c.urlBaja}" style="color:#6d28d9;text-decoration:underline;">${m}</a>`)} ${t.bajaFin}
             </p>
-            <p style="margin:0;color:#55556a;font-size:11px;line-height:1.6;">Judo Marketing · ${DIRECCION}</p>
+            <p style="margin:0;color:#8a8a9c;font-size:11px;line-height:1.6;">Judo Marketing · ${DIRECCION}</p>
           </td>
         </tr>
 
