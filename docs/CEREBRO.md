@@ -6,8 +6,9 @@ el sitio vivo de: Judo Marketing, Denali CRT, Melanie Osorio, Pachy Pinchos,
 The Equipment Source, The Notes, ART Foundation, Zanoah, Paradise Ranch 22 y
 Gerald Market.
 
-**Cómo se usa:** al empezar un website nuevo (en su propio chat), leer este
-archivo antes de escribir la primera línea. Este repo es público, así que
+**Cómo se usa:** al empezar un website nuevo (en su propio chat), pegar el
+prompt de `PROMPT-WEBSITE-NUEVO.md`; ese prompt manda a leer este archivo,
+`NICHOS.md` y `PORTAFOLIO-VISUAL.md` antes de escribir la primera línea. Este repo es público, así que
 cualquier sesión puede leerlo:
 `https://raw.githubusercontent.com/JudoMarketing/JudoMarketing/master/docs/CEREBRO.md`
 
@@ -26,6 +27,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-09-28 | **Prompt de arranque y mapa por nicho.** `PROMPT-WEBSITE-NUEVO.md` es el texto que se pega en el chat de cada proyecto nuevo. `NICHOS.md` dice qué lleva cada tipo (contratista, autos, salud, belleza, comida, cursos, SaaS, app de teléfono, comunidad, experiencias, B2B). `PORTAFOLIO-VISUAL.md` es el análisis visual y de funciones de los 26 sitios en vivo, con lo que se repite y lo que falla (el error más repetido: material de borrador publicado). |
 | 2026-09-27 | **Prospección: los 10 mejores de cada zona y correo de venta honesto.** La sesión automática ya no toca `enviar.mjs` (la rutina se quedaba colgada en un permiso): ahora guarda con `scripts/leads/guardar.mjs`, que solo escribe en nuestra base; `enviar.mjs` queda para envío manual. Si una zona no da 10 buenos se corre la siguiente el mismo día. El correo pasa a 90 a 160 palabras en 4 partes: el hecho, quiénes somos y qué haríamos, por qué lo decimos (a nuestros clientes les fue mejor, el dinero bien dirigido, crecer contigo) y el cierre. Guía en `LEADS.md`. |
 | 2026-09-25 | **Auditoría semanal automática** (`AUDITORIA-RUTINA.md`, rutina de los lunes): mide velocidad, SEO técnico, Google y Bing, correo y seguridad; corrige lo mecánico y deja el informe en `docs/auditorias/`. Metas por trimestre hasta 2028. |
 | 2026-09-25 | **Auditoría completa de judomarketing.net** en `AUDITORIA-JUDO-MARKETING.md`: notas por área, evidencia, plan de 90 días y lo que ya se corrigió (fondo animado solo en la primera pantalla, iconos, cabeceras de seguridad, redirecciones del sitio viejo, imagen para compartir, portafolio a una columna en teléfono). |
@@ -330,6 +332,9 @@ principal alcanzable sin hacer zoom.
 | Fundación | Serif digna, la misión en tres palabras, a dónde va la donación | ART Foundation |
 | Tienda / comida empacada | Producto como héroe, entrega y retiro claros, FAQ | Zanoah |
 | Educación / cursos | El profesor habla en el H1, video antes que texto, "mírame antes de decidir" | Gerald Market |
+
+La versión completa, con funciones, preguntas y trampas por tipo (incluidas
+apps de teléfono, SaaS, reservas con pago y B2B), está en `NICHOS.md`.
 
 ---
 
