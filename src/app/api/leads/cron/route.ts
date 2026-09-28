@@ -3,8 +3,8 @@
 // La sesión automática investiga, elige y escribe, pero corre en un modo que
 // no le permite mandar correos reales: deja los borradores guardados
 // (POST /api/leads {accion:"borradores"}). Esta ruta los manda, una vez al
-// día, con los candados de siempre (baja, sin recontacto, tope por país) y
-// le avisa a Junior por correo cuántos salieron.
+// día, con los candados de siempre (baja, sin recontacto, tope por país).
+// Solo avisa a Junior por correo si algo falló.
 //
 // La llama el cron de Vercel (vercel.json) con `Authorization: Bearer
 // CRON_SECRET`. También se puede llamar a mano con LEADS_SECRET:
@@ -43,20 +43,19 @@ export async function GET(req: NextRequest) {
     const quedaron = r.resultados.filter((x) => !x.ok && (x.motivo?.startsWith("tope diario") || x.motivo?.startsWith("SMTP")));
     const fallaron = r.resultados.filter((x) => !x.ok && !quedaron.includes(x));
 
-    if (r.pendientes > 0) {
-      const porPais = (Object.keys(r.enviados) as Pais[])
-        .filter((p) => r.enviados[p] > 0)
-        .map((p) => `${PAISES[p].nombre}: ${r.enviados[p]}`)
-        .join(" · ");
+    // Solo se avisa por correo cuando algo falló de verdad (SMTP caído o
+    // borradores descartados). Del envío normal no llega nada a la bandeja:
+    // Junior lo pidió así el 27 de septiembre de 2026; el detalle queda en
+    // el informe de la rutina y en GET /api/leads?reporte=1.
+    const smtpCaido = quedaron.some((x) => x.motivo?.startsWith("SMTP"));
+    if (smtpCaido || fallaron.length) {
       const lista = (xs: typeof r.resultados) =>
         xs.length ? `<ul>${xs.map((x) => `<li><b>${x.nombre}</b> (${PAISES[x.pais].nombre})${x.ok ? "" : `: ${x.motivo}`}</li>`).join("")}</ul>` : "<p>Ninguno.</p>";
       const html = `
-        <p>Prospección de hoy, modo <b>${r.modo}</b>: <b>${salieron.length}</b> correos enviados de ${r.pendientes} borradores pendientes.${porPais ? ` ${porPais}.` : ""}</p>
-        <h3>Salieron</h3>${lista(salieron)}
-        ${quedaron.length ? `<h3>Quedan para mañana (tope o SMTP)</h3>${lista(quedaron)}` : ""}
-        ${fallaron.length ? `<h3>Descartados</h3>${lista(fallaron)}` : ""}
-        <p>Auditoría: cada correo llegó en copia oculta a ${ADMIN}. Reporte de bajas y clics: GET /api/leads?reporte=1.</p>`;
-      await sendBrandedEmail(ADMIN, `Prospección: ${salieron.length} correos enviados hoy${porPais ? ` (${porPais})` : ""}`, html).catch((e) =>
+        <p>Prospección de hoy, modo <b>${r.modo}</b>: <b>${salieron.length}</b> correos enviados de ${r.pendientes} borradores pendientes, pero algo falló.</p>
+        ${smtpCaido ? `<h3>No salieron por SMTP (se reintentan mañana)</h3>${lista(quedaron.filter((x) => x.motivo?.startsWith("SMTP")))}` : ""}
+        ${fallaron.length ? `<h3>Descartados</h3>${lista(fallaron)}` : ""}`;
+      await sendBrandedEmail(ADMIN, `Prospección: ${fallaron.length + (smtpCaido ? quedaron.length : 0)} correos con problema hoy`, html).catch((e) =>
         console.error("leads/cron: no se pudo avisar", (e as Error).message)
       );
     }

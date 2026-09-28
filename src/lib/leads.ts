@@ -664,7 +664,10 @@ function direccionRespuestas(): string {
 }
 
 function copiaOculta(): string | undefined {
-  const c = process.env.LEADS_COPIA ?? "admin@judomarketing.net";
+  // Sin copia por defecto: Junior no quiere cada correo en su bandeja (27 de
+  // septiembre de 2026). Lo que salió queda en el informe de la rutina y en
+  // GET /api/leads?reporte=1.
+  const c = process.env.LEADS_COPIA ?? "";
   return c.trim() ? c.trim() : undefined;
 }
 

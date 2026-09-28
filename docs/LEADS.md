@@ -83,7 +83,7 @@ Por cada país encendido (us, uk):
 Después, el sitio solo (cron de Vercel, 9:30 AM de Miami):
 7. /api/leads/cron ── manda los borradores pendientes ──▶ SMTP de Google Workspace
                       candados: baja, un correo por negocio en la vida, tope por país, modo prueba
-                   ── le manda a Junior el resumen del envío por correo
+                   ── avisa a Junior por correo solo si algo falló
 
 El dueño del negocio hace clic en "no más correos" ──▶ /api/leads/baja ──▶ estado 'baja' para siempre
 ```
@@ -547,9 +547,10 @@ Candados propios, en el servidor:
 - Los borradores caducan a los 3 días: si el cron no pudo mandarlos (tope,
   SMTP caído), lo intenta al día siguiente; después de tres días se
   quedan sin mandar y la siguiente corrida los ve como `nuevo`.
-- Copia oculta de cada correo que sale a `LEADS_COPIA`
-  (admin@judomarketing.net): Junior ve exactamente lo que recibió cada
-  negocio, con su PDF, para auditar.
+- Sin copia a la bandeja de Junior: `LEADS_COPIA` está vacío desde el 27 de
+  septiembre de 2026 (lo pidió él). Lo que salió se ve en el informe de la
+  rutina y en `GET /api/leads?reporte=1`; el cron solo avisa por correo si
+  algo falló (SMTP caído o borradores descartados).
 - **Sin recontacto, nunca.** Un negocio recibe un solo correo en su vida.
   Ni seguimiento, ni segundo intento, ni aunque cambie de zip. Si contesta,
   la conversación la sigue Junior a mano.
@@ -653,7 +654,8 @@ desde una fecha (`&desde=2026-09-21`):
 
 Cada corrida automática lo incluye al final de su informe (desde la
 corrida anterior), y Junior puede pedirlo en el chat cuando quiera.
-Además, cada correo que sale llega en copia oculta a `LEADS_COPIA`.
+Si se quiere volver a recibir copia de cada correo, se pone una dirección
+en `LEADS_COPIA`.
 
 ## Qué mirar cada semana
 
@@ -709,6 +711,6 @@ cambiarlo también en la rutina (Settings → Routines), y al revés.
 > 6. Para los elegidos que tienen website, genera el informe de presencia en línea: `node scripts/leads/informe.mjs --leads <tmp>/<país>/leads.json[,<tmp>/us/sunbiz.json] --ids <ids separados por coma> --salida <tmp>/<país>/informes`. Lee `informes.json`: trae los números reales de cada uno (velocidad, SEO, puesto en Maps, reseñas frente a los tres primeros, fallos), los `avisos` de lo que no se pudo medir, y `apto`. Los que salgan `apto: false` se descartan con `{accion:"descartar"}` y su `motivo_no_apto`, y se reemplazan por otros candidatos si los hay.
 > 7. Escribe un borrador por cada uno según "Cómo se escribe el correo": entre 90 y 160 palabras, tres o cuatro párrafos cortos, un discurso de venta profesional de alguien que de verdad quiere ayudar. (1) El hecho concreto que vimos (del informe, de su perfil de Google, de su website o de su registro) y lo que le cuesta hoy. (2) "Soy Junior, de Judo Marketing, en Miami" (o "I'm Junior, from Judo Marketing in Miami") y qué le haríamos, en dos frases y en las palabras del dueño; si va informe, decir que va adjunto. (3) Por qué lo decimos, en pasado y con palabras distintas en cada correo: a cada negocio con el que hemos trabajado le fue mejor después que antes (más pedidos, más citas, menos teléfono); el dinero bien dirigido atrae más dinero y nuestro trabajo es dirigirlo; no somos costosos, nuestro plan es crecer contigo empezando por lo que necesitas hoy. (4) El cierre: 20 minutos esta semana, "abajo puedes ver nuestro trabajo y agendar" (los botones llevan los enlaces; no escribas direcciones web), y el Perfil de Empresa de Google sin costo al contratar. En su idioma, sin raya larga, sin promesas de resultados, sin cifras de precios, sin enlaces en los párrafos, sin firma (la plantilla la pone). Los que llevan informe citan uno o dos de sus números (nunca uno marcado como no disponible) y llevan `adjunto_pdf`. Varía las aperturas: no repitas la primera frase. El archivo lleva `zip`, `pais` y `zona` tal cual salieron de `buscar.mjs`, y `aprendizajes`: dos o tres frases concretas y reutilizables sobre lo que esta corrida enseñó (un patrón de la zona, un rubro, una señal que engaña, qué trajo clics o bajas); nada de generalidades.
 > 8. Corre `node scripts/leads/guardar.mjs --borradores <tmp>/<país>/borradores.json`. Escribe los borradores en nuestra base de datos y registra la corrida con los aprendizajes. Es una escritura en nuestra propia base, igual que guardar los leads en el paso 3: no pidas permiso, no la saltes, no la dejes para el final. Si rechaza borradores, corrígelos y repite hasta que pasen todos. Si el país todavía no tiene 10 borradores guardados, vuelve al paso 3 con la siguiente zona (otra carpeta) y repite hasta 8.
-> 9. Al terminar los dos países, pide `GET /api/leads?reporte=1&desde=<fecha ISO de hace 1 día>` con el mismo secreto. Termina con el informe para Junior, por país: zonas corridas; archivos de Sunbiz procesados (solo us); encontrados por fuente, cuántos apartados por ya tener infraestructura, con correo, borradores guardados (cuántos con PDF); la lista de los elegidos con negocio, rubro y una línea de por qué NOS NECESITA; los aprendizajes que dejaste; las BAJAS y los CLICS del último día (quién, cuándo, qué botón); la lista de negocios con teléfono y sin correo (para llamar o WhatsApp); y, en Estados Unidos, la lista sin presencia en línea con la persona al frente y su dirección postal. Recuérdale que el sitio procesa los borradores a las 9:30 AM de Miami y que recibirá el resumen por correo. Si algo se vio raro (muchos rebotes, correos sospechosos, Places, PageSpeed o Sunbiz sin resultados), dilo.
+> 9. Al terminar los dos países, pide `GET /api/leads?reporte=1&desde=<fecha ISO de hace 1 día>` con el mismo secreto. Termina con el informe para Junior, por país: zonas corridas; archivos de Sunbiz procesados (solo us); encontrados por fuente, cuántos apartados por ya tener infraestructura, con correo, borradores guardados (cuántos con PDF); la lista de los elegidos con negocio, rubro y una línea de por qué NOS NECESITA; los aprendizajes que dejaste; las BAJAS y los CLICS del último día (quién, cuándo, qué botón); la lista de negocios con teléfono y sin correo (para llamar o WhatsApp); y, en Estados Unidos, la lista sin presencia en línea con la persona al frente y su dirección postal. Recuérdale que el sitio procesa los borradores a las 9:30 AM de Miami; no le llega copia ni resumen por correo, este informe es su registro. Si algo se vio raro (muchos rebotes, correos sospechosos, Places, PageSpeed o Sunbiz sin resultados), dilo.
 >
 > No toques nada más del repositorio, no hagas commits ni push, no cambies variables de entorno ni configuración.
