@@ -164,7 +164,7 @@ export function pageMetadata(page: PageKey, locale: string): Metadata {
       title,
       description,
       url: `${SITE_URL}${paths[loc]}`,
-      images: [{ url: "/brand/og-judo-marketing.jpg", width: 1200, height: 630, alt: "Judo Marketing · Websites, Apps, AI Marketing · Miami, Florida" }],
+      images: [{ url: "/brand/og-thumbnail-v2.jpg", width: 1200, height: 800, alt: "Judo Marketing · Smart marketing solutions that grow your business" }],
     },
   };
 }
