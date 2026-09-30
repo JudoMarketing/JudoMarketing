@@ -106,7 +106,7 @@ export async function generateMetadata({
       description: descripcion,
       url: "https://www.judomarketing.net",
       siteName: "Judo Marketing",
-      images: [{ url: "/brand/og-thumbnail.jpg", width: 1200, height: 800 }],
+      images: [{ url: "/brand/og-judo-marketing.jpg", width: 1200, height: 630, alt: "Judo Marketing · Websites, Apps, AI Marketing · Miami, Florida" }],
       locale: locale === "es" ? "es_US" : "en_US",
       type: "website",
     },
