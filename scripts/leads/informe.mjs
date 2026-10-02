@@ -512,12 +512,23 @@ export async function informe(lead, opciones) {
   const fallos = Object.entries(datos.auditoria?.chequeos ?? {}).filter(([, v]) => v === false).map(([k]) => k);
   const fallosGraves = fallos.filter((k) => ["viewport", "https", "titulo", "meta_descripcion", "pedidos", "contacto"].includes(k));
   const rendimiento = datos.pagespeed?.puntajes?.rendimiento;
-  const arriba = m1?.posicion != null && m1.posicion <= 3;
-  // No es apto quien ya tiene plataforma integrada, o quien está arriba en
-  // Maps con una página rápida y sin fallos graves: no nos necesita.
-  const plataformas = (lead.senales ?? []).filter((x) => x.startsWith("ya_tiene_"));
-  const apto = plataformas.length === 0 && !(arriba && (rendimiento == null || rendimiento >= 75) && fallosGraves.length === 0) && !(lead.senales ?? []).includes("muy_establecido");
-  const motivo_no_apto = !apto ? (plataformas.length ? `ya usa ${plataformas[0].split(":")[1]}` : (lead.senales ?? []).includes("muy_establecido") ? "gigante de su zona" : "arriba en Maps con página rápida y sin fallos graves") : null;
+  // Regla de Junior (2 de octubre de 2026): buscamos a quien está en
+  // internet pero no hace ranking. Quien ya sale entre los 5 primeros de
+  // Maps, o entre los 3 primeros de la búsqueda web, con una página que no
+  // está rota, ya tiene quien le dé el servicio y no se le escribe.
+  const mejorMaps = datos.maps.map((m) => m.posicion).filter((x) => x != null).sort((a, b) => a - b)[0] ?? null;
+  const arribaMaps = mejorMaps != null && mejorMaps <= 5;
+  const arribaWeb = datos.web?.configurado && datos.web.posicion != null && datos.web.posicion <= 3;
+  const paginaRota = !auditoria.ok || (rendimiento != null && rendimiento < 40) || fallosGraves.length >= 2;
+  const senales = lead.senales ?? [];
+  const plataformas = senales.filter((x) => x.startsWith("ya_tiene_"));
+  let motivo_no_apto = null;
+  if (plataformas.length) motivo_no_apto = `ya usa ${plataformas[0].split(":")[1]}`;
+  else if (senales.includes("muy_establecido")) motivo_no_apto = "gigante de su zona";
+  else if ((arribaMaps || arribaWeb) && !paginaRota)
+    motivo_no_apto = arribaMaps ? `ya rankea: puesto ${mejorMaps} en Maps y su página funciona` : `ya rankea: puesto ${datos.web.posicion} en Google y su página funciona`;
+  else if (senales.includes("ya_rankea") && !paginaRota) motivo_no_apto = "ya rankea arriba en Maps";
+  const apto = motivo_no_apto == null;
   return {
     lead_id: lead.id ?? null,
     nombre: lead.nombre,

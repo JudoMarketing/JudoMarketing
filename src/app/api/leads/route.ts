@@ -28,6 +28,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   autorizado,
   buscarNegocios,
+  NICHOS,
   buscarPorNombre,
   clienteServicio,
   detallePlace,
@@ -178,7 +179,12 @@ export async function POST(req: NextRequest) {
       }
       const maximo = Math.min(Number(cuerpo.maximo ?? 100), 150);
       const semilla = Number(cuerpo.semilla ?? 0);
-      const { candidatos, consultas, aviso } = await buscarNegocios(zona, maximo, semilla);
+      // Un nicho conocido (NICHOS en lib/leads) o la lista general.
+      const nicho = typeof cuerpo.nicho === "string" && cuerpo.nicho ? cuerpo.nicho : null;
+      if (nicho && !NICHOS[nicho]) {
+        return NextResponse.json({ error: `nicho desconocido: ${nicho}. Hay: ${Object.keys(NICHOS).join(", ")}` }, { status: 400 });
+      }
+      const { candidatos, consultas, aviso } = await buscarNegocios(zona, maximo, semilla, nicho ? NICHOS[nicho] : undefined);
 
       // Qué candidatos ya conocemos, para que la sesión no repita trabajo.
       const supabase = clienteServicio();

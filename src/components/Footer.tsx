@@ -12,6 +12,7 @@ import { IconoRed, PERFIL_GOOGLE, REDES } from "./SocialLinks";
 const NAVEGACION = [
   { href: "/", key: "home" },
   { href: "/services", key: "services" },
+  { href: "/mental-health", key: "mentalHealth" },
   { href: "/showcase", key: "showcase" },
   { href: "/about", key: "about" },
   { href: "/contact", key: "contact" },

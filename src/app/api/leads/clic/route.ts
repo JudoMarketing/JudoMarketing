@@ -12,9 +12,12 @@ import { enlacesProspecto } from "@/lib/leads-correo";
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams;
   const idioma = q.get("i") === "es" ? "es" : "en";
-  const zip = (q.get("z") ?? "").replace(/[^0-9]/g, "").slice(0, 5) || "00000";
+  // La zona puede ser un zip ("33130") o una ciudad ("us:austin-tx").
+  const zip = (q.get("z") ?? "").toLowerCase().replace(/[^a-z0-9:-]/g, "").slice(0, 70) || "00000";
   const accion = q.get("a") === "showcase" ? "showcase" : "contacto";
-  const destino = enlacesProspecto(idioma, zip)[accion];
+  // El nicho solo elige entre destinos fijos nuestros: no hace falta firmarlo.
+  const nicho = q.get("n") === "salud_mental" ? "salud_mental" : null;
+  const destino = enlacesProspecto(idioma, zip, nicho)[accion];
 
   if (secretoLeads()) {
     const clic = verificarClic(q.get("l"), q.get("a"), q.get("t"));

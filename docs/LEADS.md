@@ -65,6 +65,22 @@ Este documento es tres cosas: el manual de Junior, la guía que sigue la
 sesión automática para elegir y escribir, y el registro de por qué está
 montado así.
 
+## El nicho de salud mental (Estados Unidos)
+
+Desde el 2 de octubre de 2026 la corrida de Estados Unidos empieza por el
+nicho donde Judo Marketing ya tiene cuatro proyectos para enseñar: Denali
+CRT, ABA for Happiness, RBT Corner y The Notes. `buscar.mjs --nicho
+salud_mental` busca en la zona del día solo terapia ABA, clínicas de salud
+mental, centros de salud conductual, consejería, psicólogos, psiquiatras,
+terapia familiar, centros de autismo, terapia del habla y ocupacional, y
+centros de tratamiento de adicciones (lista en `NICHOS` de
+`src/lib/leads.ts`). Los hospitales siguen fuera.
+
+Después se corre la búsqueda general en la misma zona, con `--zip` y el id
+de zona que dejó la primera. Del nicho salen hasta 5 de los 10 del día; el
+resto, de la general. La página a la que lleva el correo de este nicho es
+`/salud-mental` (en inglés `/mental-health`), con las referencias.
+
 ## Cómo está montado
 
 ```
@@ -179,6 +195,35 @@ Por qué así y no de otra forma:
 
 ## Cómo se elige a quién escribir
 
+**La regla madre (Junior, 2 de octubre de 2026): buscamos negocios que están
+en internet pero NO están haciendo ranking.** Quien ya sale arriba en
+Google, con buenas reseñas y una página que funciona, ya tiene a alguien que
+le da el servicio: ¿por qué cambiaría? A ese no se le escribe.
+
+Cómo se sabe desde fuera. Google Places devuelve los negocios de una
+búsqueda ("law firm in Doral") en el mismo orden en que Google Maps los
+rankea, así que `buscar.mjs` guarda el puesto real de cada uno
+(`maps_puesto_N`) y decide con él:
+
+| Puesto en Maps | Qué pasa |
+| --- | --- |
+| 1 a 5, con página que funciona | `ya_rankea`: no se le escribe |
+| 1 a 5, sin website, con página caída o solo redes | Se le escribe: rankea por el perfil, pero pierde a quien lo busca en la web |
+| 6 a 10 | Resta puntos: se le escribe solo con una debilidad clara |
+| 11 a 20 | Suma un poco |
+| 21 en adelante | `no_rankea`: suma; es exactamente a quien buscamos |
+
+Además, `sin_debilidad_clara` aparta a quien no tiene nada concreto que
+venderle (que no tenga WhatsApp no cuenta como debilidad), y
+`muy_establecido` aparta a quien tiene 400 reseñas o más, o 150 o más con
+una página sin fallos. El informe vuelve a mirar: si sale entre los 5
+primeros de Maps o los 3 primeros de la búsqueda web con una página que
+funciona, queda `apto: false` con el motivo "ya rankea".
+
+A abogados, contadores, aseguradoras e inmobiliarias no se les cuenta "sin
+citas en línea" como debilidad (no venden así); lo que se mira es si tienen
+por dónde dejar el caso o pedir la cotización (`profesional_sin_formulario`).
+
 Se escribe a quien tiene un problema que nosotros resolvemos y se nota
 desde fuera. El puntaje del JSON ayuda, pero la decisión la toma la sesión
 leyendo `senales` y `resumen_sitio`.
@@ -220,14 +265,16 @@ No se escribe a:
   `buscar.mjs`, señal `ya_tiene_plataforma`), ni en los que venden,
   cobran membresías o reservan desde su propia página (señal
   `ya_tiene_sistema`: dos o más rutas propias de membresía, tienda,
-  reservas, pedidos o portal), ni en los gigantes de su zona (más de 800
-  reseñas, `muy_establecido`). Los scripts los sacan de
+  reservas, pedidos o portal), ni en los gigantes de su zona (400 reseñas o
+  más, `muy_establecido`), ni en los que ya salen arriba en Maps
+  (`ya_rankea`), ni en los que no tienen una debilidad concreta
+  (`sin_debilidad_clara`). Los scripts los sacan de
   `candidatos_para_escribir` y los dejan en `ya_equipados`; el informe los
   marca `apto: false`. Nunca se les escribe, aunque a su página le falte
   algo. Comprobado con casos reales: Gallo 8 Gym (membresías y tienda
   propias) y La Carreta (pedidos por Toast) quedan fuera.
-- Negocios que salen entre los tres primeros de Maps con página rápida y sin
-  fallos graves: `apto: false` en `informes.json`. Están bien; que
+- Negocios que salen entre los cinco primeros de Maps (o los tres primeros
+  de la web) con una página que funciona: `apto: false` en `informes.json`. Están bien; que
   Gallo 8 Gym sea el número uno de Little Havana con 146 reseñas y un sitio
   de 94 puntos no es una oportunidad, es un cliente de otro.
 - Cadenas, franquicias, gobierno, iglesias, escuelas públicas, hospitales,
@@ -238,7 +285,8 @@ No se escribe a:
   no es el del negocio y dice "design", "media", "agency", "marketing").
 - Nadie con `estado` distinto de `nuevo`.
 
-Reglas de mezcla: máximo 3 del mismo rubro en una corrida, y si hay menos de
+Reglas de mezcla: máximo 3 del mismo rubro por país y por día (el nicho de
+salud mental puede llenar hasta 5 de los 10 de Estados Unidos), y si hay menos de
 10 que valgan la pena, se mandan menos. Diez malos hacen más daño que
 siete buenos: cada correo que ignoran baja la reputación del dominio.
 
@@ -348,18 +396,27 @@ cuatro partes, en este orden:
    teléfono); el dinero bien dirigido atrae más dinero, y nuestro trabajo
    es dirigirlo; no somos costosos: nuestro plan es crecer contigo,
    empezando por lo que necesitas hoy. Se dice "nos ha ido así", nunca "te
-   va a ir así".
+   va a ir así". **Aquí va el precio, con la cifra real** (lo pidió Junior
+   el 2 de octubre de 2026): "el website empieza en $99 al mes", o para el
+   que necesita un asistente, "desde $25 al mes". Una sola cifra, la que
+   corresponde a lo que le ofrecemos. Debajo del texto la plantilla pone
+   sola el bloque "Precios claros, sin sorpresas" con los precios del sitio
+   (website desde $99 más $130 de inicio, proyectos a la medida sin cuota,
+   apps desde $300, asistente desde $25, JuditoADS $20), así que el párrafo
+   no los repite todos.
 4. *El cierre.* Pedir 20 minutos esta semana. Decir que abajo puede ver
    nuestro trabajo y agendar (los botones llevan los enlaces al sitio y a
    la agenda; no se escribe la dirección). Que al contratar le configuramos
-   su Perfil de Empresa de Google sin costo. La frase de los primeros 100
-   clientes va aquí si cabe con naturalidad; si no, se deja.
+   su Perfil de Empresa de Google sin costo.
 
 **PS (opcional, una línea):** `WhatsApp +1 305 934 9981.`
 
 `guardar.mjs` rechaza el borrador si tiene menos de tres párrafos, si no
-dice "Judo Marketing", si trae un enlace dentro de un párrafo o si se sale
-del largo.
+dice "Judo Marketing", si trae un enlace dentro de un párrafo, si se sale
+del largo, si no menciona un precio, o si cita una cifra en dólares que no
+es nuestra (las válidas salen de `src/content/pricing.json`: $99, $130,
+$229, $300, $25, $20; los Websites Complejos nunca llevan cifra, se
+cotizan). El sitio vuelve a comprobar las cifras antes de mandar.
 
 **Cuando lleva informe adjunto:** el dolor del párrafo 1 sale de
 `informes.json` con uno o dos números, los que más duelen y sean ciertos
@@ -375,6 +432,7 @@ listarla en el correo; en el correo va una sola):
 | Talleres, reparaciones, contratistas, plomeros, electricistas | Citas y presupuestos por llamada; se pierden trabajos fuera de horario | Citas en línea, solicitud de presupuesto con fotos, recordatorios por texto, asistente que contesta de noche |
 | Salones, barberías, spas, estética | Agenda en papel o en una app que cobra por cita; no-shows | Reservas con depósito, recordatorios, panel de la semana, fidelización |
 | Clínicas, dentistas, terapias | Teléfono ocupado; formularios en papel; recordatorios a mano | Citas en línea, formularios de ingreso digitales, recordatorios, portal del paciente |
+| Salud mental: ABA, consejería, psicología, psiquiatría, terapia del habla y ocupacional, adicciones | La familia busca de noche y con miedo; el seguro es su primer filtro; la lista de espera vive en el teléfono | Página que dice qué seguros acepta y deja verificar la elegibilidad, pedir la evaluación en dos minutos, lista de espera, portal y recordatorios. Referencias nuestras: Denali CRT, ABA for Happiness, RBT Corner y The Notes |
 | Tiendas, boutiques, ferreterías | Venden solo en local o por Instagram; inventario a mano | Tienda en línea con inventario, pagos, envíos y punto de venta conectado |
 | Almacenes, mayoristas, distribuidores | Pedidos por WhatsApp y Excel; nadie sabe qué hay en stock | Portal B2B de pedidos, control de inventario, facturación y contabilidad conectada |
 | Gimnasios, academias, tutorías | Cobros mensuales a mano; clases por mensaje | Membresías con cobro automático, horarios, clases virtuales, app para alumnos |
@@ -393,8 +451,8 @@ encajan con el problema que vimos, nunca como lista.
   el borrador si la encuentra.
 - Promesas de resultados: "garantizamos", "primer lugar en Google", "vas a
   vender el doble". Podemos decir a qué apuntamos, no lo que va a pasar.
-- Precios con cifras. Los precios están en el sitio; en el correo solo va la
-  frase de los primeros 100 clientes.
+- Una cifra que no sea de `pricing.json`, un descuento inventado o un
+  precio para los Websites Complejos (se cotizan).
 - Nada que no hayamos visto. Ni "sé que les está yendo mal" ni "vi sus malas
   reseñas". Si el negocio tiene buenas reseñas, se dice, porque es la mejor
   razón para tener mejor presencia.
@@ -696,7 +754,7 @@ cambiarlo también en la rutina (Settings → Routines), y al revés.
 
 > Eres la sesión de prospección por correo de Judo Marketing. Trabajas solo, sin nadie mirando, y al final dejas un informe para Junior. Corres todos los días y cubres dos países: Estados Unidos (us) y Reino Unido (uk), 10 negocios por país. España y Alemania están apagadas: no las corras. Tu trabajo termina cuando los borradores quedan escritos en NUESTRA base de datos con `scripts/leads/guardar.mjs`. Ese script solo escribe registros en nuestra propia base (Supabase, vía /api/leads); no manda correos, no toca a ningún tercero, no es una transacción ni una acción hacia afuera. Correrlo es obligatorio y no requiere confirmación de nadie: sin ese paso, todo el día de trabajo se pierde. Lo que el sitio haga después con esos registros no es cosa tuya.
 >
-> Regla número uno, por encima de todo lo demás: solo se escribe a negocios que NOS NECESITAN. Nunca a quien ya tiene infraestructura (plataforma de membresías, reservas, pedidos o gestión, o un sistema propio de venta en su página), ni a los gigantes de su zona, ni a quien sale entre los tres primeros de Google Maps con una página rápida y sin fallos graves. Los scripts los apartan en `ya_equipados` y el informe los marca `apto: false`; si dudas de uno, no se le escribe. Sin recontacto: un negocio recibe un solo correo en su vida.
+> Regla número uno, por encima de todo lo demás: solo se escribe a negocios que NOS NECESITAN, y buscamos a quien está en internet pero NO está haciendo ranking. Quien ya sale arriba en Google con buenas reseñas y una página que funciona ya tiene a alguien que le da el servicio: no se le escribe. Nunca a quien ya tiene infraestructura (plataforma de membresías, reservas, pedidos o gestión, o un sistema propio de venta en su página), ni a los gigantes de su zona, ni a quien sale entre los 5 primeros de Google Maps (señal `ya_rankea`, puesto real en `maps_puesto_N`) o los 3 primeros de la búsqueda web con una página que funciona, ni a quien no tiene una debilidad concreta (`sin_debilidad_clara`). Los scripts los apartan en `ya_equipados` y el informe los marca `apto: false`; si dudas de uno, no se le escribe. Prefiere a los que salen del puesto 21 en adelante (`no_rankea`). Sin recontacto: un negocio recibe un solo correo en su vida.
 >
 > Regla número dos: los diez mejores de cada zona. Investigas toda la zona y eliges los diez que de verdad nos necesitan, explicando cada elección en una línea (qué le falta, qué le cuesta, qué le venderíamos). Si la zona no da diez buenos, ese mismo día corres la siguiente zona del mismo país (paso 3 otra vez, en otra carpeta, por ejemplo <tmp>/us2) hasta completar diez borradores para ese país; cada zona lleva su propio archivo de borradores y su propia corrida. Lo que nunca haces es rellenar con negocios que no nos necesitan. Diez es exacto: cuando un país ya tiene diez borradores guardados, ese país terminó; no corras otra zona para tener más, porque el sitio manda 10 por país al día y lo que sobra caduca a los 3 días.
 >
@@ -705,12 +763,12 @@ cambiarlo también en la rutina (Settings → Routines), y al revés.
 > Pasos:
 > 1. En el repositorio JudoMarketing/JudoMarketing haz `git checkout master && git pull && npm ci` y lee COMPLETO el archivo `docs/LEADS.md`. Todo lo que hagas sigue ese documento. Después lee la memoria: `GET /api/leads?memoria=1` (con LEADS_SECRET) trae las últimas corridas con su resumen y sus aprendizajes; aplica lo que dicen (patrones de la zona, rubros que responden o no, señales que engañan).
 > 2. Para cada país, en este orden us, uk, repite los pasos 3 a 8 con su propia carpeta (<tmp>/us, <tmp>/uk). Si un país falla, lo dices en el informe y sigues con el siguiente.
-> 3. Corre `node scripts/leads/buscar.mjs --pais <país> --zip auto --salida <tmp>/<país>/leads.json` (negocios establecidos de la siguiente zona de ese país, desde Google Places). Solo en Estados Unidos corre después `node scripts/leads/sunbiz.mjs --salida <tmp>/us/sunbiz.json` (empresas registradas en Florida: las nuevas de esta semana y las de hace 2 y 3 años, cruzadas con Google). Necesitan la variable de entorno LEADS_SECRET. Si uno falla, no improvises ni intentes otra vía: tu informe dice exactamente qué falló y qué paso de la sección "Configuración" de docs/LEADS.md falta.
+> 3. Corre `node scripts/leads/buscar.mjs --pais <país> --zip auto --salida <tmp>/<país>/leads.json` (negocios establecidos de la siguiente zona de ese país, desde Google Places). En Estados Unidos, primero corre el nicho de salud mental en la zona del día: `node scripts/leads/buscar.mjs --pais us --zip auto --nicho salud_mental --salida <tmp>/us-salud/leads.json`, y después la búsqueda general en LA MISMA zona con `--zip <el campo zip que dejó la del nicho>` en <tmp>/us/leads.json; del nicho salen hasta 5 de los 10 del día y cada búsqueda lleva su propio archivo de borradores. Solo en Estados Unidos corre después `node scripts/leads/sunbiz.mjs --salida <tmp>/us/sunbiz.json` (empresas registradas en Florida: las nuevas de esta semana y las de hace 2 y 3 años, cruzadas con Google). Necesitan la variable de entorno LEADS_SECRET. Si uno falla, no improvises ni intentes otra vía: tu informe dice exactamente qué falló y qué paso de la sección "Configuración" de docs/LEADS.md falta.
 > 4. Lee el JSON (los dos en Estados Unidos). Para los mejores candidatos que no tienen correo (hasta 10 por país), busca en internet el negocio con su ciudad, y el nombre de la persona al frente con el negocio, incluyendo Facebook e Instagram. Si encuentras un correo que claramente es del negocio, guárdalo con `POST /api/leads {accion:"actualizar", lead_id, email}` (mismo secreto). Si encuentras WhatsApp o una página de Facebook, guárdalo en `notas`. Nunca correos personales de terceros ni direcciones adivinadas.
-> 5. Elige los 10 mejores de `candidatos_para_escribir` según las secciones "Cómo se elige a quién escribir" y "Aprender de cada corrida" (máximo 3 del mismo rubro por país y por día, contando todas las zonas; prioridad a los que tienen muchas reseñas y solo redes, a los que llevan años sin sistema, a los que dependen del teléfono o de las apps de delivery, a los de dominio expirado o página caída). Si varios candidatos comparten dominio, teléfono, dirección o correo, son UN prospecto: se escribe una sola vez. Nunca de `ya_equipados`. Si no llegas a 10 buenos, anota los que tienes y, después del paso 8, vuelve al paso 3 con la siguiente zona.
+> 5. Elige los 10 mejores de `candidatos_para_escribir` según las secciones "Cómo se elige a quién escribir" y "Aprender de cada corrida" (máximo 3 del mismo rubro por país y por día, contando todas las zonas, salvo el nicho de salud mental que puede llenar hasta 5 en Estados Unidos; prioridad a los que tienen muchas reseñas y solo redes, a los que llevan años sin sistema, a los que dependen del teléfono o de las apps de delivery, a los de dominio expirado o página caída). Si varios candidatos comparten dominio, teléfono, dirección o correo, son UN prospecto: se escribe una sola vez. Nunca de `ya_equipados`. Si no llegas a 10 buenos, anota los que tienes y, después del paso 8, vuelve al paso 3 con la siguiente zona.
 > 6. Para los elegidos que tienen website, genera el informe de presencia en línea: `node scripts/leads/informe.mjs --leads <tmp>/<país>/leads.json[,<tmp>/us/sunbiz.json] --ids <ids separados por coma> --salida <tmp>/<país>/informes`. Lee `informes.json`: trae los números reales de cada uno (velocidad, SEO, puesto en Maps, reseñas frente a los tres primeros, fallos), los `avisos` de lo que no se pudo medir, y `apto`. Los que salgan `apto: false` se descartan con `{accion:"descartar"}` y su `motivo_no_apto`, y se reemplazan por otros candidatos si los hay.
-> 7. Escribe un borrador por cada uno según "Cómo se escribe el correo": entre 90 y 160 palabras, tres o cuatro párrafos cortos, un discurso de venta profesional de alguien que de verdad quiere ayudar. (1) El hecho concreto que vimos (del informe, de su perfil de Google, de su website o de su registro) y lo que le cuesta hoy. (2) "Soy Junior, de Judo Marketing, en Miami" (o "I'm Junior, from Judo Marketing in Miami") y qué le haríamos, en dos frases y en las palabras del dueño; si va informe, decir que va adjunto. (3) Por qué lo decimos, en pasado y con palabras distintas en cada correo: a cada negocio con el que hemos trabajado le fue mejor después que antes (más pedidos, más citas, menos teléfono); el dinero bien dirigido atrae más dinero y nuestro trabajo es dirigirlo; no somos costosos, nuestro plan es crecer contigo empezando por lo que necesitas hoy. (4) El cierre: 20 minutos esta semana, "abajo puedes ver nuestro trabajo y agendar" (los botones llevan los enlaces; no escribas direcciones web), y el Perfil de Empresa de Google sin costo al contratar. En su idioma, sin raya larga, sin promesas de resultados, sin cifras de precios, sin enlaces en los párrafos, sin firma (la plantilla la pone). Los que llevan informe citan uno o dos de sus números (nunca uno marcado como no disponible) y llevan `adjunto_pdf`. Varía las aperturas: no repitas la primera frase. El archivo lleva `zip`, `pais` y `zona` tal cual salieron de `buscar.mjs`, y `aprendizajes`: dos o tres frases concretas y reutilizables sobre lo que esta corrida enseñó (un patrón de la zona, un rubro, una señal que engaña, qué trajo clics o bajas); nada de generalidades.
+> 7. Escribe un borrador por cada uno según "Cómo se escribe el correo": entre 90 y 160 palabras, tres o cuatro párrafos cortos, un discurso de venta profesional de alguien que de verdad quiere ayudar. (1) El hecho concreto que vimos (del informe, de su perfil de Google, de su website o de su registro) y lo que le cuesta hoy. (2) "Soy Junior, de Judo Marketing, en Miami" (o "I'm Junior, from Judo Marketing in Miami") y qué le haríamos, en dos frases y en las palabras del dueño; si va informe, decir que va adjunto. (3) Por qué lo decimos, en pasado y con palabras distintas en cada correo: a cada negocio con el que hemos trabajado le fue mejor después que antes (más pedidos, más citas, menos teléfono); el dinero bien dirigido atrae más dinero y nuestro trabajo es dirigirlo; no somos costosos, nuestro plan es crecer contigo empezando por lo que necesitas hoy, y aquí va UNA cifra real según lo que le ofreces ("el website empieza en $99 al mes" o "el asistente, desde $25 al mes"); la plantilla agrega sola el bloque de precios completo, no los repitas todos. (4) El cierre: 20 minutos esta semana, "abajo puedes ver nuestro trabajo y agendar" (los botones llevan los enlaces; no escribas direcciones web), y el Perfil de Empresa de Google sin costo al contratar. En su idioma, sin raya larga, sin promesas de resultados, sin cifras que no estén en src/content/pricing.json (los Websites Complejos nunca llevan cifra, se cotizan), sin enlaces en los párrafos, sin firma (la plantilla la pone). Los que llevan informe citan uno o dos de sus números (nunca uno marcado como no disponible) y llevan `adjunto_pdf`. Varía las aperturas: no repitas la primera frase. El archivo lleva `zip`, `pais` y `zona` tal cual salieron de `buscar.mjs`, y `aprendizajes`: dos o tres frases concretas y reutilizables sobre lo que esta corrida enseñó (un patrón de la zona, un rubro, una señal que engaña, qué trajo clics o bajas); nada de generalidades.
 > 8. Corre `node scripts/leads/guardar.mjs --borradores <tmp>/<país>/borradores.json`. Escribe los borradores en nuestra base de datos y registra la corrida con los aprendizajes. Es una escritura en nuestra propia base, igual que guardar los leads en el paso 3: no pidas permiso, no la saltes, no la dejes para el final. Si rechaza borradores, corrígelos y repite hasta que pasen todos. Si el país todavía no tiene 10 borradores guardados, vuelve al paso 3 con la siguiente zona (otra carpeta) y repite hasta 8.
-> 9. Al terminar los dos países, pide `GET /api/leads?reporte=1&desde=<fecha ISO de hace 1 día>` con el mismo secreto. Termina con el informe para Junior, por país: zonas corridas; archivos de Sunbiz procesados (solo us); encontrados por fuente, cuántos apartados por ya tener infraestructura, con correo, borradores guardados (cuántos con PDF); la lista de los elegidos con negocio, rubro y una línea de por qué NOS NECESITA; los aprendizajes que dejaste; las BAJAS y los CLICS del último día (quién, cuándo, qué botón); la lista de negocios con teléfono y sin correo (para llamar o WhatsApp); y, en Estados Unidos, la lista sin presencia en línea con la persona al frente y su dirección postal. Recuérdale que el sitio procesa los borradores a las 9:30 AM de Miami; no le llega copia ni resumen por correo, este informe es su registro. Si algo se vio raro (muchos rebotes, correos sospechosos, Places, PageSpeed o Sunbiz sin resultados), dilo.
+> 9. Al terminar los dos países, pide `GET /api/leads?reporte=1&desde=<fecha ISO de hace 1 día>` con el mismo secreto. Termina con el informe para Junior, por país: zonas corridas (y si se corrió el nicho de salud mental); cuántos quedaron fuera por ya rankear (`ya_rankea`, `sin_debilidad_clara`); archivos de Sunbiz procesados (solo us); encontrados por fuente, cuántos apartados por ya tener infraestructura, con correo, borradores guardados (cuántos con PDF); la lista de los elegidos con negocio, rubro y una línea de por qué NOS NECESITA; los aprendizajes que dejaste; las BAJAS y los CLICS del último día (quién, cuándo, qué botón); la lista de negocios con teléfono y sin correo (para llamar o WhatsApp); y, en Estados Unidos, la lista sin presencia en línea con la persona al frente y su dirección postal. Recuérdale que el sitio procesa los borradores a las 9:30 AM de Miami; no le llega copia ni resumen por correo, este informe es su registro. Si algo se vio raro (muchos rebotes, correos sospechosos, Places, PageSpeed o Sunbiz sin resultados), dilo.
 >
 > No toques nada más del repositorio, no hagas commits ni push, no cambies variables de entorno ni configuración.

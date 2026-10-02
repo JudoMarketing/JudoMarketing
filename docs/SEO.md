@@ -57,6 +57,40 @@ nosotros por un vendedor o un anuncio.
 - bilingual marketing agency miami
 - app development for small business
 
+### Nicho salud mental (página /salud-mental y /mental-health, desde 10/2026)
+Clínicas de salud mental, terapia ABA, consejería, psicología, psiquiatría
+ambulatoria, centros de autismo, terapia del habla y ocupacional, y centros de
+tratamiento de adicciones. Referencias reales en la página: Denali CRT, RBT
+Corner y The Notes. La misma lista vive en `src/lib/seo.ts`
+(KEYWORDS_SALUD_MENTAL).
+
+Español:
+- página web para clínica de salud mental
+- diseño web para terapia ABA
+- marketing para centros de terapia ABA
+- página web para psicólogos / consultorio de psicología
+- marketing para clínicas de salud mental en Miami
+- página web para centro de autismo
+- página web para terapia del habla
+- sistema de citas para terapeutas
+- verificación de seguro en línea para clínicas
+- página web para centro de consejería
+- marketing para centros de tratamiento de adicciones
+
+Inglés:
+- mental health website design
+- ABA therapy website design
+- marketing for ABA therapy providers
+- website for therapists in Florida
+- behavioral health marketing agency Miami
+- psychology practice website
+- counseling center website
+- autism center website
+- speech therapy website design
+- insurance verification form for clinics
+- RBT recruiting website
+- addiction treatment center marketing
+
 ### Informacionales (futuro blog)
 - cómo vender por internet en estados unidos
 - qué necesita mi negocio para aparecer en google

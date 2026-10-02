@@ -48,6 +48,8 @@ function args() {
     salida: leer("--salida"),
     maximo: Number(leer("--max") ?? 100),
     soloSitio: leer("--solo-sitio"),
+    // Nicho que se corre aparte (NICHOS en src/lib/leads.ts), p. ej. salud_mental.
+    nicho: leer("--nicho"),
   };
 }
 
@@ -365,10 +367,15 @@ export async function estudiarSitio(website, tipoGoogle = "") {
 
   const t = (tipoGoogle + " " + texto.slice(0, 6000)).toLowerCase();
   const esComida = /restaurant|cafe|bakery|pizza|bar|food|comida|cafeter/i.test(tipoGoogle);
-  const esServicio = /repair|salon|barber|dentist|dental|clinic|doctor|spa|gym|lawyer|accountant|cleaning|plumber|electrician|contractor|therapy|physio|veterinar|groom|tutor|daycare|moving|landscap|insurance|real_estate|car_wash|photograph|beauty|nail|massage/i.test(tipoGoogle);
+  const esServicio = /repair|salon|barber|dentist|dental|clinic|doctor|spa|gym|cleaning|plumber|electrician|contractor|therapy|therapist|physio|psycholog|psychiatr|counsel|mental|veterinar|groom|tutor|daycare|moving|landscap|car_wash|photograph|beauty|nail|massage/i.test(tipoGoogle);
+  // Abogados, contadores, seguros e inmobiliarias no venden con reserva en
+  // línea: a ellos no se les cuenta "sin citas" como debilidad. Lo que sí
+  // les cuesta es no tener por dónde dejar el caso o pedir la cotización.
+  const esProfesional = /lawyer|attorney|law_firm|accountant|accounting|insurance|real_estate|financial|tax/i.test(tipoGoogle);
   const esTienda = /store|shop|boutique|furniture|clothing|jewelry|florist|market|wholesale|distributor|supply|warehouse|dealer/i.test(tipoGoogle);
   if (esComida && !/order online|pedir en l|pedido en l|ordena|reserv|book a table|doordash|ubereats|grubhub|toast|menu/i.test(t)) r.senales.push("comida_sin_pedidos_ni_reservas_en_linea");
   if (esServicio && !/book|appointment|agenda|cita|schedule|reservar|calendly|square|vagaro|booksy|zocdoc/i.test(t)) r.senales.push("servicio_sin_citas_en_linea");
+  if (esProfesional && !/<form[\s>]/i.test(html) && !/calendly|consultation|consulta gratis|free consultation|get a quote|cotiza/i.test(t)) r.senales.push("profesional_sin_formulario");
   if (esTienda && !/cart|carrito|checkout|comprar|add to|shop now|tienda en l|catalog|cat[aá]logo/i.test(t)) r.senales.push("tienda_sin_venta_en_linea");
   if (!/whatsapp|wa\.me/i.test(inicio.html)) r.senales.push("sin_whatsapp");
   const plataformas = plataformasEn(html);
@@ -409,9 +416,13 @@ export async function estudiarSitio(website, tipoGoogle = "") {
   return r;
 }
 
-export function puntuar(c, estudio) {
+/**
+ * Lo que de verdad le falta al negocio, en puntos. Solo cuentan debilidades
+ * que un dueño reconoce y que nosotros resolvemos; "no tiene WhatsApp" suma
+ * poco porque casi nadie pierde un cliente por eso.
+ */
+function debilidad(s) {
   let p = 0;
-  const s = new Set(estudio.senales);
   if (s.has("sin_website")) p += 4;
   if (s.has("website_es_red_social")) p += 4;
   if ([...s].some((x) => x.startsWith("website_caido") || x.startsWith("website_responde"))) p += 4;
@@ -425,17 +436,78 @@ export function puntuar(c, estudio) {
   if (s.has("comida_sin_pedidos_ni_reservas_en_linea")) p += 3;
   if (s.has("servicio_sin_citas_en_linea")) p += 3;
   if (s.has("tienda_sin_venta_en_linea")) p += 3;
-  if (s.has("sin_whatsapp")) p += 1;
-  if (c.resenas != null && c.resenas >= 20 && c.resenas <= 400) p += 1; // negocio real, todavía chico
-  if (c.rating != null && c.rating >= 4.2) p += 1; // buen negocio con mala presencia: el mejor cliente
-  // Un negocio con miles de reseñas ya tiene quien le resuelva todo: no es
-  // nuestro cliente aunque a su página le falte algo.
-  if (c.resenas != null && c.resenas > 800) {
+  if (s.has("profesional_sin_formulario")) p += 2;
+  if (s.has("sin_whatsapp")) p += 0.5;
+  return p;
+}
+
+/** Sin página, página caída o solo redes: una necesidad que nadie discute. */
+function necesidadGrave(s) {
+  return (
+    s.has("sin_website") ||
+    s.has("website_es_red_social") ||
+    s.has("en_construccion") ||
+    [...s].some((x) => x.startsWith("website_caido") || x.startsWith("website_responde"))
+  );
+}
+
+/**
+ * Puntaje del prospecto. La regla de Junior (2 de octubre de 2026): buscamos
+ * negocios que están en internet pero NO están haciendo ranking. Quien ya
+ * sale arriba en Google Maps, con buenas reseñas y una página que funciona,
+ * ya tiene a alguien que le da el servicio; no hay razón para que cambie.
+ *
+ * Deja en estudio.senales:
+ * - maps_puesto_N: el puesto real en Maps para la búsqueda que lo trajo.
+ * - ya_rankea: está entre los 5 primeros y no tiene una necesidad grave.
+ * - no_rankea: aparece del puesto 21 en adelante (segunda página o más).
+ * - muy_establecido: 400 reseñas o más.
+ * - sin_debilidad_clara: no le encontramos nada concreto que vender.
+ */
+export function puntuar(c, estudio) {
+  const s = new Set(estudio.senales);
+  let p = debilidad(s);
+  const grave = necesidadGrave(s);
+
+  const puesto = Number.isFinite(c.posicion) ? c.posicion : null;
+  if (puesto != null) {
+    estudio.senales.push(`maps_puesto_${puesto}`);
+    if (puesto <= 5 && !grave) {
+      p -= 8;
+      estudio.senales.push("ya_rankea");
+    } else if (puesto <= 10) p -= 2;
+    else if (puesto <= 20) p += 1;
+    else {
+      p += 2;
+      estudio.senales.push("no_rankea");
+    }
+  }
+
+  // Negocio real y todavía chico, con buenas reseñas: el mejor cliente.
+  if (c.resenas != null && c.resenas >= 10 && c.resenas <= 150) p += 1;
+  if (c.rating != null && c.rating >= 4.2) p += 1;
+  // Muchas reseñas y una página sin fallos: ya tiene quien le resuelva.
+  if (c.resenas != null && c.resenas >= 400) {
+    p -= 4;
+    estudio.senales.push("muy_establecido");
+  } else if (c.resenas != null && c.resenas >= 150 && debilidad(s) < 3 && !grave) {
     p -= 3;
     estudio.senales.push("muy_establecido");
   }
   if ([...s].some((x) => x.startsWith("ya_tiene_plataforma") || x.startsWith("ya_tiene_sistema"))) p -= 6;
-  return p;
+  if (!grave && debilidad(s) < 3) estudio.senales.push("sin_debilidad_clara");
+  return Math.round(p * 10) / 10;
+}
+
+/**
+ * Quien no nos necesita: ya tiene plataforma o sistema, es gigante de su
+ * zona, ya sale arriba en Maps, o no tiene ninguna debilidad concreta. No se
+ * le escribe aunque tenga correo.
+ */
+export function noNosNecesita(senales = []) {
+  return senales.some(
+    (x) => x.startsWith("ya_tiene_") || x === "muy_establecido" || x === "ya_rankea" || x === "sin_debilidad_clara"
+  );
 }
 
 export async function enLotes(items, n, fn) {
@@ -491,6 +563,7 @@ async function main() {
     zona: { id: zona.id, consulta: zona.consulta, verificar: zona.verificar },
     maximo: a.maximo,
     semilla,
+    ...(a.nicho ? { nicho: a.nicho } : {}),
   });
   if (aviso) console.error("Aviso de Places:", aviso);
   console.error(`${candidatos.length} negocios en ${consultas} consultas. Visitando websites...`);
@@ -515,6 +588,7 @@ async function main() {
     website: e.urlFinal ?? c.website,
     email: e.email,
     tipo_google: c.tipo_google,
+    rubro: c.busqueda ?? null,
     rating: c.rating,
     resenas: c.resenas,
     idioma: idiomaPais === "auto" ? e.idioma : idiomaPais,
@@ -538,9 +612,10 @@ async function main() {
     })
     .sort((x, y) => y.puntaje - x.puntaje);
 
-  // Quien ya tiene plataforma integrada o miles de reseñas no es candidato:
-  // va a una lista aparte para que nadie le escriba por error.
-  const equipado = (l) => l.senales.some((x) => x.startsWith("ya_tiene_") || x === "muy_establecido");
+  // Quien no nos necesita (plataforma, gigante, ya rankea arriba o sin
+  // debilidad concreta) no es candidato: va a una lista aparte para que nadie
+  // le escriba por error.
+  const equipado = (l) => noNosNecesita(l.senales);
   // Reino Unido: a autónomos y sociedades de personas no se les escribe
   // (PECR). Solo pasa a candidato quien demostró ser sociedad en su web.
   const noEsSociedadUk = (l) => pais === "uk" && !l.senales.includes("sociedad_uk");
@@ -554,6 +629,7 @@ async function main() {
     zip,
     pais,
     zona: zona.nombre,
+    nicho: a.nicho ?? null,
     idioma: idiomaPais,
     fecha: new Date().toISOString(),
     encontrados: candidatos.length,
@@ -562,8 +638,13 @@ async function main() {
     sin_correo: sinCorreo.length,
     candidatos_para_escribir: conCorreo,
     para_llamar_o_whatsapp: sinCorreo.filter((l) => l.telefono).slice(0, 25),
-    // No se les escribe: ya tienen infraestructura o son gigantes de su zona.
-    ya_equipados: yaEquipados.map((l) => ({ id: l.id, nombre: l.nombre, senales: l.senales.filter((x) => x.startsWith("ya_tiene") || x === "muy_establecido") })),
+    // No se les escribe: ya tienen infraestructura, son gigantes de su zona,
+    // ya salen arriba en Maps o no tienen una debilidad concreta.
+    ya_equipados: yaEquipados.map((l) => ({
+      id: l.id,
+      nombre: l.nombre,
+      senales: l.senales.filter((x) => x.startsWith("ya_tiene") || ["muy_establecido", "ya_rankea", "sin_debilidad_clara"].includes(x) || x.startsWith("maps_puesto_")),
+    })),
     // Reino Unido: no se pudo comprobar que sean sociedad (Ltd); no se les
     // escribe por correo. Quedan para llamar si tienen teléfono.
     ...(pais === "uk" ? { sin_sociedad_uk: sinSociedadUk.map((l) => ({ id: l.id, nombre: l.nombre, telefono: l.telefono, website: l.website })) } : {}),

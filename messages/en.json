@@ -14,7 +14,8 @@
     "loginAds": "JuditoADS",
     "loginAdsWhat": "Your Facebook and Instagram ads",
     "loginAi": "AI Assistants",
-    "loginAiWhat": "Your assistant that answers on its own"
+    "loginAiWhat": "Your assistant that answers on its own",
+    "mentalHealth": "Mental health"
   },
   "hero": {
     "title": "Build Trust,",
@@ -514,5 +515,123 @@
   "listo": {
     "title": "All set!",
     "body": "We're on it. We'll write to you today."
+  },
+  "mentalHealth": {
+    "kicker": [
+      "Miami, Florida",
+      "3 mental health projects live",
+      "Delivered in 30 days"
+    ],
+    "titleBefore": "Help the families looking for care ",
+    "titleHighlight": "find",
+    "titleAfter": " your practice.",
+    "subtitle": "Websites, portals and assistants for mental health clinics, ABA therapy, counseling and developmental therapies. Built on what we learned making Denali CRT, RBT Corner and The Notes.",
+    "ctaPrimary": "Book 20 minutes",
+    "ctaSecondary": "See what we built",
+    "trust": [
+      "Full English and Spanish",
+      "Forms that ask only what's needed",
+      "Websites from {essential} a month"
+    ],
+    "decideTitle": "What a family decides in 30 seconds.",
+    "decideSub": "They arrive at night, tired, on a phone. Your page has to answer three questions before they close the tab.",
+    "decide": [
+      {
+        "q": "Do you take my insurance?",
+        "a": "It's the first filter for almost every family. Your page says which plans you accept and lets them check eligibility before calling."
+      },
+      {
+        "q": "How do I get started?",
+        "a": "A short form to request the assessment from a phone, at any hour, without waiting for someone to pick up."
+      },
+      {
+        "q": "Can I trust them?",
+        "a": "Your team, their credentials and the area you serve, in the family's language. No stock photos and no promises you can't back up."
+      }
+    ],
+    "buildTitle": "What we build for clinics.",
+    "build": [
+      {
+        "title": "Get found",
+        "items": [
+          "Bilingual website with your brand",
+          "Google Business Profile connected",
+          "A page for every service and city"
+        ]
+      },
+      {
+        "title": "Get contacted",
+        "items": [
+          "Insurance check and intake form",
+          "Waitlist and consultation booking",
+          "AI assistant that answers on WhatsApp and Instagram"
+        ]
+      },
+      {
+        "title": "Help your team",
+        "items": [
+          "Portal for families or for your staff",
+          "Hiring page for RBTs and therapists",
+          "Online courses and session notes"
+        ]
+      }
+    ],
+    "workTitle": "We've done it, and it's live.",
+    "workSub": "Open each one and judge for yourself.",
+    "visit": "Visit",
+    "work": [
+      {
+        "name": "Denali CRT",
+        "what": "ABA therapy and psychotherapy clinic in Doral. Appointment booking, insurance check, portal and the whole site in English and Spanish."
+      },
+      {
+        "name": "RBT Corner",
+        "what": "Online courses in Spanish for the RBT exam. Student accounts, payments, private videos and a sales dashboard."
+      },
+      {
+        "name": "The Notes",
+        "what": "ABA session notes platform for RBTs and BCBAs, priced per note, with a client portal."
+      }
+    ],
+    "priceTitle": "What it costs, no fine print.",
+    "prices": [
+      {
+        "name": "Your clinic's website",
+        "price": "from {essential} a month",
+        "note": "plus a one-time {setup} setup"
+      },
+      {
+        "name": "Portal or platform",
+        "price": "custom",
+        "note": "quoted, with no setup fee"
+      },
+      {
+        "name": "AI assistant",
+        "price": "from {assistant} a month",
+        "note": "answers on WhatsApp, Instagram and Messenger"
+      }
+    ],
+    "faqTitle": "What clinic directors ask.",
+    "faq": [
+      {
+        "q": "Can you show which insurance plans we accept?",
+        "a": "Yes. You give us the list and it carries only the plans you actually accept. If you'd rather not publish it, the form asks for the insurance and your team replies."
+      },
+      {
+        "q": "What about patient privacy?",
+        "a": "The website doesn't store clinical records. Forms ask only for contact and insurance details, travel encrypted and go to your team. If you need a portal with clinical information, we quote it separately with the safeguards HIPAA requires."
+      },
+      {
+        "q": "How long does it take?",
+        "a": "Under 30 days from the moment you send us your material. If we miss it, we refund your first payment, setup fee included."
+      },
+      {
+        "q": "Do you work outside Miami?",
+        "a": "Yes. We work with clinics across Florida, the rest of the US and Latin America, fully online, in English or Spanish."
+      }
+    ],
+    "closeTitle": "Let's talk about your clinic for 20 minutes.",
+    "closeText": "I'll show you how Google sees your practice today and what we'd change first.",
+    "whatsapp": "Message me on WhatsApp"
   }
 }

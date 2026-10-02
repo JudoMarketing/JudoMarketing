@@ -34,6 +34,12 @@ export type CorreoProspecto = {
   urlBaja: string;
   /** Enlaces de los botones con seguimiento por negocio; si faltan, van los directos. */
   enlaces?: { contacto: string; showcase: string };
+  /**
+   * Las líneas del bloque de precios, ya en el idioma del correo. Las arma
+   * quien envía a partir de pricing.json, para que el correo nunca diga una
+   * cifra que el sitio no cobra. Si falta, el bloque no sale.
+   */
+  precios?: string[];
 };
 
 const SITIO = "https://www.judomarketing.net";
@@ -42,6 +48,7 @@ const TELEFONO = "+1 305 934 9981";
 
 const TEXTOS = {
   es: {
+    precios: "Precios claros, sin sorpresas",
     agenda: "Agenda una llamada conmigo",
     trabajo: "Ver nuestro trabajo",
     cargo: "Director, Judo Marketing",
@@ -52,8 +59,10 @@ const TEXTOS = {
     bajaFin: "y no vuelvo a escribirte.",
     rutaContacto: "/es/contacto",
     rutaShowcase: "/es/showcase",
+    rutaSaludMental: "/es/salud-mental",
   },
   en: {
+    precios: "Clear pricing, no surprises",
     agenda: "Book a call with me",
     trabajo: "See our work",
     cargo: "Director, Judo Marketing",
@@ -64,8 +73,10 @@ const TEXTOS = {
     bajaFin: "and I won't write again.",
     rutaContacto: "/contact",
     rutaShowcase: "/showcase",
+    rutaSaludMental: "/mental-health",
   },
   de: {
+    precios: "Klare Preise, ohne Überraschungen",
     agenda: "Gespräch mit mir vereinbaren",
     trabajo: "Unsere Arbeit ansehen",
     cargo: "Director, Judo Marketing",
@@ -76,6 +87,7 @@ const TEXTOS = {
     bajaFin: "und ich schreibe nicht mehr.",
     rutaContacto: "/contact",
     rutaShowcase: "/showcase",
+    rutaSaludMental: "/mental-health",
   },
 } as const;
 
@@ -87,13 +99,19 @@ function escapar(texto: string): string {
     .replace(/"/g, "&quot;");
 }
 
-/** Enlaces de los botones, con UTM para saber en Analytics qué correo trajo la visita. */
-export function enlacesProspecto(idioma: IdiomaCorreo, zip: string) {
+export type NichoCorreo = "salud_mental";
+
+/**
+ * Enlaces de los botones, con UTM para saber en Analytics qué correo trajo la
+ * visita. En un nicho con página propia, "Ver nuestro trabajo" lleva a esa
+ * página (sus referencias son las que convencen), no al showcase general.
+ */
+export function enlacesProspecto(idioma: IdiomaCorreo, zip: string, nicho?: NichoCorreo | null) {
   const t = TEXTOS[idioma];
-  const utm = `utm_source=correo&utm_medium=prospeccion&utm_campaign=zip-${encodeURIComponent(zip)}`;
+  const utm = `utm_source=correo&utm_medium=prospeccion&utm_campaign=zip-${encodeURIComponent(zip)}${nicho ? `&utm_content=${nicho}` : ""}`;
   return {
     contacto: `${SITIO}${t.rutaContacto}?${utm}#agendar`,
-    showcase: `${SITIO}${t.rutaShowcase}?${utm}`,
+    showcase: `${SITIO}${nicho === "salud_mental" ? t.rutaSaludMental : t.rutaShowcase}?${utm}`,
   };
 }
 
@@ -106,6 +124,7 @@ export function textoProspecto(c: CorreoProspecto): string {
     "",
     ...c.parrafos.flatMap((p) => [p, ""]),
     ...(c.ps ? [`PS: ${c.ps}`, ""] : []),
+    ...(c.precios?.length ? [`${t.precios}:`, ...c.precios.map((l) => `· ${l}`), ""] : []),
     `${t.agenda}: ${enlaces.contacto}`,
     `${t.trabajo}: ${enlaces.showcase}`,
     "",
@@ -131,6 +150,18 @@ export function htmlProspecto(c: CorreoProspecto): string {
     .join("");
   const ps = c.ps
     ? `<p style="margin:18px 0 0;color:#4a4858;font-size:15px;line-height:1.6;font-family:Arial,Helvetica,sans-serif;"><strong style="color:#15131f;">PS:</strong> ${escapar(c.ps)}</p>`
+    : "";
+  // Precios: un bloque fijo, en gris claro, entre el texto y los botones.
+  // El cliente ve cuánto cuesta antes de decidir si agenda.
+  const precios = c.precios?.length
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 0;">
+              <tr>
+                <td bgcolor="#f6f3fd" style="background-color:#f6f3fd;border:1px solid #e4dcf7;border-radius:12px;padding:14px 16px;font-family:Arial,Helvetica,sans-serif;">
+                  <p style="margin:0 0 6px;color:#5b21b6;font-size:13px;font-weight:bold;letter-spacing:0.2px;">${escapar(t.precios)}</p>
+                  ${c.precios.map((l) => `<p style="margin:0 0 4px;color:#2a2838;font-size:14px;line-height:1.5;">${escapar(l)}</p>`).join("")}
+                </td>
+              </tr>
+            </table>`
     : "";
   // Lo primero que el cliente de correo enseña junto al asunto, sin abrir el
   // mensaje. Va oculto en el cuerpo.
@@ -175,6 +206,7 @@ export function htmlProspecto(c: CorreoProspecto): string {
             <p style="margin:0 0 18px;color:#15131f;font-size:17px;line-height:1.5;font-family:Arial,Helvetica,sans-serif;">${escapar(c.saludo)}</p>
             ${parrafos}
             ${ps}
+            ${precios}
 
             <!-- Botones -->
             <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:26px 0 8px;">

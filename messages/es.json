@@ -14,7 +14,8 @@
     "loginAds": "JuditoADS",
     "loginAdsWhat": "Tus anuncios en Facebook e Instagram",
     "loginAi": "AI Assistants",
-    "loginAiWhat": "Tu asistente que contesta solo"
+    "loginAiWhat": "Tu asistente que contesta solo",
+    "mentalHealth": "Salud mental"
   },
   "hero": {
     "title": "Construye confianza,",
@@ -514,5 +515,123 @@
   "listo": {
     "title": "¡Todo listo!",
     "body": "Nos ponemos a trabajar. Te escribimos hoy mismo."
+  },
+  "mentalHealth": {
+    "kicker": [
+      "Miami, Florida",
+      "3 proyectos de salud mental en línea",
+      "Entrega en 30 días"
+    ],
+    "titleBefore": "Que la familia que busca ayuda ",
+    "titleHighlight": "encuentre",
+    "titleAfter": " tu centro.",
+    "subtitle": "Websites, portales y asistentes para clínicas de salud mental, terapia ABA, consejería y terapias del desarrollo. Los construimos con lo que ya aprendimos haciendo Denali CRT, RBT Corner y The Notes.",
+    "ctaPrimary": "Agenda 20 minutos",
+    "ctaSecondary": "Ver lo que construimos",
+    "trust": [
+      "Inglés y español completos",
+      "Formularios que piden solo lo necesario",
+      "Website desde {essential} al mes"
+    ],
+    "decideTitle": "Lo que una familia decide en 30 segundos.",
+    "decideSub": "Llega de noche, cansada, desde el teléfono. Tu página tiene que contestarle tres preguntas antes de que cierre la pestaña.",
+    "decide": [
+      {
+        "q": "¿Aceptan mi seguro?",
+        "a": "Es el primer filtro de casi todas las familias. Tu página dice qué planes aceptas y deja verificar la elegibilidad antes de llamar."
+      },
+      {
+        "q": "¿Cómo empiezo?",
+        "a": "Un formulario corto para pedir la evaluación desde el teléfono, a cualquier hora, sin esperar a que alguien conteste."
+      },
+      {
+        "q": "¿Puedo confiar en ellos?",
+        "a": "Tu equipo, sus credenciales y la zona que cubres, en el idioma de la familia. Sin fotos de banco ni promesas que no puedes probar."
+      }
+    ],
+    "buildTitle": "Lo que construimos para clínicas.",
+    "build": [
+      {
+        "title": "Que te encuentren",
+        "items": [
+          "Website bilingüe con tu marca",
+          "Perfil de Empresa de Google conectado",
+          "Una página por servicio y por ciudad"
+        ]
+      },
+      {
+        "title": "Que te escriban",
+        "items": [
+          "Verificador de seguro y formulario de ingreso",
+          "Lista de espera y agenda de consultas",
+          "Asistente de IA que contesta por WhatsApp e Instagram"
+        ]
+      },
+      {
+        "title": "Que tu equipo rinda",
+        "items": [
+          "Portal para familias o para tu equipo",
+          "Página para contratar RBTs y terapeutas",
+          "Cursos en línea y notas de sesión"
+        ]
+      }
+    ],
+    "workTitle": "Ya lo hicimos, y está en línea.",
+    "workSub": "Entra a cada uno y compruébalo tú mismo.",
+    "visit": "Visitar",
+    "work": [
+      {
+        "name": "Denali CRT",
+        "what": "Clínica de terapia ABA y psicoterapia en Doral. Agenda de citas, verificación de seguro, portal y todo el sitio en inglés y español."
+      },
+      {
+        "name": "RBT Corner",
+        "what": "Cursos en línea en español para el examen de RBT. Cuentas de alumnos, pagos, videos privados y panel de ventas."
+      },
+      {
+        "name": "The Notes",
+        "what": "Plataforma de notas de sesión ABA para RBTs y BCBAs, con precio por nota y portal de clientes."
+      }
+    ],
+    "priceTitle": "Lo que cuesta, sin letra pequeña.",
+    "prices": [
+      {
+        "name": "Website de tu clínica",
+        "price": "desde {essential} al mes",
+        "note": "más {setup} de inicio, una sola vez"
+      },
+      {
+        "name": "Portal o plataforma",
+        "price": "a la medida",
+        "note": "se cotiza y no lleva cuota de inicio"
+      },
+      {
+        "name": "Asistente de IA",
+        "price": "desde {assistant} al mes",
+        "note": "contesta por WhatsApp, Instagram y Messenger"
+      }
+    ],
+    "faqTitle": "Lo que preguntan los directores de clínica.",
+    "faq": [
+      {
+        "q": "¿Pueden mostrar qué seguros aceptamos?",
+        "a": "Sí. La lista la das tú y lleva solo los planes que de verdad aceptas. Si prefieres no publicarla, el formulario pregunta el seguro y tu equipo responde."
+      },
+      {
+        "q": "¿Qué pasa con la privacidad de los pacientes?",
+        "a": "El website no guarda historiales clínicos. Los formularios piden solo contacto y seguro, viajan cifrados y llegan a tu equipo. Si necesitas un portal con información clínica, lo cotizamos aparte con las salvaguardas que exige HIPAA."
+      },
+      {
+        "q": "¿En cuánto tiempo está listo?",
+        "a": "En menos de 30 días desde que nos entregas el material. Si no cumplimos, te devolvemos el primer pago, cuota de inicio incluida."
+      },
+      {
+        "q": "¿Atienden fuera de Miami?",
+        "a": "Sí. Trabajamos con clínicas de toda Florida, del resto de Estados Unidos y de Latinoamérica, todo en línea y en español o inglés."
+      }
+    ],
+    "closeTitle": "Hablemos 20 minutos de tu clínica.",
+    "closeText": "Te enseño cómo ve Google hoy tu centro y qué cambiaríamos primero.",
+    "whatsapp": "Escríbeme por WhatsApp"
   }
 }

@@ -25,11 +25,13 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { sendBrandedEmail } from "@/lib/email";
+import { cuotaInicio, precio, PRECIO_ASISTENTE, PRECIO_JUDITOADS } from "@/lib/pricing";
 import {
   enlacesProspecto,
   htmlProspecto,
   textoProspecto,
   type IdiomaCorreo,
+  type NichoCorreo,
 } from "@/lib/leads-correo";
 
 const SITIO = "https://www.judomarketing.net";
@@ -139,10 +141,10 @@ function firmaClic(leadId: string, accion: string): string {
 }
 
 /** Los dos botones del correo pasan por el sitio para saber qué negocio hizo clic. */
-export function enlacesConSeguimiento(leadId: string, idioma: IdiomaCorreo, zip: string) {
-  const directo = enlacesProspecto(idioma, zip);
+export function enlacesConSeguimiento(leadId: string, idioma: IdiomaCorreo, zip: string, nicho?: NichoCorreo | null) {
+  const directo = enlacesProspecto(idioma, zip, nicho);
   const url = (accion: "contacto" | "showcase") =>
-    `${SITIO}/api/leads/clic?l=${encodeURIComponent(leadId)}&a=${accion}&t=${firmaClic(leadId, accion)}&i=${idioma}&z=${encodeURIComponent(zip)}`;
+    `${SITIO}/api/leads/clic?l=${encodeURIComponent(leadId)}&a=${accion}&t=${firmaClic(leadId, accion)}&i=${idioma}&z=${encodeURIComponent(zip)}${nicho ? `&n=${nicho}` : ""}`;
   return { contacto: url("contacto"), showcase: url("showcase"), directo };
 }
 
@@ -197,10 +199,22 @@ export type Candidato = {
   tipo_google: string | null;
   tipos: string[];
   maps: string | null;
+  /**
+   * Puesto en Google Maps para la búsqueda "rubro in zona" que lo trajo
+   * (1 = el primero). Places devuelve los resultados en el mismo orden en que
+   * Google los rankea, así que esto dice si el negocio ya aparece arriba. Al
+   * que ya rankea no se le escribe: ya tiene quién le resuelva eso.
+   */
+  posicion: number | null;
+  /** La búsqueda con la que salió ese puesto, por ejemplo "law firm". */
+  busqueda: string;
 };
 
 // Rubros que buscamos en cada código postal. El orden rota por corrida para
 // que dos zips seguidos no traigan el mismo tipo de negocio primero.
+// Los de salud mental también tienen su propia lista (NICHOS.salud_mental),
+// que la sesión corre aparte en Estados Unidos: es el nicho donde Judo
+// Marketing ya tiene cuatro proyectos para enseñar.
 const CONSULTAS = [
   "restaurant",
   "auto repair shop",
@@ -232,7 +246,33 @@ const CONSULTAS = [
   "spa",
   "furniture store",
   "catering",
+  "mental health clinic",
+  "ABA therapy",
+  "counseling center",
 ];
+
+/**
+ * Nichos que se corren aparte con --nicho. Salud mental: clínicas, centros
+ * de terapia ABA, consejería, psicología, psiquiatría ambulatoria, terapia
+ * del habla y ocupacional, y centros de tratamiento de adicciones. Los
+ * hospitales siguen fuera (TIPOS_FUERA): son instituciones grandes, no
+ * clientes de una suscripción.
+ */
+export const NICHOS: Record<string, string[]> = {
+  salud_mental: [
+    "ABA therapy",
+    "mental health clinic",
+    "behavioral health center",
+    "counseling center",
+    "psychologist",
+    "psychiatrist",
+    "family therapist",
+    "autism center",
+    "speech therapy",
+    "occupational therapy",
+    "addiction treatment center",
+  ],
+};
 
 // Lo que no es un cliente nuestro: gobierno, culto, hospitales, bancos,
 // cadenas nacionales. Tipos de Google Places y palabras en el nombre.
@@ -301,7 +341,8 @@ type RespuestaPlaces = {
 export async function buscarNegocios(
   zona: Zona,
   maximo = 100,
-  semilla = 0
+  semilla = 0,
+  rubros: string[] = CONSULTAS
 ): Promise<{ candidatos: Candidato[]; consultas: number; aviso?: string }> {
   const llave = process.env.GOOGLE_PLACES_API_KEY;
   if (!llave) throw new Error("Falta GOOGLE_PLACES_API_KEY");
@@ -311,11 +352,15 @@ export async function buscarNegocios(
   const vistos = new Map<string, Candidato>();
   let consultas = 0;
   let aviso: string | undefined;
-  const orden = [...CONSULTAS.slice(semilla % CONSULTAS.length), ...CONSULTAS.slice(0, semilla % CONSULTAS.length)];
+  const orden = [...rubros.slice(semilla % rubros.length), ...rubros.slice(0, semilla % rubros.length)];
 
   for (const rubro of orden) {
     if (vistos.size >= maximo) break;
     let pageToken: string | undefined;
+    // Puesto en el orden de Google para esta búsqueda, contando todo lo que
+    // devuelve (también lo que después se filtra): es el puesto real que ve
+    // quien busca en Maps.
+    let puesto = 0;
     for (let pagina = 0; pagina < 3 && vistos.size < maximo; pagina++) {
       consultas++;
       const res = await fetch("https://places.googleapis.com/v1/places:searchText", {
@@ -339,7 +384,16 @@ export async function buscarNegocios(
         return { candidatos: [...vistos.values()], consultas, aviso };
       }
       for (const p of datos.places ?? []) {
-        if (vistos.has(p.id)) continue;
+        puesto++;
+        const previo = vistos.get(p.id);
+        if (previo) {
+          // Si sale mejor en otra búsqueda, manda el mejor puesto.
+          if (previo.posicion == null || puesto < previo.posicion) {
+            previo.posicion = puesto;
+            previo.busqueda = rubro;
+          }
+          continue;
+        }
         const direccion = p.formattedAddress ?? "";
         // Places entiende "in 33130" o "in Sevilla" como zona, no como
         // filtro: comprobamos que la dirección sea de ahí.
@@ -361,6 +415,8 @@ export async function buscarNegocios(
           tipo_google: p.primaryType ?? null,
           tipos,
           maps: p.googleMapsUri ?? null,
+          posicion: puesto,
+          busqueda: rubro,
         });
         if (vistos.size >= maximo) break;
       }
@@ -422,7 +478,9 @@ export async function buscarPorNombre(
 }
 
 /** Website, teléfono y reseñas de un negocio ya identificado. */
-export async function detallePlace(placeId: string): Promise<Omit<Candidato, "place_id" | "nombre" | "direccion">> {
+export async function detallePlace(
+  placeId: string
+): Promise<Omit<Candidato, "place_id" | "nombre" | "direccion" | "posicion" | "busqueda">> {
   const llave = process.env.GOOGLE_PLACES_API_KEY;
   if (!llave) throw new Error("Falta GOOGLE_PLACES_API_KEY");
   const res = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, {
@@ -671,6 +729,61 @@ function copiaOculta(): string | undefined {
   return c.trim() ? c.trim() : undefined;
 }
 
+/**
+ * El bloque de precios del correo de prospección, sacado de pricing.json.
+ * Junior lo pidió el 2 de octubre de 2026: el dueño tiene que ver que no
+ * somos costosos antes de agendar, y ver la cifra real.
+ */
+export function preciosCorreo(idioma: "es" | "en" | "de"): string[] {
+  const esencial = precio("essential");
+  const cuota = cuotaInicio("essential");
+  const app = precio("apps");
+  if (idioma === "es")
+    return [
+      `Website con tu panel de control: desde $${esencial} al mes, más $${cuota} de inicio, una sola vez.`,
+      `Proyectos a la medida: se cotizan y no llevan cuota de inicio. Apps de teléfono desde $${app} al mes.`,
+      `Asistente de IA que contesta por WhatsApp e Instagram: desde $${PRECIO_ASISTENTE} al mes. Anuncios con JuditoADS: $${PRECIO_JUDITOADS} al mes.`,
+    ];
+  if (idioma === "de")
+    return [
+      `Website mit eigenem Verwaltungsbereich: ab $${esencial} pro Monat, plus einmalig $${cuota} Einrichtung.`,
+      `Individuelle Projekte: nach Angebot, ohne Einrichtungsgebühr. Apps ab $${app} pro Monat.`,
+      `KI-Assistent für WhatsApp und Instagram: ab $${PRECIO_ASISTENTE} pro Monat.`,
+    ];
+  return [
+    `Website with your own admin panel: from $${esencial} a month, plus a one-time $${cuota} setup.`,
+    `Custom projects are quoted, with no setup fee. Mobile apps from $${app} a month.`,
+    `AI assistant that answers on WhatsApp and Instagram: from $${PRECIO_ASISTENTE} a month. Ads with JuditoADS: $${PRECIO_JUDITOADS} a month.`,
+  ];
+}
+
+/**
+ * Si el negocio es del nicho de salud mental, por la búsqueda que lo trajo
+ * (leads.rubro) o por el rubro que escribió la sesión en el borrador.
+ */
+export function nichoDe(rubroLead: unknown, rubroBorrador?: string | null): NichoCorreo | null {
+  const r = typeof rubroLead === "string" ? rubroLead : "";
+  if (NICHOS.salud_mental.includes(r)) return "salud_mental";
+  const texto = `${r} ${rubroBorrador ?? ""}`;
+  return /\b(aba|mental|behavioral|psicolog|psycholog|psiquiatr|psychiatr|counsel|consejer|terapia|therap|autis|speech|habla|ocupacional|occupational|adicci|addiction)/i.test(texto)
+    ? "salud_mental"
+    : null;
+}
+
+/** Las cifras en dólares que un borrador puede citar: las de la tabla de precios. */
+function cifrasPermitidas(): Set<number> {
+  const s = new Set<number>([PRECIO_ASISTENTE, PRECIO_JUDITOADS]);
+  // Los Complejos no llevan cifra: se cotizan (decisión de Junior).
+  for (const plan of ["essential", "apps"] as const) {
+    s.add(precio(plan));
+    if (cuotaInicio(plan) > 0) {
+      s.add(cuotaInicio(plan));
+      s.add(precio(plan) + cuotaInicio(plan));
+    }
+  }
+  return s;
+}
+
 function validarBorrador(b: Borrador): string | null {
   if (!b.lead_id || !b.asunto || !b.saludo || !Array.isArray(b.parrafos) || b.parrafos.length === 0) {
     return "borrador incompleto";
@@ -683,6 +796,12 @@ function validarBorrador(b: Borrador): string | null {
   if (palabras < 40) return `cuerpo demasiado corto (${palabras} palabras)`;
   if (/[—–]/.test([b.asunto, b.saludo, ...b.parrafos, b.ps ?? ""].join(" "))) {
     return "lleva raya larga; se escribe con comas o puntos";
+  }
+  // Un precio en el texto tiene que ser uno de los que cobra el sitio.
+  const permitidas = cifrasPermitidas();
+  for (const m of [b.asunto, ...b.parrafos, b.ps ?? ""].join(" ").matchAll(/\$\s?(\d[\d,]*)/g)) {
+    const n = Number(m[1].replace(/,/g, ""));
+    if (!permitidas.has(n)) return `cita $${n}, que no es un precio nuestro (pricing.json)`;
   }
   if (b.adjunto) {
     if (!/^[\w.-]+\.pdf$/i.test(b.adjunto.nombre)) return "el adjunto tiene que ser un .pdf con nombre simple";
@@ -724,7 +843,7 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
     }
     const { data: lead } = await supabase
       .from("leads")
-      .select("id, nombre, zip, email, estado, enviado_en")
+      .select("id, nombre, zip, email, estado, enviado_en, rubro")
       .eq("id", b.lead_id)
       .maybeSingle();
     if (!lead) {
@@ -758,8 +877,9 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
       zip: lead.zip as string,
       lugar: b.lugar,
       urlBaja: urlBaja(lead.email, b.idioma),
+      precios: preciosCorreo(b.idioma),
       enlaces: (() => {
-        const e = enlacesConSeguimiento(lead.id as string, b.idioma, lead.zip as string);
+        const e = enlacesConSeguimiento(lead.id as string, b.idioma, lead.zip as string, nichoDe(lead.rubro, b.rubro));
         return { contacto: e.contacto, showcase: e.showcase };
       })(),
     };

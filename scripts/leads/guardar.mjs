@@ -33,8 +33,26 @@
  * Entorno: LEADS_SECRET (obligatorio), LEADS_SITE (opcional).
  */
 
+import { readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Las cifras que un correo puede citar salen de la misma tabla que usa el
+// sitio (src/content/pricing.json): un precio inventado se rechaza aquí.
+const TARIFA = JSON.parse(
+  readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "../../src/content/pricing.json"), "utf8")
+);
+const CIFRAS = new Set([TARIFA.extras.asistente, TARIFA.extras.juditoads]);
+for (const [plan, valor] of Object.entries(TARIFA.precios)) {
+  if (plan === "complex") continue; // los Complejos se cotizan, sin cifra
+  CIFRAS.add(valor);
+  const cuota = TARIFA.cuotaInicio?.[plan] ?? 0;
+  if (cuota > 0) {
+    CIFRAS.add(cuota);
+    CIFRAS.add(valor + cuota);
+  }
+}
 
 const SITE = (process.env.LEADS_SITE ?? "https://www.judomarketing.net").replace(/\/$/, "");
 const SECRETO = process.env.LEADS_SECRET;
@@ -71,6 +89,11 @@ export function revisarLocal(b) {
   if (palabras > MAX_PALABRAS) problemas.push(`muy largo (${palabras} palabras; la guía pide entre 90 y 160)`);
   if ((b.asunto ?? "").length > 70) problemas.push("asunto largo");
   if (/[!]{2,}|GRATIS|FREE!!!|\$\$\$/.test(todo)) problemas.push("suena a spam");
+  for (const m of todo.matchAll(/\$\s?(\d[\d,]*)/g)) {
+    const n = Number(m[1].replace(/,/g, ""));
+    if (!CIFRAS.has(n)) problemas.push(`cita $${n}, que no es un precio nuestro (los válidos: ${[...CIFRAS].map((x) => "$" + x).join(", ")})`);
+  }
+  if (!/\$\s?\d/.test(parrafos.join(" "))) problemas.push("no menciona el precio (la guía pide decir desde cuánto, con la cifra real)");
   if (/https?:\/\/|www\./i.test(parrafos.join(" "))) problemas.push("enlace dentro de un párrafo (los botones ya llevan los enlaces)");
   if (!/judo marketing/i.test(parrafos.join(" "))) problemas.push("no dice quiénes somos (Soy Junior, de Judo Marketing, en Miami)");
   return problemas;

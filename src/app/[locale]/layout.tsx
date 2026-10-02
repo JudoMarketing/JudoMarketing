@@ -135,6 +135,10 @@ export default async function LocaleLayout({
       <head>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         {supabase ? <link rel="preconnect" href={new URL(supabase).origin} crossOrigin="" /> : null}
+        {/* Sin JavaScript, lo que entra con scroll reveal se ve desde el
+            principio: buscadores, capturas y equipos lentos no deben ver
+            secciones vacías. */}
+        <noscript dangerouslySetInnerHTML={{ __html: "<style>.reveal{opacity:1!important;transform:none!important}</style>" }} />
       </head>
       <body className="min-h-screen antialiased">
         <JsonLd locale={locale} />

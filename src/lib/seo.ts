@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 
 export const SITE_URL = "https://www.judomarketing.net";
 
-type PageKey = "services" | "showcase" | "about" | "contact" | "legal";
+type PageKey = "services" | "showcase" | "about" | "contact" | "legal" | "mentalHealth";
 
 const PATHS: Record<PageKey | "home", { en: string; es: string }> = {
   home: { en: "/", es: "/es" },
@@ -19,9 +19,20 @@ const PATHS: Record<PageKey | "home", { en: string; es: string }> = {
   about: { en: "/about", es: "/es/nosotros" },
   contact: { en: "/contact", es: "/es/contacto" },
   legal: { en: "/legal", es: "/es/legal" },
+  mentalHealth: { en: "/mental-health", es: "/es/salud-mental" },
 };
 
 const COPY: Record<PageKey, Record<"en" | "es", { title: string; description: string }>> = {
+  mentalHealth: {
+    es: {
+      title: "Páginas Web para Clínicas de Salud Mental y Terapia ABA | Judo Marketing",
+      description: `Websites, portales y asistentes para clínicas de salud mental, terapia ABA, consejería y psicología en Florida. Verificación de seguro, formulario de ingreso y lista de espera. Desde ${precioDesde()} al mes.`,
+    },
+    en: {
+      title: "Websites for Mental Health Clinics & ABA Therapy Providers | Judo Marketing",
+      description: `Websites, portals and AI assistants for mental health clinics, ABA therapy, counseling and psychology practices in Florida. Insurance check, intake forms and waitlists. From ${precioDesde()} a month.`,
+    },
+  },
   services: {
     es: {
       title: `Páginas Web desde ${precioDesde()}/mes y Publicidad en Facebook e Instagram | Judo Marketing`,
@@ -117,6 +128,42 @@ const KEYWORDS_SERVICIOS: Record<"en" | "es", string[]> = {
   ],
 };
 
+/**
+ * Keywords del nicho de salud mental (Junior, 2 de octubre de 2026). Viven
+ * también en docs/SEO.md y en el texto de la página /salud-mental, que es
+ * donde Google las lee de verdad.
+ */
+const KEYWORDS_SALUD_MENTAL: Record<"en" | "es", string[]> = {
+  es: [
+    "página web para clínica de salud mental",
+    "diseño web para terapia ABA",
+    "marketing para centros de terapia ABA",
+    "página web para psicólogos",
+    "página web para consultorio de psicología",
+    "marketing para clínicas de salud mental en Miami",
+    "página web para centro de autismo",
+    "página web para terapia del habla",
+    "sistema de citas para terapeutas",
+    "verificación de seguro en línea para clínicas",
+    "página web para centro de consejería",
+    "marketing para centros de tratamiento de adicciones",
+  ],
+  en: [
+    "mental health website design",
+    "ABA therapy website design",
+    "marketing for ABA therapy providers",
+    "website for therapists in Florida",
+    "behavioral health marketing agency Miami",
+    "psychology practice website",
+    "counseling center website",
+    "autism center website",
+    "speech therapy website design",
+    "insurance verification form for clinics",
+    "RBT recruiting website",
+    "addiction treatment center marketing",
+  ],
+};
+
 /** Canonical y hreflang de la portada; el título y la descripción los pone el layout. */
 export function homeAlternates(locale: string): Metadata["alternates"] {
   const loc = locale === "es" ? "es" : "en";
@@ -150,6 +197,7 @@ export function pageMetadata(page: PageKey, locale: string): Metadata {
     title,
     description,
     ...(page === "services" ? { keywords: KEYWORDS_SERVICIOS[loc] } : {}),
+    ...(page === "mentalHealth" ? { keywords: KEYWORDS_SALUD_MENTAL[loc] } : {}),
     alternates: {
       canonical: `${SITE_URL}${paths[loc]}`,
       languages: {
