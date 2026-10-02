@@ -2,7 +2,7 @@
 
 One unified policy for services, subscriptions, websites, apps, digital products, virtual assistants, marketing packages, privacy, and communications.
 
-Effective Date: 09/21/2026
+Effective Date: 10/02/2026
 
 ## 1. Agreement
 
@@ -37,8 +37,10 @@ information; see Section 12.
 
 ## 4. Payments and Billing
 
-Subscription payments are due monthly in advance on the agreed billing date. Judo
-Marketing does not charge late fees or non-payment penalties: if a payment is not
+Subscription payments are due monthly in advance on the agreed billing date. Some plans
+carry a one-time setup fee, shown on www.judomarketing.net before payment and charged
+once with the first month (today, the Essential Website); Complex Websites and Mobile
+Apps have no setup fee. Judo Marketing does not charge late fees or non-payment penalties: if a payment is not
 received, the only consequences are suspension of services as described in Section 8 and
 pausing of the ownership-transfer clock in Section 7. The client is responsible for
 third-party costs (advertising budgets, premium software, stock assets) unless expressly
@@ -59,7 +61,7 @@ started or a subscription period has begun — with one exception: the **30-Day 
 Guarantee**. If Judo Marketing fails to deliver the client's initial website or agreed
 project within thirty (30) days after receiving all required client materials,
 information, access, and approvals, the client may request a full refund of the first
-subscription payment. This guarantee does not apply to delays caused by the client,
+subscription payment, including the setup fee if one was paid. This guarantee does not apply to delays caused by the client,
 incomplete materials, third-party platforms, or scope changes requested after the
 project started. Refunds are not provided because a campaign or website did not produce
 a specific business result (see Section 9). Third-party fees are non-refundable.

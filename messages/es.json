@@ -123,7 +123,7 @@
   "services": {
     "title": "Servicios",
     "subtitle": "Tres cosas hacemos. Elige la que necesitas.",
-    "note": "Precio final, sin costo de instalación. Contrato de 12 meses.",
+    "note": "Website Esencial: cuota de inicio única de {fee}. Websites Complejos y Apps sin cuota de inicio. Contrato de 12 meses.",
     "cta": "Hablemos de tu proyecto",
     "perMonth": "/mes",
     "from": "desde",
@@ -166,7 +166,7 @@
         "Escalable y seguro"
       ],
       "custom": "Precio a la medida",
-      "customNote": "Cada proyecto se cotiza aparte. Hablemos.",
+      "customNote": "Cada proyecto se cotiza aparte y sin cuota de inicio: todo va dentro de la mensualidad. Hablemos.",
       "customShort": "precio a la medida"
     },
     "apps": {
@@ -239,7 +239,7 @@
       "items": [
         {
           "q": "¿Cuánto cuesta una página web con Judo Marketing?",
-          "a": "Nuestros websites funcionan por suscripción mensual: Websites Esenciales desde {essential} al mes (tiendas online, citas, servicios) y Apps para Teléfonos desde {apps}. Los Websites Complejos (delivery, logística, integraciones) tienen {complex}: se cotizan en una cita. Todo incluye diseño, soporte, mantenimiento y tu propio panel de control."
+          "a": "Nuestros websites funcionan por suscripción mensual: Websites Esenciales desde {essential} al mes, más una cuota de inicio única de {setup} (tiendas online, citas, servicios), y Apps para Teléfonos desde {apps} al mes, sin cuota de inicio. Los Websites Complejos (delivery, logística, integraciones) tienen {complex}: se cotizan en una cita, sin cuota de inicio. Todo incluye diseño, soporte, mantenimiento y tu propio panel de control."
         },
         {
           "q": "¿Cuánto tardan en entregar mi website?",
@@ -268,7 +268,9 @@
       "title": "¿Cómo prefieres empezar?",
       "book": "Agendar una cita",
       "form": "Contarnos tu proyecto"
-    }
+    },
+    "setupFee": "+ {fee} de inicio, una sola vez",
+    "noSetupFee": "Sin cuota de inicio"
   },
   "login": {
     "title": "Portales",
@@ -429,7 +431,8 @@
     "pay": "Pagar",
     "opening": "Abriendo pago seguro…",
     "back": "← Volver a servicios",
-    "feesNote": "El monto a pagar es el total del plan. Los fees de procesamiento o de red los cubre el cliente."
+    "feesNote": "El monto a pagar hoy es el primer mes más la cuota de inicio, si tu plan la lleva. Los fees de procesamiento o de red los cubre el cliente.",
+    "setupLine": "Hoy pagas {total}: el primer mes ({month}) más la cuota de inicio de {fee}, una sola vez. Desde el segundo mes pagas {month}."
   },
   "crypto": {
     "title": "Cripto (USDT)",

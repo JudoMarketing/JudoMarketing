@@ -17,6 +17,7 @@
 | Email / Teléfono | ________________________ |
 | Plan contratado | ☐ Website Esencial ☐ Website Complejo ☐ App ☐ Otro: ____________ |
 | Precio mensual acordado | $________ /mes |
+| Cuota de inicio (solo Website Esencial, una sola vez) | $________ |
 | Dominio / Proyecto | ________________________ |
 | Vendedor asignado | ________________________ |
 | Fecha de inicio | ____ / ____ / ______ |
@@ -31,8 +32,8 @@ pago mensual por adelantado.
 
 - **Garantía de entrega de 30 días.** Si no entregamos el proyecto inicial dentro de 30
   días de recibir todos los materiales y aprobaciones del cliente, el cliente puede pedir
-  el reembolso completo de su primer pago. Es la única excepción a la regla de no
-  reembolso.
+  el reembolso completo de su primer pago, incluida la cuota de inicio si la pagó. Es la
+  única excepción a la regla de no reembolso.
 - **Cero penalidades.** Nunca cobramos recargos por mora ni multas por cancelar.
 - **Cancelación libre.** El cliente puede cancelar en cualquier momento escribiendo a
   admin@judomarketing.net; al cancelar, el servicio y el website se desactivan de

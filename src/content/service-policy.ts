@@ -13,7 +13,7 @@ export const policyContent: Record<
   { effective: string; sections: PolicySection[] }
 > = {
   en: {
-    effective: "Effective Date: 09/21/2026",
+    effective: "Effective Date: 10/02/2026",
     sections: [
       {
         title: "1. Agreement",
@@ -36,7 +36,7 @@ export const policyContent: Record<
       {
         title: "4. Payments and Billing",
         body: [
-          "Subscription payments are due monthly in advance on the agreed billing date. Judo Marketing does not charge late fees or non-payment penalties: if a payment is not received, the only consequences are suspension of services as described in Section 8 and pausing of the ownership-transfer clock in Section 7. The client is responsible for third-party costs (advertising budgets, premium software, stock assets) unless expressly included in writing.",
+          "Subscription payments are due monthly in advance on the agreed billing date. Some plans carry a one-time setup fee, shown on www.judomarketing.net before payment and charged once with the first month (today, the Essential Website); Complex Websites and Mobile Apps have no setup fee. Judo Marketing does not charge late fees or non-payment penalties: if a payment is not received, the only consequences are suspension of services as described in Section 8 and pausing of the ownership-transfer clock in Section 7. The client is responsible for third-party costs (advertising budgets, premium software, stock assets) unless expressly included in writing.",
         ],
       },
       {
@@ -48,7 +48,7 @@ export const policyContent: Record<
       {
         title: "6. Refunds and the 30-Day Delivery Guarantee",
         body: [
-          "Because services are customized digital work, payments are non-refundable once work has started or a subscription period has begun, with one exception: the 30-Day Delivery Guarantee. If Judo Marketing fails to deliver the client's initial website or agreed project within thirty (30) days after receiving all required client materials, information, access, and approvals, the client may request a full refund of the first subscription payment. This guarantee does not apply to delays caused by the client, incomplete materials, third-party platforms, or scope changes requested after the project started. Refunds are not provided because a campaign or website did not produce a specific business result (see Section 9). Third-party fees are non-refundable.",
+          "Because services are customized digital work, payments are non-refundable once work has started or a subscription period has begun, with one exception: the 30-Day Delivery Guarantee. If Judo Marketing fails to deliver the client's initial website or agreed project within thirty (30) days after receiving all required client materials, information, access, and approvals, the client may request a full refund of the first subscription payment, including the setup fee if one was paid. This guarantee does not apply to delays caused by the client, incomplete materials, third-party platforms, or scope changes requested after the project started. Refunds are not provided because a campaign or website did not produce a specific business result (see Section 9). Third-party fees are non-refundable.",
         ],
       },
       {
@@ -172,7 +172,7 @@ export const policyContent: Record<
     ],
   },
   es: {
-    effective: "Fecha efectiva: 09/21/2026",
+    effective: "Fecha efectiva: 10/02/2026",
     sections: [
       {
         title: "1. Acuerdo",
@@ -195,7 +195,7 @@ export const policyContent: Record<
       {
         title: "4. Pagos y facturación",
         body: [
-          "Los pagos de suscripción se hacen mensualmente por adelantado en la fecha acordada. Judo Marketing no cobra recargos por mora ni penalidades por falta de pago: si un pago no se recibe, las únicas consecuencias son la suspensión del servicio descrita en la Sección 8 y la pausa del reloj de transferencia de propiedad de la Sección 7. El cliente es responsable de los costos de terceros (presupuestos publicitarios, software premium, recursos de stock) salvo que estén incluidos por escrito.",
+          "Los pagos de suscripción se hacen mensualmente por adelantado en la fecha acordada. Algunos planes llevan una cuota de inicio única, que se muestra en www.judomarketing.net antes de pagar y se cobra una sola vez con el primer mes (hoy, el Website Esencial); los Websites Complejos y las Apps Móviles no llevan cuota de inicio. Judo Marketing no cobra recargos por mora ni penalidades por falta de pago: si un pago no se recibe, las únicas consecuencias son la suspensión del servicio descrita en la Sección 8 y la pausa del reloj de transferencia de propiedad de la Sección 7. El cliente es responsable de los costos de terceros (presupuestos publicitarios, software premium, recursos de stock) salvo que estén incluidos por escrito.",
         ],
       },
       {
@@ -207,7 +207,7 @@ export const policyContent: Record<
       {
         title: "6. Reembolsos y la Garantía de Entrega de 30 Días",
         body: [
-          "Como los servicios son trabajo digital personalizado, los pagos no son reembolsables una vez iniciado el trabajo o el período de suscripción, con una excepción: la Garantía de Entrega de 30 Días. Si Judo Marketing no entrega el website inicial o proyecto acordado dentro de treinta (30) días después de recibir todos los materiales, información, accesos y aprobaciones del cliente, el cliente puede solicitar el reembolso completo de su primer pago de suscripción. Esta garantía no aplica a demoras causadas por el cliente, materiales incompletos, plataformas de terceros o cambios de alcance pedidos después de iniciado el proyecto. No se dan reembolsos porque una campaña o website no produjo un resultado de negocio específico (ver Sección 9). Las tarifas de terceros no son reembolsables.",
+          "Como los servicios son trabajo digital personalizado, los pagos no son reembolsables una vez iniciado el trabajo o el período de suscripción, con una excepción: la Garantía de Entrega de 30 Días. Si Judo Marketing no entrega el website inicial o proyecto acordado dentro de treinta (30) días después de recibir todos los materiales, información, accesos y aprobaciones del cliente, el cliente puede solicitar el reembolso completo de su primer pago de suscripción, incluida la cuota de inicio si la pagó. Esta garantía no aplica a demoras causadas por el cliente, materiales incompletos, plataformas de terceros o cambios de alcance pedidos después de iniciado el proyecto. No se dan reembolsos porque una campaña o website no produjo un resultado de negocio específico (ver Sección 9). Las tarifas de terceros no son reembolsables.",
         ],
       },
       {

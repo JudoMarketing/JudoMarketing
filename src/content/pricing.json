@@ -1,5 +1,20 @@
 {
   "_comentario": "Fuente única de los precios. La leen src/lib/pricing.ts (el website) y los scripts de Python que arman los PDF. Si cambia un precio, se cambia aquí y en ningún otro lado.",
-  "precios": { "essential": 99, "complex": 200, "apps": 300 },
-  "extras": { "juditoads": 20, "asistente": 25, "asistentePro": 60, "hosting": 30 }
+  "precios": {
+    "essential": 99,
+    "complex": 200,
+    "apps": 300
+  },
+  "extras": {
+    "juditoads": 20,
+    "asistente": 25,
+    "asistentePro": 60,
+    "hosting": 30
+  },
+  "cuotaInicio": {
+    "essential": 130,
+    "complex": 0,
+    "apps": 0
+  },
+  "_cuotaInicio": "Cuota única que se cobra con el primer mes. Solo el Website Esencial la lleva; los Complejos se cotizan con todo dentro de la mensualidad y las Apps tampoco la llevan (decisión de Junior, 2 de octubre de 2026)."
 }

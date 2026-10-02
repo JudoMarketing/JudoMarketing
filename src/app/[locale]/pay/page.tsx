@@ -1,7 +1,7 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import PaymentOptions from "@/components/PaymentOptions";
-import { precioTexto } from "@/lib/pricing";
+import { cuotaInicio, cuotaInicioTexto, precioTexto, primerPagoTexto } from "@/lib/pricing";
 import { privateMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -62,11 +62,22 @@ export default async function PayPage({
               · {tPlans("from")} {precioTexto(plan)}
               {tPlans("perMonth")}
             </p>
+            {/* La cuota de inicio se dice antes de pagar, con la suma hecha:
+                nadie debe enterarse en la pantalla de Stripe. */}
+            {cuotaInicio(plan) > 0 && (
+              <p className="mx-auto mt-3 max-w-sm text-sm text-judo-fog/70">
+                {t("setupLine", {
+                  total: primerPagoTexto(plan),
+                  month: precioTexto(plan),
+                  fee: cuotaInicioTexto(plan),
+                })}
+              </p>
+            )}
           </div>
           <div className="mt-8">
             <PaymentOptions
               plan={plan}
-              amount={precioTexto(plan)}
+              amount={primerPagoTexto(plan)}
               stripeReady={stripeReady}
               paypalMe={paypalMe}
             />

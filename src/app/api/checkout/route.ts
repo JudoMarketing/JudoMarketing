@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { precio, type Plan } from "@/lib/pricing";
+import { cuotaInicio, precio, type Plan } from "@/lib/pricing";
 
 const PLAN_ENV: Record<string, string | undefined> = {
   essential: process.env.STRIPE_PRICE_ESSENTIAL,
@@ -85,11 +85,37 @@ export async function POST(req: NextRequest) {
     // Si Stripe no deja consultarlo, se sigue con el precio configurado
   }
 
+  /**
+   * Cuota de inicio (hoy solo el Website Esencial): un cobro único que Stripe
+   * suma a la primera factura de la suscripción y no repite. Va con
+   * price_data para que el monto salga de pricing.json y no haya que crear ni
+   * mantener otro precio en el panel de Stripe.
+   */
+  const lineas: Stripe.Checkout.SessionCreateParams.LineItem[] = [linea];
+  const cuota = cuotaInicio(plan as Plan);
+  if (cuota > 0) {
+    lineas.push({
+      quantity: 1,
+      price_data: {
+        currency: "usd",
+        unit_amount: cuota * 100,
+        product_data: {
+          name: loc === "es" ? "Cuota de inicio (pago único)" : "Setup fee (one-time)",
+          description:
+            loc === "es"
+              ? "Configuración inicial del website. Se cobra una sola vez, con el primer mes."
+              : "Initial website setup. Charged once, with the first month.",
+        },
+      },
+    });
+  }
+
   let session: Stripe.Checkout.Session;
   try {
     session = await stripe.checkout.sessions.create({
     mode: "subscription",
-    line_items: [linea],
+    line_items: lineas,
+    metadata: { plan: String(plan), cuota_inicio: String(cuota) },
     locale: loc,
     // Origen del cliente: dato de marketing para saber qué canal funciona
     custom_fields: [

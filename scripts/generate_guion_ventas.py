@@ -28,6 +28,7 @@ OUT = "docs/legal/Guion_de_Ventas.pdf"
 with open("src/content/pricing.json", encoding="utf-8") as f:
     TARIFA = json.load(f)
 PRECIOS = TARIFA["precios"]
+CUOTA = TARIFA.get("cuotaInicio", {})
 
 
 def dos_precios(plan: str) -> str:
@@ -75,11 +76,11 @@ p(f"<b>PRECIOS VIGENTES:</b> son los que cobra el website hoy. "
   "El precio que el cliente firme antes es el que mantiene mientras siga con "
   "nosotros. Úsalo: es tu mejor razón para que decida hoy y no la otra semana.")
 sub("Los 3 planes")
-b(f"<b>Websites Esenciales, {dos_precios('essential')}:</b> tiendas online, páginas de citas, "
+b(f"<b>Websites Esenciales, {dos_precios('essential')} más una cuota de inicio única de ${CUOTA.get('essential', 0)}:</b> tiendas online, páginas de citas, "
   "venta de servicios. Diseño moderno, panel fácil, soporte y mantenimiento.")
-b(f"<b>Websites Complejos, {dos_precios('complex')}:</b> delivery, logística, clases virtuales, "
+b(f"<b>Websites Complejos, precio a la medida y sin cuota de inicio:</b> se cotizan en la entrevista y todo va dentro de la mensualidad. Delivery, logística, clases virtuales, "
   "sistemas avanzados, integraciones a la medida.")
-b(f"<b>Apps para Teléfonos, {dos_precios('apps')}:</b> aplicaciones nativas iPhone y Android "
+b(f"<b>Apps para Teléfonos, {dos_precios('apps')}, sin cuota de inicio:</b> aplicaciones nativas iPhone y Android "
   "con notificaciones push.")
 b("<b>Media Marketing (publicidad pagada):</b> anuncios en Instagram, Facebook, TikTok y Google. "
   "Nosotros armamos el anuncio y elegimos a quién se le muestra; el cliente decide cuánto invertir "
@@ -90,7 +91,7 @@ b("Página: <b>www.judomarketing.net</b> (en español y en inglés)")
 b("Teléfono y WhatsApp de la agencia: <b>+1 305 934 9981</b>")
 b("Oficina: 66 W Flagler St Suite 900, Miami, FL. Atendemos todo Estados Unidos y Latinoamérica online.")
 b("Pagos: tarjeta (y todos los métodos de Stripe), PayPal, Zelle y cripto USDT. Solo en dólares.")
-b("Garantía: si el proyecto no se entrega en menos de un mes, se devuelve el primer pago.")
+b("Garantía: si el proyecto no se entrega en menos de un mes, se devuelve el primer pago, cuota de inicio incluida.")
 b("Contrato de 12 meses. Al cumplir el año, el código del website pasa a ser del cliente.")
 
 # ── 2. Speech 30 segundos ────────────────────────────────────────
@@ -123,9 +124,9 @@ b("<b>Restaurante o comida:</b> “Pedidos directos desde su propia página, sin
 b("<b>Servicios (mecánico, abogado, doctor, entrenador):</b> “Una página seria que dé confianza, con sus "
   "servicios, citas y testimonios, para que cuando lo busquen en Google, usted gane.”")
 sub("Paso 4. El precio, sin miedo y sin rodeos")
-say(f"Son {PRECIOS['essential']} dólares al mes, el plan de arranque. Menos de 2 dólares al día, menos de lo que cuesta un café. Y ahí va "
-    "todo incluido: el diseño, el mantenimiento, la seguridad, los respaldos y su panel de control. Sin cobros "
-    "escondidos.")
+say(f"Son {PRECIOS['essential']} dólares al mes, el plan de arranque, y una cuota de inicio de {CUOTA.get('essential', 0)} dólares que se paga "
+    "una sola vez, con el primer mes. Menos de 4 dólares al día. Y ahí va todo incluido: el diseño, el mantenimiento, "
+    "la seguridad, los respaldos y su panel de control. Sin cobros escondidos: lo que le digo hoy es todo.")
 sub("Paso 5. Quítale el riesgo")
 say("Y mire lo mejor: si no le entregamos su proyecto en menos de un mes, le devolvemos su primer pago. Y usted puede "
     "cancelar cuando quiera, sin penalidad. O sea que el riesgo lo corremos nosotros, no usted.")
@@ -174,9 +175,9 @@ qa("“No tengo tiempo para eso ahorita”",
 
 # ── 5. FAQ ───────────────────────────────────────────────────────
 sec("5. PREGUNTAS FRECUENTES DEL CLIENTE (tu chuleta)")
-qa("¿Cuánto cuesta?", f"Websites Esenciales {dos_precios('essential')}; Websites Complejos "
-   f"{dos_precios('complex')}; Apps {dos_precios('apps')}. Son precios “desde”: si el proyecto es "
-   "más grande, la agencia cotiza en la entrevista.")
+qa("¿Cuánto cuesta?", f"Websites Esenciales {dos_precios('essential')} más una cuota de inicio única de "
+   f"${CUOTA.get('essential', 0)}; Websites Complejos a la medida, sin cuota de inicio, se cotizan en la entrevista; "
+   f"Apps {dos_precios('apps')}, sin cuota de inicio. Son precios “desde”.")
 qa("¿Qué incluye la mensualidad?", "Diseño, hosting, mantenimiento, seguridad y respaldos diarios, soporte, y su "
    "panel de administrador para controlar contenido, usuarios y ventas.")
 qa("¿En cuánto tiempo está lista?", "Menos de un mes. Con garantía: si no se entrega en menos de un mes, se devuelve "

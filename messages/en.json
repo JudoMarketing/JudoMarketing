@@ -123,7 +123,7 @@
   "services": {
     "title": "Services",
     "subtitle": "We do three things. Pick the one you need.",
-    "note": "Final price, no setup fee. 12-month agreement.",
+    "note": "Essential Website: one-time {fee} setup fee. Complex Websites and Apps have no setup fee. 12-month agreement.",
     "cta": "Let's talk about your project",
     "perMonth": "/mo",
     "from": "from",
@@ -166,7 +166,7 @@
         "Scalable and secure"
       ],
       "custom": "Custom pricing",
-      "customNote": "Every project is quoted on its own. Let's talk.",
+      "customNote": "Every project is quoted on its own, with no setup fee: everything goes into the monthly price. Let's talk.",
       "customShort": "custom pricing"
     },
     "apps": {
@@ -239,7 +239,7 @@
       "items": [
         {
           "q": "How much does a website cost with Judo Marketing?",
-          "a": "Our websites work as a monthly subscription: Essential Websites from {essential} a month (online stores, bookings, services) and Mobile Apps from {apps}. Complex Websites (delivery, logistics, integrations) have {complex}: they are quoted on a call. Everything includes design, support, maintenance, and your own admin panel."
+          "a": "Our websites work as a monthly subscription: Essential Websites from {essential} a month plus a one-time {setup} setup fee (online stores, bookings, services), and Mobile Apps from {apps} a month with no setup fee. Complex Websites (delivery, logistics, integrations) have {complex}: they are quoted on a call, with no setup fee. Everything includes design, support, maintenance, and your own admin panel."
         },
         {
           "q": "How long does it take to deliver my website?",
@@ -268,7 +268,9 @@
       "title": "How would you like to start?",
       "book": "Book a call",
       "form": "Tell us about your project"
-    }
+    },
+    "setupFee": "+ {fee} one-time setup",
+    "noSetupFee": "No setup fee"
   },
   "login": {
     "title": "Portals",
@@ -429,7 +431,8 @@
     "pay": "Pay",
     "opening": "Opening secure checkout…",
     "back": "← Back to services",
-    "feesNote": "The amount to pay is the plan total. Processing or network fees are covered by the client."
+    "feesNote": "Today's amount is the first month plus the setup fee, if your plan has one. Processing or network fees are covered by the client.",
+    "setupLine": "Today you pay {total}: the first month ({month}) plus the one-time {fee} setup fee. From the second month on, you pay {month}."
   },
   "crypto": {
     "title": "Crypto (USDT)",

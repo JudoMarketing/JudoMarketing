@@ -16,7 +16,7 @@
  * de mandarlo al primer cliente grande, que un abogado lo lea.
  */
 
-import { PRECIO_HOSTING } from "@/lib/pricing";
+import { cuotaInicio, PRECIO_HOSTING } from "@/lib/pricing";
 
 export const TIPOS_DOCUMENTO = ["websites", "juditoads", "juditos"] as const;
 export type TipoDocumento = (typeof TIPOS_DOCUMENTO)[number];
@@ -146,17 +146,23 @@ function marcoLegal(): Seccion {
 
 function websites(d: DatosDocumento): Documento {
   const plan = d.plan ?? "Website";
+  // La cuota de inicio solo va en el Website Esencial (pricing.json). Se
+  // reconoce por el nombre del plan que pone el portal ("Website Esencial").
+  const cuota = /esencial|essential/i.test(plan) ? cuotaInicio("essential") : 0;
+  const filas = partes(d, `${plan}${d.proyecto ? ` · ${d.proyecto}` : ""}`);
+  if (cuota > 0) {
+    const i = filas.findIndex(([etiqueta]) => etiqueta === "Precio mensual");
+    filas.splice(i + 1, 0, ["Cuota de inicio", `${usd(cuota)}, una sola vez, con el primer mes`]);
+  }
   return {
     titulo: "Acuerdo de servicio · Websites y apps",
     subtitulo: "Suscripción de diseño, construcción, alojamiento y mantenimiento · Plazo: 12 meses",
-    datos: [
-      ...partes(d, `${plan}${d.proyecto ? ` · ${d.proyecto}` : ""}`),
-    ],
+    datos: filas,
     secciones: [
       {
         titulo: "1. El servicio y el plazo",
         parrafos: [
-          `Judo Marketing diseña, construye, aloja y mantiene el website o la aplicación del cliente descrita en los datos de este contrato, incluido su portal de administración. El plan contratado es ${plan}, por ${usd(d.precioMensual)} al mes, pagados por adelantado.`,
+          `Judo Marketing diseña, construye, aloja y mantiene el website o la aplicación del cliente descrita en los datos de este contrato, incluido su portal de administración. El plan contratado es ${plan}, por ${usd(d.precioMensual)} al mes, pagados por adelantado.${cuota > 0 ? ` Además, una cuota de inicio única de ${usd(cuota)}, que se paga junto con el primer mes, cubre la configuración inicial y no se vuelve a cobrar.` : " Este plan no lleva cuota de inicio."}`,
           "El plazo inicial es de doce (12) meses contados desde la fecha de inicio. Al cumplirse, el cliente elige una de las tres salidas de la cláusula 4. Si no elige ninguna por escrito, el servicio continúa mes a mes con el mismo plan y el mismo precio, y cualquiera de las partes puede terminarlo con aviso de treinta (30) días.",
           "Incluye: el diseño y la construcción inicial; el alojamiento; el dominio (registrado por Judo Marketing durante el plazo); las actualizaciones de seguridad; el portal de administración del cliente; y las actualizaciones menores del plan (cambios de texto, precios, fotos y productos que el cliente no pueda hacer solo desde su portal). No incluye: rediseños, funciones nuevas, integraciones no previstas en el plan, campañas de publicidad ni contenido que deba producirse desde cero. Eso se cotiza aparte.",
         ],
@@ -164,7 +170,7 @@ function websites(d: DatosDocumento): Documento {
       {
         titulo: "2. Cómo protegemos al cliente",
         parrafos: [
-          "Garantía de entrega de 30 días. Si el proyecto inicial no está entregado dentro de los treinta (30) días siguientes a que el cliente haya entregado todos los materiales, textos, accesos y aprobaciones que se le pidan, el cliente puede pedir el reembolso completo de su primer pago. Es la única excepción a la regla de no reembolso. El plazo se pausa cada día que Judo Marketing esté esperando algo del cliente.",
+          "Garantía de entrega de 30 días. Si el proyecto inicial no está entregado dentro de los treinta (30) días siguientes a que el cliente haya entregado todos los materiales, textos, accesos y aprobaciones que se le pidan, el cliente puede pedir el reembolso completo de su primer pago, incluida la cuota de inicio si la pagó. Es la única excepción a la regla de no reembolso. El plazo se pausa cada día que Judo Marketing esté esperando algo del cliente.",
           "Sin recargos ni multas. Judo Marketing no cobra intereses de mora ni penalidades por cancelar.",
           "Cancelación libre. El cliente puede cancelar cuando quiera escribiendo a admin@judomarketing.net. Al cancelar, el servicio y el website se desactivan y no se factura el mes siguiente. Lo ya pagado no se devuelve.",
           "Control de su negocio. El cliente maneja su contenido, usuarios, productos y precios desde su portal de administración. Sus datos y su marca son suyos siempre.",

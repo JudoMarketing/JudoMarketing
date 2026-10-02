@@ -6,7 +6,7 @@ import Reveal from "@/components/Reveal";
 import EleccionContacto from "@/components/EleccionContacto";
 import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
 import { pageMetadata } from "@/lib/seo";
-import { precioTexto, PRECIO_JUDITOADS, PRECIO_ASISTENTE, PRECIO_ASISTENTE_PRO } from "@/lib/pricing";
+import { cuotaInicio, cuotaInicioTexto, precioTexto, PRECIO_JUDITOADS, PRECIO_ASISTENTE, PRECIO_ASISTENTE_PRO } from "@/lib/pricing";
 
 /**
  * Tres servicios, tres colores, poco texto.
@@ -53,6 +53,7 @@ export default function ServicesPage({
     q: faq.q,
     a: faq.a
       .replace("{essential}", precioTexto("essential"))
+      .replace("{setup}", cuotaInicioTexto("essential"))
       .replace("{complex}", t("complex.customShort"))
       .replace("{apps}", precioTexto("apps")),
   }));
@@ -145,6 +146,11 @@ export default function ServicesPage({
                       </span>
                       <span className="display-num text-5xl font-bold">{precioTexto(plan)}</span>
                       <span style={{ color: "var(--svc-luz)" }}>{t("perMonth")}</span>
+                      <span className="mt-1 block text-sm text-judo-fog/55">
+                        {cuotaInicio(plan) > 0
+                          ? t("setupFee", { fee: cuotaInicioTexto(plan) })
+                          : t("noSetupFee")}
+                      </span>
                     </p>
                   )}
                   <ul className="mt-6 flex-1 space-y-2.5">
@@ -169,7 +175,7 @@ export default function ServicesPage({
             );
           })}
         </div>
-        <p className="mt-6 text-center text-xs text-judo-fog/45">{t("note")}</p>
+        <p className="mt-6 text-center text-xs text-judo-fog/45">{t("note", { fee: cuotaInicioTexto("essential") })}</p>
       </section>
 
       {/* ── JUDITOADS ────────────────────────────────────────────────────

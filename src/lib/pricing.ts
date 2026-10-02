@@ -43,3 +43,29 @@ export function precioTexto(plan: Plan): string {
 export function precioDesde(): string {
   return precioTexto("essential");
 }
+
+const CUOTAS = (tabla as { cuotaInicio?: Partial<Record<Plan, number>> }).cuotaInicio ?? {};
+
+/**
+ * Cuota de inicio: un pago único que se cobra junto con el primer mes. Desde
+ * el 2 de octubre de 2026 solo la lleva el Website Esencial ($130); los
+ * Complejos se cotizan con todo dentro de la mensualidad y las Apps no la
+ * llevan. Devuelve 0 cuando el plan no tiene cuota. Los clientes que ya
+ * estaban suscritos no la pagan: solo entra en un checkout nuevo.
+ */
+export function cuotaInicio(plan: Plan): number {
+  return CUOTAS[plan] ?? 0;
+}
+
+export function cuotaInicioTexto(plan: Plan): string {
+  return `$${cuotaInicio(plan)}`;
+}
+
+/** Lo que se paga el primer día: el primer mes más la cuota de inicio. */
+export function primerPago(plan: Plan): number {
+  return precio(plan) + cuotaInicio(plan);
+}
+
+export function primerPagoTexto(plan: Plan): string {
+  return `$${primerPago(plan)}`;
+}
