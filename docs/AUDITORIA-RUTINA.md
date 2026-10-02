@@ -50,6 +50,15 @@ sube al repositorio y le manda a Junior un aviso con lo que depende de él.
    semanas seguidas, decirlo en el informe: el plan de contenido está en la
    sección 2.7 de la línea base.
 
+8. **Estrategia:** lee `ESTRATEGIA.md`. Llena la fila de la semana en "El
+   marcador" con lo que se puede medir desde aquí (correos enviados, clics,
+   respuestas y bajas de `GET /api/leads?reporte=1&desde=<hace 7 días>` si
+   la sesión tiene LEADS_SECRET; visitas a `/mental-health` y
+   `/es/salud-mental` si hay acceso a Analytics) y deja en blanco lo que solo
+   Junior sabe. En el informe, una línea por parte que siga en ❓ o ⏳ con la
+   pregunta exacta para Junior. Puedes editar `ESTRATEGIA.md` solo en el
+   marcador y en los estados; las propuestas y precios no se tocan.
+
 ## Lo que la sesión puede corregir sola
 
 Solo cambios pequeños, mecánicos y sin decisión de diseño, y siempre con
