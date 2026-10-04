@@ -64,6 +64,8 @@ function rechazar(req: NextRequest): NextResponse | null {
 
 function conTablas(e: unknown): NextResponse {
   const msg = (e as Error).message ?? String(e);
+  // Que quede en los registros de Vercel: un 500 sin rastro costó tres días.
+  console.error("api/leads:", msg);
   if (/relation .* does not exist|leads/.test(msg) && /does not exist/.test(msg)) {
     return NextResponse.json(
       { error: "Falta aplicar supabase/migrations/0027_leads.sql en el SQL Editor de Supabase." },
@@ -250,7 +252,12 @@ export async function POST(req: NextRequest) {
       const porPlace = new Map((existentes ?? []).map((f) => [f.place_id, f]));
 
       const salida: Array<{ id: string; place_id: string; estado: string; email: string | null; nuevo: boolean }> = [];
+      // Un negocio que no se puede guardar no tumba a los demás: se anota
+      // con su motivo y se sigue. Antes, el primer error cortaba el lote y
+      // los que venían detrás se perdían.
+      const fallidos: Array<{ place_id: string; nombre: string; motivo: string }> = [];
       for (const l of entrantes) {
+        try {
         if (!l.place_id || !l.nombre || !ZONA_RE.test(l.zip ?? "")) continue;
         const email = l.email?.trim().toLowerCase() || null;
         const investigado = {
@@ -266,9 +273,11 @@ export async function POST(req: NextRequest) {
           resenas: l.resenas ?? null,
           idioma: l.idioma && ["es", "en", "de"].includes(l.idioma) ? l.idioma : null,
           constructor: l.constructor ?? null,
-          senales: Array.isArray(l.senales) ? l.senales.slice(0, 20) : [],
+          senales: Array.isArray(l.senales) ? l.senales.filter((s) => typeof s === "string").slice(0, 30) : [],
           resumen_sitio: l.resumen_sitio?.slice(0, 1200) ?? null,
-          puntaje: Number.isFinite(l.puntaje) ? Number(l.puntaje) : 0,
+          // La columna es entera: un puntaje con decimales (9.5) tumbaba el
+          // guardado entero desde el 2 de octubre de 2026.
+          puntaje: Number.isFinite(Number(l.puntaje)) ? Math.round(Number(l.puntaje)) : 0,
           fuente: l.fuente === "sunbiz" ? "sunbiz" : "places",
           sunbiz_numero: l.sunbiz_numero ?? null,
           sunbiz_fecha: l.sunbiz_fecha && /^\d{4}-\d{2}-\d{2}$/.test(l.sunbiz_fecha) ? l.sunbiz_fecha : null,
@@ -303,8 +312,13 @@ export async function POST(req: NextRequest) {
           .single();
         if (error) throw error;
         salida.push({ ...data, nuevo: false });
+        } catch (e) {
+          const motivo = (e as { message?: string }).message ?? String(e);
+          console.error("leads/guardar:", l.place_id, motivo);
+          fallidos.push({ place_id: l.place_id, nombre: l.nombre, motivo });
+        }
       }
-      return NextResponse.json({ leads: salida });
+      return NextResponse.json({ leads: salida, fallidos });
     }
 
     if (accion === "posicion") {

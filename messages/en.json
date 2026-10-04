@@ -519,13 +519,13 @@
   "mentalHealth": {
     "kicker": [
       "Miami, Florida",
-      "3 mental health projects live",
+      "4 mental health projects live",
       "Delivered in 30 days"
     ],
     "titleBefore": "Help the families looking for care ",
     "titleHighlight": "find",
     "titleAfter": " your practice.",
-    "subtitle": "Websites, portals and assistants for mental health clinics, ABA therapy, counseling and developmental therapies. Built on what we learned making Denali CRT, RBT Corner and The Notes.",
+    "subtitle": "Websites, portals and assistants for mental health clinics, ABA therapy, counseling and developmental therapies. Built on what we learned making Denali CRT, ABA for Happiness, RBT Corner and The Notes.",
     "ctaPrimary": "Book 20 minutes",
     "ctaSecondary": "See what we built",
     "trust": [
@@ -583,6 +583,10 @@
       {
         "name": "Denali CRT",
         "what": "ABA therapy and psychotherapy clinic in Doral. Appointment booking, insurance check, portal and the whole site in English and Spanish."
+      },
+      {
+        "name": "ABA for Happiness",
+        "what": "Family-centered ABA therapy center in Miami. Insurance eligibility check, free consultation and a fixed call button on phones, in English and Spanish."
       },
       {
         "name": "RBT Corner",

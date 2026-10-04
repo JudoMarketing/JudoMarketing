@@ -496,7 +496,8 @@ export function puntuar(c, estudio) {
   }
   if ([...s].some((x) => x.startsWith("ya_tiene_plataforma") || x.startsWith("ya_tiene_sistema"))) p -= 6;
   if (!grave && debilidad(s) < 3) estudio.senales.push("sin_debilidad_clara");
-  return Math.round(p * 10) / 10;
+  // Entero: la columna leads.puntaje es integer y un 9.5 rompía el guardado.
+  return Math.round(p);
 }
 
 /**
@@ -600,8 +601,9 @@ async function main() {
 
   const guardados = [];
   for (let i = 0; i < filas.length; i += 100) {
-    const { leads } = await api("POST", "", { accion: "guardar", leads: filas.slice(i, i + 100) });
+    const { leads, fallidos } = await api("POST", "", { accion: "guardar", leads: filas.slice(i, i + 100) });
     guardados.push(...leads);
+    for (const f of fallidos ?? []) console.error(`  ✗ no se pudo guardar ${f.nombre}: ${f.motivo}`);
   }
   const porPlace = new Map(guardados.map((g) => [g.place_id, g]));
 

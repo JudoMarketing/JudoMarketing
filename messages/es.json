@@ -519,13 +519,13 @@
   "mentalHealth": {
     "kicker": [
       "Miami, Florida",
-      "3 proyectos de salud mental en línea",
+      "4 proyectos de salud mental en línea",
       "Entrega en 30 días"
     ],
     "titleBefore": "Que la familia que busca ayuda ",
     "titleHighlight": "encuentre",
     "titleAfter": " tu centro.",
-    "subtitle": "Websites, portales y asistentes para clínicas de salud mental, terapia ABA, consejería y terapias del desarrollo. Los construimos con lo que ya aprendimos haciendo Denali CRT, RBT Corner y The Notes.",
+    "subtitle": "Websites, portales y asistentes para clínicas de salud mental, terapia ABA, consejería y terapias del desarrollo. Los construimos con lo que ya aprendimos haciendo Denali CRT, ABA for Happiness, RBT Corner y The Notes.",
     "ctaPrimary": "Agenda 20 minutos",
     "ctaSecondary": "Ver lo que construimos",
     "trust": [
@@ -583,6 +583,10 @@
       {
         "name": "Denali CRT",
         "what": "Clínica de terapia ABA y psicoterapia en Doral. Agenda de citas, verificación de seguro, portal y todo el sitio en inglés y español."
+      },
+      {
+        "name": "ABA for Happiness",
+        "what": "Centro de terapia ABA centrada en la familia, en Miami. Verificador de elegibilidad por seguro, consulta gratis y botón de llamada fijo en el teléfono, en inglés y español."
       },
       {
         "name": "RBT Corner",

@@ -13,7 +13,8 @@ import { cuotaInicioTexto, precioTexto, PRECIO_ASISTENTE } from "@/lib/pricing";
  * Es a donde llevan los correos de prospección a clínicas de salud mental,
  * terapia ABA, consejería y terapias del desarrollo, y la que ataca las
  * keywords de ese nicho (docs/SEO.md). Su argumento son tres proyectos
- * nuestros que están en línea: Denali CRT, RBT Corner y The Notes, con la
+ * nuestros que están en línea: Denali CRT, ABA for Happiness, RBT Corner y
+ * The Notes, con la
  * captura real de cada uno. Ninguna cifra ni promesa que no se pueda probar:
  * el visitante es un director de clínica y lo va a comprobar.
  */
@@ -31,6 +32,7 @@ type Precio = { name: string; price: string; note: string };
 /** Los proyectos que respaldan la página, en el orden de los textos. */
 const PROYECTOS = [
   { url: "https://www.denalibehaviorcrt.com", imagen: "/nichos/salud-mental/denali-crt.jpg" },
+  { url: "https://www.abaforhappiness.com", imagen: "/nichos/salud-mental/aba-for-happiness.jpg" },
   { url: "https://www.rbtcorner.com", imagen: "/nichos/salud-mental/rbt-corner.jpg" },
   { url: "https://thenotes.net", imagen: "/nichos/salud-mental/the-notes.jpg" },
 ];
@@ -186,7 +188,7 @@ export default function MentalHealthPage({ params }: { params: Promise<{ locale:
           <h2 className="text-3xl font-bold sm:text-4xl">{t("workTitle")}</h2>
           <p className="mt-3 text-judo-fog/65">{t("workSub")}</p>
         </Reveal>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
           {trabajos.map((w, i) => (
             <Reveal key={w.name} paso={i}>
               <a
@@ -200,7 +202,7 @@ export default function MentalHealthPage({ params }: { params: Promise<{ locale:
                   alt={`${w.name}: ${locale === "es" ? "portada del website" : "website home page"}`}
                   width={900}
                   height={562}
-                  sizes="(min-width: 768px) 33vw, 100vw"
+                  sizes="(min-width: 768px) 50vw, 100vw"
                   className="aspect-[900/562] w-full border-b border-judo-lilac/15 object-cover object-top"
                 />
                 <div className="flex flex-1 flex-col p-6">

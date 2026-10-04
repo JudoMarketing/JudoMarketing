@@ -71,15 +71,15 @@ sorpresas". Detalle en `LEADS.md`.
 
 ### 3. Nicho de salud mental ✅
 
-Es donde ya tenemos pruebas: Denali CRT, RBT Corner y The Notes. Página
+Es donde ya tenemos pruebas: Denali CRT, ABA for Happiness, RBT Corner y The Notes. Página
 `/es/salud-mental` y `/mental-health` con esas tres referencias, precios y
 preguntas de directores de clínica; 24 keywords en `SEO.md`; la rutina de
 Estados Unidos corre primero este nicho (hasta 5 de los 10 del día) y esos
 correos llevan "Ver nuestro trabajo" a la página del nicho.
 **Se mide:** visitas a la página (GA4, `utm_content=salud_mental`), citas
 agendadas que vienen de ahí, y puesto en Google de las keywords del nicho.
-**Siguiente paso posible:** ABA for Happiness como cuarta referencia, si
-Junior confirma que se puede mostrar.
+ABA for Happiness entró como cuarta referencia el 4 de octubre de 2026,
+confirmado por Junior.
 
 ### 4. Llamadas diarias ⏳
 
