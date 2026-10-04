@@ -61,6 +61,21 @@ export function videoDePortada(dominio: string): Trabajo["video"] {
   return { src: `/showcase/video/${slug}.mp4`, poster: `/showcase/video/${slug}.jpg` };
 }
 
+/**
+ * Portadas fijas elegidas por Junior para sitios sin movimiento: van en vez
+ * de la captura automática (y de la imagen del portal). Archivos en
+ * public/showcase/portadas/, a 1200x750 para que calcen con la ficha.
+ */
+const PORTADAS_FIJAS: Record<string, string> = {
+  // Vanventure, 4 de octubre de 2026: su arte de "Private van tours in Miami"
+  "vanventuremia.com": "/showcase/portadas/vanventuremia-com.jpg",
+};
+
+export function portadaFija(dominio: string): string | null {
+  const limpio = dominio.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/+$/, "");
+  return PORTADAS_FIJAS[limpio] ?? null;
+}
+
 // Misma lista que el selector del portal y que el candado de la base
 // (migración 0023). Si se agrega una categoría, va en las cuatro.
 export const CATEGORIAS: { id: Categoria; es: string; en: string }[] = [

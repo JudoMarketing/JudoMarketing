@@ -55,5 +55,5 @@ Se vuelve a grabar cuando un sitio cambia de diseño. Cada video pesa entre
 
 | Sitio | Motivo |
 | --- | --- |
-| vanventuremia.com | Una sola pantalla, sin movimiento: el video sería la foto |
+| vanventuremia.com | Una sola pantalla, sin movimiento. Lleva portada fija (`PORTADAS_FIJAS` en `src/content/portfolio.ts`): el arte de "Private van tours in Miami" que eligió Junior |
 | milcoloresapp.vercel.app/hoy | Igual: app de una pantalla |

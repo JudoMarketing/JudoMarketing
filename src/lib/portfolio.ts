@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { capturaDelHome, videoDePortada, type Categoria, type Trabajo } from "@/content/portfolio";
+import { capturaDelHome, portadaFija, videoDePortada, type Categoria, type Trabajo } from "@/content/portfolio";
 
 /**
  * Los trabajos del portafolio, leídos de la lista de websites.
@@ -108,7 +108,7 @@ export async function trabajosPublicados(): Promise<Trabajo[]> {
         nombre: fila.name,
         dominio,
         url: `https://${dominio}`,
-        imagen: capturaDelHome(paraLaFoto[i], fila.portfolio_image, fila.portfolio_shot_at),
+        imagen: portadaFija(dominio) ?? capturaDelHome(paraLaFoto[i], fila.portfolio_image, fila.portfolio_shot_at),
         // El video manda incluso sobre una imagen puesta en el portal (Delivery
         // Rush tenía una portada fija): estar en VIDEOS_PORTADA ya es decisión.
         video: videoDePortada(dominio),
