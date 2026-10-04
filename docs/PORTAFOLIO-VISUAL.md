@@ -26,7 +26,7 @@ animación no corra (buscadores, equipos lentos, capturas del showcase).
 | **Juditos** | SaaS | Oscuro, violeta, Poppins, elenco 3D | Login, precios | Casos concretos (pizzería, clínica) | Header de teléfono roto (CTA en 3 líneas); no muestra una conversación |
 | **ART Foundation** | Fundación | Claro, fucsia + multicolor, Domine | Inscripción por clase, donar, tienda, voluntariado, video | Galería real de alumnos; a dónde va la donación | Mitad derecha del hero vacía; Donate se esconde en teléfono |
 | **Dame una Mano** | Comunidad / app web | Claro crema, rojo ladrillo, Outfit + Inter | Login por código, eventos, chat, barra de pestañas | La que más parece app | "No pudimos cargar los eventos" en la captura; tres botones en el header |
-| **Delivery Rush** | Delivery | Oscuro, naranja | Login de conductores | Teléfono grande | Página de mantenimiento mientras los metadatos prometen el servicio |
+| **Delivery Rush** | Delivery | Oscuro, naranja | Pedido con precio por milla, registro de conductores, login | Precio claro ($2 por milla) y tipos de vehículo arriba | Revisado el 4 de octubre de 2026: ya no está en mantenimiento, el sitio está completo |
 | **Denali CRT** | Salud | Claro, verde oliva y lima, Figtree | Agenda, verificar seguro, WhatsApp, portal | "¿Qué necesitas hoy?", recuadro de emergencias | Foto de banco; en teléfono la foto empuja el H1 a media pantalla |
 | **Johan Moreno Tailoring** | Belleza / lujo | Editorial B/N, Anton + Jost | Reservar, SMS, WhatsApp, video | La identidad más premium | "24/7" solo en una cinta; sin botón de llamar a la vista en teléfono |
 | **Melanie Osorio** | Marca personal | Lavanda + violeta + mantequilla, serif con itálica | Reservas, cursos, portal, cupones, correo | Personalidad y tipografía; "Dime qué buscas" | Galería de marcadores publicada; 13.000 px de largo |
@@ -85,7 +85,7 @@ animación no corra (buscadores, equipos lentos, capturas del showcase).
 | Gerald Market | Quitar el relleno visible o sacar el sitio del aire hasta tener el material | Alta |
 | AC Customs, JudiWEB | No dejar demos con datos de ejemplo en una URL pública indexable | Alta |
 | HR Gutters | Confirmar las 5 reseñas o quitarlas; un solo teléfono | Alta (riesgo legal) |
-| Delivery Rush | Si sigue en mantenimiento, que los metadatos lo digan | Media |
+| Delivery Rush | Resuelto el 4 de octubre de 2026: el sitio ya está completo | Hecho |
 | Melanie | Reemplazar la galería de marcadores por fotos reales | Media |
 | Juditos | Header de teléfono | Media |
 | judomarketing.net | Líneas animadas detrás del texto, no encima; un solo CTA principal en el hero; mascota que no tape texto | Media (chat de Judo Marketing) |

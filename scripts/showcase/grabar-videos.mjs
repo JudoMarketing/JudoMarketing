@@ -22,7 +22,7 @@
 import { chromium } from "playwright-core";
 import sharp from "sharp";
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync, existsSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -33,6 +33,13 @@ import { join } from "node:path";
  * entrada: milisegundos que se deja correr la entrada antes de bajar.
  * bajar: cuánto se baja, en altos de pantalla.
  * saltar: segundos que se saltan del arranque (una entrada que no luce).
+ * ancho: ancho de pantalla de la grabación (1440 por defecto). Uno menor
+ *   agranda lo que se ve en la ficha: sirve para un sitio de una pantalla con
+ *   el contenido chico al centro, como JudiMental.
+ * minimo: contraste mínimo para que un cuadro cuente como pintado (8). Un
+ *   sitio casi todo negro con poco contenido necesita uno más bajo.
+ * mp4: el sitio tiene video propio en MP4. El Chrome de grabación no trae
+ *   H.264, así que esos videos se pasan a WebM al vuelo, solo para grabar.
  */
 const SITIOS = [
   { dominio: "dameunamano.org", url: "https://www.dameunamano.org/" },
@@ -45,14 +52,14 @@ const SITIOS = [
   { dominio: "art-foundation.vercel.app", url: "https://art-foundation.vercel.app/" },
   { dominio: "zanoah.shop", url: "https://zanoah.shop/" },
   { dominio: "thenotes.net", url: "https://thenotes.net/" },
-  { dominio: "the-equipment-source.vercel.app", url: "https://the-equipment-source.vercel.app/" },
+  { dominio: "the-equipment-source.vercel.app", url: "https://the-equipment-source.vercel.app/", mp4: true },
+  { dominio: "deliveryrushflorida.com", url: "https://deliveryrushflorida.com/" },
+  { dominio: "judimental.com", url: "https://www.judimental.com/", ancho: 960, minimo: 2, entrada: 2500, saltar: 0.6 },
 ];
 
-// Fuera a propósito (se quedan con su foto): judimental.com (en el Chrome de
-// grabación el home sale negro con el nombre), deliveryrushflorida.com (está
-// en mantenimiento y su ficha usa una imagen propia del portal, que manda),
-// vanventuremia.com y milcoloresapp.vercel.app/hoy (son de una pantalla, sin
-// movimiento: el video sería la misma foto).
+// Fuera a propósito (se quedan con su foto): vanventuremia.com y
+// milcoloresapp.vercel.app/hoy (son de una pantalla, sin movimiento: el video
+// sería la misma foto).
 
 const SALIDA = "public/showcase/video";
 const ANCHO = 1440;
@@ -93,9 +100,38 @@ async function abrir(p, url) {
   }
 }
 
-async function grabar(navegador, sitio) {
+/**
+ * Pasa los MP4 del sitio a WebM al vuelo y le dice a la página que sí puede
+ * con MP4, para que su video corra en la grabación igual que en un navegador
+ * normal. Cada video se convierte una vez y se guarda en `cache`.
+ */
+async function videosDelSitio(ctx, ff, cache) {
+  await ctx.addInitScript(() => {
+    const original = HTMLMediaElement.prototype.canPlayType;
+    HTMLMediaElement.prototype.canPlayType = function (tipo) {
+      return /mp4/i.test(tipo) ? "probably" : original.call(this, tipo);
+    };
+  });
+  await ctx.route(/\.mp4(\?|$)/i, async (ruta) => {
+    const url = ruta.request().url();
+    if (!cache.has(url)) {
+      const res = await ruta.fetch({ headers: { ...ruta.request().headers(), range: "bytes=0-" } });
+      const dir = mkdtempSync(join(tmpdir(), "showcase-mp4-"));
+      writeFileSync(join(dir, "o.mp4"), await res.body());
+      execFileSync(ff, ["-y", "-loglevel", "error", "-i", join(dir, "o.mp4"), "-an", "-c:v", "libvpx-vp9",
+        "-b:v", "0", "-crf", "34", "-deadline", "realtime", "-cpu-used", "8", join(dir, "v.webm")]);
+      cache.set(url, readFileSync(join(dir, "v.webm")));
+      rmSync(dir, { recursive: true, force: true });
+    }
+    await ruta.fulfill({ status: 200, contentType: "video/webm", body: cache.get(url) });
+  });
+}
+
+async function grabar(navegador, sitio, ff) {
+  const ancho = sitio.ancho ?? ANCHO;
+  const alto = Math.round((ancho * ALTO) / ANCHO);
   const ctx = await navegador.newContext({
-    viewport: { width: ANCHO, height: ALTO },
+    viewport: { width: ancho, height: alto },
     ignoreHTTPSErrors: true,
     locale: "es-US",
   });
@@ -111,6 +147,7 @@ async function grabar(navegador, sitio) {
       else document.addEventListener("DOMContentLoaded", poner);
     }, css);
   }
+  if (sitio.mp4) await videosDelSitio(ctx, ff, new Map());
   const p = await ctx.newPage();
   // Primera visita para calentar la caché: la grabada carga como la de alguien
   // que ya abrió el sitio, sin esperas de red que no son del diseño.
@@ -124,7 +161,7 @@ async function grabar(navegador, sitio) {
     cuadros.push({ t: f.metadata.timestamp, data: Buffer.from(f.data, "base64") });
     await cdp.send("Page.screencastFrameAck", { sessionId: f.sessionId }).catch(() => {});
   });
-  await cdp.send("Page.startScreencast", { format: "jpeg", quality: 90, maxWidth: ANCHO, maxHeight: ALTO });
+  await cdp.send("Page.startScreencast", { format: "jpeg", quality: 90, maxWidth: ancho, maxHeight: alto });
   await p.goto(sitio.url, { waitUntil: "commit", timeout: 60000 });
   // Hay sitios que nunca terminan de cargar (un rastreador colgado): a los
   // 12 segundos se sigue igual, el diseño ya está pintado.
@@ -187,12 +224,13 @@ async function procesar(sitio, { cuadros, inicioBajada, finBajada }, ff) {
     if (!notas.has(i)) notas.set(i, await contraste(cuadros[i].data));
     return notas.get(i);
   };
+  const minimo = sitio.minimo ?? 8;
   let desde = -1;
   for (let i = 0; i < cuadros.length && desde < 0; i++) {
-    if ((await nota(i)) < 8) continue;
+    if ((await nota(i)) < minimo) continue;
     let ok = true;
     for (let j = i; ok && j < cuadros.length && cuadros[j].t - cuadros[i].t < 0.3; j++) {
-      if ((await nota(j)) < 8) ok = false;
+      if ((await nota(j)) < minimo) ok = false;
     }
     if (ok) desde = i;
   }
@@ -252,7 +290,7 @@ for (const sitio of SITIOS) {
   // Si la red corta a media grabación, se repite el sitio entero.
   for (let intento = 1; intento <= 3; intento++) {
     try {
-      await procesar(sitio, await grabar(navegador, sitio), ff);
+      await procesar(sitio, await grabar(navegador, sitio, ff), ff);
       break;
     } catch (e) {
       if (intento === 3) console.log(`${sitio.dominio}: ERROR ${String(e.message).split("\n")[0]}`);

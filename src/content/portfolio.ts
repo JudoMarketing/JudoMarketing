@@ -35,6 +35,7 @@ export type Trabajo = {
  * hero y un recorrido suave hacia abajo, unos 5 segundos en bucle. Los graba
  * scripts/showcase/grabar-videos.mjs en public/showcase/video/. Va el dominio
  * tal como está en el portal, sin www; el que no está aquí sigue con su foto.
+ * Si está aquí, el video manda aunque el portal tenga una imagen propia.
  * Si un sitio cambia mucho de diseño, se vuelve a grabar (docs/SHOWCASE-VIDEO.md).
  */
 export const VIDEOS_PORTADA: string[] = [
@@ -49,6 +50,8 @@ export const VIDEOS_PORTADA: string[] = [
   "zanoah.shop",
   "thenotes.net",
   "the-equipment-source.vercel.app",
+  "deliveryrushflorida.com",
+  "judimental.com",
 ];
 
 export function videoDePortada(dominio: string): Trabajo["video"] {

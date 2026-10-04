@@ -4,7 +4,7 @@ Desde el 4 de octubre de 2026 (pedido de Junior) las fichas del showcase de
 los sitios con movimiento enseñan un video corto en vez de la foto: la
 entrada animada del hero y un recorrido suave hacia abajo que dispara las
 animaciones de las secciones. Unos 5 a 6 segundos, en bucle, sin audio.
-Hoy son 11 sitios.
+Hoy son 13 sitios.
 
 ## Cómo funciona en la página
 
@@ -15,8 +15,8 @@ Hoy son 11 sitios.
 - `src/components/PortfolioGrid.tsx` → `PortadaEnVideo`: enseña el póster,
   no baja el video hasta que la ficha entra en pantalla, lo pausa al salir.
   Con "reducir movimiento" o "ahorro de datos" se queda el póster.
-- Si en el portal el sitio tiene una imagen propia (`portfolio_image`), esa
-  manda y no sale video. Es el caso de Delivery Rush.
+- Si el sitio está en `VIDEOS_PORTADA`, el video manda aunque en el portal
+  tenga una imagen propia (`portfolio_image`), como pasaba con Delivery Rush.
 
 ## Cómo se graba
 
@@ -34,8 +34,12 @@ la espera con el hero quieto y pega la bajada completa.
 
 Por sitio se puede ajustar en `SITIOS`: `entrada` (cuánto esperar antes de
 bajar, para cargadores largos como el de Johan Moreno), `bajar` (cuántas
-pantallas), `saltar` (segundos que se saltan del arranque) y `ocultar`
-(selectores que se esconden: ventanas de reseñas, cookies, chats).
+pantallas), `saltar` (segundos que se saltan del arranque), `ocultar`
+(selectores que se esconden: ventanas de reseñas, cookies, chats), `ancho`
+(una pantalla más chica agranda el contenido: JudiMental), `minimo` (para
+sitios casi todos negros) y `mp4` (el sitio tiene video propio en MP4: el
+Chrome de grabación no reproduce H.264, así que se pasa a WebM al vuelo;
+es el caso del hero de The Equipment Source).
 
 ## Para sumar un sitio
 
@@ -51,7 +55,5 @@ Se vuelve a grabar cuando un sitio cambia de diseño. Cada video pesa entre
 
 | Sitio | Motivo |
 | --- | --- |
-| judimental.com | En el Chrome de grabación el home sale negro con el nombre |
-| deliveryrushflorida.com | En mantenimiento; su ficha usa imagen propia |
 | vanventuremia.com | Una sola pantalla, sin movimiento: el video sería la foto |
 | milcoloresapp.vercel.app/hoy | Igual: app de una pantalla |

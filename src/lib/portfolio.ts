@@ -109,9 +109,9 @@ export async function trabajosPublicados(): Promise<Trabajo[]> {
         dominio,
         url: `https://${dominio}`,
         imagen: capturaDelHome(paraLaFoto[i], fila.portfolio_image, fila.portfolio_shot_at),
-        // Una imagen puesta a mano en el portal es una decisión (Delivery Rush
-        // enseña su app mientras el sitio está en mantenimiento): esa manda.
-        video: fila.portfolio_image?.trim() ? null : videoDePortada(dominio),
+        // El video manda incluso sobre una imagen puesta en el portal (Delivery
+        // Rush tenía una portada fija): estar en VIDEOS_PORTADA ya es decisión.
+        video: videoDePortada(dominio),
         categoria,
         enDesarrollo: fila.status === "en_desarrollo",
         descripcion: {
