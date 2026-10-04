@@ -1190,3 +1190,29 @@ Producción revisada como Googlebot, 31/31: /juditoads/es con <html lang=es> y
 contenido en español sin cookie; sitemap con hreflang; login noindex. El
 robots.txt de judomarketing.net todavía no nombra /juditoads/sitemap.xml:
 Google solo lee el robots de la raíz del dominio.
+
+---
+
+### 2026-10-04 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** «publiqué y no sale donde elegí» y «la gente comenta y
+no veo los comentarios» casi nunca son un fallo del código que publica. Son
+dos reglas de Meta que el portal tiene que ENSEÑAR, no esconder:
+(1) Elegir ubicaciones le permite a Meta usarlas, no la obliga. Reparte el
+presupuesto donde le sale más barato y puede dejar una red entera en cero.
+Solo lo dicen los insights con desglose publisher_platform y
+platform_position.
+(2) Una publicación de una red mostrada en la otra es otro objeto. Una de
+Instagram en Facebook sale como un anuncio de la página
+(effective_object_story_id), y sus comentarios viven ahí, no en Instagram.
+Antes de tocar el código, compararlo con el ejemplo de la guía oficial de
+Meta. El creativo era el mismo, así que no había nada que «arreglar» en la
+publicación: lo que faltaba era la vista. Y antes de prometer «verás los
+comentarios», mirar el permiso: los de Facebook se leen con el token de la
+página (pages_read_engagement), los de Instagram exigen
+instagram_manage_comments, que no está pedido. De esos solo se da el enlace.
+**Evidencia:** Judito-Ads 563fb3f. Sección «Dónde se está mostrando tu
+anuncio», ruta /api/campaigns/[id]/entrega, pruebas/entrega.test.mts
+(20 comprobaciones con un Meta de mentira) y recorrido en navegador, 15/15.
+Guía de Meta: developers.facebook.com/documentation/ads-commerce/instagram/
+ads-api/guides/use-posts-as-ads (el ejemplo con call_to_action LEARN_MORE es
+el mismo que manda JuditoADS).
