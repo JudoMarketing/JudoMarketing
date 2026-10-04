@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import Reveal from "./Reveal";
 import {
@@ -96,13 +96,17 @@ export default function PortfolioGrid({
                 className="relative overflow-hidden bg-judo-black"
                 style={{ aspectRatio: RELACION_CAPTURA }}
               >
-                <Image
-                  src={trabajo.imagen}
-                  alt={trabajo.nombre}
-                  fill
-                  sizes="(max-width: 640px) 33vw, 300px"
-                  className="object-cover object-top transition duration-500 group-hover:scale-[1.04]"
-                />
+                {trabajo.video ? (
+                  <PortadaEnVideo video={trabajo.video} nombre={trabajo.nombre} />
+                ) : (
+                  <Image
+                    src={trabajo.imagen}
+                    alt={trabajo.nombre}
+                    fill
+                    sizes="(max-width: 640px) 33vw, 300px"
+                    className="object-cover object-top transition duration-500 group-hover:scale-[1.04]"
+                  />
+                )}
                 {/* Un borrador se puede enseñar, pero se dice que lo es */}
                 {trabajo.enDesarrollo && (
                   <span className="absolute top-2.5 left-2.5 rounded-full bg-amber-400 px-2 py-0.5 text-[11px] font-bold tracking-wide text-judo-black uppercase">
@@ -129,5 +133,58 @@ export default function PortfolioGrid({
         ))}
       </div>
     </div>
+  );
+}
+
+/**
+ * La portada en video. Arranca con el póster (el hero ya cargado) y no baja
+ * nada hasta que la ficha entra en pantalla; ahí se reproduce en bucle, y se
+ * pausa al salir para no gastar batería con quince videos corriendo. Quien
+ * pidió menos movimiento o ahorro de datos se queda con el póster, que es la
+ * misma portada de siempre.
+ */
+function PortadaEnVideo({
+  video,
+  nombre,
+}: {
+  video: NonNullable<Trabajo["video"]>;
+  nombre: string;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ahorro = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (ahorro || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const io = new IntersectionObserver(
+      ([entrada]) => {
+        if (entrada.isIntersecting) {
+          // Si el teléfono no deja reproducir solo (modo de bajo consumo), se
+          // queda el póster: no es un error.
+          el.play().catch(() => {});
+        } else {
+          el.pause();
+        }
+      },
+      { threshold: 0.35 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <video
+      ref={ref}
+      src={video.src}
+      poster={video.poster}
+      muted
+      loop
+      playsInline
+      preload="none"
+      disablePictureInPicture
+      aria-label={nombre}
+      className="absolute inset-0 h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.04]"
+    />
   );
 }

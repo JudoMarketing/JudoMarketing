@@ -26,7 +26,37 @@ export type Trabajo = {
   /** Un borrador se puede mostrar, pero se avisa que todavía no está entregado. */
   enDesarrollo: boolean;
   descripcion: { es: string; en: string };
+  /** Video de portada, si el sitio tiene uno grabado (VIDEOS_PORTADA). */
+  video: { src: string; poster: string } | null;
 };
+
+/**
+ * Sitios con video de portada (Junior, 4 de octubre de 2026): la entrada del
+ * hero y un recorrido suave hacia abajo, unos 5 segundos en bucle. Los graba
+ * scripts/showcase/grabar-videos.mjs en public/showcase/video/. Va el dominio
+ * tal como está en el portal, sin www; el que no está aquí sigue con su foto.
+ * Si un sitio cambia mucho de diseño, se vuelve a grabar (docs/SHOWCASE-VIDEO.md).
+ */
+export const VIDEOS_PORTADA: string[] = [
+  "dameunamano.org",
+  "denalibehaviorcrt.com",
+  "johanmorenotailor.com",
+  "judomarketing.github.io/GeraldMarket",
+  "melanieosorio.com",
+  "pachy-pinchos.vercel.app",
+  "paradiseranch22.com",
+  "art-foundation.vercel.app",
+  "zanoah.shop",
+  "thenotes.net",
+  "the-equipment-source.vercel.app",
+];
+
+export function videoDePortada(dominio: string): Trabajo["video"] {
+  const limpio = dominio.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/+$/, "");
+  if (!VIDEOS_PORTADA.includes(limpio)) return null;
+  const slug = limpio.replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "").toLowerCase();
+  return { src: `/showcase/video/${slug}.mp4`, poster: `/showcase/video/${slug}.jpg` };
+}
 
 // Misma lista que el selector del portal y que el candado de la base
 // (migración 0023). Si se agrega una categoría, va en las cuatro.

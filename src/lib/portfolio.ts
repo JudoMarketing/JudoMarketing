@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { capturaDelHome, type Categoria, type Trabajo } from "@/content/portfolio";
+import { capturaDelHome, videoDePortada, type Categoria, type Trabajo } from "@/content/portfolio";
 
 /**
  * Los trabajos del portafolio, leídos de la lista de websites.
@@ -109,6 +109,9 @@ export async function trabajosPublicados(): Promise<Trabajo[]> {
         dominio,
         url: `https://${dominio}`,
         imagen: capturaDelHome(paraLaFoto[i], fila.portfolio_image, fila.portfolio_shot_at),
+        // Una imagen puesta a mano en el portal es una decisión (Delivery Rush
+        // enseña su app mientras el sitio está en mantenimiento): esa manda.
+        video: fila.portfolio_image?.trim() ? null : videoDePortada(dominio),
         categoria,
         enDesarrollo: fila.status === "en_desarrollo",
         descripcion: {
