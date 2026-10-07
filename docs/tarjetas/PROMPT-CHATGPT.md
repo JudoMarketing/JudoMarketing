@@ -26,7 +26,7 @@ FRONT (minimal):
 
 BACK (few elements, clear hierarchy, no icons):
 - Top left: "Junior Osorio" (Poppins SemiBold, white), under it "DIRECTOR" in small letter-spaced light purple capitals.
-- Under the name, four services stacked, grouped by one thin vertical purple line on their left: "Websites & E-commerce", "Delivery & Ordering Apps", "AI Assistants", "Business Advisory".
+- Under the name, four services stacked, grouped by one thin vertical purple line on their left: "Websites & E-commerce", "Delivery & Ordering Apps", "Automations", "Business Advisory".
 - Under the list, one short line in light purple: "Complex problems, solved."
 - Bottom left, the phone as the most visible contact: "+1 305-497-9266" (Poppins SemiBold, bigger than the services), and under it in small light gray: "judomarketing.net · Miami · EN / ES".
 - Right side: a QR code on a white rounded square (placeholder), under it "See our work →" in white with a purple arrow.
