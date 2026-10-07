@@ -57,6 +57,15 @@ const nextConfig: NextConfig = {
   // Las direcciones viejas del portafolio, por si Google alcanzó a verlas
   async redirects() {
     return [
+      // El QR de las tarjetas de presentación (docs/tarjetas). Corto para que
+      // el código salga grande y fácil de leer, medido en Analytics como
+      // tarjeta, y temporal a propósito: si un día el QR debe llevar a otra
+      // página, se cambia aquí sin reimprimir ninguna tarjeta.
+      {
+        source: "/card",
+        destination: "/showcase?utm_source=business_card&utm_medium=print&utm_campaign=junior_osorio",
+        permanent: false,
+      },
       // El acceso ahora es de los clientes de JuditoADS; el portal de
       // vendedores se retiró. Las direcciones viejas llevan al portal nuevo.
       { source: "/login", destination: "/juditoads/login", permanent: false },
