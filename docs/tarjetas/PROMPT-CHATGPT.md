@@ -18,24 +18,20 @@ BRAND: deep black (#0A0A0F), electric purple (#7B2DFF), light purple (#A855F7), 
 
 USE THE ATTACHED LOGO exactly as it is (white 3D "JUDO" wordmark made of concentric lines, with "marketing" underneath). Do not redraw it or change the letters.
 
-FRONT:
+FRONT (minimal):
 - The logo large on the left half.
-- Right side, right-aligned: "Your business," in white and "in good hands." in light purple (#A855F7), Poppins Bold.
-- Under it, a short purple line (#7B2DFF), then in small letter-spaced uppercase light gray: "WEBSITES · APPS" / "AI · ADVISORY".
-- Bottom right, small: "judomarketing.net".
-- Background detail: thin dark-purple concentric broken lines rippling out from the logo, like a fingerprint (a hand that takes care of the business), very subtle, tone on tone.
+- Right side, right-aligned: "Your business," in white and "in good hands." in light purple (#A855F7), Poppins Bold. Under it, a short thin purple line (#7B2DFF).
+- Bottom right, small light gray: "judomarketing.net".
+- Background detail: thin dark-purple broken concentric lines rippling out from the logo, like a fingerprint (a hand that takes care of the business), very subtle, tone on tone.
 
-BACK:
+BACK (few elements, clear hierarchy, no icons):
 - Top left: "Junior Osorio" (Poppins SemiBold, white), under it "DIRECTOR" in small letter-spaced light purple capitals.
-- A list with small thin purple outline icons:
-  monitor icon: "Websites & online stores"
-  phone icon: "Delivery & ordering apps"
-  robot icon: "AI assistants that answer 24/7"
-  rising chart icon: "Business advisory" with a smaller gray line under it: "Complex problems, solved."
-- Bottom left, with small purple icons: "305-497-9266" (slightly bigger and bolder), "admin@judomarketing.net", "judomarketing.net".
-- Right side: a QR code on a white rounded square (placeholder), under it "See our work →" in white with a purple arrow, and "judomarketing.net/card" in small gray.
-- Bottom right, tiny letter-spaced gray capitals: "MIAMI · EN · ES".
+- Under the name, four services stacked, grouped by one thin vertical purple line on their left: "Websites & E-commerce", "Delivery & Ordering Apps", "AI Assistants", "Business Advisory".
+- Under the list, one short line in light purple: "Complex problems, solved."
+- Bottom left, the phone as the most visible contact: "+1 305-497-9266" (Poppins SemiBold, bigger than the services), and under it in small light gray: "judomarketing.net · Miami · EN / ES".
+- Right side: a QR code on a white rounded square (placeholder), under it "See our work →" in white with a purple arrow.
 - A few subtle dark-purple concentric lines peeking from the bottom right corner, the same fingerprint motif as the front.
+- No email address.
 
 All text must be spelled exactly as written above. Keep at least 3.5 mm of empty margin from the edges. Text must be crisp and readable, minimum 6 pt.
 ```

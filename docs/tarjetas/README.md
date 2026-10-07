@@ -11,9 +11,11 @@ los colores del website, para imprimir en **plástico negro**.
   huella hecha con las mismas líneas concéntricas del logo: la mano que
   cuida el negocio. Va impresa tono sobre tono (morado oscuro sin tinta
   blanca debajo), así que casi no se nota hasta que le da la luz.
-- **Dorso:** nombre y cargo, los cuatro servicios (websites, apps de
-  delivery, asistentes con IA, asesoría de negocios), teléfono, correo, web y
-  un QR grande que lleva al showcase.
+- **Dorso:** pocas cosas y en orden: nombre y cargo, los cuatro servicios
+  agrupados por una raya morada (sin íconos, que se ven a plantilla), la
+  frase "Complex problems, solved.", el teléfono como protagonista y un QR
+  grande que lleva al showcase. Sin correo (decisión de Junior, 7 de
+  octubre de 2026): el contacto es el teléfono y el QR.
 - **El QR** apunta a `judomarketing.net/card`, un enlace corto nuestro
   (`next.config.ts`) que manda al showcase con marca de origen en Analytics
   (`utm_source=business_card`). Así se ve cuántas visitas trae la tarjeta, y
@@ -61,6 +63,5 @@ Illustrator poniendo la placa encima con sobreimpresión.
 
 ## Si algo cambia
 
-El correo es `admin@judomarketing.net` (el de la marca). Si Junior quiere
-uno propio, o cambian el teléfono o los servicios, se edita `tarjeta.html`
-y se vuelve a correr `generar.mjs`.
+Si cambian el teléfono, el cargo o los servicios, se edita `tarjeta.html` y
+se vuelve a correr `generar.mjs` y `mockup.mjs`.
