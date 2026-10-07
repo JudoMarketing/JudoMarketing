@@ -26,6 +26,7 @@ los colores del website, para imprimir en **plástico negro**.
 | Carpeta | Qué hay |
 | --- | --- |
 | `imprenta/` | Los PDF para la imprenta. `cr80`: 85.6 x 54 mm (tamaño tarjeta de crédito, el normal en plástico). `us`: 3.5 x 2 in (tamaño de tarjeta de papel). Cada uno con frente y dorso, en `color` (el arte) y `blanco` (la placa de tinta blanca). Todos con 1/8" de sangrado. |
+| `alta/` | Los originales en alta definición: cada cara en PNG a 1200 dpi, cortada a la medida final (sin sangrado). Para compartir o para una imprenta que pida imagen. Se sacan con `node docs/tarjetas/alta.mjs`. |
 | `vista/` | Imágenes para mirar: cada cara, cada cara con guías de corte y zona segura, y `mockup.png`. |
 | `tarjeta.html` | El diseño. Se edita aquí. |
 | `generar.mjs`, `mockup.mjs` | Vuelven a sacar los PDF y las vistas: `node docs/tarjetas/generar.mjs && node docs/tarjetas/mockup.mjs`. |
