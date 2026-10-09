@@ -58,40 +58,37 @@
     width: var(--ancho);
     height: var(--alto);
   }
-  /* Nada importante a menos de 3.5 mm del corte */
-  .seguro { position: absolute; inset: 3.5mm; }
+  /* Nada importante a menos de 5.5 mm del corte: aire de tarjeta premium y
+     margen de sobra si la imprenta corta o encuadra un poco distinto. */
+  .seguro { position: absolute; inset: 5.5mm; }
 
   .poppins { font-family: Poppins, sans-serif; letter-spacing: -0.022em; }
 
   /* ── FRENTE ─────────────────────────────────────────────── */
   .huella { position: absolute; left: calc(-1 * var(--sangrado)); top: calc(-1 * var(--sangrado));
     width: calc(var(--ancho) + 2 * var(--sangrado)); height: calc(var(--alto) + 2 * var(--sangrado)); }
-  .frente .seguro { display: flex; align-items: center; }
-  .logo { height: 29mm; width: auto; display: block; margin-left: 1.2mm; }
-  .lema { margin-left: auto; text-align: right; padding-bottom: 1mm; }
-  .lema .uno { font-size: 11pt; font-weight: 600; line-height: 1.12; }
-  .lema .dos { font-size: 11pt; font-weight: 700; line-height: 1.12; color: var(--lila); }
-  .lema .raya { width: 9mm; height: 0.5mm; border-radius: 0.25mm; background: var(--violeta); margin: 2.6mm 0 0 auto; }
-  .web { position: absolute; right: 0; bottom: 0; font-size: 6.5pt; font-weight: 500; letter-spacing: 0.04em; color: var(--suave); }
+  .frente .seguro { display: flex; align-items: center; gap: 5mm; }
+  .logo { height: 27mm; width: auto; display: block; flex: none; }
+  .lema { margin-left: auto; text-align: right; }
+  .lema .uno { font-size: 10.5pt; font-weight: 600; line-height: 1.12; }
+  .lema .dos { font-size: 10.5pt; font-weight: 700; line-height: 1.12; color: var(--lila); }
+  .lema .raya { width: 8mm; height: 0.45mm; border-radius: 0.25mm; background: var(--violeta); margin: 2.8mm 0 2.6mm auto; }
+  .lema .que { list-style: none; font-size: 6.5pt; font-weight: 500; line-height: 1.65; color: var(--suave); white-space: nowrap; }
 
   /* ── DORSO ──────────────────────────────────────────────── */
-  .dorso .seguro { display: flex; gap: 3.5mm; }
-  .izq { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-  .nombre { font-size: 12.5pt; font-weight: 600; line-height: 1.05; }
-  .cargo { margin-top: 1.1mm; font-size: 6.4pt; font-weight: 600; letter-spacing: 0.24em; color: var(--lila); }
-  /* Servicios sin íconos: una raya morada a la izquierda los agrupa */
-  .servicios { list-style: none; margin-top: 3.6mm; padding-left: 2.4mm; border-left: 0.35mm solid var(--violeta);
-    display: grid; gap: 0.95mm; }
-  .servicios li { font-size: 7.2pt; font-weight: 500; line-height: 1.2; white-space: nowrap; }
-  .frase { margin-top: 2.2mm; font-size: 6.6pt; font-weight: 500; color: var(--lila); }
-  .contacto { margin-top: auto; }
-  .tel { font-family: Poppins, sans-serif; font-size: 9.5pt; font-weight: 600; letter-spacing: 0.01em; line-height: 1.1; }
-  .pie { margin-top: 0.9mm; font-size: 6pt; font-weight: 500; letter-spacing: 0.06em; color: var(--suave); white-space: nowrap; }
+  .dorso .seguro { display: flex; gap: 6mm; }
+  .izq { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
+  .nombre { font-size: 13pt; font-weight: 600; line-height: 1.05; }
+  .cargo { margin-top: 1.3mm; font-size: 6.4pt; font-weight: 600; letter-spacing: 0.24em; color: var(--lila); }
+  .frase { font-size: 7.6pt; font-weight: 500; line-height: 1.3; color: var(--suave); }
+  .frase b { font-weight: 600; color: var(--lila); }
+  .tel { font-family: Poppins, sans-serif; font-size: 10pt; font-weight: 600; letter-spacing: 0.01em; line-height: 1.1; }
+  .pie { margin-top: 1mm; font-size: 6pt; font-weight: 500; letter-spacing: 0.06em; color: var(--suave); white-space: nowrap; }
 
-  .der { width: 24mm; display: flex; flex-direction: column; align-items: center; }
-  .qr { width: 24mm; height: 24mm; background: #fff; border-radius: 2.2mm; padding: 2.2mm; }
+  .der { width: 21mm; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .qr { width: 21mm; height: 21mm; background: #fff; border-radius: 2mm; padding: 1.9mm; }
   .qr img { width: 100%; height: 100%; display: block; }
-  .ver { margin-top: 2mm; font-size: 7.4pt; font-weight: 600; text-align: center; line-height: 1.1; }
+  .ver { margin-top: 2.2mm; font-size: 7pt; font-weight: 600; text-align: center; line-height: 1.1; white-space: nowrap; }
   .ver span { color: var(--lila); font-family: Inter, sans-serif; font-weight: 600; }
 
   /* ── PLACA DE TINTA BLANCA ──────────────────────────────── */
@@ -111,7 +108,7 @@
 <script>
   const q = new URLSearchParams(location.search);
   const lado = q.get("lado") === "dorso" ? "dorso" : "frente";
-  const tam = q.get("tam") === "us" ? { ancho: 88.9, alto: 50.8 } : { ancho: 85.6, alto: 54 };
+  const tam = q.get("tam") === "cr80" ? { ancho: 85.6, alto: 54 } : { ancho: 88.9, alto: 50.8 };
   const raiz = document.documentElement.style;
   raiz.setProperty("--ancho", tam.ancho + "mm");
   raiz.setProperty("--alto", tam.alto + "mm");
@@ -132,8 +129,13 @@
       <div class="uno poppins">Your business,</div>
       <div class="dos poppins">in good hands.</div>
       <div class="raya"></div>
+      <ul class="que">
+        <li>Websites &amp; E-commerce</li>
+        <li>Delivery &amp; Ordering Apps</li>
+        <li>Automations</li>
+        <li>Business Advisory</li>
+      </ul>
     </div>
-    <div class="web">judomarketing.net</div>
   </div>
 </div>
 
@@ -142,16 +144,12 @@
   <svg class="huella" id="huella-dorso" aria-hidden="true"></svg>
   <div class="seguro">
     <div class="izq">
-      <div class="nombre poppins">Junior Osorio</div>
-      <div class="cargo">DIRECTOR</div>
-      <ul class="servicios">
-        <li>Websites &amp; E-commerce</li>
-        <li>Delivery &amp; Ordering Apps</li>
-        <li>Automations</li>
-        <li>Business Advisory</li>
-      </ul>
-      <div class="frase">Complex problems, solved.</div>
-      <div class="contacto">
+      <div>
+        <div class="nombre poppins">Junior Osorio</div>
+        <div class="cargo">DIRECTOR</div>
+      </div>
+      <div class="frase">Complex problems, <b>solved.</b></div>
+      <div>
         <div class="tel">+1 305-497-9266</div>
         <div class="pie">judomarketing.net · Miami · EN / ES</div>
       </div>
@@ -207,9 +205,9 @@
   // Frente: sale del centro del logo. Dorso: asoma desde la esquina de abajo
   // a la derecha, la misma huella vista de cerca.
   const frente = document.getElementById("huella");
-  if (frente) huella(frente, b + 3.5 + 1.2 + 16.5, H / 2, 19, 17);
+  if (frente) huella(frente, b + 5.5 + 15.3, H / 2, 18, 18);
   const dorso = document.getElementById("huella-dorso");
-  if (dorso) huella(dorso, W + 4, H + 4, 12, 12);
+  if (dorso) huella(dorso, W + 6, H + 6, 12, 7);
 </script>
 </body>
 </html>

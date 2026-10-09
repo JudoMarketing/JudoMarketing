@@ -23,13 +23,13 @@ async function cortada(nombre) {
   return "data:image/png;base64," + buf.toString("base64");
 }
 
-const frente = await cortada("cr80-frente");
-const dorso = await cortada("cr80-dorso");
+const frente = await cortada("us-frente");
+const dorso = await cortada("us-dorso");
 const html = `<!doctype html><html><head><style>
   html,body{margin:0;width:1800px;height:1200px;overflow:hidden}
   body{background:radial-gradient(1200px 800px at 30% 20%,#2a1c4a 0%,#14111f 45%,#08070c 100%);display:grid;place-items:center}
   .mesa{position:relative;width:1800px;height:1200px;perspective:2600px}
-  .t{position:absolute;width:760px;aspect-ratio:85.6/54;border-radius:${(3.18 / 85.6) * 100}% / ${(3.18 / 54) * 100}%;
+  .t{position:absolute;width:760px;aspect-ratio:88.9/50.8;border-radius:${(3.18 / 88.9) * 100}% / ${(3.18 / 50.8) * 100}%;
      overflow:hidden;box-shadow:0 40px 80px -20px rgba(0,0,0,.85),0 12px 24px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05)}
   .t img{width:100%;height:100%;display:block}
   .t::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.10) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.05) 100%);pointer-events:none}

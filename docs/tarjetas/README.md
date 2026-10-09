@@ -7,15 +7,20 @@ los colores del website, para imprimir en **plástico negro**.
 
 ## La idea
 
-- **Frente:** el logo grande y "Your business, in good hands." Detrás, una
+- **Frente:** el logo grande, "Your business, in good hands." y lo que
+  hacemos (Websites & E-commerce, Delivery & Ordering Apps, Automations,
+  Business Advisory): la promesa y la oferta en la misma cara. Detrás, una
   huella hecha con las mismas líneas concéntricas del logo: la mano que
   cuida el negocio. Va impresa tono sobre tono (morado oscuro sin tinta
   blanca debajo), así que casi no se nota hasta que le da la luz.
-- **Dorso:** pocas cosas y en orden: nombre y cargo, los cuatro servicios
-  agrupados por una raya morada (sin íconos, que se ven a plantilla), la
-  frase "Complex problems, solved.", el teléfono como protagonista y un QR
-  grande que lleva al showcase. Sin correo (decisión de Junior, 7 de
-  octubre de 2026): el contacto es el teléfono y el QR.
+- **Dorso:** solo la persona y cómo llegar a ella, en tres grupos con aire
+  entre ellos: nombre y cargo arriba, "Complex problems, solved." al medio,
+  teléfono y web abajo; a la derecha el QR al showcase. Sin correo
+  (decisión de Junior, 7 de octubre de 2026).
+- **Márgenes de 5.5 mm** por lado (9 de octubre de 2026): en la primera
+  prueba en Uprintly todo se veía pegado al borde, porque se subió la
+  medida de tarjeta de crédito a una tarjeta de 3.5 x 2 y la recortaron.
+  Ahora la medida principal es 3.5 x 2 y nada queda cerca del corte.
 - **El QR** apunta a `judomarketing.net/card`, un enlace corto nuestro
   (`next.config.ts`) que manda al showcase con marca de origen en Analytics
   (`utm_source=business_card`). Así se ve cuántas visitas trae la tarjeta, y
@@ -26,7 +31,7 @@ los colores del website, para imprimir en **plástico negro**.
 | Carpeta | Qué hay |
 | --- | --- |
 | `imprenta/` | Los PDF para la imprenta. `cr80`: 85.6 x 54 mm (tamaño tarjeta de crédito, el normal en plástico). `us`: 3.5 x 2 in (tamaño de tarjeta de papel). Cada uno con frente y dorso, en `color` (el arte) y `blanco` (la placa de tinta blanca). Todos con 1/8" de sangrado. |
-| `alta/` | Los originales en alta definición: cada cara en PNG a 1200 dpi, cortada a la medida final (sin sangrado). Para compartir o para una imprenta que pida imagen. Se sacan con `node docs/tarjetas/alta.mjs`. |
+| `alta/` | Los originales en alta definición, PNG a 1200 dpi. **Para Uprintly u otra imprenta en línea se sube `us-frente-con-sangrado.png` y `us-dorso-con-sangrado.png`** (3.75 x 2.25 in: la tarjeta de 3.5 x 2 más 1/8" por lado). Los `-final.png` son la medida ya cortada, para compartir. Se sacan con `node docs/tarjetas/alta.mjs`. |
 | `vista/` | Imágenes para mirar: cada cara, cada cara con guías de corte y zona segura, y `mockup.png`. |
 | `tarjeta.html` | El diseño. Se edita aquí. |
 | `generar.mjs`, `mockup.mjs` | Vuelven a sacar los PDF y las vistas: `node docs/tarjetas/generar.mjs && node docs/tarjetas/mockup.mjs`. |
@@ -34,14 +39,14 @@ los colores del website, para imprimir en **plástico negro**.
 
 ## Para la imprenta (en inglés, para copiar)
 
-> Black PVC cards, 30 mil, CR80 (3.375 x 2.125 in), rounded corners, printed
-> both sides. Files: `cr80-frente-color.pdf` / `cr80-dorso-color.pdf` (CMYK
-> art) and `cr80-frente-blanco.pdf` / `cr80-dorso-blanco.pdf` (white ink
+> Black PVC cards, 3.5 x 2 in, rounded corners, printed both sides. Files:
+> `us-frente-color.pdf` / `us-dorso-color.pdf` (CMYK art) and
+> `us-frente-blanco.pdf` / `us-dorso-blanco.pdf` (white ink
 > plate: black = white ink underneath). Do **not** print the black
 > background: it is the card itself. All text, the logo, the purple accents
 > and the QR tile get a white underbase. The dark purple concentric lines on
 > both sides are intentionally printed **without** white (tone on tone).
-> 1/8" bleed included, safe area 3.5 mm. Please send a proof and test-scan
+> 1/8" bleed included, safe area 5.5 mm. Please send a proof and test-scan
 > the QR before the full run.
 
 Si la imprenta pide un solo archivo con la tinta blanca como color directo
@@ -56,7 +61,7 @@ Illustrator poniendo la placa encima con sobreimpresión.
 - **El logo tiene líneas muy finas.** En la prueba hay que mirar que no se
   tapen. Si se tapan, la mejor opción es imprimir el logo en **foil
   plateado**, que además combina con el logo cromado de la marca.
-- **El QR mide 24 mm** con fondo blanco: se lee a la primera con cualquier
+- **El QR mide 21 mm** con fondo blanco: se lee a la primera con cualquier
   teléfono (el mínimo recomendado en plástico es 20 a 25 mm).
 - **Extra que vale la pena:** muchas imprentas de plástico meten un chip
   **NFC**: el cliente acerca el teléfono y se abre el showcase, sin
