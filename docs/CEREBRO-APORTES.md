@@ -1216,3 +1216,35 @@ anuncio», ruta /api/campaigns/[id]/entrega, pruebas/entrega.test.mts
 Guía de Meta: developers.facebook.com/documentation/ads-commerce/instagram/
 ads-api/guides/use-posts-as-ads (el ejemplo con call_to_action LEARN_MORE es
 el mismo que manda JuditoADS).
+
+---
+
+### 2026-10-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un anuncio que «no funciona» casi nunca falla en Meta:
+falla en lo que el portal decide SOLO, sin enseñárselo al cliente. En el de
+The RBT Corner fueron cinco cosas, todas comprobadas con datos de su cuenta:
+(1) Sin idioma, un anuncio en español sale en EE. UU. a cualquiera. El idioma
+va en targeting.locales con la clave que da /search?type=adlocale (pedir
+«Spanish (All)», con locale=en_US), y es de lo poco que Meta respeta como
+límite firme con Advantage+. Si no se puede confirmar, NO se publica: salir
+«para todos» es justo el error.
+(2) Nunca «el primer resultado» de un buscador de Meta. El catálogo de
+intereses está en inglés: «Educación en línea» devolvía «Green tea» y
+«Professional wrestling». El cliente elige el interés real (id, ruta,
+tamaño) y eso es lo que se manda; el texto viejo solo si coincide exacto.
+(3) Lo que se guarda por cuenta publicitaria tiene que ser de la cuenta. Una
+cuenta puede anunciar varias páginas: la audiencia «ya interactuaron contigo»
+guardada una sola vez hizo que RBT usara la de JuDo Marketing. Va por página,
+y se comprueba por su nombre antes de reutilizarla.
+(4) Una publicación se anuncia tal cual: si dice «Síguenos», eso pide el
+anuncio aunque se pague por visitas. Avisar antes (sin acción, sin precio,
+pide seguir) y ofrecer un anuncio nuevo con el texto ya puesto.
+(5) Sin píxel que reciba visitas, Meta no sabe quién compra. Meta da
+last_fired_time = 1970-01-01 para «nunca»: no es «hace mucho».
+**Evidencia:** Judito-Ads 247d0fc. Pruebas con un Meta de mentira:
+intereses (26), idioma (31), revisar-texto (17), pixel (14),
+publico-por-pagina (11); cada una falla si se deshace su arreglo. Banco
+SQLite 102/102 y recorrido en navegador 34/34. Datos reales (conector de
+Facebook, solo lectura): campañas 120251993789540389 y 120252060370320389
+sin locales, una con Green tea y Professional wrestling, una con la
+audiencia de JuDo; el píxel de RBT (cuenta 4630048677226499) nunca disparó.
