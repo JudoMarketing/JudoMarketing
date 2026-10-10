@@ -1272,3 +1272,45 @@ o WhatsApp» y «Interacción: mensajes» hacían creer que eso existía.
 por ese fallo y con locales [7, 23] (el idioma sí llegó). Pruebas:
 mensajes.test.mts, publico-por-pagina.test.mts (falla con el error exacto de
 producción si se vuelve a mandar subtype), banco 108/108, navegador 18/18.
+
+---
+
+### 2026-10-10 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** (1) «Lo marqué en todas partes y salió en Facebook» no
+siempre es un error. Antes de tocar código, mirar el desglose por plataforma
+y el creativo. Aquí el anuncio estaba bien armado (con el reel de
+Instagram), y Meta puso el dinero donde el clic salía más barato: el feed de
+Facebook, con CPM de unos $9.5 frente a $12–14 en Instagram. Instagram se
+quedó en un 1%. El Administrador de anuncios hace lo mismo. Lo que faltaba
+en el portal era dejar elegir como allí: Advantage+ (sin
+publisher_platforms) o manual, con atajos «Solo Instagram» y «Solo
+Facebook». También faltaba avisar antes de publicar que marcar las dos no
+reparte mitad y mitad. Un aviso que solo salta con cero no cubre el caso
+real: hay que avisar también por debajo de un umbral (5%).
+(2) «Igual que Facebook» en Mensajes quiere decir dos cosas.
+  - Varias apps a la vez: el conjunto lleva destination_type
+    MESSAGING_INSTAGRAM_DIRECT_MESSENGER_WHATSAPP o una de sus parejas. El
+    creativo lleva asset_feed_spec {optimization_type:
+    DOF_MESSAGING_DESTINATION, call_to_actions: un botón por app, con su
+    enlace}.
+  - Una plantilla de bienvenida: page_welcome_message VISUAL_EDITOR v2, con
+    ice_breakers {title, response}. La respuesta automática solo existe en
+    Messenger e Instagram. Con WhatsApp solo, va el título o un
+    autofill_message.
+
+  Cada guía de Meta tiene su propio ejemplo y hay que copiar el de cada caso
+  campo por campo. Sus límites: 300/80/300.
+(3) Cuando un adorno puede tumbar la publicación entera, hay que reintentar
+sin él y avisar con lo que dijo Meta. Así está hecho con las mejoras de
+Advantage+, y ahora también con el saludo.
+(4) El buscador de documentación del MCP de Meta (devtools_discovery
+search_docs) trae el JSON literal de los ejemplos. WebFetch lo resume y no
+copia bloques largos.
+**Evidencia:** Judito-Ads 8593010. Datos reales (conector de Facebook, solo
+lectura): campañas 120252143402700389 y 120252161516980389, Facebook feed con
+1.291 y 1.002 impresiones, Instagram con 14 y 12. Creativos 1850674305940601
+y 1111573417931980 con effective_instagram_media_id 17902469568598261.
+Pruebas con Meta simulado: mensajes.test.mts 119 comprobaciones, con las
+cuatro combinaciones de apps, el saludo de cada app y su rechazo. También
+ubicaciones.test.mts, entrega.test.mts (el caso del 1%), el banco 116/116 y
+un recorrido en el navegador de 41/41.
