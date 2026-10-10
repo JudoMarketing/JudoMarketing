@@ -1310,7 +1310,7 @@ copia bloques largos.
 lectura): campañas 120252143402700389 y 120252161516980389, Facebook feed con
 1.291 y 1.002 impresiones, Instagram con 14 y 12. Creativos 1850674305940601
 y 1111573417931980 con effective_instagram_media_id 17902469568598261.
-Pruebas con Meta simulado: mensajes.test.mts 119 comprobaciones, con las
+Pruebas con Meta simulado: mensajes.test.mts 121 comprobaciones, con las
 cuatro combinaciones de apps, el saludo de cada app y su rechazo. También
 ubicaciones.test.mts, entrega.test.mts (el caso del 1%), el banco 116/116 y
 un recorrido en el navegador de 41/41.
