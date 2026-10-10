@@ -1248,3 +1248,27 @@ SQLite 102/102 y recorrido en navegador 34/34. Datos reales (conector de
 Facebook, solo lectura): campañas 120251993789540389 y 120252060370320389
 sin locales, una con Green tea y Professional wrestling, una con la
 audiencia de JuDo; el píxel de RBT (cuenta 4630048677226499) nunca disparó.
+
+---
+
+### 2026-10-10 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** (1) Un código que nunca corrió en producción no está
+probado, aunque «funcione»: la audiencia de JuDo que parecía creada por
+JuditoADS la había creado otra cosa; la creación del portal falló la primera
+vez que de verdad corrió (al separar las audiencias por página). Meta no deja
+mezclar página e Instagram en una audiencia («Too Many Event Source Types»,
+subcode 1870028) y con subtype=ENGAGEMENT espera la regla del formato viejo
+(«Invalid Event Name», 2654). Se arregla copiando el ejemplo exacto de la
+documentación (sin subtype, prefill=1, una fuente por audiencia, eventos
+documentados) y probando contra un Meta falso que rechaza lo mismo que el
+real. (2) «Que me escriban» es otro objetivo, no un botón: campaña
+OUTCOME_ENGAGEMENT, conjunto con destination_type WHATSAPP / MESSENGER /
+INSTAGRAM_DIRECT optimizado a CONVERSATIONS con promoted_object {page_id},
+y el botón con app_destination. Un enlace wa.me en Tráfico optimiza a clics.
+(3) Las descripciones de los objetivos también son promesas: «Tráfico: tu web
+o WhatsApp» y «Interacción: mensajes» hacían creer que eso existía.
+**Evidencia:** Judito-Ads 6d25611. Logs de Vercel del 2026-10-09 19:07 UTC
+(los dos rechazos), conjunto 120252161517430389 sin excluded_custom_audiences
+por ese fallo y con locales [7, 23] (el idioma sí llegó). Pruebas:
+mensajes.test.mts, publico-por-pagina.test.mts (falla con el error exacto de
+producción si se vuelve a mandar subtype), banco 108/108, navegador 18/18.
