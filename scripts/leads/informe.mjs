@@ -21,7 +21,9 @@
  * PLAYWRIGHT_CHROMIUM (opcional, ruta al Chromium).
  */
 
-import { readFile, writeFile, mkdir, access } from "node:fs/promises";
+import { readFile, writeFile, mkdir, access, mkdtemp, rm } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { chromium } from "playwright-core";
@@ -61,6 +63,19 @@ const T = {
     seo: "SEO técnico",
     maps: "Puesto en Google Maps",
     resenas: "Reseñas en Google",
+    accesibilidad: "Accesibilidad",
+    practicas: "Buenas prácticas",
+    leeGoogle: "Lo que Google lee de tu página",
+    seoChequeos: {
+      "document-title": "Título de la página",
+      "meta-description": "Descripción para los resultados",
+      "is-crawlable": "Google puede indexarla",
+      "http-status-code": "La página responde bien",
+      "link-text": "Enlaces con texto que se entiende",
+      "crawlable-anchors": "Enlaces que Google puede seguir",
+      "image-alt": "Imágenes con descripción",
+      "robots-txt": "Archivo robots.txt válido",
+    },
     de100: "de 100 según Google",
     noAparece: "No aparece",
     entre: (n) => `entre los ${n} primeros`,
@@ -95,7 +110,7 @@ const T = {
     regaloTitulo: "Un regalo por trabajar con nosotros",
     regalo: "Al contratar cualquiera de nuestros servicios, configuramos y optimizamos tu Perfil de Empresa de Google sin costo: categorías, fotos, horarios, servicios, publicaciones y respuesta a reseñas. Es lo primero que ve un cliente cuando te busca, y lo dejamos listo antes que nada.",
     cta: "Agenda 20 minutos con Junior en",
-    fuente: "Fuentes: PageSpeed Insights de Google, Google Maps (Places), la búsqueda de Google y el propio sitio del negocio. Medición automática, sin acceso a cuentas privadas. Los puestos en Google varían según desde dónde y desde qué aparato se busque.",
+    fuente: "Fuentes: Lighthouse, la herramienta de Google con la que se miden la velocidad y el SEO de una página (la misma de PageSpeed Insights), medida en un celular simulado, y el propio sitio del negocio. Medición automática, sin acceso a cuentas privadas.",
     rec: {
       lento: (s) => `Tu página tarda ${s} en mostrar lo principal en un celular. Google recomienda menos de 2,5 segundos; con más de 4, buena parte de la gente se va antes de ver nada.`,
       sinTitulo: "Google no tiene con qué presentarte: el título o la descripción que salen en los resultados faltan o son demasiado cortos. Es lo más barato de arreglar y lo que más cambia el clic.",
@@ -119,6 +134,19 @@ const T = {
     seo: "Technical SEO",
     maps: "Rank on Google Maps",
     resenas: "Google reviews",
+    accesibilidad: "Accessibility",
+    practicas: "Best practices",
+    leeGoogle: "What Google reads on your page",
+    seoChequeos: {
+      "document-title": "Page title",
+      "meta-description": "Description for search results",
+      "is-crawlable": "Google can index it",
+      "http-status-code": "Page responds correctly",
+      "link-text": "Links with clear text",
+      "crawlable-anchors": "Links Google can follow",
+      "image-alt": "Images with descriptions",
+      "robots-txt": "Valid robots.txt file",
+    },
     de100: "out of 100, per Google",
     noAparece: "Not listed",
     entre: (n) => `within the top ${n}`,
@@ -153,7 +181,7 @@ const T = {
     regaloTitulo: "A gift for working with us",
     regalo: "When you sign up for any of our services, we set up and optimize your Google Business Profile at no cost: categories, photos, hours, services, posts and review replies. It's the first thing a customer sees when they search for you, and we get it ready before anything else.",
     cta: "Book 20 minutes with Junior at",
-    fuente: "Sources: Google PageSpeed Insights, Google Maps (Places), Google Search and the business's own website. Automated measurement, no access to private accounts. Google rankings vary by location and device.",
+    fuente: "Sources: Lighthouse, Google's tool for measuring a page's speed and SEO (the same engine as PageSpeed Insights), run on a simulated phone, and the business's own website. Automated measurement, no access to private accounts.",
     rec: {
       lento: (s) => `Your page takes ${s} to show its main content on a phone. Google recommends under 2.5 seconds; past 4, a good share of visitors leave before seeing anything.`,
       sinTitulo: "Google has nothing to introduce you with: the title or the description shown in results is missing or too short. It's the cheapest fix and the one that changes clicks the most.",
@@ -201,7 +229,7 @@ async function antiguedadDominio(dominio) {
 
 export async function auditar(url) {
   const pag = await traer(url);
-  if (!pag.ok || !pag.html) return { ok: false, estado: pag.estado, error: pag.error ?? null, url };
+  if (!pag.ok || !pag.html) return { ok: false, estado: pag.estado, error: pag.error ?? null, url, protegido: Boolean(pag.protegido) };
   const html = pag.html;
   const texto = textoVisible(html);
   const origen = new URL(pag.url).origin;
@@ -380,14 +408,27 @@ function html(t, d, logoB64, idioma) {
 <div class="tiles">
   ${tile(t.velocidad, ps?.puntajes?.rendimiento ?? t.sinDatos, ps ? t.de100 : "", color(ps?.puntajes?.rendimiento))}
   ${tile(t.seo, ps?.puntajes?.seo ?? t.sinDatos, ps ? t.de100 : "", color(ps?.puntajes?.seo))}
-  ${tile(t.maps, puestoMaps, puestoSub, m1?.posicion ? (m1.posicion <= 3 ? "#1f9d55" : m1.posicion <= 10 ? "#d9930d" : "#d64545") : "#d64545")}
-  ${tile(t.resenas, resenas, resenasSub, d.rating != null ? (d.rating >= 4.5 ? "#1f9d55" : d.rating >= 4 ? "#d9930d" : "#d64545") : "#8a8a9c")}
+  ${m1 || d.resenas != null
+    ? `${tile(t.maps, puestoMaps, puestoSub, m1?.posicion ? (m1.posicion <= 3 ? "#1f9d55" : m1.posicion <= 10 ? "#d9930d" : "#d64545") : "#d64545")}
+  ${tile(t.resenas, resenas, resenasSub, d.rating != null ? (d.rating >= 4.5 ? "#1f9d55" : d.rating >= 4 ? "#d9930d" : "#d64545") : "#8a8a9c")}`
+    : `${tile(t.accesibilidad, ps?.puntajes?.accesibilidad ?? t.sinDatos, ps ? t.de100 : "", color(ps?.puntajes?.accesibilidad))}
+  ${tile(t.practicas, ps?.puntajes?.buenas_practicas ?? t.sinDatos, ps ? t.de100 : "", color(ps?.puntajes?.buenas_practicas))}`}
 </div>
 <div class="cols">
-  <div class="col"><h2>${t.encuentran}</h2>
-    ${filasMaps || filaWeb ? `<table class="comp"><tr><th>${t.busqueda}</th><th class="r">${t.puesto}</th></tr>${filasMaps}${filaWeb}</table>` : `<div class="u">${t.sinDatos}</div>`}
+  ${filasMaps || filaWeb
+    ? `<div class="col"><h2>${t.encuentran}</h2>
+    <table class="comp"><tr><th>${t.busqueda}</th><th class="r">${t.puesto}</th></tr>${filasMaps}${filaWeb}</table>
     ${comp}
-  </div>
+  </div>`
+    : `<div class="col"><h2>${t.leeGoogle}</h2>
+    <ul class="ch">${Object.entries(t.seoChequeos)
+      .map(([k, nombre]) => {
+        const v = ps?.auditorias?.[k];
+        const icono = v === true ? '<span class="ok">✓</span>' : v === false ? '<span class="no">✗</span>' : '<span class="nd">·</span>';
+        return `<li>${icono} ${nombre}</li>`;
+      })
+      .join("")}</ul>
+  </div>`}
   <div class="col"><h2>${t.pagina}</h2>
     ${metricas}
     <ul class="ch" style="margin-top:6px">${Object.keys(t.chequeos).map(chequeo).join("")}</ul>
@@ -398,6 +439,53 @@ function html(t, d, logoB64, idioma) {
 <div class="cta">${t.cta} <a href="https://${contacto}">${contacto}</a> · WhatsApp +1 305 934 9981</div>
 <div class="pie">${t.fuente}<br>Judo Marketing · 66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130 · www.judomarketing.net</div>
 </body></html>`;
+}
+
+// ---------------------------------------------------------- Lighthouse
+
+/**
+ * Lighthouse en esta máquina, en celular simulado: lo mismo que mide
+ * PageSpeed Insights, sin pasar por la API de Google. Devuelve la forma que
+ * tenía la respuesta de PageSpeed para que el resto del informe no cambie.
+ */
+async function lighthouseLocal(url) {
+  const chrome = process.env.CHROME_PATH ?? (await rutaChromium());
+  const carpeta = await mkdtemp(path.join(tmpdir(), "lh-"));
+  const salida = path.join(carpeta, "lh.json");
+  try {
+    await new Promise((listo, fallo) => {
+      execFile(
+        "npx",
+        [
+          "--yes", "lighthouse@12", url, "--quiet",
+          "--chrome-flags=--headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --ignore-certificate-errors",
+          "--only-categories=performance,seo,accessibility,best-practices",
+          "--output=json", `--output-path=${salida}`,
+        ],
+        { env: { ...process.env, ...(chrome ? { CHROME_PATH: chrome } : {}) }, timeout: 150_000, maxBuffer: 20_000_000 },
+        (e) => (e ? fallo(new Error(e.killed ? "tardó demasiado" : String(e.message).split("\n")[0])) : listo())
+      );
+    });
+    const r = JSON.parse(await readFile(salida, "utf8"));
+    if (r.runtimeError) throw new Error(r.runtimeError.message ?? "error de Lighthouse");
+    const cat = r.categories ?? {};
+    const a = r.audits ?? {};
+    const puntaje = (k) => (cat[k]?.score == null ? null : Math.round(cat[k].score * 100));
+    const valor = (k) => a[k]?.displayValue ?? null;
+    const pasa = (k) => (a[k]?.score == null ? null : a[k].score === 1);
+    return {
+      url,
+      estrategia: "mobile",
+      puntajes: { rendimiento: puntaje("performance"), seo: puntaje("seo"), accesibilidad: puntaje("accessibility"), buenas_practicas: puntaje("best-practices") },
+      metricas: { lcp: valor("largest-contentful-paint"), fcp: valor("first-contentful-paint"), cls: valor("cumulative-layout-shift"), tbt: valor("total-blocking-time"), velocidad: valor("speed-index") },
+      auditorias: Object.fromEntries(
+        ["document-title", "meta-description", "is-crawlable", "http-status-code", "link-text", "crawlable-anchors", "image-alt", "robots-txt", "viewport"].map((k) => [k, pasa(k)])
+      ),
+      crux: null,
+    };
+  } finally {
+    await rm(carpeta, { recursive: true, force: true });
+  }
 }
 
 // ---------------------------------------------------------------- PDF
@@ -468,16 +556,38 @@ export async function informe(lead, opciones) {
     resenas: lead.resenas ?? null,
     avisos: [],
   };
-  if (!auditoria.ok) datos.avisos.push(`website no respondió (${auditoria.estado || auditoria.error || "sin respuesta"})`);
+  if (!auditoria.ok)
+    datos.avisos.push(
+      auditoria.protegido
+        ? "la página bloquea a los programas (muro anti-robots): solo se midió con Lighthouse"
+        : `website no respondió (${auditoria.estado || auditoria.error || "sin respuesta"})`
+    );
 
-  if (!opciones.sinApi) {
-    if (auditoria.ok) {
+  // Velocidad y SEO con Lighthouse en esta máquina: gratis. PageSpeed, Maps y
+  // la búsqueda de Google quedaron apagados el 12 de octubre de 2026 por
+  // costo; LEADS_GOOGLE=1 los vuelve a pedir el día que se prendan.
+  if (auditoria.ok || auditoria.protegido) {
+    // Un segundo intento: a veces la primera carga se cae por la red.
+    for (let intento = 1; intento <= 2 && !datos.pagespeed; intento++) {
       try {
-        datos.pagespeed = await api("POST", "", { accion: "pagespeed", url: auditoria.url, estrategia: "mobile" });
+        datos.pagespeed = await lighthouseLocal(auditoria.url);
       } catch (e) {
-        datos.avisos.push(`pagespeed: ${e.message}`);
+        if (intento === 2) datos.avisos.push(`lighthouse: ${String(e.message).slice(0, 160)}`);
       }
     }
+  }
+  // Lighthouse abre la página como un navegador de verdad (con JavaScript):
+  // lo que él ve manda sobre la lectura rápida del HTML, que en páginas
+  // armadas con JavaScript no encuentra el título ni la descripción.
+  const lh = datos.pagespeed?.auditorias;
+  if (lh && datos.auditoria?.chequeos) {
+    const c = datos.auditoria.chequeos;
+    if (lh["document-title"] != null) c.titulo = lh["document-title"];
+    if (lh["meta-description"] != null) c.meta_descripcion = lh["meta-description"];
+    if (lh.viewport != null) c.viewport = lh.viewport;
+    if (lh["image-alt"] != null) c.alt_imagenes = lh["image-alt"];
+  }
+  if (!opciones.sinApi && process.env.LEADS_GOOGLE === "1") {
     const placeId = lead.place_id && !String(lead.place_id).startsWith("sunbiz:") ? lead.place_id : null;
     if (placeId) {
       // En un zip: por el zip y por el barrio. En una ciudad: por la ciudad.
@@ -519,15 +629,20 @@ export async function informe(lead, opciones) {
   const mejorMaps = datos.maps.map((m) => m.posicion).filter((x) => x != null).sort((a, b) => a - b)[0] ?? null;
   const arribaMaps = mejorMaps != null && mejorMaps <= 5;
   const arribaWeb = datos.web?.configurado && datos.web.posicion != null && datos.web.posicion <= 3;
-  const paginaRota = !auditoria.ok || (rendimiento != null && rendimiento < 40) || fallosGraves.length >= 2;
+  const paginaRota = (!auditoria.ok && !auditoria.protegido) || (rendimiento != null && rendimiento < 40) || fallosGraves.length >= 2;
   const senales = lead.senales ?? [];
   const plataformas = senales.filter((x) => x.startsWith("ya_tiene_"));
   let motivo_no_apto = null;
   if (plataformas.length) motivo_no_apto = `ya usa ${plataformas[0].split(":")[1]}`;
+  else if (auditoria.protegido && !datos.pagespeed) motivo_no_apto = "no se pudo revisar su página (bloquea a los programas)";
   else if (senales.includes("muy_establecido")) motivo_no_apto = "gigante de su zona";
   else if ((arribaMaps || arribaWeb) && !paginaRota)
     motivo_no_apto = arribaMaps ? `ya rankea: puesto ${mejorMaps} en Maps y su página funciona` : `ya rankea: puesto ${datos.web.posicion} en Google y su página funciona`;
   else if (senales.includes("ya_rankea") && !paginaRota) motivo_no_apto = "ya rankea arriba en Maps";
+  // Sin datos de ranking (fuentes gratis): una página rápida y con el SEO en
+  // orden ya tiene quien la cuide.
+  else if (rendimiento != null && rendimiento >= 90 && (datos.pagespeed?.puntajes?.seo ?? 0) >= 92 && fallosGraves.length === 0)
+    motivo_no_apto = `su página ya está bien hecha (velocidad ${rendimiento}, SEO ${datos.pagespeed.puntajes.seo})`;
   const apto = motivo_no_apto == null;
   return {
     lead_id: lead.id ?? null,

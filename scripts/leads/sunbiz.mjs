@@ -12,10 +12,12 @@
  *      tiempo operando).
  *   2. Se queda con los de nuestra zona (scripts/leads/zips.json) cuyo nombre
  *      dice a qué se dedican (restaurante, taller, salón, limpieza...).
- *   3. Pregunta a Google, por nombre, si el negocio existe ahí: si tiene
- *      website se estudia como cualquier otro; si tiene perfil sin website
- *      queda con teléfono; si no existe en Google, queda "sin presencia" con
- *      el nombre de quien lo registró y su dirección postal.
+ *   3. Busca, gratis, si el negocio ya tiene website: prueba los dominios
+ *      que salen de su nombre (abccleaning.com...) y confirma que la página
+ *      sea suya. Si la tiene, se estudia como cualquier otro; si no, queda
+ *      "sin presencia" con el nombre de quien lo registró y su dirección
+ *      postal. (Hasta el 12 de octubre de 2026 se le preguntaba a Google
+ *      Places; se apagó por costo. LEADS_GOOGLE=1 lo vuelve a usar.)
  *   4. Guarda todo en la base a través del sitio y deja un JSON para la
  *      sesión.
  *
@@ -29,7 +31,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { api, enLotes, estudiarSitio, noNosNecesita, puntuar } from "./buscar.mjs";
+import { api, enLotes, estudiarSitio, noNosNecesita, puntuar, traer, textoVisible } from "./buscar.mjs";
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const PORTAL = "https://sftp.floridados.gov";
@@ -44,6 +46,48 @@ const CABECERAS = {
   "Accept-Language": "en-US,en;q=0.9",
   Accept: "*/*",
 };
+
+// ------------------------------------------------- website por el nombre
+
+const SUFIJOS = /\b(llc|l\.l\.c|inc|corp|corporation|co|company|pa|p\.a|pllc|ltd|group|enterprises?|services?|solutions?|of florida|fl|usa)\b\.?/gi;
+const ESTACIONADO = /domain (is )?for sale|buy this domain|this domain (may be|is) for sale|parked (free|domain)|domain parking|hugedomains|sedo|dan\.com|afternic|godaddy\.com\/domainsearch|future home of|coming soon|under construction|website coming soon/i;
+
+/** Los dominios que salen del nombre: "ABC Cleaning Services LLC" → abccleaningservices.com, abccleaning.com... */
+function dominiosDelNombre(nombre) {
+  const base = nombre.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/&/g, " and ");
+  const conServicio = base.replace(/\b(llc|l\.l\.c|inc|corp|corporation|pa|p\.a|pllc|ltd)\b\.?/g, " ").replace(/[^a-z0-9 ]/g, " ").trim();
+  const sinSufijos = base.replace(SUFIJOS, " ").replace(/[^a-z0-9 ]/g, " ").trim();
+  const variantes = new Set();
+  for (const v of [conServicio, sinSufijos]) {
+    const pegado = v.replace(/\s+/g, "");
+    if (pegado.length >= 4 && pegado.length <= 40) variantes.add(pegado);
+    const guiones = v.replace(/\s+/g, "-");
+    if (guiones.includes("-") && guiones.length <= 40) variantes.add(guiones);
+  }
+  return [...variantes].slice(0, 4).map((v) => `https://${v}.com/`);
+}
+
+/**
+ * ¿Tiene website? Se prueba cada dominio y se acepta solo si la página
+ * responde, no es un dominio estacionado o en venta, y su texto trae las
+ * palabras del nombre del negocio.
+ */
+export async function websitePorNombre(nombre) {
+  const palabras = nombre
+    .toLowerCase()
+    .replace(SUFIJOS, " ")
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w.length >= 3);
+  for (const url of dominiosDelNombre(nombre)) {
+    const pag = await traer(url);
+    if (!pag.ok || !pag.html) continue;
+    const texto = textoVisible(pag.html).toLowerCase();
+    if (ESTACIONADO.test(texto.slice(0, 5000)) || texto.length < 200) continue;
+    const coinciden = palabras.filter((w) => texto.includes(w)).length;
+    if (coinciden >= Math.min(2, palabras.length)) return pag.url;
+  }
+  return null;
+}
 
 // ------------------------------------------------------------ argumentos
 
@@ -201,25 +245,32 @@ async function main() {
     return;
   }
 
-  // Google, por nombre. Tope para no gastar de más en Places. Primero los que
-  // llevan años (son los que más probablemente existen en Google y facturan
-  // sin sistema); los recién registrados, después.
+  // Primero los que llevan años (son los que más probablemente tienen
+  // website y facturan sin sistema); los recién registrados, después.
   const ordenados = [...candidatos.filter((c) => c.clase !== "nuevo"), ...candidatos.filter((c) => c.clase === "nuevo")];
   const aRevisar = ordenados.slice(0, a.maximo);
-  console.error(`Preguntando a Google por ${aRevisar.length} negocios...`);
-  const revisados = await enLotes(aRevisar, 4, async (c, k) => {
+  const conGoogle = process.env.LEADS_GOOGLE === "1";
+  console.error(`${conGoogle ? "Preguntando a Google" : "Buscando el website (gratis)"} de ${aRevisar.length} negocios...`);
+  const revisados = await enLotes(aRevisar, conGoogle ? 4 : 8, async (c, k) => {
     let google = null;
-    try {
-      google = await api("POST", "", { accion: "buscar_nombre", nombre: c.nombre, ciudad: c.ciudad, zip: c.zip });
-    } catch (err) {
-      google = { en_google: false, error: err.message };
+    if (conGoogle) {
+      try {
+        google = await api("POST", "", { accion: "buscar_nombre", nombre: c.nombre, ciudad: c.ciudad, zip: c.zip });
+      } catch (err) {
+        google = { en_google: false, error: err.message };
+      }
+    } else {
+      // Sin Google: si su nombre lleva a una página suya, se trata como si
+      // Google la hubiera devuelto (sin teléfono ni reseñas, que no se saben).
+      const web = await websitePorNombre(c.nombre);
+      google = web ? { en_google: true, place_id: `sunbiz:${c.numero}`, nombre: titulo(c.nombre), direccion: `${titulo(c.direccion)}, ${c.ciudad}, FL ${c.zip}`, detalle: { website: web } } : { en_google: false };
     }
     let estudio = { email: null, idioma: null, constructor: null, senales: [], resumen: null, urlFinal: null };
     if (google?.en_google && google.detalle?.website) estudio = await estudiarSitio(google.detalle.website, google.detalle.tipo_google ?? "");
     else if (google?.en_google) estudio.senales.push("sin_website");
     else if (google?.error) estudio.senales.push("google_no_verificado");
-    else estudio.senales.push("sin_presencia_en_google");
-    process.stderr.write(`  ${k + 1}/${aRevisar.length} ${c.nombre.slice(0, 40)} → ${google?.en_google ? (google.detalle?.website ? "website" : "google sin website") : google?.error ? "no verificado (" + google.error.slice(0, 60) + ")" : "sin presencia"}${estudio.email ? " ✓ " + estudio.email : ""}\n`);
+    else estudio.senales.push(conGoogle ? "sin_presencia_en_google" : "sin_website_encontrado");
+    process.stderr.write(`  ${k + 1}/${aRevisar.length} ${c.nombre.slice(0, 40)} → ${google?.en_google ? (google.detalle?.website ? `website ${google.detalle.website}` : "google sin website") : google?.error ? "no verificado (" + google.error.slice(0, 60) + ")" : "sin website"}${estudio.email ? " ✓ " + estudio.email : ""}\n`);
     return { c, google, estudio };
   });
 
@@ -281,7 +332,10 @@ async function main() {
   );
 }
 
-main().catch((e) => {
-  console.error("Error:", e.message);
-  process.exit(1);
-});
+// Solo corre cuando se ejecuta directo (así se puede importar para probar).
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((e) => {
+    console.error("Error:", e.message);
+    process.exit(1);
+  });
+}

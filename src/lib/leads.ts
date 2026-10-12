@@ -89,6 +89,51 @@ export const ESTADOS_QUE_NO_SE_ESCRIBEN = new Set([
   "descartado",
 ]);
 
+/**
+ * Sin recontacto entre registros. Un mismo negocio puede entrar dos veces con
+ * llaves distintas (antes por Google Places, desde el 12 de octubre de 2026
+ * por OpenStreetMap, o por Sunbiz). Si ya se le escribió, rebotó o pidió la
+ * baja con otro registro, no se le vuelve a escribir: se compara el correo y
+ * el dominio de su website. La baja es por dirección de correo (CAN-SPAM).
+ */
+const ESTADOS_CONTACTADO = ["enviado", "baja", "rebotado", "respondio", "cliente"];
+// Dominios compartidos por miles de negocios: no sirven para reconocer a uno.
+const DOMINIOS_COMPARTIDOS = /(^|\.)(facebook|instagram|linktr|tiktok|yelp|google|business\.site|wixsite|square\.site|godaddysites|weebly|sites\.google|menufy|toasttab|clover|squareup|booksy|vagaro|fresha|linkedin|twitter|x)\.(com|ee|site|net)$/i;
+
+export function dominioDeWeb(website: string | null | undefined): string | null {
+  if (!website) return null;
+  try {
+    const host = new URL(/^https?:\/\//i.test(website) ? website : `https://${website}`).hostname.replace(/^www\./, "").toLowerCase();
+    return DOMINIOS_COMPARTIDOS.test(host) ? null : host;
+  } catch {
+    return null;
+  }
+}
+
+export async function yaContactadoPorOtro(
+  supabase: SupabaseClient,
+  datos: { id?: string | null; email?: string | null; website?: string | null }
+): Promise<string | null> {
+  const contactado = (f: { estado: string; enviado_en: string | null }) => Boolean(f.enviado_en) || ESTADOS_CONTACTADO.includes(f.estado);
+  const email = datos.email?.trim().toLowerCase();
+  if (email) {
+    const { data } = await supabase.from("leads").select("id, nombre, estado, enviado_en").eq("email", email).limit(10);
+    const otro = (data ?? []).find((f) => f.id !== datos.id && contactado(f));
+    if (otro) return `mismo correo que "${otro.nombre}" (${otro.estado})`;
+  }
+  const dominio = dominioDeWeb(datos.website);
+  if (dominio) {
+    const { data } = await supabase
+      .from("leads")
+      .select("id, nombre, estado, enviado_en, website")
+      .ilike("website", `%${dominio}%`)
+      .limit(20);
+    const otro = (data ?? []).find((f) => f.id !== datos.id && dominioDeWeb(f.website) === dominio && contactado(f));
+    if (otro) return `mismo website que "${otro.nombre}" (${otro.estado})`;
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------- acceso
 
 export function secretoLeads(): string | null {
@@ -853,7 +898,7 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
     }
     const { data: lead } = await supabase
       .from("leads")
-      .select("id, nombre, zip, email, estado, enviado_en, rubro")
+      .select("id, nombre, zip, email, estado, enviado_en, rubro, website")
       .eq("id", b.lead_id)
       .maybeSingle();
     if (!lead) {
@@ -870,6 +915,11 @@ export async function enviarBorradores(borradores: Borrador[]): Promise<{
     }
     if (lead.enviado_en) {
       resultados.push({ lead_id: b.lead_id, ok: false, motivo: "ya se le escribió; sin recontacto" });
+      continue;
+    }
+    const otro = await yaContactadoPorOtro(supabase, { id: lead.id as string, email: lead.email as string, website: lead.website as string | null });
+    if (otro) {
+      resultados.push({ lead_id: b.lead_id, ok: false, motivo: `ya se le escribió con otro registro: ${otro}` });
       continue;
     }
     const pais = paisDeZona(lead.zip as string);
@@ -963,7 +1013,7 @@ export async function guardarBorradores(borradores: Borrador[]): Promise<{ resul
       resultados.push({ lead_id: b.lead_id, ok: false, motivo: invalido });
       continue;
     }
-    const { data: lead } = await supabase.from("leads").select("id, email, estado, enviado_en").eq("id", b.lead_id).maybeSingle();
+    const { data: lead } = await supabase.from("leads").select("id, email, estado, enviado_en, website").eq("id", b.lead_id).maybeSingle();
     if (!lead) {
       resultados.push({ lead_id: b.lead_id, ok: false, motivo: "lead no existe" });
       continue;
@@ -974,6 +1024,11 @@ export async function guardarBorradores(borradores: Borrador[]): Promise<{ resul
     }
     if (ESTADOS_QUE_NO_SE_ESCRIBEN.has(lead.estado) || lead.enviado_en) {
       resultados.push({ lead_id: b.lead_id, ok: false, motivo: lead.enviado_en ? "ya se le escribió; sin recontacto" : `estado ${lead.estado}` });
+      continue;
+    }
+    const otro = await yaContactadoPorOtro(supabase, { id: lead.id, email: lead.email, website: lead.website });
+    if (otro) {
+      resultados.push({ lead_id: b.lead_id, ok: false, motivo: `ya se le escribió con otro registro: ${otro}` });
       continue;
     }
     let informePath: string | null = null;

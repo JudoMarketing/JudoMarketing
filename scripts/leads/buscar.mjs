@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 /**
  * Investigación de una zona (un zip de Florida o una ciudad de Estados
- * Unidos, España, Reino Unido o Alemania): pide los negocios al sitio (que
- * los saca de Google Places), visita el website de cada uno, encuentra su
- * correo y las señales de que le falta algo, y guarda todo en la base a
- * través del sitio. Deja un JSON con lo que la sesión necesita para elegir
- * a quién escribirle.
+ * Unidos, España, Reino Unido o Alemania): saca los negocios de
+ * OpenStreetMap (gratis, scripts/leads/osm.mjs), visita el website de cada
+ * uno, encuentra su correo y las señales de que le falta algo, y guarda todo
+ * en la base a través del sitio. Deja un JSON con lo que la sesión necesita
+ * para elegir a quién escribirle.
+ *
+ * Desde el 12 de octubre de 2026 no se usa Google Places: las llamadas
+ * salían demasiado caras y el sitio las tiene bloqueadas. --fuente google
+ * queda para el día que se vuelva a prender.
  *
  *   node scripts/leads/buscar.mjs --pais us --zip auto --salida /ruta/leads-us.json
+ *   node scripts/leads/buscar.mjs --zip 33130 --sin-guardar --salida /tmp/prueba.json   (prueba, sin tocar la base)
  *   node scripts/leads/buscar.mjs --pais es --zip auto --salida /ruta/leads-es.json
  *   node scripts/leads/buscar.mjs --zip 33130 --salida /ruta/leads.json
  *   node scripts/leads/buscar.mjs --zip uk:leeds --salida /ruta/leads.json
@@ -25,11 +30,17 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { negociosOsm } from "./osm.mjs";
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const SITE = (process.env.LEADS_SITE ?? "https://www.judomarketing.net").replace(/\/$/, "");
 const SECRETO = process.env.LEADS_SECRET;
-const UA = "Mozilla/5.0 (compatible; JudoMarketing/1.0; +https://www.judomarketing.net)";
+// Como un Chrome normal: muchas páginas le cierran la puerta a un robot que se
+// anuncia como tal (403) y se veían "caídas" sin estarlo.
+const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36";
+// Muros anti-robots (Cloudflare, Sucuri, Incapsula...): la página existe,
+// solo no deja leerla a un programa. No es una falla del negocio.
+const MURO = /cf-browser-verification|challenge-platform|cf-chl|just a moment\.\.\.|attention required|captcha|access denied|request unsuccessful|incapsula|sucuri|403 - forbidden|ddos-guard|are you a robot|verify you are human/i;
 const TIEMPO_PAGINA_MS = 9000;
 const CONCURRENCIA = 6;
 const DIAS_ROTACION = 60;
@@ -50,6 +61,10 @@ function args() {
     soloSitio: leer("--solo-sitio"),
     // Nicho que se corre aparte (NICHOS en src/lib/leads.ts), p. ej. salud_mental.
     nicho: leer("--nicho"),
+    // osm (gratis, por defecto) o google (Places; apagado en el sitio).
+    fuente: leer("--fuente") ?? "osm",
+    // Prueba: no lee ni escribe la base; necesita --zip explícito.
+    sinGuardar: a.includes("--sin-guardar"),
   };
 }
 
@@ -133,7 +148,7 @@ function semillaDe(id) {
 // ------------------------------------------------------------- scraping
 
 const CORREOS_BASURA =
-  /(noreply|no-reply|donotreply|do-not-reply|postmaster|abuse|bugreport|bug@|mailer-daemon|privacy|unsubscribe|example\.|sentry|wixpress|wix\.com|godaddy|squarespace|wordpress|w3\.org|schema\.org|yourdomain|yourname|domain\.com|email\.com$|@sentry|@2x|moatable|placester|realgeeks|kvcore|\.(png|jpg|jpeg|gif|svg|webp)$|^[0-9a-f]{20,}@|[{}\\|<>])/i;
+  /(^(email|your|yourname|name|user|test|mail|correo|tucorreo|press|media|pr|careers|jobs|hr|recruiting|investors|legal|dpo)@|noreply|no-reply|donotreply|do-not-reply|postmaster|abuse|bugreport|bug@|mailer-daemon|privacy|unsubscribe|example\.|sentry|wixpress|wix\.com|godaddy|squarespace|wordpress|w3\.org|schema\.org|yourdomain|yourname|domain\.com|email\.com$|@sentry|@2x|moatable|placester|realgeeks|kvcore|\.(png|jpg|jpeg|gif|svg|webp)$|^[0-9a-f]{20,}@|[{}\\|<>])/i;
 
 // Correos de la agencia que hizo la página, no del negocio: si el dominio no
 // es el del sitio y suena a agencia, no sirve para escribirle al dueño.
@@ -253,6 +268,8 @@ export async function traer(url) {
     const tipo = res.headers.get("content-type") ?? "";
     if (!tipo.includes("html")) return { ok: false, estado: res.status, url: res.url, html: "" };
     const html = (await res.text()).slice(0, 1_500_000);
+    const muro = [401, 403, 429, 503].includes(res.status) || (MURO.test(html.slice(0, 20_000)) && textoVisible(html).length < 1500);
+    if (muro) return { ok: false, estado: res.status, url: res.url, html: "", protegido: true };
     return { ok: res.ok, estado: res.status, url: res.url, html };
   } catch (e) {
     return { ok: false, estado: 0, url, html: "", error: e.name === "AbortError" ? "timeout" : e.message };
@@ -320,6 +337,11 @@ export async function estudiarSitio(website, tipoGoogle = "") {
   }
   const inicio = await traer(website);
   r.urlFinal = inicio.url;
+  if (inicio.protegido) {
+    // No se pudo leer: no se le inventa ninguna falla.
+    r.senales.push("website_protegido");
+    return r;
+  }
   if (!inicio.ok || !inicio.html) {
     r.senales.push(inicio.estado ? `website_responde_${inicio.estado}` : `website_caido_${inicio.error ?? "sin_respuesta"}`);
     return r;
@@ -541,6 +563,10 @@ async function main() {
 
   let zona;
   if (a.zip === "auto") {
+    if (a.sinGuardar) {
+      console.error("Con --sin-guardar hay que decir la zona (--zip 33130 o --zip uk:leeds): la rotación se lee de la base.");
+      process.exit(2);
+    }
     zona = await siguienteZona(a.pais ?? "us");
   } else {
     zona = zonaPorId(await cargarPaises(), a.zip);
@@ -555,19 +581,27 @@ async function main() {
   // los demás países, el del país (España en español, aunque el sitio esté
   // en inglés).
   const idiomaPais = zona.config.idioma;
-  console.error(`${zona.config.nombre} · ${zona.nombre} (${zip}): pidiendo negocios a Google Places...`);
-
   const semilla = semillaDe(zip);
-  const { candidatos, consultas, aviso } = await api("POST", "", {
-    accion: "buscar",
-    zip,
-    zona: { id: zona.id, consulta: zona.consulta, verificar: zona.verificar },
-    maximo: a.maximo,
-    semilla,
-    ...(a.nicho ? { nicho: a.nicho } : {}),
-  });
-  if (aviso) console.error("Aviso de Places:", aviso);
-  console.error(`${candidatos.length} negocios en ${consultas} consultas. Visitando websites...`);
+  let candidatos;
+  if (a.fuente === "google") {
+    console.error(`${zona.config.nombre} · ${zona.nombre} (${zip}): pidiendo negocios a Google Places...`);
+    const r = await api("POST", "", {
+      accion: "buscar",
+      zip,
+      zona: { id: zona.id, consulta: zona.consulta, verificar: zona.verificar },
+      maximo: a.maximo,
+      semilla,
+      ...(a.nicho ? { nicho: a.nicho } : {}),
+    });
+    if (r.aviso) console.error("Aviso de Places:", r.aviso);
+    candidatos = r.candidatos;
+    console.error(`${candidatos.length} negocios en ${r.consultas} consultas. Visitando websites...`);
+  } else {
+    console.error(`${zona.config.nombre} · ${zona.nombre} (${zip}): pidiendo negocios a OpenStreetMap...`);
+    const r = await negociosOsm(zona, { maximo: a.maximo, semilla, nicho: a.nicho ?? null });
+    candidatos = r.candidatos;
+    console.error(`${r.encontrados} lugares en el mapa, ${candidatos.length} negocios independientes para estudiar. Visitando websites...`);
+  }
 
   // Los que ya se escribieron o están de baja no se vuelven a estudiar.
   const aEstudiar = candidatos.filter(
@@ -575,6 +609,8 @@ async function main() {
   );
   const estudiados = await enLotes(aEstudiar, CONCURRENCIA, async (c, k) => {
     const e = await estudiarSitio(c.website, c.tipo_google ?? "");
+    // OSM a veces trae el correo publicado: sirve si la página no lo muestra.
+    if (!e.email && c.email_osm && !CORREOS_BASURA.test(c.email_osm)) e.email = c.email_osm;
     process.stderr.write(`  ${k + 1}/${aEstudiar.length} ${c.nombre}${e.email ? " ✓ " + e.email : ""}\n`);
     return { c, e };
   });
@@ -592,6 +628,7 @@ async function main() {
     rubro: c.busqueda ?? null,
     rating: c.rating,
     resenas: c.resenas,
+    fuente: c.fuente === "osm" ? "osm" : "places",
     idioma: idiomaPais === "auto" ? e.idioma : idiomaPais,
     constructor: e.constructor,
     senales: e.senales,
@@ -600,10 +637,15 @@ async function main() {
   }));
 
   const guardados = [];
-  for (let i = 0; i < filas.length; i += 100) {
-    const { leads, fallidos } = await api("POST", "", { accion: "guardar", leads: filas.slice(i, i + 100) });
-    guardados.push(...leads);
-    for (const f of fallidos ?? []) console.error(`  ✗ no se pudo guardar ${f.nombre}: ${f.motivo}`);
+  if (a.sinGuardar) {
+    // Prueba: se hace como si todos fueran nuevos.
+    for (const f of filas) guardados.push({ id: null, place_id: f.place_id, estado: f.email ? "nuevo" : "sin_correo" });
+  } else {
+    for (let i = 0; i < filas.length; i += 100) {
+      const { leads, fallidos } = await api("POST", "", { accion: "guardar", leads: filas.slice(i, i + 100) });
+      guardados.push(...leads);
+      for (const f of fallidos ?? []) console.error(`  ✗ no se pudo guardar ${f.nombre}: ${f.motivo}`);
+    }
   }
   const porPlace = new Map(guardados.map((g) => [g.place_id, g]));
 

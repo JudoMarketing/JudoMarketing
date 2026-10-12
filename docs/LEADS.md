@@ -1,12 +1,16 @@
 # Prospección por correo
 
-> **En pausa desde el 12 de octubre de 2026.** Junior apagó las búsquedas
-> porque las llamadas a las APIs de Google (Places, PageSpeed, Custom Search)
-> salían demasiado caras. La rutina de prospección está desactivada y
+> **Fuentes gratis desde el 12 de octubre de 2026.** Junior apagó las
+> búsquedas en Google porque las llamadas a sus APIs (Places, PageSpeed,
+> Custom Search) salían demasiado caras. Ahora los negocios salen de
+> **OpenStreetMap** (`scripts/leads/osm.mjs`) y de Sunbiz; la velocidad y el
+> SEO se miden con **Lighthouse en la máquina de la sesión**; y el "¿ya
+> rankea?" lo comprueba la sesión con su búsqueda web en los finalistas.
 > `/api/leads` rechaza las acciones que llaman a Google
-> (`BUSQUEDAS_GOOGLE_APAGADAS` en `src/app/api/leads/route.ts`). Para volver:
-> poner ese valor en `false`, reactivar la rutina y, antes, ponerle tope de
-> gasto a la clave en Google Cloud.
+> (`BUSQUEDAS_GOOGLE_APAGADAS` en `src/app/api/leads/route.ts`). Lo que este
+> documento cuenta de Google Places, Maps y PageSpeed es cómo funcionaba
+> antes, y cómo volvería a funcionar si un día se prende (`--fuente google`,
+> `LEADS_GOOGLE=1`).
 
 Cada día una sesión automática busca negocios que pueden necesitar un
 website, una app o un sistema en **dos países**: Estados Unidos y Reino
@@ -52,8 +56,9 @@ Tres fuentes, que se complementan:
 
 | Fuente | Qué trae | Quién lo hace |
 | --- | --- | --- |
-| **Google Places** (`buscar.mjs`) | Hasta 100 negocios establecidos de una zona (un zip de Florida o una ciudad de cualquiera de los países), con website y teléfono. Es la fuente de los que llevan tiempo operando y ya tienen clientes. | Script |
-| **Sunbiz** (`sunbiz.mjs`, solo Estados Unidos) | Todas las empresas registradas en Florida, por archivo diario: las de esta semana (recién abiertas) y las de hace 2 y 3 años (con tiempo operando). Se cruzan con Google para saber si existen en línea. | Script |
+| **OpenStreetMap** (`buscar.mjs` con `osm.mjs`) | Hasta 100 negocios independientes de una zona (un zip de Florida o una ciudad de cualquiera de los países), con rubro, dirección, teléfono, website y a veces el correo. Gratis y sin clave. Se dejan fuera cadenas, gobierno, escuelas, hospitales y competidores (agencias de marketing e IT). En el centro de Miami (33130) da unos 600 lugares, 180 independientes con website. No trae reseñas ni puesto en Maps. | Script |
+| **Sunbiz** (`sunbiz.mjs`, solo Estados Unidos) | Todas las empresas registradas en Florida, por archivo diario: las de esta semana (recién abiertas) y las de hace 2 y 3 años (con tiempo operando). Se busca su website por el nombre (abccleaning.com...), comprobando que la página sea suya y no un dominio en venta. | Script |
+| ~~Google Places~~ | Apagado desde el 12 de octubre de 2026 por costo. | — |
 | **Internet** | Para los candidatos buenos sin correo: buscar en la web el negocio o su dueño (Facebook, Instagram, Yelp, directorios) para encontrar correo o WhatsApp, y para entender mejor qué hacen. | La sesión, con su herramienta de búsqueda web |
 
 Sunbiz no publica correos ni teléfonos: da el nombre del negocio, su
@@ -95,8 +100,8 @@ resto, de la general. La página a la que lleva el correo de este nicho es
 Sesión automática (Claude Code, cada día)         judomarketing.net (Vercel)
 ────────────────────────────────────────────      ──────────────────────────
 Por cada país encendido (us, uk):
-1. buscar.mjs  ── pide negocios de la zona ─────▶  /api/leads {buscar}   ──▶ Google Places
-               ◀─ 100 candidatos ───────────────
+1. buscar.mjs  ── pide negocios de la zona a OpenStreetMap (gratis, desde la sesión)
+               ◀─ hasta 100 independientes ──────
 2.             visita cada website (correo, señales, resumen)
 3.             ── guarda lo investigado ────────▶  /api/leads {guardar}  ──▶ Supabase (leads)
 4. la sesión lee lo aprendido en corridas anteriores, elige 10 y escribe 10 borradores
@@ -167,16 +172,16 @@ Por qué así y no de otra forma:
 7. **Informe de presencia en línea** para los elegidos que tienen website:
    `node scripts/leads/informe.mjs --leads <carpeta>/leads.json,<carpeta>/sunbiz.json --ids <ids separados por coma> --salida <carpeta>/informes`.
    Genera un PDF de una página por negocio con datos públicos y reales:
-   velocidad y SEO técnico según PageSpeed de Google, puesto en Google Maps
-   para dos búsquedas de su zona y quiénes van delante (con sus reseñas),
-   puesto en la búsqueda web (si está configurado), y lo que se ve en su
-   propio sitio (título, descripción, celular, candado, datos estructurados,
+   velocidad, SEO técnico, accesibilidad y buenas prácticas medidos con
+   Lighthouse en la máquina de la sesión (la misma medición de PageSpeed,
+   gratis; unos 40 segundos por negocio), lo que Google lee de su página, y
+   lo que se ve en su propio sitio (título, descripción, celular, candado, datos estructurados,
    sitemap, botón de llamada, redes, pedidos en línea, antigüedad del
    dominio). Cierra con tres recomendaciones y el regalo del Perfil de
    Empresa de Google. Deja `informes.json` con los números de cada uno.
    Lo que no se pudo medir sale como "no disponible"; nunca se inventa. Si
-   `informes.json` trae `avisos` (PageSpeed sin llave, por ejemplo), el
-   correo no cita ese dato. Si trae `apto: false`, ese negocio no se
+   `informes.json` trae `avisos` (Lighthouse no pudo abrir la página, por
+   ejemplo), el correo no cita ese dato. Si trae `apto: false`, ese negocio no se
    escribe: se descarta con `{accion:"descartar"}` y el `motivo_no_apto`.
 8. Escribir un borrador por cada uno, en un JSON con el formato de
    `scripts/leads/guardar.mjs`, con `zip`, `pais` y `zona` tal cual salieron
@@ -208,10 +213,16 @@ en internet pero NO están haciendo ranking.** Quien ya sale arriba en
 Google, con buenas reseñas y una página que funciona, ya tiene a alguien que
 le da el servicio: ¿por qué cambiaría? A ese no se le escribe.
 
-Cómo se sabe desde fuera. Google Places devuelve los negocios de una
-búsqueda ("law firm in Doral") en el mismo orden en que Google Maps los
-rankea, así que `buscar.mjs` guarda el puesto real de cada uno
-(`maps_puesto_N`) y decide con él:
+Cómo se sabe desde fuera, **con fuentes gratis (desde el 12 de octubre de
+2026)**: OpenStreetMap no dice el puesto en Google. La sesión lo comprueba
+con su búsqueda web en los finalistas (12 a 15 por país): busca "<rubro>
+<ciudad o barrio>" y, si la página del negocio sale entre los 3 primeros
+resultados y funciona, lo descarta con el motivo "ya rankea en la búsqueda
+web". Además, el informe deja `apto: false` a quien tiene la página ya bien
+hecha (velocidad 90 o más y SEO 92 o más en Lighthouse, sin fallos graves).
+
+Con Google Places (apagado), `buscar.mjs` guardaba el puesto real en Maps
+de cada uno (`maps_puesto_N`) y decidía con él:
 
 | Puesto en Maps | Qué pasa |
 | --- | --- |
@@ -566,9 +577,17 @@ muestra, y de dónde sale cada dato:
 
 | Bloque | Datos | Fuente |
 | --- | --- | --- |
-| Cuatro tarjetas | Velocidad en celular (0 a 100), SEO técnico (0 a 100), puesto en Google Maps, reseñas | PageSpeed Insights y Google Places |
-| Cómo te encuentran | Puesto para las búsquedas de su zona (en un zip de Florida: por rubro y zip y por rubro y barrio; en una ciudad: por rubro y ciudad), los tres primeros con sus reseñas frente al negocio, puesto en la búsqueda web de Google de su país si hay buscador configurado | Google Places y Custom Search |
-| Tu página web | LCP, CLS, TBT, antigüedad del dominio y doce chequeos con ✓ o ✗ (título, descripción, encabezado, celular, candado, imágenes descritas, datos estructurados, sitemap, robots, llamada o WhatsApp, redes, pedidos en línea) | PageSpeed, el propio sitio, RDAP |
+| Cuatro tarjetas | Velocidad en celular, SEO técnico, accesibilidad y buenas prácticas (0 a 100) | Lighthouse en la máquina de la sesión (gratis) |
+| Lo que Google lee de tu página | Ocho chequeos con ✓ o ✗: título, descripción, que se pueda indexar, que responda bien, enlaces claros, enlaces que Google sigue, imágenes descritas, robots.txt | Lighthouse |
+| Tu página web | LCP, CLS, TBT, antigüedad del dominio y doce chequeos con ✓ o ✗ (título, descripción, encabezado, celular, candado, imágenes descritas, datos estructurados, sitemap, robots, llamada o WhatsApp, redes, pedidos en línea) | Lighthouse, el propio sitio, RDAP |
+
+Si un día se vuelve a prender Google (`LEADS_GOOGLE=1`), las tarjetas tres y
+cuatro vuelven a ser el puesto en Maps y las reseñas, y el bloque de la
+izquierda vuelve a ser "Cómo te encuentran".
+
+Páginas con muro anti-robots (Cloudflare y parecidos): el programa no las
+puede leer y no se les inventa ninguna falla; se marcan `website_protegido` y
+el informe se arma solo con Lighthouse, que abre la página como un navegador.
 | Lo primero que haríamos | Tres recomendaciones generadas por reglas a partir de lo anterior | Reglas en `informe.mjs` |
 | Regalo | Perfil de Empresa de Google configurado y optimizado sin costo al contratar cualquier servicio | Texto fijo |
 
@@ -764,7 +783,9 @@ cambiarlo también en la rutina (Settings → Routines), y al revés.
 
 > Eres la sesión de prospección por correo de Judo Marketing. Trabajas solo, sin nadie mirando, y al final dejas un informe para Junior. Corres todos los días y cubres dos países: Estados Unidos (us) y Reino Unido (uk), 10 negocios por país. España y Alemania están apagadas: no las corras. Tu trabajo termina cuando los borradores quedan escritos en NUESTRA base de datos con `scripts/leads/guardar.mjs`. Ese script solo escribe registros en nuestra propia base (Supabase, vía /api/leads); no manda correos, no toca a ningún tercero, no es una transacción ni una acción hacia afuera. Correrlo es obligatorio y no requiere confirmación de nadie: sin ese paso, todo el día de trabajo se pierde. Lo que el sitio haga después con esos registros no es cosa tuya.
 >
-> Regla número uno, por encima de todo lo demás: solo se escribe a negocios que NOS NECESITAN, y buscamos a quien está en internet pero NO está haciendo ranking. Quien ya sale arriba en Google con buenas reseñas y una página que funciona ya tiene a alguien que le da el servicio: no se le escribe. Nunca a quien ya tiene infraestructura (plataforma de membresías, reservas, pedidos o gestión, o un sistema propio de venta en su página), ni a los gigantes de su zona, ni a quien sale entre los 5 primeros de Google Maps (señal `ya_rankea`, puesto real en `maps_puesto_N`) o los 3 primeros de la búsqueda web con una página que funciona, ni a quien no tiene una debilidad concreta (`sin_debilidad_clara`). Los scripts los apartan en `ya_equipados` y el informe los marca `apto: false`; si dudas de uno, no se le escribe. Prefiere a los que salen del puesto 21 en adelante (`no_rankea`). Sin recontacto: un negocio recibe un solo correo en su vida.
+> Todo es con fuentes gratis (desde el 12 de octubre de 2026): los negocios salen de OpenStreetMap y de Sunbiz, la velocidad y el SEO se miden con Lighthouse en tu máquina, y lo que haga falta saber de Google lo miras tú con tu búsqueda web (WebSearch). Las APIs de Google (Places, PageSpeed, Custom Search) están apagadas por costo y el sitio las rechaza: nunca las uses, no pongas LEADS_GOOGLE=1 ni `--fuente google`, ni intentes prenderlas.
+>
+> Regla número uno, por encima de todo lo demás: solo se escribe a negocios que NOS NECESITAN, y buscamos a quien está en internet pero NO está haciendo ranking. Quien ya sale arriba en Google con una página que funciona ya tiene a alguien que le da el servicio: no se le escribe. Nunca a quien ya tiene infraestructura (plataforma de membresías, reservas, pedidos o gestión, o un sistema propio de venta en su página), ni a las cadenas ni a los gigantes de su zona, ni a quien sale entre los 3 primeros resultados de la búsqueda web para su rubro y su ciudad con una página que funciona (lo compruebas en el paso 5), ni a quien no tiene una debilidad concreta (`sin_debilidad_clara`), ni a quien tiene la página bien hecha según el informe (`apto: false`). Los scripts apartan a los que no nos necesitan en `ya_equipados`; si dudas de uno, no se le escribe. Sin recontacto: un negocio recibe un solo correo en su vida (el sitio además bloquea el mismo correo o el mismo website aunque entre con otro registro).
 >
 > Regla número dos: los diez mejores de cada zona. Investigas toda la zona y eliges los diez que de verdad nos necesitan, explicando cada elección en una línea (qué le falta, qué le cuesta, qué le venderíamos). Si la zona no da diez buenos, ese mismo día corres la siguiente zona del mismo país (paso 3 otra vez, en otra carpeta, por ejemplo <tmp>/us2) hasta completar diez borradores para ese país; cada zona lleva su propio archivo de borradores y su propia corrida. Lo que nunca haces es rellenar con negocios que no nos necesitan. Diez es exacto: cuando un país ya tiene diez borradores guardados, ese país terminó; no corras otra zona para tener más, porque el sitio manda 10 por país al día y lo que sobra caduca a los 3 días.
 >
@@ -773,12 +794,12 @@ cambiarlo también en la rutina (Settings → Routines), y al revés.
 > Pasos:
 > 1. En el repositorio JudoMarketing/JudoMarketing haz `git checkout master && git pull && npm ci` y lee COMPLETO el archivo `docs/LEADS.md`. Todo lo que hagas sigue ese documento. Después lee la memoria: `GET /api/leads?memoria=1` (con LEADS_SECRET) trae las últimas corridas con su resumen y sus aprendizajes; aplica lo que dicen (patrones de la zona, rubros que responden o no, señales que engañan).
 > 2. Para cada país, en este orden us, uk, repite los pasos 3 a 8 con su propia carpeta (<tmp>/us, <tmp>/uk). Si un país falla, lo dices en el informe y sigues con el siguiente.
-> 3. Corre `node scripts/leads/buscar.mjs --pais <país> --zip auto --salida <tmp>/<país>/leads.json` (negocios establecidos de la siguiente zona de ese país, desde Google Places). En Estados Unidos, primero corre el nicho de salud mental en la zona del día: `node scripts/leads/buscar.mjs --pais us --zip auto --nicho salud_mental --salida <tmp>/us-salud/leads.json`, y después la búsqueda general en LA MISMA zona con `--zip <el campo zip que dejó la del nicho>` en <tmp>/us/leads.json; del nicho salen hasta 5 de los 10 del día y cada búsqueda lleva su propio archivo de borradores. Solo en Estados Unidos corre después `node scripts/leads/sunbiz.mjs --salida <tmp>/us/sunbiz.json` (empresas registradas en Florida: las nuevas de esta semana y las de hace 2 y 3 años, cruzadas con Google). Necesitan la variable de entorno LEADS_SECRET. Si uno falla, no improvises ni intentes otra vía: tu informe dice exactamente qué falló y qué paso de la sección "Configuración" de docs/LEADS.md falta.
+> 3. Corre `node scripts/leads/buscar.mjs --pais <país> --zip auto --salida <tmp>/<país>/leads.json` (negocios independientes de la siguiente zona de ese país, desde OpenStreetMap). En Estados Unidos, primero corre el nicho de salud mental en la zona del día: `node scripts/leads/buscar.mjs --pais us --zip auto --nicho salud_mental --salida <tmp>/us-salud/leads.json`, y después la búsqueda general en LA MISMA zona con `--zip <el campo zip que dejó la del nicho>` en <tmp>/us/leads.json; del nicho salen hasta 5 de los 10 del día y cada búsqueda lleva su propio archivo de borradores. Solo en Estados Unidos corre después `node scripts/leads/sunbiz.mjs --salida <tmp>/us/sunbiz.json` (empresas registradas en Florida: las nuevas de esta semana y las de hace 2 y 3 años, con su website buscado por el nombre). Necesitan la variable de entorno LEADS_SECRET. Si OpenStreetMap no contesta, el script ya prueba varios servidores; si aun así falla, espera unos minutos y córrelo una vez más. Si sigue fallando, no improvises otra vía: tu informe dice exactamente qué falló.
 > 4. Lee el JSON (los dos en Estados Unidos). Para los mejores candidatos que no tienen correo (hasta 10 por país), busca en internet el negocio con su ciudad, y el nombre de la persona al frente con el negocio, incluyendo Facebook e Instagram. Si encuentras un correo que claramente es del negocio, guárdalo con `POST /api/leads {accion:"actualizar", lead_id, email}` (mismo secreto). Si encuentras WhatsApp o una página de Facebook, guárdalo en `notas`. Nunca correos personales de terceros ni direcciones adivinadas.
-> 5. Elige los 10 mejores de `candidatos_para_escribir` según las secciones "Cómo se elige a quién escribir" y "Aprender de cada corrida" (máximo 3 del mismo rubro por país y por día, contando todas las zonas, salvo el nicho de salud mental que puede llenar hasta 5 en Estados Unidos; prioridad a los que tienen muchas reseñas y solo redes, a los que llevan años sin sistema, a los que dependen del teléfono o de las apps de delivery, a los de dominio expirado o página caída). Si varios candidatos comparten dominio, teléfono, dirección o correo, son UN prospecto: se escribe una sola vez. Nunca de `ya_equipados`. Si no llegas a 10 buenos, anota los que tienes y, después del paso 8, vuelve al paso 3 con la siguiente zona.
-> 6. Para los elegidos que tienen website, genera el informe de presencia en línea: `node scripts/leads/informe.mjs --leads <tmp>/<país>/leads.json[,<tmp>/us/sunbiz.json] --ids <ids separados por coma> --salida <tmp>/<país>/informes`. Lee `informes.json`: trae los números reales de cada uno (velocidad, SEO, puesto en Maps, reseñas frente a los tres primeros, fallos), los `avisos` de lo que no se pudo medir, y `apto`. Los que salgan `apto: false` se descartan con `{accion:"descartar"}` y su `motivo_no_apto`, y se reemplazan por otros candidatos si los hay.
-> 7. Escribe un borrador por cada uno según "Cómo se escribe el correo": entre 90 y 160 palabras, tres o cuatro párrafos cortos, un discurso de venta profesional de alguien que de verdad quiere ayudar. (1) El hecho concreto que vimos (del informe, de su perfil de Google, de su website o de su registro) y lo que le cuesta hoy. (2) "Soy Junior, de Judo Marketing, en Miami" (o "I'm Junior, from Judo Marketing in Miami") y qué le haríamos, en dos frases y en las palabras del dueño; si va informe, decir que va adjunto. (3) Por qué lo decimos, en pasado y con palabras distintas en cada correo: a cada negocio con el que hemos trabajado le fue mejor después que antes (más pedidos, más citas, menos teléfono); el dinero bien dirigido atrae más dinero y nuestro trabajo es dirigirlo; no somos costosos, nuestro plan es crecer contigo empezando por lo que necesitas hoy, y aquí va UNA cifra real según lo que le ofreces ("el website empieza en $199 al mes" o "el asistente, desde $25 al mes"); la plantilla agrega sola el bloque de precios completo, no los repitas todos. (4) El cierre: 20 minutos esta semana, "abajo puedes ver nuestro trabajo y agendar" (los botones llevan los enlaces; no escribas direcciones web), y el Perfil de Empresa de Google sin costo al contratar. En su idioma, sin raya larga, sin promesas de resultados, sin cifras que no estén en src/content/pricing.json (los Websites Complejos nunca llevan cifra, se cotizan), sin enlaces en los párrafos, sin firma (la plantilla la pone). Los que llevan informe citan uno o dos de sus números (nunca uno marcado como no disponible) y llevan `adjunto_pdf`. Varía las aperturas: no repitas la primera frase. El archivo lleva `zip`, `pais` y `zona` tal cual salieron de `buscar.mjs`, y `aprendizajes`: dos o tres frases concretas y reutilizables sobre lo que esta corrida enseñó (un patrón de la zona, un rubro, una señal que engaña, qué trajo clics o bajas); nada de generalidades.
+> 5. Elige de 12 a 15 finalistas por país de `candidatos_para_escribir` según las secciones "Cómo se elige a quién escribir" y "Aprender de cada corrida" (máximo 3 del mismo rubro por país y por día, contando todas las zonas, salvo el nicho de salud mental que puede llenar hasta 5 en Estados Unidos; prioridad a los que llevan años sin sistema, a los que dependen del teléfono o de las apps de delivery, a los de dominio expirado o página caída, y a los que solo tienen redes). Si varios candidatos comparten dominio, teléfono, dirección o correo, son UN prospecto: se escribe una sola vez. Nunca de `ya_equipados`. Con cada finalista que tiene website, haz la prueba de ranking con tu búsqueda web: busca "<su rubro> <su ciudad o barrio>" (en inglés en Estados Unidos y Reino Unido) y mira si su página sale entre los 3 primeros resultados orgánicos; si sale y su página funciona, ya rankea: descártalo con `{accion:"descartar"}` y motivo "ya rankea en la búsqueda web". Anota en el informe qué buscaste y qué salió. Si no llegas a 10 buenos, anota los que tienes y, después del paso 8, vuelve al paso 3 con la siguiente zona.
+> 6. Para los elegidos que tienen website, genera el informe de presencia en línea: `node scripts/leads/informe.mjs --leads <tmp>/<país>/leads.json[,<tmp>/us/sunbiz.json] --ids <ids separados por coma> --salida <tmp>/<país>/informes`. Mide cada página con Lighthouse en tu máquina (unos 40 segundos por negocio). Lee `informes.json`: trae los números reales de cada uno (velocidad, SEO, accesibilidad, buenas prácticas, fallos), los `avisos` de lo que no se pudo medir, y `apto`. Los que salgan `apto: false` se descartan con `{accion:"descartar"}` y su `motivo_no_apto`, y se reemplazan por otros candidatos si los hay.
+> 7. Escribe un borrador por cada uno según "Cómo se escribe el correo": entre 90 y 160 palabras, tres o cuatro párrafos cortos, un discurso de venta profesional de alguien que de verdad quiere ayudar. (1) El hecho concreto que vimos (del informe, de su website, de lo que encontraste en tu búsqueda o de su registro) y lo que le cuesta hoy. (2) "Soy Junior, de Judo Marketing, en Miami" (o "I'm Junior, from Judo Marketing in Miami") y qué le haríamos, en dos frases y en las palabras del dueño; si va informe, decir que va adjunto. (3) Por qué lo decimos, en pasado y con palabras distintas en cada correo: a cada negocio con el que hemos trabajado le fue mejor después que antes (más pedidos, más citas, menos teléfono); el dinero bien dirigido atrae más dinero y nuestro trabajo es dirigirlo; no somos costosos, nuestro plan es crecer contigo empezando por lo que necesitas hoy, y aquí va UNA cifra real según lo que le ofreces ("el website empieza en $199 al mes" o "el asistente, desde $25 al mes"); la plantilla agrega sola el bloque de precios completo, no los repitas todos. (4) El cierre: 20 minutos esta semana, "abajo puedes ver nuestro trabajo y agendar" (los botones llevan los enlaces; no escribas direcciones web), y el Perfil de Empresa de Google sin costo al contratar. En su idioma, sin raya larga, sin promesas de resultados, sin cifras que no estén en src/content/pricing.json (los Websites Complejos nunca llevan cifra, se cotizan), sin enlaces en los párrafos, sin firma (la plantilla la pone). Los que llevan informe citan uno o dos de sus números (nunca uno marcado como no disponible) y llevan `adjunto_pdf`. No cites puestos en Google Maps ni reseñas: ya no se miden. Varía las aperturas: no repitas la primera frase. El archivo lleva `zip`, `pais` y `zona` tal cual salieron de `buscar.mjs`, y `aprendizajes`: dos o tres frases concretas y reutilizables sobre lo que esta corrida enseñó (un patrón de la zona, un rubro, una señal que engaña, qué trajo clics o bajas); nada de generalidades.
 > 8. Corre `node scripts/leads/guardar.mjs --borradores <tmp>/<país>/borradores.json`. Escribe los borradores en nuestra base de datos y registra la corrida con los aprendizajes. Es una escritura en nuestra propia base, igual que guardar los leads en el paso 3: no pidas permiso, no la saltes, no la dejes para el final. Si rechaza borradores, corrígelos y repite hasta que pasen todos. Si el país todavía no tiene 10 borradores guardados, vuelve al paso 3 con la siguiente zona (otra carpeta) y repite hasta 8.
-> 9. Al terminar los dos países, pide `GET /api/leads?reporte=1&desde=<fecha ISO de hace 1 día>` con el mismo secreto. Termina con el informe para Junior, por país: zonas corridas (y si se corrió el nicho de salud mental); cuántos quedaron fuera por ya rankear (`ya_rankea`, `sin_debilidad_clara`); archivos de Sunbiz procesados (solo us); encontrados por fuente, cuántos apartados por ya tener infraestructura, con correo, borradores guardados (cuántos con PDF); la lista de los elegidos con negocio, rubro y una línea de por qué NOS NECESITA; los aprendizajes que dejaste; las BAJAS y los CLICS del último día (quién, cuándo, qué botón); la lista de negocios con teléfono y sin correo (para llamar o WhatsApp); y, en Estados Unidos, la lista sin presencia en línea con la persona al frente y su dirección postal. Recuérdale que el sitio procesa los borradores a las 9:30 AM de Miami; no le llega copia ni resumen por correo, este informe es su registro. Si algo se vio raro (muchos rebotes, correos sospechosos, Places, PageSpeed o Sunbiz sin resultados), dilo.
+> 9. Al terminar los dos países, pide `GET /api/leads?reporte=1&desde=<fecha ISO de hace 1 día>` con el mismo secreto. Termina con el informe para Junior, por país: zonas corridas (y si se corrió el nicho de salud mental); cuántos negocios dio OpenStreetMap y cuántos se estudiaron; cuántos descartaste por ya rankear en la búsqueda web y cuántos quedaron fuera por `sin_debilidad_clara` o por tener la página bien hecha; archivos de Sunbiz procesados y cuántas empresas tenían website (solo us); con correo, borradores guardados (cuántos con PDF); la lista de los elegidos con negocio, rubro y una línea de por qué NOS NECESITA; los aprendizajes que dejaste; las BAJAS y los CLICS del último día (quién, cuándo, qué botón); la lista de negocios con teléfono y sin correo (para llamar o WhatsApp); y, en Estados Unidos, la lista sin presencia en línea con la persona al frente y su dirección postal. Recuérdale que el sitio procesa los borradores a las 9:30 AM de Miami; no le llega copia ni resumen por correo, este informe es su registro. Si algo se vio raro (muchos rebotes, correos sospechosos, OpenStreetMap, Lighthouse o Sunbiz sin resultados), dilo.
 >
 > No toques nada más del repositorio, no hagas commits ni push, no cambies variables de entorno ni configuración.

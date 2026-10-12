@@ -40,6 +40,7 @@ import {
   posicionWeb,
   reporte,
   secretoLeads,
+  yaContactadoPorOtro,
   zonaValida,
   ZONA_RE,
   type Borrador,
@@ -301,9 +302,18 @@ export async function POST(req: NextRequest) {
         };
         const previo = porPlace.get(l.place_id);
         if (!previo) {
+          // Mismo negocio que ya entró por otra fuente y ya se contactó (o
+          // pidió la baja): entra descartado y nunca se le escribe.
+          const otro = await yaContactadoPorOtro(supabase, { email, website: investigado.website });
           const { data, error } = await supabase
             .from("leads")
-            .insert({ place_id: l.place_id, email, estado: email ? "nuevo" : "sin_correo", ...investigado })
+            .insert({
+              place_id: l.place_id,
+              email,
+              estado: otro ? "descartado" : email ? "nuevo" : "sin_correo",
+              ...(otro ? { notas: `ya contactado con otro registro: ${otro}` } : {}),
+              ...investigado,
+            })
             .select("id, place_id, estado, email")
             .single();
           if (error) throw error;
