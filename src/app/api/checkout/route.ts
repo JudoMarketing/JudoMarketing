@@ -59,6 +59,17 @@ export async function POST(req: NextRequest) {
   const origin = req.nextUrl.origin;
   const loc = locale === "en" ? "en" : "es";
 
+  /**
+   * Managed Payments apagado en estos cobros (12 de octubre de 2026). La
+   * cuenta lo tiene activado por defecto, y con él Stripe exige un código de
+   * impuesto en cada producto y solo admite productos digitales automáticos.
+   * Un website hecho a la medida es un servicio profesional (diseño y
+   * desarrollo), que Stripe excluye de Managed Payments: con él encendido, la
+   * cuota de inicio y el pago único se rechazaban y el Esencial no se podía
+   * pagar. JuditoADS y Juditos cobran por su lado y no se tocan.
+   */
+  const sinManagedPayments = { managed_payments: { enabled: false } } as const;
+
   // Inglés vive sin prefijo; solo el español lleva /es. Al pagar, lo llevamos
   // a entregar los datos de su negocio: es el momento en que más dispuesto
   // está a hacerlo.
@@ -97,6 +108,7 @@ export async function POST(req: NextRequest) {
     try {
       const pagoUnicoSesion = await stripe.checkout.sessions.create({
         mode: "payment",
+        ...sinManagedPayments,
         line_items: [
           {
             quantity: 1,
@@ -186,6 +198,7 @@ export async function POST(req: NextRequest) {
   try {
     session = await stripe.checkout.sessions.create({
     mode: "subscription",
+    ...sinManagedPayments,
     line_items: lineas,
     metadata: { plan: String(plan), modalidad: "mensual", cuota_inicio: String(cuota) },
     locale: loc,
