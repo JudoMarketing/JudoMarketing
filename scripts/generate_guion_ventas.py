@@ -29,11 +29,23 @@ with open("src/content/pricing.json", encoding="utf-8") as f:
     TARIFA = json.load(f)
 PRECIOS = TARIFA["precios"]
 CUOTA = TARIFA.get("cuotaInicio", {})
+ANTES = TARIFA.get("precioAntes", {})
+# Pago único (desde el 12 de octubre de 2026): los meses del contrato por el
+# precio mensual, sin cuota de inicio.
+MESES_UNICO = TARIFA.get("pagoUnico", {})
+UNICO_ESENCIAL = MESES_UNICO.get("essential", 0) * PRECIOS["essential"]
+# Cuánto sale al día, redondeado hacia arriba: "menos de 7 dólares al día"
+POR_DIA = -(-PRECIOS["essential"] // 30) + (1 if PRECIOS["essential"] % 30 == 0 else 0)
+
+
+def miles(n: int) -> str:
+    return f"{n:,}"
 
 
 def dos_precios(plan: str) -> str:
-    """El precio del plan, tal como lo cobra el website."""
-    return f"${PRECIOS[plan]}/mes"
+    """El precio del plan, tal como lo cobra el website (y el de antes, tachado en la web)."""
+    antes = f" (antes ${ANTES[plan]})" if ANTES.get(plan) else ""
+    return f"${PRECIOS[plan]}/mes{antes}"
 
 title_s = ParagraphStyle("t", fontName="Helvetica-Bold", fontSize=22, textColor=PURPLE, alignment=TA_CENTER, spaceAfter=4)
 subtitle_s = ParagraphStyle("st", fontName="Helvetica", fontSize=11, textColor=GRAY, alignment=TA_CENTER, spaceAfter=2)
@@ -76,7 +88,8 @@ p(f"<b>PRECIOS VIGENTES:</b> son los que cobra el website hoy. "
   "El precio que el cliente firme antes es el que mantiene mientras siga con "
   "nosotros. Úsalo: es tu mejor razón para que decida hoy y no la otra semana.")
 sub("Los 3 planes")
-b(f"<b>Websites Esenciales, {dos_precios('essential')} más una cuota de inicio única de ${CUOTA.get('essential', 0)}:</b> tiendas online, páginas de citas, "
+b(f"<b>Websites Esenciales, {dos_precios('essential')} más una cuota de inicio única de ${CUOTA.get('essential', 0)}, "
+  f"o un pago único de ${miles(UNICO_ESENCIAL)} por los 12 meses, sin cuota de inicio:</b> tiendas online, páginas de citas, "
   "venta de servicios. Diseño moderno, panel fácil, soporte y mantenimiento.")
 b(f"<b>Websites Complejos, precio a la medida y sin cuota de inicio:</b> se cotizan en la entrevista y todo va dentro de la mensualidad. Delivery, logística, clases virtuales, "
   "sistemas avanzados, integraciones a la medida.")
@@ -125,8 +138,10 @@ b("<b>Servicios (mecánico, abogado, doctor, entrenador):</b> “Una página ser
   "servicios, citas y testimonios, para que cuando lo busquen en Google, usted gane.”")
 sub("Paso 4. El precio, sin miedo y sin rodeos")
 say(f"Son {PRECIOS['essential']} dólares al mes, el plan de arranque, y una cuota de inicio de {CUOTA.get('essential', 0)} dólares que se paga "
-    "una sola vez, con el primer mes. Menos de 4 dólares al día. Y ahí va todo incluido: el diseño, el mantenimiento, "
-    "la seguridad, los respaldos y su panel de control. Sin cobros escondidos: lo que le digo hoy es todo.")
+    f"una sola vez, con el primer mes. Menos de {POR_DIA} dólares al día. Y ahí va todo incluido: el diseño, el mantenimiento, "
+    "la seguridad, los respaldos y su panel de control. Sin cobros escondidos: lo que le digo hoy es todo. "
+    f"Y si prefiere quitárselo de encima, lo paga de una vez: {miles(UNICO_ESENCIAL)} dólares por los 12 meses, "
+    "sin cuota de inicio.")
 sub("Paso 5. Quítale el riesgo")
 say("Y mire lo mejor: si no le entregamos su proyecto en menos de un mes, le devolvemos su primer pago. Y usted puede "
     "cancelar cuando quiera, sin penalidad. O sea que el riesgo lo corremos nosotros, no usted.")
@@ -141,9 +156,10 @@ b("<b>Apenas termines, registra la visita en tu portal.</b> Con o sin internet, 
 # ── 4. Objeciones ────────────────────────────────────────────────
 sec("4. OBJECIONES: QUÉ RESPONDER, PALABRA POR PALABRA")
 qa("“Está caro” / “No tengo presupuesto”",
-   "“Le entiendo. Mire, una página web tradicional cuesta 1.500 a 3.000 dólares de una sola vez, y después le "
-   f"cobran aparte el mantenimiento. Aquí son {PRECIOS['essential']} al mes con todo incluido: menos de 2 dólares diarios. ¿Cuánto vale "
-   "para usted una sola venta que hoy se le está escapando por no estar en línea?”")
+   "“Le entiendo. Mire, una página web hecha a la medida se cobra de una sola vez, y después le cobran aparte el "
+   f"alojamiento, el mantenimiento y cada cambio. Aquí son {PRECIOS['essential']} al mes con todo eso incluido: menos de "
+   f"{POR_DIA} dólares diarios, sin pagar todo de golpe. ¿Cuánto vale para usted una sola venta que hoy se le está "
+   "escapando por no estar en línea?”")
 qa("“Ya tengo Instagram y me va bien”",
    "“¡Y qué bueno, siga con Instagram! La página no lo reemplaza, lo multiplica. Instagram es terreno alquilado: "
    "si mañana le cierran la cuenta o cambia el algoritmo, pierde todo. La página es su casa propia, y hace lo que "
@@ -176,7 +192,7 @@ qa("“No tengo tiempo para eso ahorita”",
 # ── 5. FAQ ───────────────────────────────────────────────────────
 sec("5. PREGUNTAS FRECUENTES DEL CLIENTE (tu chuleta)")
 qa("¿Cuánto cuesta?", f"Websites Esenciales {dos_precios('essential')} más una cuota de inicio única de "
-   f"${CUOTA.get('essential', 0)}; Websites Complejos a la medida, sin cuota de inicio, se cotizan en la entrevista; "
+   f"${CUOTA.get('essential', 0)}, o un pago único de ${miles(UNICO_ESENCIAL)} por los 12 meses sin cuota de inicio; Websites Complejos a la medida, sin cuota de inicio, se cotizan en la entrevista; "
    f"Apps {dos_precios('apps')}, sin cuota de inicio. Son precios “desde”.")
 qa("¿Qué incluye la mensualidad?", "Diseño, hosting, mantenimiento, seguridad y respaldos diarios, soporte, y su "
    "panel de administrador para controlar contenido, usuarios y ventas.")
