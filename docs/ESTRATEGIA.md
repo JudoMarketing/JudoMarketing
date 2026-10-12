@@ -20,7 +20,7 @@ Con los precios de hoy (`src/content/pricing.json`), una mezcla que llega:
 
 | Fuente | Cuántos | Al mes |
 | --- | --- | --- |
-| Websites de suscripción, promedio $150 | 30 | $4,500 |
+| Websites de suscripción, promedio $150 (desde el 12 de octubre de 2026 el Esencial es $199, o $2,388 en pago único) | 30 | $4,500 |
 | Asistente o JuditoADS como extra | 15 | $900 |
 | Cuota de inicio de $130 | 3 a 4 Esenciales nuevos | $400 a $520 |
 | Anuncios manejados por nosotros, si se aprueba (parte 6) | 6 a $400 | $2,400 |

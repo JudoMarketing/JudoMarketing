@@ -18,6 +18,7 @@
 | Plan contratado | ☐ Website Esencial ☐ Website Complejo ☐ App ☐ Otro: ____________ |
 | Precio mensual acordado | $________ /mes |
 | Cuota de inicio (solo Website Esencial, una sola vez) | $________ |
+| Forma de pago | ☐ 12 pagos mensuales ☐ Pago único por los 12 meses (sin cuota de inicio): $________ |
 | Dominio / Proyecto | ________________________ |
 | Vendedor asignado | ________________________ |
 | Fecha de inicio | ____ / ____ / ______ |
@@ -37,7 +38,9 @@ pago mensual por adelantado.
 - **Cero penalidades.** Nunca cobramos recargos por mora ni multas por cancelar.
 - **Cancelación libre.** El cliente puede cancelar en cualquier momento escribiendo a
   admin@judomarketing.net; al cancelar, el servicio y el website se desactivan de
-  inmediato y no se factura el siguiente mes.
+  inmediato y no se factura el siguiente mes. Si pagó los 12 meses de una sola vez, el
+  servicio sigue activo hasta el final de esos 12 meses; lo pagado no se devuelve, salvo
+  la garantía de entrega de 30 días.
 - **Control total.** El cliente gestiona su contenido, usuarios y productos desde su
   portal de administrador.
 - **Privacidad.** No vendemos la información del cliente (ver Privacy Policy).
@@ -46,7 +49,7 @@ pago mensual por adelantado.
 
 - **Propiedad durante el primer año.** El código, el diseño, los portales y el dominio
   son propiedad de Judo Marketing durante los primeros 12 meses de servicio. Cumplidos
-  12 pagos mensuales y con la cuenta al día, si el cliente decide dejar el servicio puede
+  los 12 meses pagados (en cuotas o en un pago único) y con la cuenta al día, si el cliente decide dejar el servicio puede
   solicitar la entrega del dominio y del código mediante solicitud formal por escrito a
   admin@judomarketing.net.
 - **Suspensión por falta de pago.** Si un pago no se recibe, el website puede suspenderse

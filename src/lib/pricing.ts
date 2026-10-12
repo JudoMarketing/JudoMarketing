@@ -67,5 +67,39 @@ export function primerPago(plan: Plan): number {
 }
 
 export function primerPagoTexto(plan: Plan): string {
-  return `$${primerPago(plan)}`;
+  return usd(primerPago(plan));
+}
+
+/** Dólares con separador de miles: $2,388. */
+export function usd(n: number): string {
+  return `$${n.toLocaleString("en-US")}`;
+}
+
+const ANTES = (tabla as { precioAntes?: Partial<Record<Plan, number>> }).precioAntes ?? {};
+
+/**
+ * Precio de referencia que se muestra tachado junto al vigente (desde el 12
+ * de octubre de 2026, el Esencial: $400 tachado, $199 al mes). Null si el
+ * plan no lo lleva.
+ */
+export function precioAntes(plan: Plan): number | null {
+  return ANTES[plan] ?? null;
+}
+
+const MESES_UNICO = (tabla as { pagoUnico?: Partial<Record<Plan, number>> }).pagoUnico ?? {};
+
+/**
+ * Pago único: el contrato completo de una vez, los meses por el precio
+ * mensual y sin cuota de inicio ($199 x 12 = $2,388 en el Esencial). Lo
+ * contrario es pagarlo en cuotas mensuales, que es el contrato de siempre.
+ * Devuelve null si el plan no se ofrece así.
+ */
+export function pagoUnico(plan: Plan): { meses: number; total: number } | null {
+  const meses = MESES_UNICO[plan];
+  return meses ? { meses, total: meses * precio(plan) } : null;
+}
+
+export function pagoUnicoTexto(plan: Plan): string | null {
+  const p = pagoUnico(plan);
+  return p ? usd(p.total) : null;
 }

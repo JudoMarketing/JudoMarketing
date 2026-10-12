@@ -25,7 +25,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { sendBrandedEmail } from "@/lib/email";
-import { cuotaInicio, precio, PRECIO_ASISTENTE, PRECIO_JUDITOADS } from "@/lib/pricing";
+import { cuotaInicio, pagoUnico, precio, precioAntes, PRECIO_ASISTENTE, PRECIO_JUDITOADS, usd } from "@/lib/pricing";
 import {
   enlacesProspecto,
   htmlProspecto,
@@ -738,20 +738,26 @@ export function preciosCorreo(idioma: "es" | "en" | "de"): string[] {
   const esencial = precio("essential");
   const cuota = cuotaInicio("essential");
   const app = precio("apps");
+  // Desde el 12 de octubre de 2026: $199 al mes (antes $400) o un pago único
+  // por los 12 meses, sin cuota de inicio.
+  const antes = precioAntes("essential");
+  const unico = pagoUnico("essential");
+  const antesEs = antes ? ` (antes $${antes})` : "";
+  const antesEn = antes ? ` (was $${antes})` : "";
   if (idioma === "es")
     return [
-      `Website con tu panel de control: desde $${esencial} al mes, más $${cuota} de inicio, una sola vez.`,
+      `Website con tu panel de control: desde $${esencial} al mes${antesEs}, más $${cuota} de inicio, una sola vez${unico ? `; o un solo pago de ${usd(unico.total)} por los ${unico.meses} meses, sin cuota de inicio` : ""}.`,
       `Proyectos a la medida: se cotizan y no llevan cuota de inicio. Apps de teléfono desde $${app} al mes.`,
       `Asistente de IA que contesta por WhatsApp e Instagram: desde $${PRECIO_ASISTENTE} al mes. Anuncios con JuditoADS: $${PRECIO_JUDITOADS} al mes.`,
     ];
   if (idioma === "de")
     return [
-      `Website mit eigenem Verwaltungsbereich: ab $${esencial} pro Monat, plus einmalig $${cuota} Einrichtung.`,
+      `Website mit eigenem Verwaltungsbereich: ab $${esencial} pro Monat${antes ? ` (statt $${antes})` : ""}, plus einmalig $${cuota} Einrichtung${unico ? `; oder einmalig ${usd(unico.total)} für ${unico.meses} Monate, ohne Einrichtungsgebühr` : ""}.`,
       `Individuelle Projekte: nach Angebot, ohne Einrichtungsgebühr. Apps ab $${app} pro Monat.`,
       `KI-Assistent für WhatsApp und Instagram: ab $${PRECIO_ASISTENTE} pro Monat.`,
     ];
   return [
-    `Website with your own admin panel: from $${esencial} a month, plus a one-time $${cuota} setup.`,
+    `Website with your own admin panel: from $${esencial} a month${antesEn}, plus a one-time $${cuota} setup${unico ? `; or a single payment of ${usd(unico.total)} for all ${unico.meses} months, no setup fee` : ""}.`,
     `Custom projects are quoted, with no setup fee. Mobile apps from $${app} a month.`,
     `AI assistant that answers on WhatsApp and Instagram: from $${PRECIO_ASISTENTE} a month. Ads with JuditoADS: $${PRECIO_JUDITOADS} a month.`,
   ];
@@ -780,6 +786,10 @@ function cifrasPermitidas(): Set<number> {
       s.add(cuotaInicio(plan));
       s.add(precio(plan) + cuotaInicio(plan));
     }
+    const antes = precioAntes(plan);
+    if (antes) s.add(antes);
+    const unico = pagoUnico(plan);
+    if (unico) s.add(unico.total);
   }
   return s;
 }
@@ -1022,8 +1032,19 @@ export async function enviarPendientes(): Promise<{
 
   const borradores: Borrador[] = [];
   const nombres = new Map<string, { nombre: string; pais: Pais }>();
+  // El Website Esencial pasó de $99 a $199 el 12 de octubre de 2026. Los
+  // borradores escritos antes con "$99" salen con el precio vigente en vez de
+  // descartarse. Como un borrador vive 3 días, desde el 16 de octubre esto ya
+  // no encuentra nada y se puede borrar.
+  const alDia = (t: string) => t.replace(/\$\s?99(?!\d|[.,]\d)/g, `$${precio("essential")}`);
   for (const f of filas) {
-    const b = f.borrador as Omit<Borrador, "lead_id" | "adjunto">;
+    const viejo = f.borrador as Omit<Borrador, "lead_id" | "adjunto">;
+    const b = {
+      ...viejo,
+      asunto: alDia(viejo.asunto),
+      parrafos: viejo.parrafos.map(alDia),
+      ps: viejo.ps ? alDia(viejo.ps) : viejo.ps,
+    };
     let adjunto: Borrador["adjunto"];
     if (f.informe_path) {
       const { data: pdf } = await supabase.storage.from(BUCKET_LEADS).download(f.informe_path as string);

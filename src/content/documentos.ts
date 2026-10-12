@@ -16,7 +16,7 @@
  * de mandarlo al primer cliente grande, que un abogado lo lea.
  */
 
-import { cuotaInicio, PRECIO_HOSTING } from "@/lib/pricing";
+import { cuotaInicio, pagoUnico, PRECIO_HOSTING } from "@/lib/pricing";
 
 export const TIPOS_DOCUMENTO = ["websites", "juditoads", "juditos"] as const;
 export type TipoDocumento = (typeof TIPOS_DOCUMENTO)[number];
@@ -63,7 +63,8 @@ export const FIRMANTE = {
   web: "www.judomarketing.net",
 };
 
-const usd = (n: number) => `$${n.toFixed(n % 1 === 0 ? 0 : 2)} USD`;
+const usd = (n: number) =>
+  `$${n.toLocaleString("en-US", { minimumFractionDigits: n % 1 === 0 ? 0 : 2, maximumFractionDigits: 2 })} USD`;
 
 function partes(d: DatosDocumento, servicio: string): [string, string][] {
   return [
@@ -113,7 +114,7 @@ function garantiasYResponsabilidad(extra: string[]): Seccion {
     parrafos: [
       "Sin resultados garantizados. Judo Marketing se compromete a hacer el trabajo con calidad profesional. No garantiza ventas, visitas, posiciones en buscadores, aprobaciones de plataformas, cantidad de clientes ni ningún otro resultado de negocio. Toda promesa promocional vale únicamente por el remedio que tenga escrito, nunca como resultado asegurado.",
       ...extra,
-      `Límite de responsabilidad. La responsabilidad total de Judo Marketing frente al cliente por cualquier causa relacionada con este contrato no superará el total de las cuotas mensuales que el cliente haya pagado a Judo Marketing en los doce (12) meses anteriores al hecho que la origine. Judo Marketing no responde por lucro cesante, pérdida de datos causada por terceros, pérdida de oportunidades, daño reputacional ni daños indirectos o consecuenciales, aunque se le hubiera advertido de su posibilidad. Nada de esto limita la responsabilidad que la ley no permita limitar.`,
+      `Límite de responsabilidad. La responsabilidad total de Judo Marketing frente al cliente por cualquier causa relacionada con este contrato no superará el total que el cliente haya pagado a Judo Marketing en los doce (12) meses anteriores al hecho que la origine. Judo Marketing no responde por lucro cesante, pérdida de datos causada por terceros, pérdida de oportunidades, daño reputacional ni daños indirectos o consecuenciales, aunque se le hubiera advertido de su posibilidad. Nada de esto limita la responsabilidad que la ley no permita limitar.`,
       "Indemnidad. El cliente mantendrá indemne a Judo Marketing, a sus dueños y colaboradores, frente a cualquier reclamo, multa, sanción o costo (incluidos honorarios razonables de abogado) que provenga de: el contenido, productos, precios, ofertas o promesas del negocio del cliente; la relación del cliente con sus propios clientes; el incumplimiento por el cliente de la ley, de este contrato o de las reglas de las plataformas que use; y el envío de datos sensibles fuera de lo pactado en este contrato.",
     ],
   };
@@ -148,12 +149,23 @@ function websites(d: DatosDocumento): Documento {
   const plan = d.plan ?? "Website";
   // La cuota de inicio solo va en el Website Esencial (pricing.json). Se
   // reconoce por el nombre del plan que pone el portal ("Website Esencial").
-  const cuota = /esencial|essential/i.test(plan) ? cuotaInicio("essential") : 0;
+  const esencial = /esencial|essential/i.test(plan);
+  const cuota = esencial ? cuotaInicio("essential") : 0;
+  // Pago único (desde el 12 de octubre de 2026, solo el Esencial): los meses
+  // del plazo por el precio mensual de este contrato, sin cuota de inicio. El
+  // contrato sirve para las dos formas de pago; el cliente elige al pagar.
+  const unico = esencial ? pagoUnico("essential") : null;
+  const totalUnico = unico ? unico.meses * d.precioMensual : 0;
   const filas = partes(d, `${plan}${d.proyecto ? ` · ${d.proyecto}` : ""}`);
+  const i = filas.findIndex(([etiqueta]) => etiqueta === "Precio mensual");
+  const extra: [string, string][] = [];
   if (cuota > 0) {
-    const i = filas.findIndex(([etiqueta]) => etiqueta === "Precio mensual");
-    filas.splice(i + 1, 0, ["Cuota de inicio", `${usd(cuota)}, una sola vez, con el primer mes`]);
+    extra.push(["Cuota de inicio", `${usd(cuota)}, una sola vez, con el primer mes${unico ? " (no aplica con pago único)" : ""}`]);
   }
+  if (unico) {
+    extra.push(["O en pago único", `${usd(totalUnico)} por los ${unico.meses} meses, de una vez y sin cuota de inicio`]);
+  }
+  filas.splice(i + 1, 0, ...extra);
   return {
     titulo: "Acuerdo de servicio · Websites y apps",
     subtitulo: "Suscripción de diseño, construcción, alojamiento y mantenimiento · Plazo: 12 meses",
@@ -162,7 +174,7 @@ function websites(d: DatosDocumento): Documento {
       {
         titulo: "1. El servicio y el plazo",
         parrafos: [
-          `Judo Marketing diseña, construye, aloja y mantiene el website o la aplicación del cliente descrita en los datos de este contrato, incluido su portal de administración. El plan contratado es ${plan}, por ${usd(d.precioMensual)} al mes, pagados por adelantado.${cuota > 0 ? ` Además, una cuota de inicio única de ${usd(cuota)}, que se paga junto con el primer mes, cubre la configuración inicial y no se vuelve a cobrar.` : " Este plan no lleva cuota de inicio."}`,
+          `Judo Marketing diseña, construye, aloja y mantiene el website o la aplicación del cliente descrita en los datos de este contrato, incluido su portal de administración. El plan contratado es ${plan}, por ${usd(d.precioMensual)} al mes, pagados por adelantado.${cuota > 0 ? ` Además, una cuota de inicio única de ${usd(cuota)}, que se paga junto con el primer mes, cubre la configuración inicial y no se vuelve a cobrar.` : " Este plan no lleva cuota de inicio."}${unico ? ` El cliente puede, en cambio, pagar los doce (12) meses del plazo de una sola vez: ${usd(totalUnico)}, sin cuota de inicio. Con el pago único, todo lo demás de este contrato aplica igual.` : ""}`,
           "El plazo inicial es de doce (12) meses contados desde la fecha de inicio. Al cumplirse, el cliente elige una de las tres salidas de la cláusula 4. Si no elige ninguna por escrito, el servicio continúa mes a mes con el mismo plan y el mismo precio, y cualquiera de las partes puede terminarlo con aviso de treinta (30) días.",
           "Incluye: el diseño y la construcción inicial; el alojamiento; el dominio (registrado por Judo Marketing durante el plazo); las actualizaciones de seguridad; el portal de administración del cliente; y las actualizaciones menores del plan (cambios de texto, precios, fotos y productos que el cliente no pueda hacer solo desde su portal). No incluye: rediseños, funciones nuevas, integraciones no previstas en el plan, campañas de publicidad ni contenido que deba producirse desde cero. Eso se cotiza aparte.",
         ],
@@ -172,7 +184,7 @@ function websites(d: DatosDocumento): Documento {
         parrafos: [
           "Garantía de entrega de 30 días. Si el proyecto inicial no está entregado dentro de los treinta (30) días siguientes a que el cliente haya entregado todos los materiales, textos, accesos y aprobaciones que se le pidan, el cliente puede pedir el reembolso completo de su primer pago, incluida la cuota de inicio si la pagó. Es la única excepción a la regla de no reembolso. El plazo se pausa cada día que Judo Marketing esté esperando algo del cliente.",
           "Sin recargos ni multas. Judo Marketing no cobra intereses de mora ni penalidades por cancelar.",
-          "Cancelación libre. El cliente puede cancelar cuando quiera escribiendo a admin@judomarketing.net. Al cancelar, el servicio y el website se desactivan y no se factura el mes siguiente. Lo ya pagado no se devuelve.",
+          "Cancelación libre. El cliente puede cancelar cuando quiera escribiendo a admin@judomarketing.net. Al cancelar, el servicio y el website se desactivan y no se factura el mes siguiente. Lo ya pagado no se devuelve. Si el cliente pagó los doce (12) meses de una sola vez, al cancelar el servicio sigue activo hasta el final de esos doce meses y lo pagado tampoco se devuelve, salvo la garantía de entrega de 30 días.",
           "Control de su negocio. El cliente maneja su contenido, usuarios, productos y precios desde su portal de administración. Sus datos y su marca son suyos siempre.",
         ],
       },
@@ -181,7 +193,7 @@ function websites(d: DatosDocumento): Documento {
         parrafos: [
           "Del cliente, siempre: su marca, sus logotipos, sus textos, fotos y videos, su lista de clientes, sus productos y toda la información de su negocio. El cliente concede a Judo Marketing una licencia limitada para usar ese material únicamente para construir y operar el servicio.",
           "De Judo Marketing durante el plazo inicial: el código, el diseño, la estructura, los portales, el kit de componentes y el dominio son propiedad de Judo Marketing durante los primeros doce (12) meses. Es lo que permite ofrecer el proyecto por una cuota mensual en vez de cobrarlo completo el primer día.",
-          "Entrega al cumplir el año. Con doce (12) cuotas mensuales completas y la cuenta al día, el cliente puede pedir por escrito la entrega de: el código fuente del proyecto, una exportación completa de su base de datos y el traspaso del dominio a un registrador a su nombre. Judo Marketing la completa dentro de los treinta (30) días siguientes a la solicitud. Los componentes genéricos del kit de Judo Marketing que estén dentro del código se entregan con licencia perpetua, no exclusiva y sin derecho a revenderlos como producto propio: Judo Marketing sigue pudiendo usarlos en otros proyectos. Hecha la entrega, Judo Marketing queda liberada de toda obligación sobre ese proyecto.",
+          "Entrega al cumplir el año. Con los doce (12) meses del plazo cumplidos y pagados (en cuotas mensuales o en el pago único) y la cuenta al día, el cliente puede pedir por escrito la entrega de: el código fuente del proyecto, una exportación completa de su base de datos y el traspaso del dominio a un registrador a su nombre. Judo Marketing la completa dentro de los treinta (30) días siguientes a la solicitud. Los componentes genéricos del kit de Judo Marketing que estén dentro del código se entregan con licencia perpetua, no exclusiva y sin derecho a revenderlos como producto propio: Judo Marketing sigue pudiendo usarlos en otros proyectos. Hecha la entrega, Judo Marketing queda liberada de toda obligación sobre ese proyecto.",
           "Crédito en el sitio. Mientras Judo Marketing aloje el website, este lleva en su pie la frase «Website por Judo Marketing» con enlace a www.judomarketing.net. Es discreta y no interfiere con la marca del cliente.",
         ],
       },
@@ -198,7 +210,7 @@ function websites(d: DatosDocumento): Documento {
       {
         titulo: "5. Pagos, atrasos y suspensión",
         parrafos: [
-          "La cuota se paga por adelantado cada mes, por tarjeta a través del procesador de pagos de Judo Marketing o por el medio que ambas partes acuerden por escrito. Los precios no incluyen impuestos que la ley pueda exigir.",
+          "La cuota se paga por adelantado cada mes o, si el cliente eligió el pago único, una sola vez al empezar por los doce (12) meses del plazo; por tarjeta a través del procesador de pagos de Judo Marketing o por el medio que ambas partes acuerden por escrito. Los precios no incluyen impuestos que la ley pueda exigir.",
           "Si una cuota no se recibe, el orden es siempre el mismo: factura enviada, recordatorio, aviso de corte y, vencidos siete (7) días de gracia, la suspensión. Cada paso queda registrado con su fecha y el cliente puede pedir ese registro.",
           "Durante la suspensión el website muestra una página neutral de «Temporalmente deshabilitado» con la marca de Judo Marketing y un enlace a www.judomarketing.net, sin publicidad. El cliente autoriza expresamente esa página. Al ponerse al día, el servicio se reactiva de inmediato y sin recargos. Si la suspensión dura más de sesenta (60) días, Judo Marketing puede dar el contrato por terminado y eliminar el proyecto tras avisar por escrito.",
           "Un pago devuelto o disputado (contracargo) sin causa justificada se considera cuota no recibida y activa el mismo proceso.",
@@ -227,7 +239,7 @@ function websites(d: DatosDocumento): Documento {
         titulo: "11. Terminación",
         parrafos: [
           "El cliente puede terminar cuando quiera (cláusula 2). Judo Marketing puede terminar: con treinta (30) días de aviso una vez cumplido el plazo inicial; de inmediato si el cliente incumple este contrato de forma grave o usa el servicio para fines ilegales; y tras sesenta (60) días de suspensión por falta de pago.",
-          "Al terminar, el website se desactiva. Los datos del cliente quedan disponibles para exportación durante treinta (30) días y después se eliminan (cláusula 7). El derecho a la entrega completa del proyecto solo existe con doce (12) cuotas completas y la cuenta al día; si el cliente termina antes, se lleva sus datos y su contenido, y el código, el diseño y el dominio quedan con Judo Marketing.",
+          "Al terminar, el website se desactiva. Los datos del cliente quedan disponibles para exportación durante treinta (30) días y después se eliminan (cláusula 7). El derecho a la entrega completa del proyecto solo existe con los doce (12) meses del plazo cumplidos y pagados y la cuenta al día; si el cliente termina antes, se lleva sus datos y su contenido, y el código, el diseño y el dominio quedan con Judo Marketing.",
         ],
       },
       { ...comunicacion(), titulo: "12. Comunicación y avisos" },

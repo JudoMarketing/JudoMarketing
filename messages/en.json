@@ -80,7 +80,8 @@
     },
     "apps": {
       "name": "Mobile App"
-    }
+    },
+    "was": "Was"
   },
   "reviews": {
     "title": "What our clients say",
@@ -124,7 +125,7 @@
   "services": {
     "title": "Services",
     "subtitle": "We do three things. Pick the one you need.",
-    "note": "Essential Website: one-time {fee} setup fee. Complex Websites and Apps have no setup fee. 12-month agreement.",
+    "note": "Essential Website: one-time {fee} setup fee on the monthly plan; the {oneTime} one-time payment has none. Complex Websites and Apps have no setup fee. 12-month agreement.",
     "cta": "Let's talk about your project",
     "perMonth": "/mo",
     "from": "from",
@@ -240,7 +241,7 @@
       "items": [
         {
           "q": "How much does a website cost with Judo Marketing?",
-          "a": "Our websites work as a monthly subscription: Essential Websites from {essential} a month plus a one-time {setup} setup fee (online stores, bookings, services), and Mobile Apps from {apps} a month with no setup fee. Complex Websites (delivery, logistics, integrations) have {complex}: they are quoted on a call, with no setup fee. Everything includes design, support, maintenance, and your own admin panel."
+          "a": "Our websites work as a subscription: Essential Websites from {essential} a month plus a one-time {setup} setup fee, or a single payment of {oneTime} for all 12 months with no setup fee (online stores, bookings, services). Mobile Apps from {apps} a month with no setup fee. Complex Websites (delivery, logistics, integrations) have {complex}: they are quoted on a call, with no setup fee. Everything includes design, support, maintenance, and your own admin panel."
         },
         {
           "q": "How long does it take to deliver my website?",
@@ -271,7 +272,9 @@
       "form": "Tell us about your project"
     },
     "setupFee": "+ {fee} one-time setup",
-    "noSetupFee": "No setup fee"
+    "noSetupFee": "No setup fee",
+    "was": "Was",
+    "oneTime": "or one payment of {total} for all {months} months, no setup fee"
   },
   "login": {
     "title": "Portals",
@@ -433,7 +436,19 @@
     "opening": "Opening secure checkout…",
     "back": "← Back to services",
     "feesNote": "Today's amount is the first month plus the setup fee, if your plan has one. Processing or network fees are covered by the client.",
-    "setupLine": "Today you pay {total}: the first month ({month}) plus the one-time {fee} setup fee. From the second month on, you pay {month}."
+    "setupLine": "Today you pay {total}: the first month ({month}) plus the one-time {fee} setup fee. From the second month on, you pay {month}.",
+    "titleOneTime": "Complete your payment",
+    "howTitle": "How would you like to pay?",
+    "monthlyTitle": "12 monthly payments",
+    "monthlyPrice": "{month}/mo",
+    "monthlyDesc": "Today you pay {total}: the first month plus the {fee} setup fee. Then {month} a month.",
+    "monthlyDescNoFee": "Today you pay the first month. Then {month} a month.",
+    "oneTimeTitle": "One-time payment",
+    "oneTimeDesc": "All {months} months of the agreement, paid at once. No setup fee.",
+    "oneTimeSave": "You save {fee}",
+    "oneTimeChip": "one-time payment of {total}",
+    "feesNoteOneTime": "The one-time payment covers the 12 months of the agreement. Processing or network fees are paid by the client.",
+    "selected": "Selected"
   },
   "crypto": {
     "title": "Crypto (USDT)",
@@ -602,7 +617,7 @@
       {
         "name": "Your clinic's website",
         "price": "from {essential} a month",
-        "note": "plus a one-time {setup} setup"
+        "note": "plus {setup} one-time setup, or {oneTime} in a single payment for all 12 months"
       },
       {
         "name": "Portal or platform",

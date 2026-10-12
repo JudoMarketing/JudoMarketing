@@ -52,6 +52,9 @@ for (const [plan, valor] of Object.entries(TARIFA.precios)) {
     CIFRAS.add(cuota);
     CIFRAS.add(valor + cuota);
   }
+  // El precio de antes (tachado) y el pago único de los 12 meses
+  if (TARIFA.precioAntes?.[plan]) CIFRAS.add(TARIFA.precioAntes[plan]);
+  if (TARIFA.pagoUnico?.[plan]) CIFRAS.add(TARIFA.pagoUnico[plan] * valor);
 }
 
 const SITE = (process.env.LEADS_SITE ?? "https://www.judomarketing.net").replace(/\/$/, "");

@@ -13,7 +13,7 @@ export const policyContent: Record<
   { effective: string; sections: PolicySection[] }
 > = {
   en: {
-    effective: "Effective Date: 10/02/2026",
+    effective: "Effective Date: 10/12/2026",
     sections: [
       {
         title: "1. Agreement",
@@ -36,7 +36,7 @@ export const policyContent: Record<
       {
         title: "4. Payments and Billing",
         body: [
-          "Subscription payments are due monthly in advance on the agreed billing date. Some plans carry a one-time setup fee, shown on www.judomarketing.net before payment and charged once with the first month (today, the Essential Website); Complex Websites and Mobile Apps have no setup fee. Judo Marketing does not charge late fees or non-payment penalties: if a payment is not received, the only consequences are suspension of services as described in Section 8 and pausing of the ownership-transfer clock in Section 7. The client is responsible for third-party costs (advertising budgets, premium software, stock assets) unless expressly included in writing.",
+          "Subscription payments are due monthly in advance on the agreed billing date. Some plans carry a one-time setup fee, shown on www.judomarketing.net before payment and charged once with the first month (today, the Essential Website); Complex Websites and Mobile Apps have no setup fee. Where www.judomarketing.net offers it (today, the Essential Website), the client may instead pay the full twelve-month term at once, with no setup fee; everything else in these terms applies the same. A client who pays the full term at once and later cancels keeps the service active until the end of that term; the amount paid is not refunded except under the 30-Day Delivery Guarantee in Section 6. Judo Marketing does not charge late fees or non-payment penalties: if a payment is not received, the only consequences are suspension of services as described in Section 8 and pausing of the ownership-transfer clock in Section 7. The client is responsible for third-party costs (advertising budgets, premium software, stock assets) unless expressly included in writing.",
         ],
       },
       {
@@ -55,7 +55,7 @@ export const policyContent: Record<
         title: "7. Twelve-Month Ownership Rule",
         body: [
           "Judo Marketing owns and retains administrative control of the website code, design, portals, hosting configuration, and domain during the first twelve (12) months of service. Ownership transfer becomes available when all of the following are satisfied:",
-          "• The client has completed twelve (12) full monthly subscription payments.",
+          "• The client has completed the twelve (12) month term and paid it in full, whether in twelve (12) monthly payments or in a single payment for the term.",
           "• The account has no unpaid invoices, chargebacks, disputes, or outstanding balances.",
           "• The client has complied with this Policy and any applicable service agreement.",
           "• Any third-party transfer, registrar, hosting, or platform fees have been paid.",
@@ -172,7 +172,7 @@ export const policyContent: Record<
     ],
   },
   es: {
-    effective: "Fecha efectiva: 10/02/2026",
+    effective: "Fecha efectiva: 10/12/2026",
     sections: [
       {
         title: "1. Acuerdo",
@@ -195,7 +195,7 @@ export const policyContent: Record<
       {
         title: "4. Pagos y facturación",
         body: [
-          "Los pagos de suscripción se hacen mensualmente por adelantado en la fecha acordada. Algunos planes llevan una cuota de inicio única, que se muestra en www.judomarketing.net antes de pagar y se cobra una sola vez con el primer mes (hoy, el Website Esencial); los Websites Complejos y las Apps Móviles no llevan cuota de inicio. Judo Marketing no cobra recargos por mora ni penalidades por falta de pago: si un pago no se recibe, las únicas consecuencias son la suspensión del servicio descrita en la Sección 8 y la pausa del reloj de transferencia de propiedad de la Sección 7. El cliente es responsable de los costos de terceros (presupuestos publicitarios, software premium, recursos de stock) salvo que estén incluidos por escrito.",
+          "Los pagos de suscripción se hacen mensualmente por adelantado en la fecha acordada. Algunos planes llevan una cuota de inicio única, que se muestra en www.judomarketing.net antes de pagar y se cobra una sola vez con el primer mes (hoy, el Website Esencial); los Websites Complejos y las Apps Móviles no llevan cuota de inicio. Donde www.judomarketing.net lo ofrezca (hoy, el Website Esencial), el cliente puede pagar en cambio los doce meses del plazo de una sola vez, sin cuota de inicio; todo lo demás de estos términos aplica igual. Si el cliente pagó el plazo completo de una vez y luego cancela, el servicio sigue activo hasta el final de ese plazo; lo pagado no se devuelve salvo la Garantía de Entrega de 30 Días de la Sección 6. Judo Marketing no cobra recargos por mora ni penalidades por falta de pago: si un pago no se recibe, las únicas consecuencias son la suspensión del servicio descrita en la Sección 8 y la pausa del reloj de transferencia de propiedad de la Sección 7. El cliente es responsable de los costos de terceros (presupuestos publicitarios, software premium, recursos de stock) salvo que estén incluidos por escrito.",
         ],
       },
       {
@@ -214,7 +214,7 @@ export const policyContent: Record<
         title: "7. Regla de Propiedad de Doce Meses",
         body: [
           "Judo Marketing es propietaria y mantiene el control administrativo del código del website, el diseño, los portales, la configuración de hosting y el dominio durante los primeros doce (12) meses de servicio. La transferencia de propiedad está disponible cuando se cumple todo lo siguiente:",
-          "• El cliente completó doce (12) pagos mensuales completos de suscripción.",
+          "• El cliente cumplió el plazo de doce (12) meses y lo pagó completo, sea en doce (12) pagos mensuales o en un pago único por el plazo.",
           "• La cuenta no tiene facturas pendientes, contracargos, disputas ni saldos.",
           "• El cliente cumplió esta Política y el acuerdo de servicio aplicable.",
           "• Se pagaron las tarifas de terceros necesarias para la transferencia (registrar, hosting, plataformas).",

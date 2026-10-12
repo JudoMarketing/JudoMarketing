@@ -2,7 +2,7 @@
 
 One unified policy for services, subscriptions, websites, apps, digital products, virtual assistants, marketing packages, privacy, and communications.
 
-Effective Date: 10/02/2026
+Effective Date: 10/12/2026
 
 ## 1. Agreement
 
@@ -40,7 +40,11 @@ information; see Section 12.
 Subscription payments are due monthly in advance on the agreed billing date. Some plans
 carry a one-time setup fee, shown on www.judomarketing.net before payment and charged
 once with the first month (today, the Essential Website); Complex Websites and Mobile
-Apps have no setup fee. Judo Marketing does not charge late fees or non-payment penalties: if a payment is not
+Apps have no setup fee. Where www.judomarketing.net offers it (today, the Essential
+Website), the client may instead pay the full twelve-month term at once, with no setup
+fee; everything else in these terms applies the same. A client who pays the full term at
+once and later cancels keeps the service active until the end of that term; the amount
+paid is not refunded except under the 30-Day Delivery Guarantee in Section 6. Judo Marketing does not charge late fees or non-payment penalties: if a payment is not
 received, the only consequences are suspension of services as described in Section 8 and
 pausing of the ownership-transfer clock in Section 7. The client is responsible for
 third-party costs (advertising budgets, premium software, stock assets) unless expressly
@@ -72,7 +76,8 @@ Judo Marketing owns and retains administrative control of the website code, desi
 portals, hosting configuration, and domain during the first twelve (12) months of
 service. Ownership transfer becomes available when all of the following are satisfied:
 
-- The client has completed twelve (12) full monthly subscription payments.
+- The client has completed the twelve (12) month term and paid it in full, whether in
+  twelve (12) monthly payments or in a single payment for the term.
 - The account has no unpaid invoices, chargebacks, disputes, or outstanding balances.
 - The client has complied with this Policy and any applicable service agreement.
 - Any third-party transfer, registrar, hosting, or platform fees have been paid.

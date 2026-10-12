@@ -20,11 +20,14 @@ const USDT_ADDRESS = "0x1848289C74282b1b2F58CfEf43019A9f9d180086";
 
 export default function PaymentOptions({
   plan,
+  modalidad = "mensual",
   amount,
   stripeReady,
   paypalMe,
 }: {
   plan: "essential" | "complex" | "apps";
+  /** Mensual (suscripción) o pago único de los 12 meses. */
+  modalidad?: "mensual" | "unico";
   /** Lo calcula el servidor: el reloj del visitante no decide cuánto paga. */
   amount: string;
   stripeReady: boolean;
@@ -56,7 +59,7 @@ export default function PaymentOptions({
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, locale }),
+        body: JSON.stringify({ plan, locale, modalidad }),
       });
       const data = (await res.json()) as { url?: string };
       if (data.url) {
@@ -144,7 +147,8 @@ export default function PaymentOptions({
   // como el enlace completo pegado desde PayPal
   const paypalHref = (() => {
     if (!paypalMe) return null;
-    const amt = amount.replace("$", "");
+    // PayPal.me quiere el número limpio: sin $ ni comas ($2,388 → 2388)
+    const amt = amount.replace(/[$,]/g, "");
     const v = paypalMe.trim();
     if (/^https?:\/\//i.test(v)) {
       const base = v.replace(/\/+$/, "");
@@ -342,7 +346,9 @@ export default function PaymentOptions({
         </form>
       )}
 
-      <p className="mt-1 text-center text-xs text-judo-fog/45">{t("feesNote")}</p>
+      <p className="mt-1 text-center text-xs text-judo-fog/45">
+        {modalidad === "unico" ? t("feesNoteOneTime") : t("feesNote")}
+      </p>
 
       {error && !zelleOpen && !cryptoOpen && (
         <p className="text-center text-sm text-red-400">{error}</p>

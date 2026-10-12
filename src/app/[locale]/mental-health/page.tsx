@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import Reveal from "@/components/Reveal";
 import { pageMetadata, SITE_URL } from "@/lib/seo";
-import { cuotaInicioTexto, precioTexto, PRECIO_ASISTENTE } from "@/lib/pricing";
+import { cuotaInicioTexto, pagoUnicoTexto, precioTexto, PRECIO_ASISTENTE } from "@/lib/pricing";
 
 /**
  * Página del nicho de salud mental (Junior, 2 de octubre de 2026).
@@ -47,12 +47,14 @@ export default function MentalHealthPage({ params }: { params: Promise<{ locale:
   const valores = {
     essential: precioTexto("essential"),
     setup: cuotaInicioTexto("essential"),
+    oneTime: pagoUnicoTexto("essential") ?? "",
     assistant: `$${PRECIO_ASISTENTE}`,
   };
   const llenar = (texto: string) =>
     texto
       .replace("{essential}", valores.essential)
       .replace("{setup}", valores.setup)
+      .replace("{oneTime}", valores.oneTime)
       .replace("{assistant}", valores.assistant);
 
   const kicker = t.raw("kicker") as string[];

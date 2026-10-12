@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { cuotaInicio, precio, type Plan } from "@/lib/pricing";
+import { cuotaInicio, pagoUnico, precio, type Plan } from "@/lib/pricing";
 
 const PLAN_ENV: Record<string, string | undefined> = {
   essential: process.env.STRIPE_PRICE_ESSENTIAL,
@@ -17,9 +17,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "not_configured" }, { status: 503 });
   }
 
-  const { plan, locale } = (await req.json()) as {
+  const { plan, locale, modalidad } = (await req.json()) as {
     plan?: string;
     locale?: string;
+    modalidad?: string;
   };
   let price = plan ? PLAN_ENV[plan] : undefined;
   if (!price) {
@@ -57,6 +58,77 @@ export async function POST(req: NextRequest) {
   }
   const origin = req.nextUrl.origin;
   const loc = locale === "en" ? "en" : "es";
+
+  // Inglés vive sin prefijo; solo el español lleva /es. Al pagar, lo llevamos
+  // a entregar los datos de su negocio: es el momento en que más dispuesto
+  // está a hacerlo.
+  const exito = loc === "es" ? `${origin}/es/intake?pagado=1` : `${origin}/intake?pagado=1`;
+  const volver = loc === "es" ? `${origin}/es/servicios` : `${origin}/services`;
+  // Origen del cliente: dato de marketing para saber qué canal funciona
+  const origenCliente: Stripe.Checkout.SessionCreateParams.CustomField[] = [
+    {
+      key: "source",
+      label: {
+        type: "custom",
+        custom: loc === "es" ? "¿Dónde supiste de nosotros?" : "Where did you hear about us?",
+      },
+      type: "dropdown",
+      optional: true,
+      dropdown: {
+        options: [
+          { label: "Google", value: "google" },
+          { label: loc === "es" ? "Un amigo" : "A friend", value: "friend" },
+          { label: loc === "es" ? "Redes sociales" : "Social media", value: "social" },
+        ],
+      },
+    },
+  ];
+
+  /**
+   * Pago único (Junior, 12 de octubre de 2026): los 12 meses del contrato de
+   * una vez, sin cuota de inicio. No es suscripción: un solo cobro en modo
+   * "payment", con el monto sacado de pricing.json y factura para el cliente.
+   * Al terminar los 12 meses rige la cláusula 4 del contrato, igual que con
+   * el pago mensual.
+   */
+  const unico = pagoUnico(plan as Plan);
+  if (modalidad === "unico" && unico) {
+    const nombre = loc === "es" ? "Website Esencial · 12 meses (pago único)" : "Essential Website · 12 months (one-time payment)";
+    try {
+      const pagoUnicoSesion = await stripe.checkout.sessions.create({
+        mode: "payment",
+        line_items: [
+          {
+            quantity: 1,
+            price_data: {
+              currency: "usd",
+              unit_amount: unico.total * 100,
+              product_data: {
+                name: nombre,
+                description:
+                  loc === "es"
+                    ? `Los ${unico.meses} meses del contrato pagados de una vez: diseño, alojamiento, dominio, soporte y mantenimiento. Sin cuota de inicio.`
+                    : `All ${unico.meses} months of the agreement paid at once: design, hosting, domain, support and maintenance. No setup fee.`,
+              },
+            },
+          },
+        ],
+        customer_creation: "always",
+        invoice_creation: { enabled: true },
+        metadata: { plan: String(plan), modalidad: "unico", meses: String(unico.meses) },
+        payment_intent_data: { metadata: { plan: String(plan), modalidad: "unico", meses: String(unico.meses) } },
+        locale: loc,
+        custom_fields: origenCliente,
+        success_url: exito,
+        cancel_url: volver,
+      });
+      return NextResponse.json({ url: pagoUnicoSesion.url });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "unknown";
+      console.error("stripe checkout error (pago único):", msg);
+      return NextResponse.json({ error: "stripe_error", message: msg }, { status: 502 });
+    }
+  }
 
   /**
    * Lo que la página promete y lo que Stripe cobra tienen que ser el mismo
@@ -115,37 +187,11 @@ export async function POST(req: NextRequest) {
     session = await stripe.checkout.sessions.create({
     mode: "subscription",
     line_items: lineas,
-    metadata: { plan: String(plan), cuota_inicio: String(cuota) },
+    metadata: { plan: String(plan), modalidad: "mensual", cuota_inicio: String(cuota) },
     locale: loc,
-    // Origen del cliente: dato de marketing para saber qué canal funciona
-    custom_fields: [
-      {
-        key: "source",
-        label: {
-          type: "custom",
-          custom:
-            loc === "es" ? "¿Dónde supiste de nosotros?" : "Where did you hear about us?",
-        },
-        type: "dropdown",
-        optional: true,
-        dropdown: {
-          options: [
-            { label: "Google", value: "google" },
-            { label: loc === "es" ? "Un amigo" : "A friend", value: "friend" },
-            {
-              label: loc === "es" ? "Redes sociales" : "Social media",
-              value: "social",
-            },
-          ],
-        },
-      },
-    ],
-    // Inglés vive sin prefijo; solo el español lleva /es
-    // Al pagar, lo llevamos a entregar los datos de su negocio: es el
-    // momento en que más dispuesto está a hacerlo.
-    success_url:
-      loc === "es" ? `${origin}/es/intake?pagado=1` : `${origin}/intake?pagado=1`,
-    cancel_url: loc === "es" ? `${origin}/es/servicios` : `${origin}/services`,
+    custom_fields: origenCliente,
+    success_url: exito,
+    cancel_url: volver,
     });
   } catch (e) {
     // El mensaje de Stripe dice exactamente qué está mal configurado

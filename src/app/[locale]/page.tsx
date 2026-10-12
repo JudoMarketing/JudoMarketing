@@ -8,7 +8,7 @@ import ResenasComunidad from "@/components/ResenasComunidad";
 import { PERFIL_GOOGLE } from "@/components/SocialLinks";
 import ListoOverlay from "@/components/ListoOverlay";
 import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
-import { precioDesde } from "@/lib/pricing";
+import { precioAntes, precioDesde, usd } from "@/lib/pricing";
 import { homeAlternates } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -224,9 +224,22 @@ export default function HomePage({
                   {t(`plans.${servicio.id}.name`)}
                 </h3>
                 <p className="display-num mt-1 text-lg font-bold" style={{ color: "var(--svc-luz)" }}>
-                  {servicio.id === "websites"
-                    ? `${t("plans.from")} ${precioDesde()}${t("plans.perMonth")}`
-                    : t(`plans.${servicio.id}.price`)}
+                  {servicio.id === "websites" ? (
+                    <>
+                      {/* El precio de antes, tachado (pricing.json, precioAntes) */}
+                      {precioAntes("essential") !== null && (
+                        <>
+                          <span className="sr-only">{t("plans.was")} </span>
+                          <s className="mr-2 text-base font-medium text-judo-fog/45">
+                            {usd(precioAntes("essential")!)}
+                          </s>
+                        </>
+                      )}
+                      {`${t("plans.from")} ${precioDesde()}${t("plans.perMonth")}`}
+                    </>
+                  ) : (
+                    t(`plans.${servicio.id}.price`)
+                  )}
                 </p>
                 {servicio.id === "juditoads" && (
                   <p
