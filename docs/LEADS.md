@@ -1,5 +1,13 @@
 # Prospección por correo
 
+> **En pausa desde el 12 de octubre de 2026.** Junior apagó las búsquedas
+> porque las llamadas a las APIs de Google (Places, PageSpeed, Custom Search)
+> salían demasiado caras. La rutina de prospección está desactivada y
+> `/api/leads` rechaza las acciones que llaman a Google
+> (`BUSQUEDAS_GOOGLE_APAGADAS` en `src/app/api/leads/route.ts`). Para volver:
+> poner ese valor en `false`, reactivar la rutina y, antes, ponerle tope de
+> gasto a la clave en Google Cloud.
+
 Cada día una sesión automática busca negocios que pueden necesitar un
 website, una app o un sistema en **dos países**: Estados Unidos y Reino
 Unido. En cada uno toma una zona (un código postal de Florida o una

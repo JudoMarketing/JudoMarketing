@@ -41,7 +41,7 @@ clientes activos, fecha ____`.
 | # | Parte | Estado | Dueño |
 | --- | --- | --- | --- |
 | 1 | Cuota de inicio y precios claros | ✅ En producción (2 oct 2026) | Hecho |
-| 2 | Prospección que encuentra a quien no rankea, con precios en el correo | ✅ En producción (2 oct 2026) | Rutina diaria |
+| 2 | Prospección que encuentra a quien no rankea, con precios en el correo | ⏸ En pausa desde el 12 oct 2026 (costo de las APIs de Google) | Junior decide cuándo vuelve |
 | 3 | Nicho de salud mental: página, keywords y prospección | ✅ En producción (2 oct 2026) | Rutina diaria |
 | 4 | Llamadas diarias a la lista de la rutina | ⏳ Empieza Junior | Junior |
 | 5 | Programa de referidos | ❓ Espera decisión | Junior decide, Claude construye |

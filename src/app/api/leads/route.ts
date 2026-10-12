@@ -167,6 +167,21 @@ export async function POST(req: NextRequest) {
   }
   const accion = cuerpo.accion;
 
+  // Búsquedas en Google apagadas (Junior, 12 de octubre de 2026: las llamadas
+  // a las APIs de Google salían demasiado caras). Estas acciones son las
+  // únicas que pagan Places, PageSpeed o Custom Search; con el candado puesto
+  // no llega ninguna llamada a Google aunque algo las pida. Lo demás (guardar,
+  // enviar, reporte, memoria) sigue igual. Para volver a prender: false aquí y
+  // volver a activar la rutina de prospección.
+  const BUSQUEDAS_GOOGLE_APAGADAS = true;
+  const PAGAN_GOOGLE = ["buscar", "buscar_nombre", "posicion", "pagespeed", "posicion_web"];
+  if (BUSQUEDAS_GOOGLE_APAGADAS && typeof accion === "string" && PAGAN_GOOGLE.includes(accion)) {
+    return NextResponse.json(
+      { error: "busquedas_apagadas", mensaje: "Las búsquedas en Google están apagadas por costo (12 de octubre de 2026). No se hizo ninguna llamada." },
+      { status: 503 }
+    );
+  }
+
   try {
     if (accion === "buscar") {
       const zip = String(cuerpo.zip ?? "").trim();
