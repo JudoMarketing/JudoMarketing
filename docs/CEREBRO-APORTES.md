@@ -1353,3 +1353,41 @@ y sin píxel, otra web, sin eventos, Meta sin responder, el rechazo de LPV),
 resultados.test.mts 32, publico-real.test.mts 20, costo-paises.test.mts 9.
 npm test 751, banco 116 y un recorrido en el navegador de 34, sin errores de
 hidratación.
+
+---
+
+### 2026-10-12 · Judito-Ads · SaaS de anuncios (formularios instantáneos)
+**Qué aprendimos:** (1) A un negocio sin web con píxel, «Clientes potenciales»
+solo le sirve con un formulario instantáneo de Meta: la persona deja sus
+datos sin salir de Facebook o Instagram. Para Meta es otro camino:
+  - el formulario se crea con POST /{page}/leadgen_forms y el token de la
+    PÁGINA;
+  - el conjunto va con LEAD_GENERATION + ON_AD + promoted_object {page_id};
+  - el anuncio lleva el enlace https://fb.me/ y un botón con
+    lead_gen_form_id, y solo admite APPLY_NOW, DOWNLOAD, GET_QUOTE,
+    LEARN_MORE, SIGN_UP o SUBSCRIBE.
+Hay que crearlo ANTES que la campaña, porque no se puede borrar ni editar
+(solo archivar). Sale en el feed y las historias; en Instagram, solo en el
+móvil.
+(2) Antes de pedir nada, mirar la página: leadgen_tos_accepted dice si un
+admin aceptó las condiciones de Lead Ads. Avisarlo en el asistente ahorra el
+fallo al activar. La URL de aceptación no está en la documentación de Meta.
+(3) Meta exige una política de privacidad en cada formulario, y quien no tiene
+web casi nunca tiene una. Se resolvió con una página básica y pública con el
+nombre del negocio y el contacto que él mismo escribe para que borren los
+datos. No se rellena con el correo de la cuenta: publicarlo es decisión suya.
+(4) Leer los contactos por API exige leads_retrieval, App Review y la
+verificación del negocio. Sin eso, la única salida honesta es enlazar al
+Centro de clientes potenciales y a la descarga CSV del formulario
+(/ads/lead_gen/export_csv/?id={form}&type=form).
+(5) Hay que revisar la app con devtools_app_review privileges antes de
+diseñar: así se supo qué permisos tiene de verdad, y no cuáles se suponían.
+(6) Los ejemplos de la guía de Meta tienen erratas (http y https en fb.me,
+promoted_object como texto suelto, archivar con GET). Hay que seguir el texto
+de la referencia, no copiar el ejemplo a ciegas.
+**Evidencia:** Judito-Ads 90abebb. Permisos de la app 3110235295833588
+(pages_manage_ads con acceso avanzado; sin leads_retrieval). Pruebas con un
+Meta simulado en formulario.test.mts (63): el token de la página, el orden de
+creación, ON_AD/LEAD_GENERATION, fb.me y el botón, video y carrusel, las
+condiciones sin aceptar y la falta del token de la página. Banco 123 y un
+recorrido en el navegador de 27.
