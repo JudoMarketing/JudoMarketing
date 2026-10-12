@@ -52,6 +52,7 @@ export const VIDEOS_PORTADA: string[] = [
   "the-equipment-source.vercel.app",
   "deliveryrushflorida.com",
   "judimental.com",
+  "godshome.app",
 ];
 
 export function videoDePortada(dominio: string): Trabajo["video"] {
@@ -75,6 +76,32 @@ export function portadaFija(dominio: string): string | null {
   const limpio = dominio.replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/+$/, "");
   return PORTADAS_FIJAS[limpio] ?? null;
 }
+
+/**
+ * Proyectos que se enseñan sin estar en la lista de websites del portal: allá
+ * cada sitio lleva cliente y cobro, y estos no. Salen primero en el showcase,
+ * con su video o su captura como cualquier otro. Si algún día se dan de alta
+ * en el portal con el mismo dominio, manda la ficha del portal.
+ */
+export const PROYECTOS_FIJOS: {
+  nombre: string;
+  dominio: string;
+  url: string;
+  categoria: Categoria;
+  descripcion: { es: string; en: string };
+}[] = [
+  // Junior, 12 de octubre de 2026
+  {
+    nombre: "God's Home",
+    dominio: "godshome.app",
+    url: "https://www.godshome.app",
+    categoria: "delivery",
+    descripcion: {
+      es: "App de teléfono: eliges cómo te sientes y recibes un mensaje de Dios basado en la Biblia.",
+      en: "Phone app: choose how you feel and receive a message from God based on the Bible.",
+    },
+  },
+];
 
 // Misma lista que el selector del portal y que el candado de la base
 // (migración 0023). Si se agrega una categoría, va en las cuatro.

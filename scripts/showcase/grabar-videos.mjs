@@ -40,6 +40,12 @@ import { join } from "node:path";
  *   sitio casi todo negro con poco contenido necesita uno más bajo.
  * mp4: el sitio tiene video propio en MP4. El Chrome de grabación no trae
  *   H.264, así que esos videos se pasan a WebM al vuelo, solo para grabar.
+ * primeros: segundos de la entrada que se enseñan tal cual, sin bajar. Es
+ *   para el sitio cuya intro es lo mejor que tiene (God's Home y su creación
+ *   del mundo). Se graba en una pestaña nueva, porque hay intros que se ven
+ *   una sola vez por pestaña y la visita de calentar la caché ya la gastó.
+ * poster: con `primeros`, el segundo del video que va de póster (el final
+ *   del tramo si no se dice).
  */
 const SITIOS = [
   { dominio: "dameunamano.org", url: "https://www.dameunamano.org/" },
@@ -55,6 +61,8 @@ const SITIOS = [
   { dominio: "the-equipment-source.vercel.app", url: "https://the-equipment-source.vercel.app/", mp4: true },
   { dominio: "deliveryrushflorida.com", url: "https://deliveryrushflorida.com/" },
   { dominio: "judimental.com", url: "https://www.judimental.com/", ancho: 960, minimo: 2, entrada: 2500, saltar: 0.6 },
+  // Junior, 12 de octubre de 2026: los primeros 7 segundos, la intro entera
+  { dominio: "godshome.app", url: "https://www.godshome.app/", primeros: 7 },
 ];
 
 // Fuera a propósito (se quedan con su foto): vanventuremia.com y
@@ -148,12 +156,18 @@ async function grabar(navegador, sitio, ff) {
     }, css);
   }
   if (sitio.mp4) await videosDelSitio(ctx, ff, new Map());
-  const p = await ctx.newPage();
+  let p = await ctx.newPage();
   // Primera visita para calentar la caché: la grabada carga como la de alguien
   // que ya abrió el sitio, sin esperas de red que no son del diseño.
   await abrir(p, sitio.url);
   await p.waitForTimeout(2500);
   await p.goto("about:blank");
+  if (sitio.primeros) {
+    // Pestaña nueva: la caché sigue caliente, pero la intro se ve como la
+    // primera vez (la marca de "ya la vio" vive en la pestaña).
+    await p.close();
+    p = await ctx.newPage();
+  }
 
   const cdp = await ctx.newCDPSession(p);
   const cuadros = [];
@@ -166,6 +180,14 @@ async function grabar(navegador, sitio, ff) {
   // Hay sitios que nunca terminan de cargar (un rastreador colgado): a los
   // 12 segundos se sigue igual, el diseño ya está pintado.
   await p.waitForLoadState("load", { timeout: 12000 }).catch(() => {});
+  if (sitio.primeros) {
+    // La intro corre sola y no se baja: se graba de sobra y el corte exacto
+    // se hace después, desde el primer cuadro con contenido.
+    await p.waitForTimeout(sitio.primeros * 1000 + 4000);
+    await cdp.send("Page.stopScreencast");
+    await ctx.close();
+    return { cuadros, inicioBajada: null, finBajada: null };
+  }
   await p.waitForTimeout(sitio.entrada ?? 1500);
   // La hora del screencast es la del sistema, en segundos.
   const inicioBajada = Date.now() / 1000;
@@ -237,13 +259,23 @@ async function procesar(sitio, { cuadros, inicioBajada, finBajada }, ff) {
   if (desde < 0) throw new Error("no hubo un cuadro con contenido");
   const arranque = cuadros[desde].t + (sitio.saltar ?? 0);
 
-  // Dos tramos: la entrada (hasta ENTRADA_MAX segundos) y la bajada completa.
-  // Lo del medio es el hero quieto esperando, así que el corte no se nota.
-  const finEntrada = Math.min(arranque + ENTRADA_MAX, inicioBajada - 0.3);
-  const usados = [
-    ...tramo(cuadros, arranque, finEntrada),
-    ...tramo(cuadros, Math.max(finEntrada, inicioBajada - 0.3), finBajada + QUIETO_MS / 1000 - 0.2),
-  ];
+  let usados;
+  let posterHasta;
+  if (sitio.primeros) {
+    // Un solo tramo: los primeros segundos tal como los ve quien llega
+    usados = tramo(cuadros, arranque, arranque + sitio.primeros);
+    posterHasta = arranque + Math.min(sitio.poster ?? sitio.primeros, sitio.primeros);
+  } else {
+    // Dos tramos: la entrada (hasta ENTRADA_MAX segundos) y la bajada completa.
+    // Lo del medio es el hero quieto esperando, así que el corte no se nota.
+    const finEntrada = Math.min(arranque + ENTRADA_MAX, inicioBajada - 0.3);
+    usados = [
+      ...tramo(cuadros, arranque, finEntrada),
+      ...tramo(cuadros, Math.max(finEntrada, inicioBajada - 0.3), finBajada + QUIETO_MS / 1000 - 0.2),
+    ];
+    // Póster: el hero ya quieto, justo antes de empezar a bajar.
+    posterHasta = inicioBajada;
+  }
 
   const tmp = mkdtempSync(join(tmpdir(), `showcase-${slug}-`));
   try {
@@ -261,19 +293,19 @@ async function procesar(sitio, { cuadros, inicioBajada, finBajada }, ff) {
     execFileSync(ff, [
       "-y", "-loglevel", "error",
       "-f", "concat", "-safe", "0", "-i", join(tmp, "lista.txt"),
-      "-t", String(DURACION),
+      "-t", String(sitio.primeros ?? DURACION),
       "-vf", "fps=30,scale=800:500:flags=lanczos,format=yuv420p",
       "-c:v", "libx264", "-profile:v", "high", "-preset", "slow", "-crf", "26",
       "-movflags", "+faststart", "-an", mp4,
     ]);
 
-    // Póster: el hero ya quieto, justo antes de empezar a bajar.
     let poster = cuadros[desde];
-    for (const c of cuadros) if (c.t <= inicioBajada) poster = c;
+    for (const c of cuadros) if (c.t <= posterHasta) poster = c;
     await sharp(poster.data).resize(800, 500).jpeg({ quality: 80, mozjpeg: true }).toFile(join(SALIDA, `${slug}.jpg`));
 
     const segundos = usados.reduce((suma, c) => suma + c.dur, 0);
-    console.log(`${sitio.dominio}: listo (${segundos.toFixed(1)} s, la página tardó ${(inicioBajada - arranque).toFixed(1)} s en quedar lista)`);
+    const espera = sitio.primeros ? "" : `, la página tardó ${(inicioBajada - arranque).toFixed(1)} s en quedar lista`;
+    console.log(`${sitio.dominio}: listo (${segundos.toFixed(1)} s${espera})`);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
   }

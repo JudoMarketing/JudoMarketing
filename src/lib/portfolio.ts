@@ -1,5 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
-import { capturaDelHome, portadaFija, videoDePortada, type Categoria, type Trabajo } from "@/content/portfolio";
+import {
+  capturaDelHome,
+  portadaFija,
+  PROYECTOS_FIJOS,
+  videoDePortada,
+  type Categoria,
+  type Trabajo,
+} from "@/content/portfolio";
 
 /**
  * Los trabajos del portafolio, leídos de la lista de websites.
@@ -68,7 +75,25 @@ async function dominioQueContesta(dominio: string): Promise<string> {
   }
 }
 
+const sinWww = (dominio: string) => dominio.replace(/^www\./, "").toLowerCase();
+
+/**
+ * Lo del portal, con los proyectos fijos adelante (PROYECTOS_FIJOS). Un fijo
+ * que ya está en el portal no se repite: manda el del portal.
+ */
 export async function trabajosPublicados(): Promise<Trabajo[]> {
+  const delPortal = await trabajosDelPortal();
+  const enElPortal = new Set(delPortal.map((t) => sinWww(t.dominio)));
+  const fijos: Trabajo[] = PROYECTOS_FIJOS.filter((p) => !enElPortal.has(sinWww(p.dominio))).map((p) => ({
+    ...p,
+    imagen: portadaFija(p.dominio) ?? capturaDelHome(p.url.replace(/^https?:\/\//, "")),
+    video: videoDePortada(p.dominio),
+    enDesarrollo: false,
+  }));
+  return [...fijos, ...delPortal];
+}
+
+async function trabajosDelPortal(): Promise<Trabajo[]> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const llave = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !llave) return [];
