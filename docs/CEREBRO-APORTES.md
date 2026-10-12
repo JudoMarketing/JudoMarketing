@@ -1391,3 +1391,47 @@ Meta simulado en formulario.test.mts (63): el token de la página, el orden de
 creación, ON_AD/LEAD_GENERATION, fb.me y el botón, video y carrusel, las
 condiciones sin aceptar y la falta del token de la página. Banco 123 y un
 recorrido en el navegador de 27.
+
+---
+
+### 2026-10-12 · Judito-Ads · SaaS de anuncios (editar sin relanzar y presupuesto para aprender)
+**Qué aprendimos:** (1) Casi todo se edita en la MISMA campaña con POST /{id}:
+nombre y presupuesto en la campaña (CBO), público y fechas en el conjunto, y
+el anuncio cambiando su creativo (los creativos no se editan: se crea uno
+nuevo y se le pone al anuncio). Relanzarla como nueva tira su historial y lo
+aprendido. Solo hace falta una nueva para lo que Meta no deja cambiar en un
+conjunto que ya entregó: objetivo, tipo de presupuesto, página, cuenta,
+origen del anuncio, destino (apps del chat) y lo que busca (optimización y
+promoted_object).
+(2) Lo que dice el centro de ayuda de Meta:
+  - cambiar el público, el anuncio o el evento, añadir un anuncio o pausar
+    7 días o más reinicia el aprendizaje;
+  - un cambio de presupuesto lo reinicia según su tamaño, y Meta no da un
+    número (el 20 % es la regla de la industria);
+  - el público y el anuncio vuelven a revisión; el presupuesto, el nombre y
+    las fechas no;
+  - el presupuesto solo se puede cambiar 4 veces por hora (613/1487632).
+(3) Si un paso falla a mitad, hay que deshacer lo que ya se cambió, del
+último al primero. Así la campaña guardada sigue siendo la que corre en Meta.
+(4) Con imágenes sueltas, cada imagen es un anuncio. Cambiar o añadir una
+imagen toca solo su anuncio; quitarla solo pausa el suyo (eso no es un cambio
+importante). Los demás siguen entregando sin volver a revisión.
+(5) end_time=0 deja un conjunto diario sin fin. El inicio de uno que ya
+empezó no se toca.
+(6) El aprendizaje termina con unos 50 resultados en 7 días, así que el
+presupuesto diario para salir es 50 × costo del resultado ÷ 7. Meta aconseja
+10 veces el costo al día. El costo hay que sacarlo del propio cliente:
+results y cost_per_result de sus campañas, y solo de las que buscaban lo que
+su objetivo pide (en una de Ventas que buscaba clics, el «resultado» es un
+clic).
+(7) daily_outcomes_curve (la curva de resultados estimados) desaparece el
+27/10/2026 sin reemplazo. learning_stage_info del conjunto sí sirve: LEARNING,
+SUCCESS o FAIL, con los resultados desde el último cambio importante. Solo se
+da en conjuntos activos y no en todas las cuentas.
+**Evidencia:** Judito-Ads 146f9ca y 3285908.
+  - edicion.test.mts (71), con Meta simulado: qué se manda en cada cambio,
+    deshacer si falla, campaña borrada en el Administrador de anuncios.
+  - editar-campana.test.mts (24) y aprendizaje-banco.test.mts (5), contra la
+    base.
+  - aprendizaje.test.mts (48).
+  - Recorrido en el navegador: 31 comprobaciones.
