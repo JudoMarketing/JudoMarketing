@@ -1314,3 +1314,42 @@ Pruebas con Meta simulado: mensajes.test.mts 121 comprobaciones, con las
 cuatro combinaciones de apps, el saludo de cada app y su rechazo. También
 ubicaciones.test.mts, entrega.test.mts (el caso del 1%), el banco 116/116 y
 un recorrido en el navegador de 41/41.
+
+---
+
+### 2026-10-12 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** (1) Meta busca exactamente lo que se le pide. «Ventas» y
+«Clientes potenciales» se publicaban con optimization_goal LINK_CLICKS, así
+que Meta traía a quien toca barato: 12–17 clics por cada 100 vistas a $0.10,
+el 60% del dinero en mayores de 55 y ninguna compra. El nombre del objetivo
+no cambia nada: manda la optimización del conjunto. Ventas en la web es
+OFFSITE_CONVERSIONS con promoted_object {pixel_id, custom_event_type:
+PURCHASE} («If you use pixel_id, you must provide custom_event_type»).
+(2) Antes de pedir compras hay que saber si algo las mide. Se consulta
+/{pixel}/stats con aggregation=event_total_counts (qué eventos llegan, 7 días
+como mucho) y aggregation=host (en qué webs está el píxel). Un píxel activo
+en OTRA web no mide nada de la que se anuncia. Sin medición no se publica
+«Ventas»: se dice por qué y se ofrece Mensajes (la venta en el chat, sin web)
+o Tráfico. Pagar clics bajo el nombre «Ventas» es peor que no publicar.
+(3) Tráfico con píxel en la web va a LANDING_PAGE_VIEWS, no a clics. Si Meta
+la rechaza, se baja a clics; Ventas nunca baja a clics.
+(4) Contar resultados sin duplicar: purchase, omni_purchase y
+offsite_conversion.fb_pixel_purchase son la misma compra a distintas escalas
+(se toma la mayor, no la suma). Igual con lead y lead_grouped. En Mensajes el
+resultado es onsite_conversion.messaging_conversation_started_7d.
+(5) Un CTR altísimo sin compras no es una buena noticia, son curiosos. El
+coach felicitaba un 14%. Ahora lo dice como alerta y solo felicita clientes.
+(6) Meta pone el dinero donde el resultado sale más barato: mezclar EE. UU. y
+Colombia es gastar en Colombia (100% en el caso real). Hay que avisarlo antes
+de publicar y enseñar después el reparto por edad y país con lo que trajo
+cada grupo.
+(7) Leer localStorage en el primer render rompe la hidratación (React
+#418/#422). Hay que retomarlo después de montar, en un layout effect, y no
+guardar antes de haberlo retomado.
+**Evidencia:** Judito-Ads 89fdfb1. Datos reales de RBT (conector de Facebook,
+solo lectura): desglose por edad, país y plataforma, CTR 12–17% a $0.10.
+Pruebas con Meta simulado: optimizacion.test.mts 76 comprobaciones (Ventas con
+y sin píxel, otra web, sin eventos, Meta sin responder, el rechazo de LPV),
+resultados.test.mts 32, publico-real.test.mts 20, costo-paises.test.mts 9.
+npm test 751, banco 116 y un recorrido en el navegador de 34, sin errores de
+hidratación.
