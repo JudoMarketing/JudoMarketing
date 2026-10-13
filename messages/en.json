@@ -81,7 +81,8 @@
     "apps": {
       "name": "Mobile App"
     },
-    "was": "Was"
+    "was": "Was",
+    "off": "{pct}% off"
   },
   "reviews": {
     "title": "What our clients say",
@@ -125,7 +126,7 @@
   "services": {
     "title": "Services",
     "subtitle": "We do three things. Pick the one you need.",
-    "note": "Essential Website: one-time {fee} setup fee on the monthly plan; the {oneTime} one-time payment has none. Complex Websites and Apps have no setup fee. 12-month agreement.",
+    "note": "No plan has a setup fee. Essential Website: 12 monthly payments or a single payment of {oneTime}. 12-month agreement.",
     "cta": "Let's talk about your project",
     "perMonth": "/mo",
     "from": "from",
@@ -241,7 +242,7 @@
       "items": [
         {
           "q": "How much does a website cost with Judo Marketing?",
-          "a": "Our websites work as a subscription: Essential Websites from {essential} a month plus a one-time {setup} setup fee, or a single payment of {oneTime} for all 12 months with no setup fee (online stores, bookings, services). Mobile Apps from {apps} a month with no setup fee. Complex Websites (delivery, logistics, integrations) have {complex}: they are quoted on a call, with no setup fee. Everything includes design, support, maintenance, and your own admin panel."
+          "a": "Our websites work as a subscription: Essential Websites from {essential} a month with no setup fee, or a single payment of {oneTime} for all 12 months (online stores, bookings, services). Mobile Apps from {apps} a month with no setup fee. Complex Websites (delivery, logistics, integrations) have {complex}: they are quoted on a call, with no setup fee. Everything includes design, support, maintenance, and your own admin panel."
         },
         {
           "q": "How long does it take to deliver my website?",
@@ -274,7 +275,8 @@
     "setupFee": "+ {fee} one-time setup",
     "noSetupFee": "No setup fee",
     "was": "Was",
-    "oneTime": "or one payment of {total} for all {months} months, no setup fee"
+    "oneTime": "or one payment of {total} for all {months} months: you save {save}",
+    "off": "{pct}% off"
   },
   "login": {
     "title": "Portals",
@@ -435,7 +437,7 @@
     "pay": "Pay",
     "opening": "Opening secure checkout…",
     "back": "← Back to services",
-    "feesNote": "Today's amount is the first month plus the setup fee, if your plan has one. Processing or network fees are covered by the client.",
+    "feesNote": "Today's amount is the first month, with no setup fee. Processing or network fees are covered by the client.",
     "setupLine": "Today you pay {total}: the first month ({month}) plus the one-time {fee} setup fee. From the second month on, you pay {month}.",
     "titleOneTime": "Complete your payment",
     "howTitle": "How would you like to pay?",
@@ -444,8 +446,8 @@
     "monthlyDesc": "Today you pay {total}: the first month plus the {fee} setup fee. Then {month} a month.",
     "monthlyDescNoFee": "Today you pay the first month. Then {month} a month.",
     "oneTimeTitle": "One-time payment",
-    "oneTimeDesc": "All {months} months of the agreement, paid at once. No setup fee.",
-    "oneTimeSave": "You save {fee}",
+    "oneTimeDesc": "All {months} months of the agreement, paid at once.",
+    "oneTimeSave": "You save {save}",
     "oneTimeChip": "one-time payment of {total}",
     "feesNoteOneTime": "The one-time payment covers the 12 months of the agreement. Processing or network fees are paid by the client.",
     "selected": "Selected"
@@ -617,7 +619,7 @@
       {
         "name": "Your clinic's website",
         "price": "from {essential} a month",
-        "note": "plus {setup} one-time setup, or {oneTime} in a single payment for all 12 months"
+        "note": "no setup fee, or {oneTime} in a single payment for all 12 months"
       },
       {
         "name": "Portal or platform",
@@ -642,7 +644,7 @@
       },
       {
         "q": "How long does it take?",
-        "a": "Under 30 days from the moment you send us your material. If we miss it, we refund your first payment, setup fee included."
+        "a": "Under 30 days from the moment you send us your material. If we miss it, we refund your first payment."
       },
       {
         "q": "Do you work outside Miami?",

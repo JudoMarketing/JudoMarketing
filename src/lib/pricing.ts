@@ -47,11 +47,10 @@ export function precioDesde(): string {
 const CUOTAS = (tabla as { cuotaInicio?: Partial<Record<Plan, number>> }).cuotaInicio ?? {};
 
 /**
- * Cuota de inicio: un pago único que se cobra junto con el primer mes. Desde
- * el 2 de octubre de 2026 solo la lleva el Website Esencial ($130); los
- * Complejos se cotizan con todo dentro de la mensualidad y las Apps no la
- * llevan. Devuelve 0 cuando el plan no tiene cuota. Los clientes que ya
- * estaban suscritos no la pagan: solo entra en un checkout nuevo.
+ * Cuota de inicio: un pago único que se cobra junto con el primer mes. El
+ * Website Esencial la tuvo ($130) del 2 al 12 de octubre de 2026; desde el 13
+ * ningún plan la lleva. Devuelve 0 cuando el plan no tiene cuota. Si vuelve,
+ * basta con ponerla en pricing.json: el checkout y las páginas la recogen.
  */
 export function cuotaInicio(plan: Plan): number {
   return CUOTAS[plan] ?? 0;
@@ -78,25 +77,38 @@ export function usd(n: number): string {
 const ANTES = (tabla as { precioAntes?: Partial<Record<Plan, number>> }).precioAntes ?? {};
 
 /**
- * Precio de referencia que se muestra tachado junto al vigente (desde el 12
- * de octubre de 2026, el Esencial: $400 tachado, $199 al mes). Null si el
+ * Precio de referencia que se muestra tachado junto al vigente (desde el 13
+ * de octubre de 2026, el Esencial: $300 tachado, $150 al mes). Null si el
  * plan no lo lleva.
  */
 export function precioAntes(plan: Plan): number | null {
   return ANTES[plan] ?? null;
 }
 
-const MESES_UNICO = (tabla as { pagoUnico?: Partial<Record<Plan, number>> }).pagoUnico ?? {};
+/** El descuento contra el precio de antes, en porcentaje entero (50). */
+export function descuento(plan: Plan): number | null {
+  const antes = precioAntes(plan);
+  return antes ? Math.round((1 - precio(plan) / antes) * 100) : null;
+}
+
+const UNICO = (tabla as { pagoUnico?: Partial<Record<Plan, { meses: number; total: number }>> }).pagoUnico ?? {};
 
 /**
- * Pago único: el contrato completo de una vez, los meses por el precio
- * mensual y sin cuota de inicio ($199 x 12 = $2,388 en el Esencial). Lo
- * contrario es pagarlo en cuotas mensuales, que es el contrato de siempre.
- * Devuelve null si el plan no se ofrece así.
+ * Pago único: el contrato completo de una vez, por un total fijo que sale
+ * más barato que las cuotas (desde el 13 de octubre de 2026, el Esencial:
+ * $1,500 por los 12 meses, contra $1,800 pagando mes a mes). Lo contrario es
+ * pagarlo en cuotas mensuales, que es el contrato de siempre. Devuelve null
+ * si el plan no se ofrece así.
  */
 export function pagoUnico(plan: Plan): { meses: number; total: number } | null {
-  const meses = MESES_UNICO[plan];
-  return meses ? { meses, total: meses * precio(plan) } : null;
+  const p = UNICO[plan];
+  return p ? { meses: p.meses, total: p.total } : null;
+}
+
+/** Lo que se ahorra pagando de una vez contra las cuotas (y su cuota de inicio). */
+export function ahorroPagoUnico(plan: Plan): number {
+  const p = pagoUnico(plan);
+  return p ? Math.max(0, p.meses * precio(plan) + cuotaInicio(plan) - p.total) : 0;
 }
 
 export function pagoUnicoTexto(plan: Plan): string | null {

@@ -25,7 +25,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { sendBrandedEmail } from "@/lib/email";
-import { cuotaInicio, pagoUnico, precio, precioAntes, PRECIO_ASISTENTE, PRECIO_JUDITOADS, usd } from "@/lib/pricing";
+import { cuotaInicio, descuento, pagoUnico, precio, precioAntes, PRECIO_ASISTENTE, PRECIO_JUDITOADS, usd } from "@/lib/pricing";
 import {
   enlacesProspecto,
   htmlProspecto,
@@ -783,26 +783,28 @@ export function preciosCorreo(idioma: "es" | "en" | "de"): string[] {
   const esencial = precio("essential");
   const cuota = cuotaInicio("essential");
   const app = precio("apps");
-  // Desde el 12 de octubre de 2026: $199 al mes (antes $400) o un pago único
-  // por los 12 meses, sin cuota de inicio.
+  // Desde el 13 de octubre de 2026: $150 al mes (antes $300, 50% off), sin
+  // cuota de inicio, o $1,500 de una vez por los 12 meses.
   const antes = precioAntes("essential");
+  const rebaja = descuento("essential");
   const unico = pagoUnico("essential");
-  const antesEs = antes ? ` (antes $${antes})` : "";
-  const antesEn = antes ? ` (was $${antes})` : "";
+  const antesEs = antes ? ` (antes $${antes}${rebaja ? `, ${rebaja}% de descuento` : ""})` : "";
+  const antesEn = antes ? ` (was $${antes}${rebaja ? `, ${rebaja}% off` : ""})` : "";
+  const antesDe = antes ? ` (statt $${antes}${rebaja ? `, ${rebaja}% Rabatt` : ""})` : "";
   if (idioma === "es")
     return [
-      `Website con tu panel de control: desde $${esencial} al mes${antesEs}, más $${cuota} de inicio, una sola vez${unico ? `; o un solo pago de ${usd(unico.total)} por los ${unico.meses} meses, sin cuota de inicio` : ""}.`,
+      `Website con tu panel de control: desde $${esencial} al mes${antesEs}${cuota ? `, más $${cuota} de inicio, una sola vez` : ", sin cuota de inicio"}${unico ? `; o un solo pago de ${usd(unico.total)} por los ${unico.meses} meses` : ""}.`,
       `Proyectos a la medida: se cotizan y no llevan cuota de inicio. Apps de teléfono desde $${app} al mes.`,
       `Asistente de IA que contesta por WhatsApp e Instagram: desde $${PRECIO_ASISTENTE} al mes. Anuncios con JuditoADS: $${PRECIO_JUDITOADS} al mes.`,
     ];
   if (idioma === "de")
     return [
-      `Website mit eigenem Verwaltungsbereich: ab $${esencial} pro Monat${antes ? ` (statt $${antes})` : ""}, plus einmalig $${cuota} Einrichtung${unico ? `; oder einmalig ${usd(unico.total)} für ${unico.meses} Monate, ohne Einrichtungsgebühr` : ""}.`,
+      `Website mit eigenem Verwaltungsbereich: ab $${esencial} pro Monat${antesDe}${cuota ? `, plus einmalig $${cuota} Einrichtung` : ", ohne Einrichtungsgebühr"}${unico ? `; oder einmalig ${usd(unico.total)} für ${unico.meses} Monate` : ""}.`,
       `Individuelle Projekte: nach Angebot, ohne Einrichtungsgebühr. Apps ab $${app} pro Monat.`,
       `KI-Assistent für WhatsApp und Instagram: ab $${PRECIO_ASISTENTE} pro Monat.`,
     ];
   return [
-    `Website with your own admin panel: from $${esencial} a month${antesEn}, plus a one-time $${cuota} setup${unico ? `; or a single payment of ${usd(unico.total)} for all ${unico.meses} months, no setup fee` : ""}.`,
+    `Website with your own admin panel: from $${esencial} a month${antesEn}${cuota ? `, plus a one-time $${cuota} setup` : ", no setup fee"}${unico ? `; or a single payment of ${usd(unico.total)} for all ${unico.meses} months` : ""}.`,
     `Custom projects are quoted, with no setup fee. Mobile apps from $${app} a month.`,
     `AI assistant that answers on WhatsApp and Instagram: from $${PRECIO_ASISTENTE} a month. Ads with JuditoADS: $${PRECIO_JUDITOADS} a month.`,
   ];
@@ -1087,11 +1089,25 @@ export async function enviarPendientes(): Promise<{
 
   const borradores: Borrador[] = [];
   const nombres = new Map<string, { nombre: string; pais: Pais }>();
-  // El Website Esencial pasó de $99 a $199 el 12 de octubre de 2026. Los
-  // borradores escritos antes con "$99" salen con el precio vigente en vez de
-  // descartarse. Como un borrador vive 3 días, desde el 16 de octubre esto ya
-  // no encuentra nada y se puede borrar.
-  const alDia = (t: string) => t.replace(/\$\s?99(?!\d|[.,]\d)/g, `$${precio("essential")}`);
+  // El Website Esencial cambió de precio dos veces: $99 hasta el 11 de
+  // octubre de 2026, $199 (de $400, con $130 de inicio: $329 el primer día y
+  // $2,388 de una vez) el 12, y $150 (de $300, sin cuota, $1,500 de una vez)
+  // desde el 13. Los borradores escritos antes salen con las cifras vigentes
+  // en vez de descartarse. Una cifra que ya no tiene equivalente (los $130 de
+  // inicio) se deja: el candado de cifras descarta ese borrador. Como un
+  // borrador vive 3 días, desde el 17 de octubre esto ya no encuentra nada.
+  const viejas = new Map<number, number>([
+    [99, precio("essential")],
+    [199, precio("essential")],
+    [329, precio("essential") + cuotaInicio("essential")],
+    [400, precioAntes("essential") ?? 400],
+    [2388, pagoUnico("essential")?.total ?? 2388],
+  ]);
+  const alDia = (t: string) =>
+    t.replace(/\$\s?(\d[\d,]*\d|\d)(?![.,]?\d)/g, (cifra, n: string) => {
+      const nueva = viejas.get(Number(n.replace(/,/g, "")));
+      return nueva === undefined ? cifra : usd(nueva);
+    });
   for (const f of filas) {
     const viejo = f.borrador as Omit<Borrador, "lead_id" | "adjunto">;
     const b = {

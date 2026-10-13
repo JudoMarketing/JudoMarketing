@@ -1,18 +1,21 @@
 {
   "_comentario": "Fuente única de los precios. La leen src/lib/pricing.ts (el website) y los scripts de Python que arman los PDF. Si cambia un precio, se cambia aquí y en ningún otro lado.",
   "precios": {
-    "essential": 199,
+    "essential": 150,
     "complex": 200,
     "apps": 300
   },
   "precioAntes": {
-    "essential": 400
+    "essential": 300
   },
-  "_precioAntes": "Precio de referencia que se muestra tachado junto al precio vigente (Junior, 12 de octubre de 2026: el Website Esencial pasa de $99 a $199 al mes y se muestra rebajado de $400).",
+  "_precioAntes": "Precio de referencia que se muestra tachado junto al precio vigente, con el descuento en porcentaje. Junior, 13 de octubre de 2026: el Website Esencial queda en $150 al mes, rebajado de $300 (50% off). Antes: $99 hasta el 12 de octubre y $199 (de $400) el 12.",
   "pagoUnico": {
-    "essential": 12
+    "essential": {
+      "meses": 12,
+      "total": 1500
+    }
   },
-  "_pagoUnico": "Planes que se pueden pagar de una sola vez: los meses del contrato multiplicados por el precio mensual ($199 x 12 = $2,388 en el Esencial), sin cuota de inicio. La alternativa es pagarlo en 12 cuotas mensuales, que es el contrato de siempre (Junior, 12 de octubre de 2026).",
+  "_pagoUnico": "Planes que se pueden pagar de una sola vez: los meses del contrato y el total fijo que se cobra (Esencial: $1,500 por los 12 meses, contra $1,800 en cuotas; Junior, 13 de octubre de 2026). La alternativa es pagarlo en 12 cuotas mensuales, que es el contrato de siempre.",
   "extras": {
     "juditoads": 20,
     "asistente": 25,
@@ -20,9 +23,9 @@
     "hosting": 30
   },
   "cuotaInicio": {
-    "essential": 130,
+    "essential": 0,
     "complex": 0,
     "apps": 0
   },
-  "_cuotaInicio": "Cuota única que se cobra con el primer mes. Solo el Website Esencial la lleva y solo en el pago mensual: el pago único no la lleva. Los Complejos se cotizan con todo dentro de la mensualidad y las Apps tampoco la llevan (decisión de Junior, 2 y 12 de octubre de 2026)."
+  "_cuotaInicio": "Cuota única que se cobra con el primer mes. Desde el 13 de octubre de 2026 ningún plan la lleva (Junior la quitó del Website Esencial, que tuvo $130 del 2 al 12 de octubre). Si vuelve, se pone aquí y el checkout la cobra sola."
 }

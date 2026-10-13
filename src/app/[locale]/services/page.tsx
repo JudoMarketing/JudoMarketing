@@ -6,7 +6,7 @@ import Reveal from "@/components/Reveal";
 import EleccionContacto from "@/components/EleccionContacto";
 import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
 import { pageMetadata } from "@/lib/seo";
-import { cuotaInicio, cuotaInicioTexto, pagoUnico, pagoUnicoTexto, precioAntes, precioTexto, usd, PRECIO_JUDITOADS, PRECIO_ASISTENTE, PRECIO_ASISTENTE_PRO } from "@/lib/pricing";
+import { ahorroPagoUnico, cuotaInicio, cuotaInicioTexto, descuento, pagoUnico, pagoUnicoTexto, precioAntes, precioTexto, usd, PRECIO_JUDITOADS, PRECIO_ASISTENTE, PRECIO_ASISTENTE_PRO } from "@/lib/pricing";
 
 /**
  * Tres servicios, tres colores, poco texto.
@@ -144,12 +144,17 @@ export default function ServicesPage({
                     <p className="mt-5">
                       {/* El precio de antes, tachado, sobre el vigente */}
                       {precioAntes(plan) !== null && (
-                        <span className="mb-1 block text-base text-judo-fog/45">
+                        <span className="mb-1 flex flex-wrap items-center gap-2 text-base text-judo-fog/45">
                           <span className="sr-only">{t("was")} </span>
                           <s className="decoration-2" style={{ textDecorationColor: "var(--svc-luz)" }}>
                             {usd(precioAntes(plan)!)}
                             {t("perMonth")}
                           </s>
+                          {descuento(plan) ? (
+                            <span className="rounded-full bg-judo-purple px-2 py-0.5 text-xs font-bold tracking-wide text-white uppercase">
+                              {t("off", { pct: descuento(plan)! })}
+                            </span>
+                          ) : null}
                         </span>
                       )}
                       <span className="align-top text-sm text-judo-fog/50">
@@ -162,10 +167,10 @@ export default function ServicesPage({
                           ? t("setupFee", { fee: cuotaInicioTexto(plan) })
                           : t("noSetupFee")}
                       </span>
-                      {/* La otra forma de pagarlo: todo de una vez, sin cuota */}
+                      {/* La otra forma de pagarlo: todo de una vez, más barato */}
                       {pagoUnico(plan) && (
                         <span className="mt-2 block text-sm font-medium" style={{ color: "var(--svc-luz)" }}>
-                          {t("oneTime", { total: pagoUnicoTexto(plan)!, months: pagoUnico(plan)!.meses })}
+                          {t("oneTime", { total: pagoUnicoTexto(plan)!, months: pagoUnico(plan)!.meses, save: usd(ahorroPagoUnico(plan)) })}
                         </span>
                       )}
                     </p>
@@ -193,7 +198,7 @@ export default function ServicesPage({
           })}
         </div>
         <p className="mt-6 text-center text-xs text-judo-fog/45">
-          {t("note", { fee: cuotaInicioTexto("essential"), oneTime: pagoUnicoTexto("essential") ?? "" })}
+          {t("note", { oneTime: pagoUnicoTexto("essential") ?? "" })}
         </p>
       </section>
 

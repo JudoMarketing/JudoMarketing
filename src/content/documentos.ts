@@ -16,7 +16,7 @@
  * de mandarlo al primer cliente grande, que un abogado lo lea.
  */
 
-import { cuotaInicio, pagoUnico, PRECIO_HOSTING } from "@/lib/pricing";
+import { cuotaInicio, pagoUnico, precio, PRECIO_HOSTING } from "@/lib/pricing";
 
 export const TIPOS_DOCUMENTO = ["websites", "juditoads", "juditos"] as const;
 export type TipoDocumento = (typeof TIPOS_DOCUMENTO)[number];
@@ -151,11 +151,13 @@ function websites(d: DatosDocumento): Documento {
   // reconoce por el nombre del plan que pone el portal ("Website Esencial").
   const esencial = /esencial|essential/i.test(plan);
   const cuota = esencial ? cuotaInicio("essential") : 0;
-  // Pago único (desde el 12 de octubre de 2026, solo el Esencial): los meses
-  // del plazo por el precio mensual de este contrato, sin cuota de inicio. El
-  // contrato sirve para las dos formas de pago; el cliente elige al pagar.
+  // Pago único (solo el Esencial): los meses del plazo de una vez, por el
+  // total de pricing.json ($1,500 desde el 13 de octubre de 2026). Si este
+  // contrato lleva otro precio mensual, el total se ajusta en la misma
+  // proporción. El contrato sirve para las dos formas de pago; el cliente
+  // elige al pagar.
   const unico = esencial ? pagoUnico("essential") : null;
-  const totalUnico = unico ? unico.meses * d.precioMensual : 0;
+  const totalUnico = unico ? Math.round((unico.total * d.precioMensual) / precio("essential")) : 0;
   const filas = partes(d, `${plan}${d.proyecto ? ` · ${d.proyecto}` : ""}`);
   const i = filas.findIndex(([etiqueta]) => etiqueta === "Precio mensual");
   const extra: [string, string][] = [];
@@ -163,7 +165,7 @@ function websites(d: DatosDocumento): Documento {
     extra.push(["Cuota de inicio", `${usd(cuota)}, una sola vez, con el primer mes${unico ? " (no aplica con pago único)" : ""}`]);
   }
   if (unico) {
-    extra.push(["O en pago único", `${usd(totalUnico)} por los ${unico.meses} meses, de una vez y sin cuota de inicio`]);
+    extra.push(["O en pago único", `${usd(totalUnico)} por los ${unico.meses} meses, de una vez${cuota > 0 ? " y sin cuota de inicio" : ""}`]);
   }
   filas.splice(i + 1, 0, ...extra);
   return {
@@ -174,7 +176,7 @@ function websites(d: DatosDocumento): Documento {
       {
         titulo: "1. El servicio y el plazo",
         parrafos: [
-          `Judo Marketing diseña, construye, aloja y mantiene el website o la aplicación del cliente descrita en los datos de este contrato, incluido su portal de administración. El plan contratado es ${plan}, por ${usd(d.precioMensual)} al mes, pagados por adelantado.${cuota > 0 ? ` Además, una cuota de inicio única de ${usd(cuota)}, que se paga junto con el primer mes, cubre la configuración inicial y no se vuelve a cobrar.` : " Este plan no lleva cuota de inicio."}${unico ? ` El cliente puede, en cambio, pagar los doce (12) meses del plazo de una sola vez: ${usd(totalUnico)}, sin cuota de inicio. Con el pago único, todo lo demás de este contrato aplica igual.` : ""}`,
+          `Judo Marketing diseña, construye, aloja y mantiene el website o la aplicación del cliente descrita en los datos de este contrato, incluido su portal de administración. El plan contratado es ${plan}, por ${usd(d.precioMensual)} al mes, pagados por adelantado.${cuota > 0 ? ` Además, una cuota de inicio única de ${usd(cuota)}, que se paga junto con el primer mes, cubre la configuración inicial y no se vuelve a cobrar.` : " Este plan no lleva cuota de inicio."}${unico ? ` El cliente puede, en cambio, pagar los doce (12) meses del plazo de una sola vez: ${usd(totalUnico)}${cuota > 0 ? ", sin cuota de inicio" : ""}. Con el pago único, todo lo demás de este contrato aplica igual.` : ""}`,
           "El plazo inicial es de doce (12) meses contados desde la fecha de inicio. Al cumplirse, el cliente elige una de las tres salidas de la cláusula 4. Si no elige ninguna por escrito, el servicio continúa mes a mes con el mismo plan y el mismo precio, y cualquiera de las partes puede terminarlo con aviso de treinta (30) días.",
           "Incluye: el diseño y la construcción inicial; el alojamiento; el dominio (registrado por Judo Marketing durante el plazo); las actualizaciones de seguridad; el portal de administración del cliente; y las actualizaciones menores del plan (cambios de texto, precios, fotos y productos que el cliente no pueda hacer solo desde su portal). No incluye: rediseños, funciones nuevas, integraciones no previstas en el plan, campañas de publicidad ni contenido que deba producirse desde cero. Eso se cotiza aparte.",
         ],

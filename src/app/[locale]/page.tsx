@@ -8,7 +8,7 @@ import ResenasComunidad from "@/components/ResenasComunidad";
 import { PERFIL_GOOGLE } from "@/components/SocialLinks";
 import ListoOverlay from "@/components/ListoOverlay";
 import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
-import { precioAntes, precioDesde, usd } from "@/lib/pricing";
+import { descuento, precioAntes, precioDesde, usd } from "@/lib/pricing";
 import { homeAlternates } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -236,6 +236,11 @@ export default function HomePage({
                         </>
                       )}
                       {`${t("plans.from")} ${precioDesde()}${t("plans.perMonth")}`}
+                      {descuento("essential") ? (
+                        <span className="ml-2 inline-block rounded-full bg-judo-purple px-2 py-0.5 align-middle text-[11px] font-bold tracking-wide text-white uppercase">
+                          {t("plans.off", { pct: descuento("essential")! })}
+                        </span>
+                      ) : null}
                     </>
                   ) : (
                     t(`plans.${servicio.id}.price`)

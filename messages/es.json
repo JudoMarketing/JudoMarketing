@@ -81,7 +81,8 @@
     "apps": {
       "name": "App de teléfono"
     },
-    "was": "Antes"
+    "was": "Antes",
+    "off": "-{pct}%"
   },
   "reviews": {
     "title": "Lo que dicen nuestros clientes",
@@ -125,7 +126,7 @@
   "services": {
     "title": "Servicios",
     "subtitle": "Tres cosas hacemos. Elige la que necesitas.",
-    "note": "Website Esencial: cuota de inicio única de {fee} en el pago mensual; el pago único de {oneTime} no la lleva. Websites Complejos y Apps sin cuota de inicio. Contrato de 12 meses.",
+    "note": "Ningún plan lleva cuota de inicio. Website Esencial: en 12 pagos mensuales o en un pago único de {oneTime}. Contrato de 12 meses.",
     "cta": "Hablemos de tu proyecto",
     "perMonth": "/mes",
     "from": "desde",
@@ -241,7 +242,7 @@
       "items": [
         {
           "q": "¿Cuánto cuesta una página web con Judo Marketing?",
-          "a": "Nuestros websites funcionan por suscripción: Websites Esenciales desde {essential} al mes, más una cuota de inicio única de {setup}, o en un solo pago de {oneTime} por los 12 meses, sin cuota de inicio (tiendas online, citas, servicios). Apps para Teléfonos desde {apps} al mes, sin cuota de inicio. Los Websites Complejos (delivery, logística, integraciones) tienen {complex}: se cotizan en una cita, sin cuota de inicio. Todo incluye diseño, soporte, mantenimiento y tu propio panel de control."
+          "a": "Nuestros websites funcionan por suscripción: Websites Esenciales desde {essential} al mes, sin cuota de inicio, o en un solo pago de {oneTime} por los 12 meses (tiendas online, citas, servicios). Apps para Teléfonos desde {apps} al mes, sin cuota de inicio. Los Websites Complejos (delivery, logística, integraciones) tienen {complex}: se cotizan en una cita, sin cuota de inicio. Todo incluye diseño, soporte, mantenimiento y tu propio panel de control."
         },
         {
           "q": "¿Cuánto tardan en entregar mi website?",
@@ -274,7 +275,8 @@
     "setupFee": "+ {fee} de inicio, una sola vez",
     "noSetupFee": "Sin cuota de inicio",
     "was": "Antes",
-    "oneTime": "o un pago único de {total} por los {months} meses, sin cuota de inicio"
+    "oneTime": "o un pago único de {total} por los {months} meses: ahorras {save}",
+    "off": "{pct}% de descuento"
   },
   "login": {
     "title": "Portales",
@@ -435,7 +437,7 @@
     "pay": "Pagar",
     "opening": "Abriendo pago seguro…",
     "back": "← Volver a servicios",
-    "feesNote": "El monto a pagar hoy es el primer mes más la cuota de inicio, si tu plan la lleva. Los fees de procesamiento o de red los cubre el cliente.",
+    "feesNote": "El monto a pagar hoy es el primer mes, sin cuota de inicio. Los fees de procesamiento o de red los cubre el cliente.",
     "setupLine": "Hoy pagas {total}: el primer mes ({month}) más la cuota de inicio de {fee}, una sola vez. Desde el segundo mes pagas {month}.",
     "titleOneTime": "Completa tu pago",
     "howTitle": "¿Cómo prefieres pagarlo?",
@@ -444,8 +446,8 @@
     "monthlyDesc": "Hoy pagas {total}: el primer mes más la cuota de inicio de {fee}. Después, {month} al mes.",
     "monthlyDescNoFee": "Hoy pagas el primer mes. Después, {month} al mes.",
     "oneTimeTitle": "Pago único",
-    "oneTimeDesc": "Los {months} meses del contrato, pagados de una vez. Sin cuota de inicio.",
-    "oneTimeSave": "Ahorras {fee}",
+    "oneTimeDesc": "Los {months} meses del contrato, pagados de una vez.",
+    "oneTimeSave": "Ahorras {save}",
     "oneTimeChip": "pago único de {total}",
     "feesNoteOneTime": "El pago único cubre los 12 meses del contrato. Los fees de procesamiento o de red los cubre el cliente.",
     "selected": "Elegido"
@@ -617,7 +619,7 @@
       {
         "name": "Website de tu clínica",
         "price": "desde {essential} al mes",
-        "note": "más {setup} de inicio, o {oneTime} en un solo pago por los 12 meses"
+        "note": "sin cuota de inicio, o {oneTime} en un solo pago por los 12 meses"
       },
       {
         "name": "Portal o plataforma",
@@ -642,7 +644,7 @@
       },
       {
         "q": "¿En cuánto tiempo está listo?",
-        "a": "En menos de 30 días desde que nos entregas el material. Si no cumplimos, te devolvemos el primer pago, cuota de inicio incluida."
+        "a": "En menos de 30 días desde que nos entregas el material. Si no cumplimos, te devolvemos el primer pago."
       },
       {
         "q": "¿Atienden fuera de Miami?",

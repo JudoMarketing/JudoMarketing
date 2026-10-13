@@ -1,7 +1,7 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import PaymentOptions from "@/components/PaymentOptions";
-import { cuotaInicio, cuotaInicioTexto, pagoUnico, pagoUnicoTexto, precioTexto, primerPagoTexto } from "@/lib/pricing";
+import { ahorroPagoUnico, cuotaInicio, cuotaInicioTexto, pagoUnico, pagoUnicoTexto, precioTexto, primerPagoTexto, usd } from "@/lib/pricing";
 import { privateMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -40,8 +40,8 @@ export default async function PayPage({
   const plan: PlanKey = PLAN_KEYS.includes(rawPlan as PlanKey)
     ? (rawPlan as PlanKey)
     : "essential";
-  // Pago único (hoy solo el Esencial): el contrato completo de una vez, sin
-  // cuota de inicio. Si el plan no lo ofrece, se ignora el parámetro.
+  // Pago único (hoy solo el Esencial): el contrato completo de una vez, por
+  // menos que las cuotas. Si el plan no lo ofrece, se ignora el parámetro.
   const unico = pagoUnico(plan);
   const modalidad: "mensual" | "unico" = pago === "unico" && unico ? "unico" : "mensual";
   const monto = modalidad === "unico" ? pagoUnicoTexto(plan)! : primerPagoTexto(plan);
@@ -134,9 +134,9 @@ export default async function PayPage({
                     {modalidad === "unico" ? (
                       <span className="text-xs text-judo-lilac">✓ {t("selected")}</span>
                     ) : (
-                      cuotaInicio(plan) > 0 && (
+                      ahorroPagoUnico(plan) > 0 && (
                         <span className="rounded-full bg-judo-purple/25 px-2 py-0.5 text-[11px] text-judo-lilac">
-                          {t("oneTimeSave", { fee: cuotaInicioTexto(plan) })}
+                          {t("oneTimeSave", { save: usd(ahorroPagoUnico(plan)) })}
                         </span>
                       )
                     )}
