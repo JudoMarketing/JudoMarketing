@@ -20,9 +20,9 @@ Con los precios de hoy (`src/content/pricing.json`), una mezcla que llega:
 
 | Fuente | Cuántos | Al mes |
 | --- | --- | --- |
-| Websites de suscripción, promedio $150 (desde el 12 de octubre de 2026 el Esencial es $199, o $2,388 en pago único) | 30 | $4,500 |
+| Websites de suscripción, promedio $150 (desde el 13 de octubre de 2026 el Esencial es $150, antes $300, o $1,500 en pago único) | 30 | $4,500 |
 | Asistente o JuditoADS como extra | 15 | $900 |
-| Cuota de inicio de $130 | 3 a 4 Esenciales nuevos | $400 a $520 |
+| 3 a 4 websites más, en lugar de la cuota de inicio de $130 que se quitó el 13 de octubre de 2026 | 3 a 4 | $450 a $600 |
 | Anuncios manejados por nosotros, si se aprueba (parte 6) | 6 a $400 | $2,400 |
 | Websites Complejos y apps, cotizados | 3 a 4 | $1,500 a $2,000 |
 | **Total** | | **cerca de $10,000** |
@@ -51,13 +51,18 @@ clientes activos, fecha ____`.
 | 9 | Presencia propia: Google, reseñas, directorios | ⏳ Pendiente de Junior | Junior, con la auditoría |
 | 10 | Dominio aparte para la prospección | 🕒 Cuando el volumen suba | Junior compra, Claude configura |
 
-### 1. Cuota de inicio y precios claros ✅
+### 1. Precios claros ✅
 
-Website Esencial: $130 de inicio, una sola vez, con el primer mes. Websites
-Complejos y Apps: sin cuota; los Complejos se cotizan y todo va dentro de
-la mensualidad. En el sitio, el pago (Stripe lo cobra solo en la primera
-factura), los contratos, la política, el chatbot y el guion de ventas.
-**Se mide:** cuántas suscripciones Esenciales nuevas pagan la cuota (Stripe).
+Website Esencial: $150 al mes, mostrado rebajado de $300 (50% de
+descuento), sin cuota de inicio; o $1,500 de una vez por los 12 meses, que
+ahorra $300 contra las cuotas (Junior, 13 de octubre de 2026). La cuota de
+inicio de $130 rigió del 2 al 12 de octubre y se quitó: el precio de
+entrada más bajo busca volumen. Websites Complejos y Apps: sin cuota; los
+Complejos se cotizan y todo va dentro de la mensualidad. Todo sale de
+`src/content/pricing.json`: el sitio, el pago (Stripe), los contratos, la
+política, el chatbot, los correos de prospección y el guion de ventas.
+**Se mide:** cuántos Esenciales nuevos entran al mes y cuántos eligen el
+pago único (Stripe).
 
 ### 2. Prospección que encuentra a quien no rankea ✅
 

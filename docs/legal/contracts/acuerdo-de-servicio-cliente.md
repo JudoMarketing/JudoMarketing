@@ -18,7 +18,7 @@
 | Plan contratado | ☐ Website Esencial ☐ Website Complejo ☐ App ☐ Otro: ____________ |
 | Precio mensual acordado | $________ /mes |
 | Cuota de inicio (solo Website Esencial, una sola vez) | $________ |
-| Forma de pago | ☐ 12 pagos mensuales ☐ Pago único por los 12 meses (sin cuota de inicio): $________ |
+| Forma de pago | ☐ 12 pagos mensuales ☐ Pago único por los 12 meses: $________ |
 | Dominio / Proyecto | ________________________ |
 | Vendedor asignado | ________________________ |
 | Fecha de inicio | ____ / ____ / ______ |

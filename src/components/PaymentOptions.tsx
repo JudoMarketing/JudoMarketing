@@ -147,7 +147,7 @@ export default function PaymentOptions({
   // como el enlace completo pegado desde PayPal
   const paypalHref = (() => {
     if (!paypalMe) return null;
-    // PayPal.me quiere el número limpio: sin $ ni comas ($2,388 → 2388)
+    // PayPal.me quiere el número limpio: sin $ ni comas ($1,500 → 1500)
     const amt = amount.replace(/[$,]/g, "");
     const v = paypalMe.trim();
     if (/^https?:\/\//i.test(v)) {

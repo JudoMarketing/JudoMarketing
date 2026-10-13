@@ -2,7 +2,7 @@
 
 One unified policy for services, subscriptions, websites, apps, digital products, virtual assistants, marketing packages, privacy, and communications.
 
-Effective Date: 10/12/2026
+Effective Date: 10/13/2026
 
 ## 1. Agreement
 
@@ -37,12 +37,12 @@ information; see Section 12.
 
 ## 4. Payments and Billing
 
-Subscription payments are due monthly in advance on the agreed billing date. Some plans
-carry a one-time setup fee, shown on www.judomarketing.net before payment and charged
-once with the first month (today, the Essential Website); Complex Websites and Mobile
-Apps have no setup fee. Where www.judomarketing.net offers it (today, the Essential
-Website), the client may instead pay the full twelve-month term at once, with no setup
-fee; everything else in these terms applies the same. A client who pays the full term at
+Subscription payments are due monthly in advance on the agreed billing date. Plans
+currently carry no setup fee; if a plan ever carries one, it is shown on
+www.judomarketing.net before payment and charged once with the first month. Where
+www.judomarketing.net offers it (today, the Essential Website), the client may instead
+pay the full twelve-month term at once, for the single-payment price shown before
+payment; everything else in these terms applies the same. A client who pays the full term at
 once and later cancels keeps the service active until the end of that term; the amount
 paid is not refunded except under the 30-Day Delivery Guarantee in Section 6. Judo Marketing does not charge late fees or non-payment penalties: if a payment is not
 received, the only consequences are suspension of services as described in Section 8 and
