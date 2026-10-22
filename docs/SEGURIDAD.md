@@ -54,8 +54,8 @@ lista de despliegues de producción, el campo `githubCommitRef`).
 | judomarketing.net | JudoMarketing | master | Vercel |
 | judomarketing.net/juditoads | Judito-Ads | claude/meta-ads-portal-5je6kf | Vercel (rewrite) |
 | judomarketing.net/juditos | AI-Assistants | claude/meta-virtual-assistants-portal-j9nemm | Vercel (rewrite) |
-| abaforhappiness.com | ABA-For-Happiness | claude/aba-happiness-v2-ezkofa (se promueve a mano) | Vercel |
-| accustomsmiami.com | Accustoms-miami | claude/diseno-visual | Vercel |
+| abaforhappiness.com | ABA-For-Happiness | claude/aba-happiness-v2-ezkofa (se promueve a mano; ver abajo) | Vercel |
+| accustomsmiami.com | Accustoms-miami | claude/diseno-visual | Vercel (el dominio no está conectado: da 404) |
 | dameunamano.org | DameUnaMano | claude/dameunamano-landing-design-23zs94 | Vercel |
 | denalibehaviorcrt.com | Denali-CRT | main | Vercel (estático) |
 | deliveryrushflorida.com | delivery-rush-florida | main | Vercel |
@@ -111,7 +111,10 @@ La lista para la revisión externa vive en `scripts/seguridad/sitios.txt`.
    rápido, nunca a la fuerza). Después, confirmar que el despliegue de
    producción quedó READY y que el dominio contesta.
    - ABA se publica creando un despliegue de producción a mano, con sus
-     variables.
+     variables. Su dominio no está en la lista de dominios del proyecto: es
+     un alias. Después del despliegue hay que apuntar `www.abaforhappiness.com`
+     y `abaforhappiness.com` (este con redirección 308 a www) al despliegue
+     nuevo con `assign_alias`. Si no, el dominio sigue en el anterior.
    - Si la rama de producción no es la principal, el push no basta: hay que
      revisar en Vercel que salió como producción.
 7. **Línea sin parches** (como Next 14): se migra a la línea con soporte en
