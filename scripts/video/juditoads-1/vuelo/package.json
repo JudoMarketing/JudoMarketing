@@ -1,0 +1,8 @@
+{
+  "name": "vuelo-juditoads",
+  "private": true,
+  "description": "Cesium para el vuelo de la escena 4. Instalar con npm install dentro de esta carpeta.",
+  "dependencies": {
+    "cesium": "1.120.0"
+  }
+}

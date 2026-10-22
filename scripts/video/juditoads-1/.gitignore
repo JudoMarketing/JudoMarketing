@@ -1,0 +1,8 @@
+# Todo lo que se genera al producir: se rehace con los scripts
+salida/
+fuentes/
+capturas/salida/
+vuelo/node_modules/
+vuelo/tiles/
+vuelo/cuadros/
+vuelo/naip-z*.jpg

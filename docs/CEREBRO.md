@@ -27,6 +27,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-10-22 | **Videos explicativos verticales.** El primero, de JuditoADS (60 s, 1080×1920, sin voz, con efectos), quedó aprobado. Las reglas que salieron de las cinco vueltas de correcciones de Junior están en la sección 8. Todo lo necesario para rehacerlo o sacar el siguiente vive en `scripts/video/juditoads-1/`, y el cómo, en `VIDEOS.md`. |
 | 2026-10-13 | **Website Esencial a $150 al mes**, mostrado rebajado de $300 con la etiqueta de 50% de descuento, **sin cuota de inicio** (se quitó la de $130), o **$1,500 de una vez** por los 12 meses (ahorra $300). `pricing.json` guarda el pago único como total fijo (`pagoUnico.essential: {meses, total}`); `descuento()` y `ahorroPagoUnico()` en `src/lib/pricing.ts`. Los borradores de prospección pendientes con cifras viejas salen con las nuevas. |
 | 2026-10-12 | **God's Home en el showcase** (godshome.app), primero, con sus primeros 7 segundos en video. Es un proyecto fijo (`PROYECTOS_FIJOS` en `src/content/portfolio.ts`), no del portal. |
 | 2026-10-12 | **Prospección con fuentes gratis**: Junior apagó Google por costo. Los negocios salen de OpenStreetMap (`scripts/leads/osm.mjs`) y Sunbiz (website buscado por el nombre); el informe mide con Lighthouse local; el "¿ya rankea?" lo comprueba la sesión con su búsqueda web. `/api/leads` rechaza las acciones de Google (`BUSQUEDAS_GOOGLE_APAGADAS`) y bloquea el recontacto por correo y por dominio entre registros. Detalle arriba de `LEADS.md`. |
@@ -372,3 +373,78 @@ código y sus trampas), `VERIFICACION.md` (los scripts de comprobación),
 - [ ] Cada escritura de administración comprobada contra la base: que la fila
       cambió, no que el botón dijo ✓.
 - [ ] Revisado en teléfono de verdad, no solo achicando la ventana.
+
+---
+
+## 8. Videos explicativos para redes (vertical)
+
+Aprendido haciendo el video de JuditoADS (octubre de 2026). Junior lo revisó
+escena por escena en cinco versiones antes de producirlo. Cada regla de
+abajo es una corrección suya o algo que costó rehacer. El cómo (carpeta,
+scripts y pasos) está en `VIDEOS.md`.
+
+**Formato.**
+- 1080×1920 a 60 fps, alrededor de 60 segundos, sin voz.
+- El guion va en subtítulos grandes y amarillos sobre fondo morado oscuro,
+  con la marca de la casa.
+- Una idea por escena, de 2 a 4 segundos.
+- Lo que se cuenta en lista (los consejos) va uno por uno, unos 2 segundos
+  cada uno.
+- Si Junior sale a cámara, es al principio y dura 2 o 3 segundos.
+
+**El teléfono nunca toca el texto.** Fue la corrección de casi todas las
+escenas de la primera versión. La pantalla se reparte en franjas:
+- el texto entre el 14% y el 56% del ancho, contado desde arriba;
+- el teléfono desde el 60%, cortado por abajo;
+- las zonas que tapan los botones de Reels y TikTok, libres.
+
+Sin la isla negra del iPhone (se leía como "una mancha"): basta una barra de
+estado con la hora.
+
+**Pantallas reales, sin zoom.**
+- Lo que se muestra es la app de verdad, en modo demo con un negocio de
+  ejemplo, nunca una maqueta.
+- Junior pidió quitar los acercamientos: la captura se ve entera y quieta.
+- Para señalar se usa una flecha o un recuadro amarillo grueso, ajustado al
+  borde de la tarjeta.
+- Revisar que ningún titular quede cortado por la barra de estado.
+
+**Nada que parezca hecho por IA.**
+- Un genio en ilustración plana se leyó como "un mojón morado".
+- Lo que funcionó:
+  - emojis 3D de Microsoft Fluent (licencia MIT);
+  - objetos modelados en 3D para la ocasión (la lámpara, en three.js);
+  - sombras de verdad;
+  - animación con rebote y frenado suave.
+- Cada golpe, toque y transición lleva su efecto de sonido. Los efectos se
+  sintetizan nosotros, sin bancos de sonido de terceros.
+
+**Mapas: nunca Google Earth en un anuncio.** Sus reglas lo prohíben. El vuelo
+"de la Tierra a la oficina" se hace con CesiumJS e imágenes públicas, con el
+crédito visible:
+- NASA para la Tierra;
+- Sentinel-2 de EOX para Florida;
+- USGS y NAIP para la ciudad y el edificio.
+
+Tiene que ser un solo movimiento continuo, sin cortes ni fundidos. Al
+llegar: un punto rojo con una etiqueta blanca y el logo en negro.
+
+**Cifras que se entienden de un vistazo.**
+- El precio de los cursos va con su total y su promedio ("$6,823 y 134
+  horas · en promedio $758 por curso").
+- El precio de la app va comparado con algo cotidiano y corto: "Lo que
+  cuesta una hamburguesa" (sin "con todo").
+- Toda cifra tiene que ser verdad: el "te llegó por menos de 5¢" se dice
+  solo si la campaña lo cumple.
+
+**Cierre.**
+- "Pruébalo gratis" con la dirección y el dedo tocando el botón de prueba.
+- Después, unos 5 segundos con el contacto: @judo.marketing y el WhatsApp de
+  la agencia (+1 305 934 9981).
+
+**Método.**
+1. Primero el guion con capturas como artifact, con comentarios por escena
+   que Junior deja en la misma página.
+2. Producir solo cuando lo aprueba.
+3. Antes de entregar: una hoja con un cuadro cada 2 segundos, más los
+   cuadros de cerca de cada salida de escena.

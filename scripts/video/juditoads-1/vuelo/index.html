@@ -1,0 +1,67 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="/node_modules/cesium/Build/Cesium/Widgets/widgets.css">
+<style>html,body,#mapa{margin:0;width:100%;height:100%;overflow:hidden;background:#000}.cesium-viewer-bottom,.cesium-widget-credits{display:none!important}</style>
+<script>window.CESIUM_BASE_URL = "/node_modules/cesium/Build/Cesium/";</script>
+<script src="/node_modules/cesium/Build/Cesium/Cesium.js"></script>
+</head><body><div id="mapa"></div>
+<script>
+Cesium.Ion.defaultAccessToken = "";
+const viewer = new Cesium.Viewer("mapa", {
+  baseLayer: false, terrainProvider: new Cesium.EllipsoidTerrainProvider(),
+  animation: false, timeline: false, geocoder: false, homeButton: false, sceneModePicker: false,
+  baseLayerPicker: false, navigationHelpButton: false, fullscreenButton: false, infoBox: false, selectionIndicator: false,
+  contextOptions: { webgl: { preserveDrawingBuffer: true } },
+});
+const capas = viewer.imageryLayers;
+const tms = (url, opts) => new Cesium.UrlTemplateImageryProvider({ url, tilingScheme: new Cesium.WebMercatorTilingScheme(), ...opts });
+// Teselas descargadas de antemano (NASA, Sentinel-2 cloudless de EOX, USGS) y servidas en local
+const loc = (capa, max, rect) => capas.addImageryProvider(tms(`/tiles/${capa}/{z}/{y}/{x}.jpg`, { maximumLevel: max, rectangle: rect }));
+const cGibs = loc("gibs", 8);
+const cEox = loc("eox", 14, Cesium.Rectangle.fromDegrees(-88, 20, -72, 32));
+const cUsgs = loc("usgs", 16, Cesium.Rectangle.fromDegrees(-80.6, 25.4, -79.8, 26.1));
+const cNaip = loc("naip", 19, Cesium.Rectangle.fromDegrees(-80.215, 25.755, -80.175, 25.793));
+// Cada fuente entra con un fundido según la altura de la cámara: sin parches
+const entre = (alt, arriba, abajo) => Math.max(0, Math.min(1, (arriba - alt) / (arriba - abajo)));
+const mezclar = (alt) => { cEox.alpha = entre(alt, 260000, 120000); cUsgs.alpha = entre(alt, 32000, 14000); cNaip.alpha = entre(alt, 3200, 1400); };
+const g = viewer.scene.globe;
+g.maximumScreenSpaceError = 1.3; g.tileCacheSize = 4000; g._surface._loadQueueTimeSlice = 300; g.preloadSiblings = true; g.enableLighting = false; g.showGroundAtmosphere = true;
+g.baseColor = Cesium.Color.fromCssColorString("#0a1530");
+viewer.scene.skyAtmosphere.show = true;
+viewer.scene.fog.enabled = false;
+
+const OBJ = { lon: -80.1951206, lat: 25.7739775 };
+const INI = { lon: -72, lat: 21, alt: 19000000 };
+const FIN = { alt: 260 };
+const suave = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const salida = (x) => 1 - Math.pow(1 - x, 4);
+window.irA = (t) => {
+  // 0 a 0.8: el vuelo; 0.8 a 1: ya encima del edificio, sigue bajando apenas
+  const v = Math.min(1, t / 0.8);
+  const e = suave(v);
+  let alt = INI.alt * Math.pow(FIN.alt / INI.alt, e);
+  if (t > 0.8) alt *= 1 - 0.14 * suave((t - 0.8) / 0.2);
+  // la posición llega al centro antes que la altura: al final solo baja, no resbala
+  const p = salida(Math.min(1, v * 1.6));
+  const lon = INI.lon + (OBJ.lon - INI.lon) * p;
+  const lat = INI.lat + (OBJ.lat - INI.lat) * p;
+  const heading = Cesium.Math.toRadians(-8 * (1 - e));
+  mezclar(alt);
+  viewer.camera.setView({ destination: Cesium.Cartesian3.fromDegrees(lon, lat, alt), orientation: { heading, pitch: Cesium.Math.toRadians(-90), roll: 0 } });
+};
+let cola = 0, renders = 0;
+g.tileLoadProgressEvent.addEventListener((n) => { cola = n; });
+viewer.scene.postRender.addEventListener(() => { renders++; });
+// Listo = varios cuadros dibujados seguidos sin teselas en cola
+window.listo = () => new Promise((r) => {
+  const inicio = renders; let ultimo = renders, quietos = 0;
+  const mirar = () => {
+    if (renders !== ultimo) {
+      ultimo = renders;
+      if (renders - inicio >= 3 && cola === 0 && g.tilesLoaded) { if (++quietos >= 3) return r(true); } else quietos = 0;
+    }
+    setTimeout(mirar, 20);
+  };
+  mirar();
+});
+window.preparado = true;
+</script></body></html>

@@ -1,0 +1,46 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent}canvas{display:block}</style></head><body>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+const W = 1200, H = 900;
+const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+r.setSize(W, H); r.setPixelRatio(1); r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.15; r.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(r.domElement);
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(r);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+const cam = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
+cam.position.set(0.6, 2.2, 7.4); cam.lookAt(0.15, 0.55, 0);
+const oro = new THREE.MeshPhysicalMaterial({ color: 0xd9a441, metalness: 1, roughness: 0.22, clearcoat: 0.6, clearcoatRoughness: 0.15 });
+const oroOsc = new THREE.MeshPhysicalMaterial({ color: 0xa8741f, metalness: 1, roughness: 0.3 });
+const lamp = new THREE.Group();
+// cuerpo: torneado
+const perfil = [[0,0],[0.62,0.02],[0.7,0.08],[0.66,0.14],[0.42,0.2],[0.36,0.28],[0.9,0.46],[1.12,0.66],[1.08,0.86],[0.82,1.0],[0.5,1.08],[0.36,1.14],[0.38,1.2],[0.0,1.22]].map(([x,y])=>new THREE.Vector2(x,y));
+const cuerpo = new THREE.Mesh(new THREE.LatheGeometry(perfil, 96), oro);
+cuerpo.scale.set(1.25, 1, 0.9); lamp.add(cuerpo);
+// tapa con perilla
+const tapa = new THREE.Mesh(new THREE.LatheGeometry([[0,1.18],[0.42,1.2],[0.46,1.26],[0.3,1.36],[0.12,1.44],[0.1,1.52],[0.16,1.58],[0.1,1.66],[0,1.68]].map(([x,y])=>new THREE.Vector2(x,y)), 64), oroOsc);
+lamp.add(tapa);
+// pico
+const curva = new THREE.CatmullRomCurve3([new THREE.Vector3(1.05,0.7,0), new THREE.Vector3(1.6,0.8,0), new THREE.Vector3(2.1,1.05,0), new THREE.Vector3(2.45,1.35,0)]);
+const pico = new THREE.Mesh(new THREE.TubeGeometry(curva, 64, 0.16, 32, false), oro);
+pico.geometry.computeVertexNormals();
+// el pico se afina: escalar radios a lo largo
+const pos = pico.geometry.attributes.position; const pts = curva.getSpacedPoints(64);
+for (let i = 0; i < pos.count; i++) { const seg = Math.floor(i / 33); const t = seg / 64; const c = pts[Math.min(seg, 64)]; const v = new THREE.Vector3().fromBufferAttribute(pos, i); const d = v.sub(c).multiplyScalar(1 - 0.55 * t); pos.setXYZ(i, c.x + d.x, c.y + d.y, c.z + d.z); }
+pos.needsUpdate = true; pico.geometry.computeVertexNormals();
+lamp.add(pico);
+const boca = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.03, 16, 40), oroOsc); boca.position.set(2.45, 1.35, 0); boca.rotation.set(0, Math.PI / 2, -0.75); lamp.add(boca);
+// asa
+const asa = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.08, 24, 64, Math.PI * 1.32), oro);
+asa.position.set(-1.34, 0.68, 0); asa.rotation.z = Math.PI * 0.55; lamp.add(asa);
+// base
+const base = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.62, 0.12, 64), oroOsc); base.position.y = 0.04; lamp.add(base);
+lamp.rotation.y = -0.35; lamp.position.x = -0.4;
+scene.add(lamp);
+const luz = new THREE.DirectionalLight(0xfff1d6, 2.2); luz.position.set(3, 5, 4); scene.add(luz);
+const luz2 = new THREE.DirectionalLight(0xb9a3ff, 0.9); luz2.position.set(-4, 2, -2); scene.add(luz2);
+r.render(scene, cam);
+window.listo = true;
+</script></body></html>
