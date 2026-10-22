@@ -104,9 +104,11 @@ const nextConfig: NextConfig = {
 
   async headers() {
     return [
-      // Cabeceras de seguridad para todo el sitio. Sin CSP todavía: el sitio
-      // carga Stripe, Turnstile, Meta y Google y hay que probarla en modo
-      // reporte antes de imponerla.
+      // Cabeceras de seguridad para todo el sitio. La CSP lleva solo las
+      // reglas que no tocan scripts ni estilos (nadie nos enmarca, no se
+      // cambia la base de los enlaces, nada de plugins, todo por HTTPS): el
+      // sitio carga Stripe, Turnstile, Meta y Google, y una lista de orígenes
+      // hay que probarla en modo reporte antes de imponerla.
       {
         source: "/:path*",
         headers: [
@@ -114,6 +116,7 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(self)" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests" },
         ],
       },
       // Los PDFs no pueden llevar <link rel="canonical">, y Google marcó la
