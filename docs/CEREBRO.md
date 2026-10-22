@@ -27,6 +27,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-10-22 | **Seguridad de fábrica (sección 9).** El día de PHP2Shell y de la RCE del optimizador de imágenes de Next.js se revisaron los 34 repos y los 30 sitios: ninguno corre PHP. 20 repos se parcharon y los cuatro que seguían en Next 14 se migraron a Next 15. Todo proyecto nuevo nace sin PHP, en una línea de Next con parches y con `.github/workflows/seguridad.yml`, que avisa por correo. La plantilla JudiWEB ya lo trae. Inventario y procedimiento de emergencia: `SEGURIDAD.md`. |
 | 2026-10-22 | **Videos explicativos verticales.** El primero, de JuditoADS (60 s, 1080×1920, sin voz, con efectos), quedó aprobado. Las reglas que salieron de las cinco vueltas de correcciones de Junior están en la sección 8. Todo lo necesario para rehacerlo o sacar el siguiente vive en `scripts/video/juditoads-1/`, y el cómo, en `VIDEOS.md`. |
 | 2026-10-13 | **Website Esencial a $150 al mes**, mostrado rebajado de $300 con la etiqueta de 50% de descuento, **sin cuota de inicio** (se quitó la de $130), o **$1,500 de una vez** por los 12 meses (ahorra $300). `pricing.json` guarda el pago único como total fijo (`pagoUnico.essential: {meses, total}`); `descuento()` y `ahorroPagoUnico()` en `src/lib/pricing.ts`. Los borradores de prospección pendientes con cifras viejas salen con las nuevas. |
 | 2026-10-12 | **God's Home en el showcase** (godshome.app), primero, con sus primeros 7 segundos en video. Es un proyecto fijo (`PROYECTOS_FIJOS` en `src/content/portfolio.ts`), no del portal. |
@@ -373,6 +374,12 @@ código y sus trampas), `VERIFICACION.md` (los scripts de comprobación),
 - [ ] Cada escritura de administración comprobada contra la base: que la fila
       cambió, no que el botón dijo ✓.
 - [ ] Revisado en teléfono de verdad, no solo achicando la ventana.
+- [ ] Seguridad (sección 9):
+  - `npm audit --omit=dev` sin críticas ni altas;
+  - `.github/workflows/seguridad.yml` en el repo y en verde;
+  - cabeceras de seguridad en todas las rutas (`curl -I`);
+  - cero archivos PHP, cero rutas de prueba abiertas, cero claves en el repo;
+  - el dominio agregado a `scripts/seguridad/sitios.txt`.
 
 ---
 
@@ -448,3 +455,94 @@ llegar: un punto rojo con una etiqueta blanca y el logo en negro.
 2. Producir solo cuando lo aprueba.
 3. Antes de entregar: una hoja con un cuadro cada 2 segundos, más los
    cuadros de cerca de cada salida de escena.
+
+---
+
+## 9. Seguridad: lo que todo proyecto trae de fábrica
+
+Aprendido el 22 de octubre de 2026, el día de **PHP2Shell**: dos fallas de
+PHP (CVE-2026-109618 y CVE-2026-109619) que dejan tomar un servidor sin
+contraseña y que afectan a WordPress, Magento, Drupal y casi cualquier
+hosting con PHP. El mismo día salió una ejecución remota de código en el
+optimizador de imágenes de Next.js. El inventario de sitios, el
+procedimiento de emergencia y las excepciones están en `SEGURIDAD.md`.
+
+**Sin PHP.**
+- Construimos en Next.js (o estático) sobre Vercel: no hay PHP que parchar,
+  ni servidor nuestro que se quede atrás.
+- Nada de WordPress, `.php` ni hosting compartido para un sitio nuestro.
+  `seguridad.yml` falla si aparece un archivo PHP en el repo.
+
+**Si un cliente trae PHP** (un WordPress que ya tiene, un hosting que no
+quiere dejar), antes de tocarlo:
+- **Versión con parches.** PHP 8.2.35, 8.3.36, 8.4.27 u 8.5.12 o más nueva.
+  PHP 8.1 y anteriores ya no reciben parches: se migra o el hosting tiene
+  que dar parches extendidos por escrito.
+- **Hosting administrado** que aplique los parches de PHP por su cuenta
+  (Hostinger, SiteGround, Kinsta y similares), nunca un servidor que nadie
+  actualiza.
+- **Mientras llega el parche:**
+  - `session.upload_progress.enabled = 0`;
+  - un firewall delante (Cloudflare o el del hosting) con sus reglas de
+    PHP2Shell.
+- **WordPress:** núcleo y plugins con actualización automática, fuera los
+  plugins abandonados, copia de seguridad diaria fuera del servidor y admin
+  con contraseña larga y segundo factor.
+- **Propuesta escrita.** Se propone pasarlo a nuestro stack, y queda por
+  escrito si el cliente prefiere quedarse.
+
+**Next.js en una línea con parches.**
+- Siempre la última versión de una línea que todavía recibe parches.
+- Una línea sin soporte (Next 14 en 2026) no se parcha: se migra.
+- Con React 19, los formularios no pueden perder lo escrito cuando el
+  servidor contesta con un error. Se cubren con un componente como
+  `ActionForm` de RBT Corner.
+
+**Vigilancia que avisa sola.**
+- Todo repo lleva `.github/workflows/seguridad.yml` (plantilla en
+  `scripts/seguridad/seguridad.yml.plantilla`; JudiWEB ya lo trae). Corre
+  lunes, miércoles y viernes, y cuando cambian las dependencias.
+- Falla si aparece:
+  - una vulnerabilidad crítica o alta en las dependencias de producción;
+  - un archivo PHP;
+  - un optimizador de imágenes abierto a cualquier dominio.
+- **Si llega el correo de que falló, se parcha ese día.**
+- Si la rama de producción no es la principal, el flujo revisa la de
+  producción (`ref:`).
+- La auditoría semanal además revisa todos los sitios desde afuera con
+  `scripts/seguridad/sondear-sitios.py`.
+
+**Reglas de construcción.**
+- **Cabeceras en todas las rutas.**
+  - `X-Content-Type-Options: nosniff`.
+  - `Referrer-Policy: strict-origin-when-cross-origin`.
+  - `X-Frame-Options: SAMEORIGIN`.
+  - Una CSP que no toca scripts: `frame-ancestors 'self'; base-uri 'self';
+    object-src 'none'; upgrade-insecure-requests`.
+  - Una CSP con `script-src` solo se pone con nonces, nunca con
+    `unsafe-inline` para aparentar.
+- **`images.remotePatterns` solo con los dominios que de verdad usa
+  `<Image>`.** Con `hostname: "**"`, cualquiera usa el optimizador del
+  cliente como proxy y Vercel nos lo cobra.
+- **Cero rutas de prueba o diagnóstico abiertas.** Si hacen falta, piden
+  sesión de admin. Zanoah tenía `/api/diag`, que creaba órdenes reales,
+  mandaba correos a los admins y mostraba sus correos a cualquiera.
+- **Claves y contraseñas solo en las variables de Vercel.** Nunca en el
+  repo, ni en un `.md` "para acordarse". Si se escribió una, se cambia: el
+  historial no se borra.
+- **Toda ruta pública que escribe o manda correo** valida lo que recibe,
+  tiene límite de intentos por IP y, si es un formulario, trampa anti-bots y
+  captcha verificado en el servidor.
+- **El preview no es un lugar seguro para probar pagos.** Si el proyecto
+  comparte base de datos, Stripe o correo entre preview y producción, una
+  compra de prueba en el preview es real. Se avisa en el `CLAUDE.md` del
+  repo.
+
+**Cuando sale una vulnerabilidad grande:**
+1. judomarketing primero.
+2. Después todos los repos con `scripts/seguridad/auditar.sh`.
+3. Se parcha con `parchar.sh`.
+4. Se prueba en el preview contra producción con `comparar.sh`.
+5. Se sube solo si la rama de producción no se movió.
+
+El detalle paso a paso está en `SEGURIDAD.md`.

@@ -1,0 +1,33 @@
+# Sitios en vivo de Judo Marketing y sus clientes. Uno por línea: el dominio
+# que contesta (con www si es el principal). Al lanzar un cliente nuevo se
+# agrega aquí; la auditoría semanal los revisa todos.
+www.judomarketing.net
+www.judomarketing.net/juditoads/login
+www.judomarketing.net/juditos
+www.abaforhappiness.com
+accustomsmiami.com
+www.dameunamano.org
+www.denalibehaviorcrt.com
+deliveryrushflorida.com
+godshome.app
+judimental.com
+www.johanmorenotailor.com
+juniorosorio.com
+www.melanieosorio.com
+pachypinchos.com
+www.paradiseranch22.com
+www.rbtcorner.com
+thenotes.net
+vanventuremia.com
+zanoah.shop
+judomarketing.github.io/GeraldMarket
+art-foundation.vercel.app
+hr-gutters.vercel.app
+math-games.vercel.app
+maybayker.vercel.app
+milcoloresapp.vercel.app
+mr-naples-hauling-llc.vercel.app
+pachy-pinchos.vercel.app
+sofla-contractors.vercel.app
+the-equipment-source.vercel.app
+athena-beauty.vercel.app

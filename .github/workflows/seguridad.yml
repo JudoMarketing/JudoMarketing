@@ -1,0 +1,63 @@
+# Revisión de seguridad automática (Judo Marketing, CEREBRO sección 9).
+# Si falla, GitHub manda un correo: hay que parchar ese día, no la semana
+# que viene. Corre lunes, miércoles y viernes, y cada vez que cambian las
+# dependencias.
+name: Seguridad
+
+on:
+  schedule:
+    - cron: "23 12 * * 1,3,5"
+  push:
+    paths:
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/seguridad.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # Avisos revisados que no se pueden explotar aquí, con su motivo. Vacío es
+  # lo normal; cada línea que se agregue lleva su porqué en el commit.
+  PERMITIDOS: ""
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Dependencias de producción sin vulnerabilidades críticas ni altas
+        run: |
+          npm audit --omit=dev --package-lock-only --json > audit.json || true
+          node -e '
+            const a = require("./audit.json");
+            const ok = (process.env.PERMITIDOS || "").split(/[\s,]+/).filter(Boolean);
+            const malas = [];
+            for (const [nombre, v] of Object.entries(a.vulnerabilities || {})) {
+              for (const via of v.via) {
+                if (typeof via !== "object") continue;
+                if (!["critical", "high"].includes(via.severity)) continue;
+                const id = (via.url || "").split("/").pop();
+                if (!ok.includes(id)) malas.push(`${via.severity} ${nombre}: ${via.title} (${id})`);
+              }
+            }
+            if (malas.length) { console.log([...new Set(malas)].join("\n")); process.exit(1); }
+            console.log("Sin vulnerabilidades críticas ni altas.");
+          '
+      - name: Sin PHP en el proyecto
+        run: |
+          if git ls-files | grep -iE '\.(php[0-9]?|phtml|phar)$'; then
+            echo "Este proyecto no lleva PHP: lo construimos en Next.js (CEREBRO, sección 9)."
+            exit 1
+          fi
+      - name: Optimizador de imágenes sin comodines
+        run: |
+          if grep -nE "hostname:[[:space:]]*[\"'][*]{1,2}[\"']" next.config.* 2>/dev/null; then
+            echo "remotePatterns con hostname comodín: cualquiera puede usar el optimizador (y Vercel lo cobra)."
+            exit 1
+          fi

@@ -41,10 +41,24 @@ sube al repositorio y le manda a Junior un aviso con lo que depende de él.
    para ver si ya existen las fichas del plan.
 5. **Correo:** `https://dns.google/resolve?name=_dmarc.judomarketing.net&type=TXT`
    (¿sigue en `p=none`?), SPF y DKIM presentes.
-6. **Seguridad y salud:** cabeceras (`curl -I`), `https://www.judomarketing.net/api/leads/cron`
-   sin autorización responde 401 (no 500), `/sitemap.xml` y `/robots.txt`
-   responden, `/favicon.ico` responde 200, `judomarketing.net` redirige a
-   `www` con 308, certificado vigente.
+6. **Seguridad y salud:**
+   - **Respuestas del sitio:**
+     - cabeceras (`curl -I`);
+     - `https://www.judomarketing.net/api/leads/cron` sin autorización
+       responde 401 (no 500);
+     - `/sitemap.xml` y `/robots.txt` responden y `/favicon.ico` responde
+       200;
+     - `judomarketing.net` redirige a `www` con 308 y el certificado está
+       vigente.
+   - **Dependencias:** `npm audit --omit=dev` sin críticas ni altas, y el
+     flujo "Seguridad" de GitHub en verde.
+   - **Los sitios de los clientes desde afuera:**
+     `python3 scripts/seguridad/sondear-sitios.py`. Si algo contesta como
+     PHP o expone `.env`, `.git` o `package.json`, va arriba del informe.
+   - **Avisos de la semana:** con WebSearch, vulnerabilidades críticas
+     publicadas en Next.js, React, Node, Vercel y PHP. Si hay una que nos
+     toca, el informe la pone primero y remite al procedimiento de
+     `SEGURIDAD.md`.
 7. **Contenido:** ¿se publicó algo nuevo esta semana (artículo, página de
    servicio, caso)? Contar páginas del sitemap. Si no hay nada nuevo en dos
    semanas seguidas, decirlo en el informe: el plan de contenido está en la

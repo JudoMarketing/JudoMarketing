@@ -66,9 +66,19 @@ REGLAS QUE NO SE NEGOCIAN (cada una ya costó algo):
 - Toda clave externa (mapas, calendario, correo, pagos) configurada antes de enseñar la función. Un mapa con "API KEY REQUIRED" es peor que no tener mapa.
 - Toda escritura de administración se comprueba contra la base (que la fila cambió, no que el botón dijo ✓).
 - Si es SaaS o app, se muestra el producto: capturas reales, no solo texto.
+- Seguridad de fábrica (CEREBRO, sección 9):
+  - sin PHP, ni WordPress, ni hosting compartido;
+  - Next.js en la última versión de una línea con parches;
+  - .github/workflows/seguridad.yml en el repo (JudiWEB ya lo trae);
+  - cabeceras de seguridad en todas las rutas;
+  - remotePatterns solo con los dominios que se usan, nunca "**";
+  - cero rutas de prueba o diagnóstico abiertas;
+  - claves y contraseñas solo en las variables de Vercel, nunca en el repo ni en un .md.
+  - Si el cliente trae un sitio en PHP o WordPress, aplica la regla de PHP de esa sección antes de tocarlo.
 
 ANTES DE ENTREGAR CADA FASE:
 - next build + next start de verdad (no solo dev), typecheck y lint limpios.
+- npm audit --omit=dev sin críticas ni altas, y el flujo "Seguridad" de GitHub en verde.
 - Capturas con Playwright a 360, 390, 768 y 1440, bajando con scroll, y MÍRALAS: desbordes, textos cortados, cosas que tapan otras, secciones vacías.
 - Contraste medido con número (4,5:1 mínimo) en cada par de texto.
 - Revisión autocrítica: busca lo que está MAL, no confirmación de que está bien.
@@ -77,6 +87,7 @@ ANTES DE ENTREGAR CADA FASE:
 AL LANZAR:
 - Dominio decidido (www o sin www) y el otro redirigiendo con 308.
 - JSON-LD del rubro, sitemap con hreflang, robots, imagen para compartir, title con oficio + ciudad, GA4 (y Pixel si habrá anuncios).
+- Agrega el dominio a scripts/seguridad/sitios.txt de JudoMarketing (lo revisa la auditoría semanal) y su fila al inventario de docs/SEGURIDAD.md, con la rama de producción.
 - Dame los pasos para registrarlo en el portal de admin de judomarketing.net (dominio, precio, día de cobro, showcase, categoría, descripción ES/EN) y para mandarlo a Search Console.
 - Si aprendiste algo que el siguiente proyecto necesita saber, agrégalo a docs/CEREBRO-APORTES.md de JudoMarketing con su evidencia.
 
