@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import {
   capturaDelHome,
+  ORDEN_SHOWCASE,
   portadaFija,
   PROYECTOS_FIJOS,
   videoDePortada,
@@ -79,9 +80,20 @@ const sinWww = (dominio: string) => dominio.replace(/^www\./, "").toLowerCase();
 
 /**
  * Lo del portal, con los proyectos fijos adelante (PROYECTOS_FIJOS). Un fijo
- * que ya está en el portal no se repite: manda el del portal.
+ * que ya está en el portal no se repite: manda el del portal. Al final, los
+ * de ORDEN_SHOWCASE pasan al frente en ese orden; el resto no se mueve.
  */
 export async function trabajosPublicados(): Promise<Trabajo[]> {
+  const todos = await fijosYPortal();
+  const puesto = (t: Trabajo) => {
+    const i = ORDEN_SHOWCASE.indexOf(sinWww(t.dominio).replace(/\/+$/, ""));
+    return i === -1 ? ORDEN_SHOWCASE.length : i;
+  };
+  // sort es estable: los que no están en la lista conservan su orden
+  return todos.map((t, i) => ({ t, i })).sort((a, b) => puesto(a.t) - puesto(b.t) || a.i - b.i).map((x) => x.t);
+}
+
+async function fijosYPortal(): Promise<Trabajo[]> {
   const delPortal = await trabajosDelPortal();
   const enElPortal = new Set(delPortal.map((t) => sinWww(t.dominio)));
   const fijos: Trabajo[] = PROYECTOS_FIJOS.filter((p) => !enElPortal.has(sinWww(p.dominio))).map((p) => ({

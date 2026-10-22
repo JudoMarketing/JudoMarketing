@@ -103,6 +103,20 @@ export const PROYECTOS_FIJOS: {
   },
 ];
 
+/**
+ * Orden del showcase (Junior, 22 de octubre de 2026): estos van primero, en
+ * este orden. El resto sigue detrás en el orden de siempre (los fijos y
+ * después lo más nuevo del portal). Va el dominio sin www.
+ */
+export const ORDEN_SHOWCASE: string[] = [
+  "godshome.app",
+  "the-equipment-source.vercel.app",
+  "deliveryrushflorida.com",
+  "johanmorenotailor.com",
+  "vanventuremia.com",
+  "dameunamano.org",
+];
+
 // Misma lista que el selector del portal y que el candado de la base
 // (migración 0023). Si se agrega una categoría, va en las cuatro.
 export const CATEGORIAS: { id: Categoria; es: string; en: string }[] = [

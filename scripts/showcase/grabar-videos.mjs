@@ -46,23 +46,30 @@ import { join } from "node:path";
  *   una sola vez por pestaña y la visita de calentar la caché ya la gastó.
  * poster: con `primeros`, el segundo del video que va de póster (el final
  *   del tramo si no se dice).
+ * almacen: valores que se ponen en localStorage antes de abrir el sitio. Es
+ *   para el sitio que guarda el idioma en el navegador (JudiMental).
+ *
+ * Todas las portadas van en inglés. Si el sitio tiene el inglés en otra ruta,
+ * la url ya apunta ahí. Melanie Osorio y Gerald Market solo existen en
+ * español.
  */
 const SITIOS = [
-  { dominio: "dameunamano.org", url: "https://www.dameunamano.org/" },
+  { dominio: "dameunamano.org", url: "https://www.dameunamano.org/en" },
   { dominio: "denalibehaviorcrt.com", url: "https://www.denalibehaviorcrt.com/" },
   { dominio: "johanmorenotailor.com", url: "https://www.johanmorenotailor.com/", entrada: 3500, saltar: 0.4 },
   { dominio: "judomarketing.github.io/GeraldMarket", url: "https://judomarketing.github.io/GeraldMarket/" },
   { dominio: "melanieosorio.com", url: "https://www.melanieosorio.com/", saltar: 0.35 },
-  { dominio: "pachy-pinchos.vercel.app", url: "https://pachy-pinchos.vercel.app/", ocultar: ".panel-in.fixed" },
+  { dominio: "pachy-pinchos.vercel.app", url: "https://pachy-pinchos.vercel.app/en", ocultar: ".panel-in.fixed" },
   { dominio: "paradiseranch22.com", url: "https://www.paradiseranch22.com/" },
   { dominio: "art-foundation.vercel.app", url: "https://art-foundation.vercel.app/" },
   { dominio: "zanoah.shop", url: "https://zanoah.shop/" },
   { dominio: "thenotes.net", url: "https://thenotes.net/" },
   { dominio: "the-equipment-source.vercel.app", url: "https://the-equipment-source.vercel.app/", mp4: true },
   { dominio: "deliveryrushflorida.com", url: "https://deliveryrushflorida.com/" },
-  { dominio: "judimental.com", url: "https://www.judimental.com/", ancho: 960, minimo: 2, entrada: 2500, saltar: 0.6 },
+  { dominio: "judimental.com", url: "https://www.judimental.com/", ancho: 960, minimo: 2, entrada: 2500, saltar: 0.6,
+    almacen: { "juniapp.setting.lang": "en" } },
   // Junior, 12 de octubre de 2026: los primeros 7 segundos, la intro entera
-  { dominio: "godshome.app", url: "https://www.godshome.app/", primeros: 7 },
+  { dominio: "godshome.app", url: "https://www.godshome.app/en", primeros: 7 },
 ];
 
 // Fuera a propósito (se quedan con su foto): vanventuremia.com y
@@ -138,11 +145,21 @@ async function videosDelSitio(ctx, ff, cache) {
 async function grabar(navegador, sitio, ff) {
   const ancho = sitio.ancho ?? ANCHO;
   const alto = Math.round((ancho * ALTO) / ANCHO);
+  // Siempre en inglés (Junior, 22 de octubre de 2026): la portada del
+  // showcase sale en inglés sin importar el idioma del visitante. El
+  // navegador pide inglés y, si el sitio elige el idioma por su ruta o lo
+  // guarda en el navegador, SITIOS trae la dirección o el valor en inglés.
   const ctx = await navegador.newContext({
     viewport: { width: ancho, height: alto },
     ignoreHTTPSErrors: true,
-    locale: "es-US",
+    locale: "en-US",
+    extraHTTPHeaders: { "Accept-Language": "en-US,en;q=0.9" },
   });
+  if (sitio.almacen) {
+    await ctx.addInitScript((pares) => {
+      for (const [k, v] of Object.entries(pares)) localStorage.setItem(k, v);
+    }, sitio.almacen);
+  }
   if (sitio.ocultar) {
     const css = `${sitio.ocultar}{display:none!important}`;
     await ctx.addInitScript((css) => {

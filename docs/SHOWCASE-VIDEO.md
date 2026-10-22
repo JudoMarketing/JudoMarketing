@@ -8,6 +8,20 @@ Hoy son 14 sitios. God's Home (godshome.app, 12 de octubre de 2026) es la
 excepción: enseña sus primeros 7 segundos tal cual, la intro de la creación
 que termina en el hero.
 
+**Las portadas van en inglés, sin importar el idioma del visitante** (Junior,
+22 de octubre de 2026).
+- El grabador abre cada sitio con el navegador en inglés (`en-US`).
+- Si el sitio pone el inglés en una ruta, la `url` de SITIOS apunta a esa
+  ruta: `/en` en God's Home, Dame una mano y Pachy Pinchos.
+- Si lo guarda en el navegador, `almacen` lo deja puesto antes de abrir. Es
+  el caso de JudiMental (`juniapp.setting.lang`).
+- Melanie Osorio, Gerald Market y Mil Colores solo existen en español. Su
+  portada sale en español hasta que tengan versión en inglés.
+
+**Orden:** God's Home, The Equipment Source, Delivery Rush, Johan Tailoring,
+Vanventure y Dame una mano van primero (`ORDEN_SHOWCASE` en
+`src/content/portfolio.ts`). El resto sigue en su orden de siempre.
+
 ## Cómo funciona en la página
 
 - `src/content/portfolio.ts` → `VIDEOS_PORTADA`: los dominios (tal como están
