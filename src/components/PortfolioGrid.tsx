@@ -82,7 +82,10 @@ export default function PortfolioGrid({
       {/* Tres por fila en cualquier pantalla */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {visibles.map((trabajo, i) => (
-          <Reveal key={trabajo.dominio} paso={i}>
+          // El escalonado es dentro de la fila (3 por fila), no de la lista:
+          // con paso={i} la ficha 16 esperaba 2.25 s en pantalla antes de
+          // empezar a aparecer, y el showcase se sentía lento al bajar.
+          <Reveal key={trabajo.dominio} paso={i % 3}>
             <a
               href={trabajo.url}
               target="_blank"
@@ -97,7 +100,7 @@ export default function PortfolioGrid({
                 style={{ aspectRatio: RELACION_CAPTURA }}
               >
                 {trabajo.video ? (
-                  <PortadaEnVideo video={trabajo.video} nombre={trabajo.nombre} />
+                  <PortadaEnVideo video={trabajo.video} nombre={trabajo.nombre} primera={i === 0} />
                 ) : (
                   <Image
                     src={trabajo.imagen}
@@ -142,15 +145,24 @@ export default function PortfolioGrid({
  * pausa al salir para no gastar batería con quince videos corriendo. Quien
  * pidió menos movimiento o ahorro de datos se queda con el póster, que es la
  * misma portada de siempre.
+ *
+ * El póster va como imagen aparte y no como atributo del video. Así el de
+ * más abajo se pide recién al acercarse y el de la primera ficha sale
+ * primero y optimizado. Con `poster` el navegador bajaba los catorce de
+ * entrada, y la primera portada tardaba casi 8 s en un teléfono. El video
+ * aparece encima en cuanto arranca.
  */
 function PortadaEnVideo({
   video,
   nombre,
+  primera,
 }: {
   video: NonNullable<Trabajo["video"]>;
   nombre: string;
+  primera: boolean;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
+  const [corriendo, setCorriendo] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
@@ -174,17 +186,27 @@ function PortadaEnVideo({
   }, []);
 
   return (
-    <video
-      ref={ref}
-      src={video.src}
-      poster={video.poster}
-      muted
-      loop
-      playsInline
-      preload="none"
-      disablePictureInPicture
-      aria-label={nombre}
-      className="absolute inset-0 h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.04]"
-    />
+    <>
+      <Image
+        src={video.poster}
+        alt=""
+        fill
+        priority={primera}
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+        className="object-cover object-top transition duration-500 group-hover:scale-[1.04]"
+      />
+      <video
+        ref={ref}
+        src={video.src}
+        muted
+        loop
+        playsInline
+        preload="none"
+        disablePictureInPicture
+        aria-label={nombre}
+        onPlaying={() => setCorriendo(true)}
+        className={`absolute inset-0 h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.04] ${corriendo ? "opacity-100" : "opacity-0"}`}
+      />
+    </>
   );
 }

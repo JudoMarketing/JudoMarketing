@@ -71,38 +71,53 @@ export default function Mascot() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    const onMove = (x: number, y: number) => {
-      const el = wrapRef.current;
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      const cx = r.left + r.width / 2;
-      const cy = r.top + r.height * 0.35; // mirar desde la cabeza
-      target.current = {
-        x: Math.max(-1, Math.min(1, (x - cx) / (window.innerWidth / 2))),
-        y: Math.max(-1, Math.min(1, (y - cy) / (window.innerHeight / 2))),
-      };
-    };
-    const onMouse = (e: MouseEvent) => onMove(e.clientX, e.clientY);
-    const onTouch = (e: TouchEvent) => {
-      const touch = e.touches[0];
-      if (touch) onMove(touch.clientX, touch.clientY);
-    };
-
+    // El bucle solo corre mientras la cabeza se está moviendo: cuando llega a
+    // donde mira, se apaga, y el siguiente movimiento del cursor lo prende.
+    // Antes corría 60 veces por segundo en todas las páginas aunque nadie
+    // moviera nada. La posición de la mascota se lee dentro del cuadro, no
+    // en cada evento del mouse, para no forzar un cálculo de diseño por evento.
     let raf = 0;
+    let puntero: { x: number; y: number } | null = null;
+
     const animate = () => {
+      raf = 0;
+      if (puntero && wrapRef.current) {
+        const r = wrapRef.current.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height * 0.35; // mirar desde la cabeza
+        target.current = {
+          x: Math.max(-1, Math.min(1, (puntero.x - cx) / (window.innerWidth / 2))),
+          y: Math.max(-1, Math.min(1, (puntero.y - cy) / (window.innerHeight / 2))),
+        };
+        puntero = null;
+      }
       const c = current.current;
       const tg = target.current;
       c.x += (tg.x - c.x) * 0.06;
       c.y += (tg.y - c.y) * 0.06;
+      const quieto = Math.abs(tg.x - c.x) < 0.002 && Math.abs(tg.y - c.y) < 0.002;
+      if (quieto) {
+        c.x = tg.x;
+        c.y = tg.y;
+      }
       if (headRef.current) {
         headRef.current.style.transform = `translate(${c.x * 5}px, ${c.y * 3.5}px) rotate(${c.x * 4}deg)`;
       }
       if (eyesRef.current) {
         eyesRef.current.style.transform = `translate(${c.x * 4.5}px, ${c.y * 3}px)`;
       }
-      raf = requestAnimationFrame(animate);
+      if (!quieto) raf = requestAnimationFrame(animate);
     };
-    raf = requestAnimationFrame(animate);
+
+    const onMove = (x: number, y: number) => {
+      puntero = { x, y };
+      if (!raf) raf = requestAnimationFrame(animate);
+    };
+    const onMouse = (e: MouseEvent) => onMove(e.clientX, e.clientY);
+    const onTouch = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (touch) onMove(touch.clientX, touch.clientY);
+    };
 
     window.addEventListener("mousemove", onMouse, { passive: true });
     window.addEventListener("touchstart", onTouch, { passive: true });

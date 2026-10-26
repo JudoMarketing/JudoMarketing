@@ -175,23 +175,27 @@ export default function LightLines() {
       ctx.globalCompositeOperation = "lighter";
       ctx.strokeStyle = l.color;
       ctx.lineCap = "round";
+      // El desenfoque real (shadowBlur) cuesta más que todo el resto de la
+      // página junto: en computadora, con el lienzo a pantalla completa, se
+      // comía el hilo principal y el showcase, con sus videos, se sentía
+      // lento (octubre de 2026). El halo se imita con trazos anchos y tenues
+      // debajo del trazo fino: se ve igual y cuesta casi nada. En
+      // computadora van dos, medidos contra el desenfoque de 14 que había.
       if (telefono) {
-        // En teléfono el desenfoque real (shadowBlur) cuesta más que todo el
-        // resto de la página junto. El halo se imita con un trazo ancho y
-        // tenue debajo del trazo fino: se ve igual y cuesta casi nada.
         ctx.globalAlpha = alpha * 0.22;
         ctx.lineWidth = l.width * 4;
         ctx.stroke();
-        ctx.globalAlpha = alpha;
-        ctx.lineWidth = l.width;
-        ctx.stroke();
       } else {
-        ctx.globalAlpha = alpha;
-        ctx.lineWidth = l.width;
-        ctx.shadowColor = l.color;
-        ctx.shadowBlur = 14;
+        ctx.globalAlpha = alpha * 0.06;
+        ctx.lineWidth = l.width * 6;
+        ctx.stroke();
+        ctx.globalAlpha = alpha * 0.14;
+        ctx.lineWidth = l.width * 3;
         ctx.stroke();
       }
+      ctx.globalAlpha = alpha;
+      ctx.lineWidth = l.width;
+      ctx.stroke();
 
       // Punta brillante
       if (l.head <= 1) {
@@ -203,7 +207,6 @@ export default function LightLines() {
         ctx.fill();
       }
       ctx.globalAlpha = 1;
-      ctx.shadowBlur = 0;
     };
 
     const frame = () => {
