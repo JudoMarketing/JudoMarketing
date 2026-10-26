@@ -20,6 +20,14 @@ export const dynamic = "force-dynamic";
 
 const ADMIN = "admin@judomarketing.net";
 
+/**
+ * Prospección detenida (Junior, 26 de octubre de 2026: "están arrojando muchos
+ * errores"). Mientras esté en true, esta ruta no manda nada aunque haya
+ * borradores pendientes; la rutina diaria que los escribe también está
+ * apagada. Para reanudar: false aquí y volver a encender la rutina.
+ */
+const PAUSADA = true;
+
 function esCron(cabecera: string | null): boolean {
   const secreto = process.env.CRON_SECRET;
   if (!secreto || !cabecera?.startsWith("Bearer ")) return false;
@@ -35,6 +43,9 @@ export async function GET(req: NextRequest) {
   }
   if (!esCron(auth) && !autorizado(auth)) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+  if (PAUSADA) {
+    return NextResponse.json({ pausada: true, enviados: 0 });
   }
 
   try {

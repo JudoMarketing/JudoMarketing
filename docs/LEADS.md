@@ -1,5 +1,16 @@
 # Prospección por correo
 
+> **DETENIDA desde el 26 de octubre de 2026** (Junior: "están arrojando
+> muchos errores").
+> - La rutina diaria de Claude ("Prospección por correo (Judo Marketing) ·
+>   us/uk, fuentes gratis") está apagada: no busca negocios ni escribe
+>   borradores.
+> - `/api/leads/cron` contesta `{pausada: true}` sin mandar nada
+>   (`PAUSADA` en `src/app/api/leads/cron/route.ts`). Los borradores que
+>   quedaron pendientes caducan solos.
+> - Para reanudar: `PAUSADA = false`, publicar y volver a encender la rutina.
+>   Antes hay que encontrar y arreglar la causa de los errores.
+
 > **Fuentes gratis desde el 12 de octubre de 2026.** Junior apagó las
 > búsquedas en Google porque las llamadas a sus APIs (Places, PageSpeed,
 > Custom Search) salían demasiado caras. Ahora los negocios salen de
