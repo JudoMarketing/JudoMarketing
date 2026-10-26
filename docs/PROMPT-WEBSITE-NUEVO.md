@@ -15,7 +15,7 @@ sirve: el paso 1 lo clasifica.
 Vamos a construir el proyecto de [NOMBRE DEL NEGOCIO] para Judo Marketing.
 
 ANTES DE ESCRIBIR CÓDIGO, lee completos estos cuatro archivos (repo público):
-- https://raw.githubusercontent.com/JudoMarketing/JudoMarketing/master/docs/CEREBRO.md  (reglas de diseño y construcción de la casa)
+- https://raw.githubusercontent.com/JudoMarketing/JudoMarketing/master/docs/CEREBRO.md  (reglas de diseño y construcción de la casa; la sección 10 son los errores que ya cometimos, no los repitas)
 - https://raw.githubusercontent.com/JudoMarketing/JudoMarketing/master/docs/NICHOS.md  (qué lleva cada tipo de proyecto)
 - https://raw.githubusercontent.com/JudoMarketing/JudoMarketing/master/docs/PORTAFOLIO-VISUAL.md  (cómo se ven nuestros sitios y qué les falla)
 - https://raw.githubusercontent.com/JudoMarketing/JudoMarketing/master/docs/CEREBRO-APORTES.md  (lecciones con evidencia; lee al menos las de AC-Customs y "la vara del dueño")
@@ -90,6 +90,7 @@ AL LANZAR:
 - Agrega el dominio a scripts/seguridad/sitios.txt de JudoMarketing (lo revisa la auditoría semanal) y su fila al inventario de docs/SEGURIDAD.md, con la rama de producción.
 - Dame los pasos para registrarlo en el portal de admin de judomarketing.net (dominio, precio, día de cobro, showcase, categoría, descripción ES/EN) y para mandarlo a Search Console.
 - Si aprendiste algo que el siguiente proyecto necesita saber, agrégalo a docs/CEREBRO-APORTES.md de JudoMarketing con su evidencia.
+- Si te equivocaste en algo que otra sesión podría repetir (un deploy, una medición, una clave, un comando), agrégalo también a CEREBRO-APORTES.md ese mismo día: qué pasó, qué costó y la regla. Se cura en la sección 10 del CEREBRO.
 
 CÓMO ME HABLAS: en español. Cada respuesta con tres partes: "Te toca a ti" (lo que depende de mí, con enlaces), "Listo" (una línea por cambio) y "Ojo" (solo si algo puede morder). No me cuentes el proceso; dime lo que necesito decidir o hacer.
 ```

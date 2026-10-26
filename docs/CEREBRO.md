@@ -27,6 +27,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-10-26 | **Errores que ya cometimos (sección 10).** Lo que salió mal trabajando con Claude, con lo que costó y la regla que lo evita: mediciones sin comprobar, ramas de producción, deploys manuales, npm, claves impresas, la terminal, rendimiento, formularios y videos. Se lee antes de tocar git, Vercel, dependencias o claves. Cada error nuevo se anota ahí el mismo día; desde otro proyecto, por `CEREBRO-APORTES.md`. |
 | 2026-10-22 | **Seguridad de fábrica (sección 9).** El día de PHP2Shell y de la RCE del optimizador de imágenes de Next.js se revisaron los 34 repos y los 30 sitios: ninguno corre PHP. 20 repos se parcharon y los cuatro que seguían en Next 14 se migraron a Next 15. Todo proyecto nuevo nace sin PHP, en una línea de Next con parches y con `.github/workflows/seguridad.yml`, que avisa por correo. La plantilla JudiWEB ya lo trae. Inventario y procedimiento de emergencia: `SEGURIDAD.md`. |
 | 2026-10-22 | **Videos explicativos verticales.** El primero, de JuditoADS (60 s, 1080×1920, sin voz, con efectos), quedó aprobado. Las reglas que salieron de las cinco vueltas de correcciones de Junior están en la sección 8. Todo lo necesario para rehacerlo o sacar el siguiente vive en `scripts/video/juditoads-1/`, y el cómo, en `VIDEOS.md`. |
 | 2026-10-13 | **Website Esencial a $150 al mes**, mostrado rebajado de $300 con la etiqueta de 50% de descuento, **sin cuota de inicio** (se quitó la de $130), o **$1,500 de una vez** por los 12 meses (ahorra $300). `pricing.json` guarda el pago único como total fijo (`pagoUnico.essential: {meses, total}`); `descuento()` y `ahorroPagoUnico()` en `src/lib/pricing.ts`. Los borradores de prospección pendientes con cifras viejas salen con las nuevas. |
@@ -546,3 +547,164 @@ quiere dejar), antes de tocarlo:
 5. Se sube solo si la rama de producción no se movió.
 
 El detalle paso a paso está en `SEGURIDAD.md`.
+
+---
+
+## 10. Errores que ya cometimos (y cómo no repetirlos)
+
+Lo que salió mal trabajando con Claude en los proyectos de la casa: qué
+pasó, qué costó y la regla que lo evita. Se lee entero antes de tocar git,
+Vercel, dependencias, claves o videos.
+
+Los errores de diseño de los sitios están en la sección 2 y en
+`kit/cerebro/ERRORES.md`. Esta sección es de **cómo trabajamos**.
+
+**Cómo se alimenta.**
+- Cada vez que una sesión se equivoca, se agrega aquí **el mismo día**, con
+  la fecha. Da igual quién lo pille: Junior, una prueba o un cliente.
+- Desde el chat de otro proyecto, el error va a `CEREBRO-APORTES.md` y se
+  cura aquí.
+- Repetir un error que ya estaba escrito cuesta el doble: se perdió el
+  tiempo y se perdió la confianza.
+
+### Dar algo por hecho sin comprobarlo
+
+- **Lighthouse midió la página de login de Vercel**, no el preview
+  (2026-10-26).
+  - Qué pasó: el script que leía el archivo de cookies se saltaba las líneas
+    `#HttpOnly_`, y sin cookie de acceso Vercel muestra su login. Los
+    números no eran del sitio.
+  - Regla: toda medición se valida antes de creerla. Se mira la
+    `finalDisplayedUrl` del informe o una captura: que lo medido sea lo que
+    se quería medir.
+- **Comparamos el preview contra alias viejos** (2026-10-22).
+  - Qué pasó: `dame-una-mano.vercel.app` y `ai-assistants.vercel.app`
+    sirven una versión vieja y dieron "diferencias" falsas.
+  - Regla: se compara contra el dominio real del cliente, con su `basePath`
+    si lo tiene.
+- **Dijimos "la rama de producción se movió" y no se había movido**
+  (2026-10-22).
+  - Qué pasó: un `git fetch` de varias ramas en un clon superficial no creó
+    las referencias.
+  - Regla: fetch con refspec explícito
+    (`+refs/heads/X:refs/remotes/origin/X`). Antes de concluir, se
+    comprueba que la referencia existe.
+- **Las portadas del showcase salieron en español** (grabadas el
+  2026-10-04; las vio Junior, no nosotros, el 2026-10-22).
+  - Qué pasó: el navegador del grabador estaba en `es-US` y los sitios
+    bilingües contestaron en español.
+  - Regla: lo grabado o generado se mira antes de publicar, cuadro por
+    cuadro o portada por portada. Y lo que se enseña a clientes de afuera
+    se graba en `en-US`.
+
+### Publicar (git y Vercel)
+
+- **La rama principal no siempre es la de producción.**
+  - Qué pasó: may-baykery, aba y zanoah publican desde otra rama.
+  - Regla: antes de subir, el `githubCommitRef` del último deploy de
+    producción en Vercel dice cuál es. Esa rama se sube solo si no se movió
+    mientras trabajábamos.
+- **Un push a ABA no llegó a producción** (2026-10-22).
+  - Qué pasó: ese proyecto publica a mano y su dominio es un alias.
+  - Regla: si el deploy de producción no aparece a los pocos minutos, se
+    revisa cómo publica el proyecto antes de reintentar. En ABA se hace
+    `create_deployment` a producción y después `assign_alias`.
+  - "Promover" un preview no sirve: no reconstruye y se lleva las variables
+    del preview.
+- **Un build falló por una descarga de Google Fonts.**
+  - Regla: un fallo de red en el build se reintenta una vez antes de tocar
+    código. Si falla dos veces, el problema es nuestro.
+- **El showcase del preview sale solo con los proyectos fijos.** No es un
+  error del cambio: el preview no tiene la clave de servicio de Supabase.
+  Se revisa la parte fija y lo demás en producción.
+
+### Dependencias (npm)
+
+- **`npm install` corrió `prisma generate` y falló.**
+  - Regla: cuando solo se actualiza el lock, va con `--ignore-scripts`.
+- **npm cambió versiones exactas por rangos con `^`.**
+  - Regla: si el repo fija versiones exactas, se instala con
+    `--save-exact`. El diff de `package.json` se lee antes de subir.
+- **El build local falló con "supabaseUrl is required".**
+  - Regla: los builds locales llevan variables de relleno, con forma de URL
+    donde se espera una URL. Nunca las claves reales.
+
+### Claves y datos sensibles
+
+- **Se imprimió en la terminal la contraseña de admin de Zanoah**
+  (2026-10-22).
+  - Qué pasó: la expresión que debía taparla falló, y hubo que pedirle a
+    Junior que la cambie.
+  - Regla: un valor secreto no se imprime nunca, ni "enmascarado". Se
+    cuenta cuántas veces aparece (`grep -c`) y se dice en qué archivo, nada
+    más.
+  - Las variables de Vercel no se descifran.
+
+### Terminal y herramientas
+
+- **La sesión se mató a sí misma** (salida 144), dos veces.
+  - Qué pasó: `pkill -f "next start -p 3099"` encontró el patrón en su
+    propia línea de comandos.
+  - Regla: se mata por el PID guardado (`$!`). Si hace falta un patrón, se
+    arma por partes (`P="30"; P="${P}99"`) para que no aparezca escrito.
+- **ffmpeg no está en el PATH** de las sesiones en la nube. Se usa el
+  binario de `imageio-ffmpeg`.
+- **Playwright falla con ERR_CERT detrás del proxy.** Lleva
+  `ignoreHTTPSErrors`, `--ignore-certificate-errors` y el proxy
+  configurado.
+- **Varios subagentes escribieron en la misma carpeta y se pisaron los
+  resultados.** Cada agente trabaja en una carpeta con nombre único.
+- **Script nuevo con un error de sintaxis** (`sondear-sitios.py`).
+  - Regla: todo script se corre una vez completo antes de subirlo.
+- **Se creó un enlace simbólico que apuntaba a sí mismo**, en la carpeta de
+  trabajo del video.
+  - Regla: después de crear un enlace, se lista con `ls -l`.
+
+### Rendimiento: el código que pesa
+
+Medido en el showcase el 2026-10-26. Lighthouse en computadora pasó de 54
+a 99.
+
+- **`shadowBlur` en un canvas a pantalla completa** se comía el hilo
+  principal: 44 s de trabajo en la prueba.
+  - Regla: nunca `shadowBlur` dentro de un bucle de animación. El brillo se
+    imita con dos trazos anchos y tenues debajo del fino (`LightLines.tsx`).
+- **La mascota pedía cuadros todo el tiempo**, aunque el cursor no se
+  moviera.
+  - Regla: todo `requestAnimationFrame` se apaga cuando no hay nada que
+    mover o cuando no se ve.
+- **La aparición escalonada contaba toda la lista**: la ficha 16 esperaba
+  2,25 s.
+  - Regla: el escalonado es por fila (`i % columnas`), nunca por lista.
+- **El atributo `poster` bajó los 14 pósters de entrada**, y la primera
+  portada tardó casi 8 s en un teléfono.
+  - Regla: el póster va como `next/image` (perezoso, con `priority` solo en
+    el primero) y el video aparece encima cuando arranca.
+
+### Formularios con Next 15 y React 19
+
+- **Los formularios se vaciaban cuando el servidor contestaba un error**,
+  al migrar RBT Corner.
+  - Regla: los formularios con Server Actions usan un componente como el
+    `ActionForm` de RBT (`preventDefault` + `startTransition`, ignorando el
+    error de redirección). Se prueban con un error a propósito antes de
+    entregar.
+
+### Videos
+
+Las correcciones de Junior escena por escena están en la sección 8. Aquí van
+las trampas técnicas.
+
+- **Opacidad con un solo fotograma clave, al 100%.**
+  - Qué pasó: el cambio se repartió por toda la animación y la moneda se
+    veía a medias desde el principio.
+  - Regla: el valor de partida se fija también en el fotograma donde debe
+    empezar a cambiar.
+- **Un titular cortado por la barra de estado y un sello que se iba antes
+  del barrido.**
+  - Regla: antes de enseñarlo, hoja con un cuadro cada 2 s más los de cada
+    salida de escena (sección 8).
+- **Cesium desde el CDN no cargó**: sus workers corren desde otro origen.
+  - Regla: se sirve local.
+- **La exportación de NAIP se corta en 4000 px.**
+  - Regla: se pide por mosaicos.
