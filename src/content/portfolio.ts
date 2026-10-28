@@ -117,6 +117,17 @@ export const ORDEN_SHOWCASE: string[] = [
   "dameunamano.org",
 ];
 
+/**
+ * Sitios que no salen en el showcase aunque el portal los tenga visibles
+ * (Junior, 28 de octubre de 2026): solo existen en español y el showcase se
+ * enseña en inglés. Melanie también es solo en español, pero se queda.
+ * Va el dominio sin www; tapa también cualquier ruta debajo de él.
+ */
+export const OCULTOS_SHOWCASE: string[] = [
+  "judomarketing.github.io/GeraldMarket",
+  "milcoloresapp.vercel.app",
+];
+
 // Misma lista que el selector del portal y que el candado de la base
 // (migración 0023). Si se agrega una categoría, va en las cuatro.
 export const CATEGORIAS: { id: Categoria; es: string; en: string }[] = [

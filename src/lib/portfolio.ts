@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import {
   capturaDelHome,
+  OCULTOS_SHOWCASE,
   ORDEN_SHOWCASE,
   portadaFija,
   PROYECTOS_FIJOS,
@@ -81,12 +82,18 @@ const sinWww = (dominio: string) => dominio.replace(/^www\./, "").toLowerCase();
 /**
  * Lo del portal, con los proyectos fijos adelante (PROYECTOS_FIJOS). Un fijo
  * que ya está en el portal no se repite: manda el del portal. Al final, los
- * de ORDEN_SHOWCASE pasan al frente en ese orden; el resto no se mueve.
+ * de ORDEN_SHOWCASE pasan al frente en ese orden; el resto no se mueve. Los
+ * de OCULTOS_SHOWCASE no salen.
  */
 export async function trabajosPublicados(): Promise<Trabajo[]> {
-  const todos = await fijosYPortal();
+  const limpio = (dominio: string) => sinWww(dominio).replace(/\/+$/, "");
+  const ocultos = OCULTOS_SHOWCASE.map(limpio);
+  const todos = (await fijosYPortal()).filter((t) => {
+    const d = limpio(t.dominio);
+    return !ocultos.some((o) => d === o || d.startsWith(`${o}/`));
+  });
   const puesto = (t: Trabajo) => {
-    const i = ORDEN_SHOWCASE.indexOf(sinWww(t.dominio).replace(/\/+$/, ""));
+    const i = ORDEN_SHOWCASE.indexOf(limpio(t.dominio));
     return i === -1 ? ORDEN_SHOWCASE.length : i;
   };
   // sort es estable: los que no están en la lista conservan su orden

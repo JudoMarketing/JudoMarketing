@@ -15,8 +15,10 @@ que termina en el hero.
   ruta: `/en` en God's Home, Dame una mano y Pachy Pinchos.
 - Si lo guarda en el navegador, `almacen` lo deja puesto antes de abrir. Es
   el caso de JudiMental (`juniapp.setting.lang`).
-- Melanie Osorio, Gerald Market y Mil Colores solo existen en español. Su
-  portada sale en español hasta que tengan versión en inglés.
+- Melanie Osorio, Gerald Market y Mil Colores solo existen en español. Gerald
+  Market y Mil Colores no salen en el showcase (`OCULTOS_SHOWCASE` en
+  `src/content/portfolio.ts`, Junior, 28 de octubre de 2026). Melanie se
+  queda con su portada en español.
 
 **Orden:** God's Home, The Equipment Source, Delivery Rush, Johan Tailoring,
 Vanventure y Dame una mano van primero (`ORDEN_SHOWCASE` en
