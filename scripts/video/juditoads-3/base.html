@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Video · JuditoADS (ejemplo)</title>
+<!-- FUENTES:INICIO -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<!-- FUENTES:FIN -->
+<style>
+/* MARCA:INICIO */
+:root {
+  --fondo: #0d0a17;
+  --superficie: #1c1829;
+  --texto: #ffffff;
+  --acento: #ffc533;
+  --acento-texto: #16101f;
+  --primario: #8b5cf6;
+  --primario-hondo: #6d28d9;
+  --ok: #34d399;
+  --alerta: #ff4d4d;
+  --f-display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --f-cuerpo: "Instrument Sans", "Segoe UI", Arial, sans-serif;
+  --ancho-display: 112%;
+  --sombra-texto: 0 .6cqw 2.4cqw rgba(0,0,0,.55);
+  --esquema: dark;
+}
+/* MARCA:FIN */
+
+/* ════════════════════════════════════════════════════════════════════
+   MESA DE REVISIÓN (solo en el navegador; el render la esconde)
+   ════════════════════════════════════════════════════════════════════ */
+* { box-sizing: border-box; }
+html { background: #0c0a14; }
+body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrument Sans", "Segoe UI", Arial, sans-serif; padding: 28px max(16px, env(safe-area-inset-right)) 64px max(16px, env(safe-area-inset-left)); }
+.mesa { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+.mesa h1 { font: 850 clamp(30px, 5vw, 48px)/1.05 var(--f-display); margin: 0; }
+.mesa .bajada { color: #a8a0c0; margin: 0; max-width: 70ch; }
+.piezas { width: 100%; border-collapse: collapse; font-size: 14px; }
+.piezas th, .piezas td { text-align: left; padding: 6px 10px; border-bottom: 1px solid #2c2541; }
+.piezas th { color: #a8a0c0; font-weight: 600; }
+.linea-tiempo { display: flex; gap: 3px; height: 30px; }
+.linea-tiempo a { flex: var(--d) 1 0; min-width: 0; display: grid; place-items: center; border-radius: 5px; background: #1c1829; color: #a8a0c0; font: 11px ui-monospace, Menlo, monospace; text-decoration: none; }
+.linea-tiempo a:hover { outline: 1px solid var(--primario); color: #fff; }
+.controles { display: flex; gap: 10px; flex-wrap: wrap; }
+.controles button { font: inherit; font-weight: 600; color: #f3effb; background: #1c1829; border: 1px solid #2c2541; border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+.escena { display: grid; grid-template-columns: minmax(200px, 250px) minmax(0, 1fr); gap: 22px; padding: 18px; background: #15121f; border: 1px solid #2c2541; border-radius: 18px; scroll-margin-top: 16px; }
+.escena .det { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.escena .cab { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.escena .num { font: 900 28px/1 var(--f-display); color: var(--primario); }
+.escena h2 { margin: 0; font: 750 19px/1.2 var(--f-display); }
+.escena .tc { margin-left: auto; font: 12px ui-monospace, Menlo, monospace; color: #a8a0c0; }
+.escena .en-pantalla { margin: 0; padding: 12px 14px; background: #0c0a14; border-left: 3px solid var(--acento); border-radius: 10px; font: 800 20px/1.25 var(--f-display); }
+.escena dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 0; }
+.escena dt { font: 11px ui-monospace, Menlo, monospace; letter-spacing: .08em; text-transform: uppercase; color: #a8a0c0; padding-top: 3px; }
+.escena dd { margin: 0; }
+.escena .sonido { font: 13px ui-monospace, Menlo, monospace; color: var(--acento); }
+.escena .ojo { color: #fb923c; }
+@media (max-width: 640px) { .escena { grid-template-columns: minmax(0, 1fr); } .escena .marco { max-width: 260px; width: 100%; margin: 0 auto; } }
+.pausado .cuadro *, .pausado .cuadro *::before, .pausado .cuadro *::after { animation-play-state: paused !important; }
+
+/* ════════════════════════════════════════════════════════════════════
+   EL CUADRO 9:16 Y LA BIBLIOTECA DE ESCENAS
+   Medidas en cqw: el ancho del cuadro es 100 y el alto 177,8.
+   Franjas (sección «Zonas» de references/estilo.md):
+   - texto entre 14 y 56 cuando hay teléfono o foto abajo;
+   - teléfono desde 60, cortado por abajo;
+   - de 0 a 14 (arriba), de 142 para abajo y la franja derecha
+     (de 86 a 100 de ancho, entre 96 y 142 de alto) las tapan los botones
+     de Reels y TikTok: ahí no va nada importante.
+   Tiempos: cada cuadro recibe --t (lo que dura la escena). Los eventos
+   (entrar, tocar, sellar) duran lo suyo y empiezan en --d segundos; los que
+   salen antes del corte usan --fuera. Lo continuo (un brillo, la mira que
+   recorre) dura var(--t).
+   ════════════════════════════════════════════════════════════════════ */
+.cuadro { position: relative; aspect-ratio: 9 / 16; width: 100%; overflow: hidden; container-type: inline-size; isolation: isolate; border-radius: 14px; color-scheme: var(--esquema);
+  color: var(--texto); font-family: var(--f-cuerpo);
+  background:
+    radial-gradient(70% 45% at 20% 12%, color-mix(in oklab, var(--primario) 40%, transparent), transparent 70%),
+    radial-gradient(60% 40% at 90% 95%, color-mix(in oklab, var(--acento) 15%, transparent), transparent 70%),
+    var(--fondo); }
+.cuadro::after { content: ""; position: absolute; inset: 0; z-index: 40; pointer-events: none; opacity: .1; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+.cuadro .zonas { position: absolute; inset: 0; z-index: 39; pointer-events: none; opacity: 0; transition: opacity .2s;
+  background:
+    linear-gradient(to bottom, rgba(255,77,77,.25) 0 7.9%, transparent 7.9% 80%, rgba(255,77,77,.25) 80% 100%),
+    linear-gradient(to left, rgba(255,77,77,.25) 0 14cqw, transparent 14cqw) right 73% / 100% 26% no-repeat; }
+.ver-zonas .zonas { opacity: 1; }
+
+/* ── Eventos de uso general ── */
+.entra { animation: entra .42s cubic-bezier(.3,1.5,.5,1) var(--d, 0s) both, salir .28s ease-in var(--fuera, 9999s) forwards; }
+.funde { animation: fundir .4s ease-out var(--d, 0s) both, salir-quieto .3s ease-in var(--fuera, 9999s) forwards; }
+.golpea { animation: golpea .36s cubic-bezier(.2,1.6,.4,1) var(--d, 0s) both, salir-quieto .25s ease-in var(--fuera, 9999s) forwards; }
+@keyframes entra { from { opacity: 0; transform: translateY(5cqw) scale(.92) } to { opacity: 1; transform: none } }
+@keyframes fundir { from { opacity: 0 } to { opacity: 1 } }
+@keyframes golpea { from { opacity: 0; transform: scale(2) rotate(var(--giro, -6deg)) } to { opacity: 1; transform: rotate(var(--giro-final, 0deg)) } }
+@keyframes salir { to { opacity: 0; transform: translateY(-4cqw) } }
+@keyframes salir-quieto { to { opacity: 0 } }
+
+/* ── Texto ── */
+.cap { position: absolute; left: 7cqw; right: 9cqw; z-index: 10; text-align: center; text-wrap: balance; font-family: var(--f-display); font-stretch: var(--ancho-display); font-weight: 880; font-size: 8.4cqw; line-height: 1.06; letter-spacing: -.01em; color: var(--texto); text-shadow: var(--sombra-texto); }
+.cap.arriba { top: 15cqw; }
+.cap.centro { top: 50%; translate: 0 -50%; font-size: 10cqw; }
+.cap.bucle { top: 30cqw; font-size: 9.6cqw; line-height: 1.08; }
+.cap.abajo { top: 116cqw; font-size: 6.8cqw; }
+.cap .hl { color: var(--acento-texto); background: var(--acento); padding: 0 .16em; border-radius: .14em; box-decoration-break: clone; -webkit-box-decoration-break: clone; text-shadow: none; }
+.cap .sub { display: block; font-family: var(--f-cuerpo); font-stretch: 100%; font-weight: 600; font-size: 4.4cqw; line-height: 1.3; letter-spacing: 0; margin-top: 2.4cqw; opacity: .9; text-wrap: pretty; }
+.w { display: inline-block; animation: golpe .32s cubic-bezier(.2,1.4,.4,1) var(--d, 0s) both; }
+@keyframes golpe { from { opacity: 0; transform: scale(1.35) translateY(8%) } to { opacity: 1; transform: none } }
+.texto-chico { position: absolute; left: 8cqw; right: 12cqw; top: var(--y, 131cqw); z-index: 8; text-align: center; font-size: 3.6cqw; line-height: 1.35; opacity: .75; }
+.credito { position: absolute; left: 4cqw; right: 14cqw; bottom: 25cqw; z-index: 8; font-size: 2.2cqw; opacity: .65; }
+
+/* ── Objeto que entra (gancho): una imagen o la moneda ── */
+.objeto { position: absolute; left: 50%; top: var(--y, 92cqw); width: var(--ancho, 40cqw); translate: -50% -50%; z-index: 5; filter: drop-shadow(0 3cqw 4cqw rgba(0,0,0,.5)); }
+.objeto.girando { animation: girando 1s cubic-bezier(.2,.9,.3,1) var(--d, 0s) both; }
+.objeto.cae { animation: cae .75s cubic-bezier(.3,1.4,.5,1) var(--d, 0s) both; }
+.objeto.brota { transform-origin: 78% 100%; animation: brota .5s cubic-bezier(.3,1.45,.5,1) var(--d, 0s) both, vuelve .45s ease-in var(--fuera, 9999s) forwards; }
+.objeto.flota { animation: entra .42s cubic-bezier(.3,1.5,.5,1) var(--d, 0s) both, flotar 2.4s ease-in-out calc(var(--d, 0s) + .42s) infinite alternate; }
+@keyframes girando { from { transform: rotateY(0) scale(2.6) } to { transform: rotateY(720deg) scale(1) } }
+@keyframes cae { from { transform: translateY(-130cqw) rotate(-20deg) } to { transform: none } }
+@keyframes brota { from { transform: translate(14cqw, 40cqw) scale(0) } to { transform: none } }
+@keyframes vuelve { to { transform: translate(14cqw, 40cqw) scale(0) rotate(18deg) } }
+@keyframes flotar { from { transform: translateY(0) } to { transform: translateY(-2.4cqw) } }
+.moneda { aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; font: 900 12cqw/1 var(--f-display); font-stretch: var(--ancho-display); color: #5a3d06;
+  background: radial-gradient(circle at 35% 30%, #fff3c4, #e9b44c 45%, #a8771f 100%); box-shadow: 0 0 0 1.6cqw #c99632 inset, 0 3cqw 8cqw rgba(0,0,0,.5); }
+
+/* ── Globo de diálogo y sello ── */
+.globo { position: absolute; left: var(--x, 16cqw); top: var(--y, 40cqw); z-index: 9; padding: 2.2cqw 3.4cqw; border-radius: 4cqw; background: #fff; color: #16101f; font: 880 5cqw/1.1 var(--f-display); white-space: nowrap; box-shadow: 0 2cqw 4cqw rgba(0,0,0,.45); }
+.globo::after { content: ""; position: absolute; left: var(--cola, 30cqw); bottom: -2.6cqw; border: 1.6cqw solid transparent; border-top: 2.4cqw solid #fff; border-left-width: 0; }
+.globo b { color: #16a34a; }
+.sello { position: absolute; left: 50%; top: var(--y, 80cqw); translate: -50% -50%; rotate: -14deg; z-index: 12; padding: 0 4cqw; border: 1.4cqw solid currentColor; border-radius: 4cqw; color: var(--color, var(--alerta)); font: 900 var(--tam, 20cqw)/1.05 var(--f-display); font-stretch: 125%; white-space: nowrap; animation: sellar .3s cubic-bezier(.2,1.6,.4,1) var(--d, 0s) both, salir-quieto .25s ease-in var(--fuera, 9999s) forwards; }
+@keyframes sellar { from { opacity: 0; transform: scale(2.2) } to { opacity: .95; transform: none } }
+
+/* ── Pila de cosas que caen (cursos, gastos) con su total ── */
+.pila { position: absolute; left: 0; right: 0; top: var(--y, 56cqw); height: 86cqw; z-index: 3; animation: barrer .5s cubic-bezier(.5,0,.8,.4) var(--fuera, 9999s) forwards; }
+.pila .item { position: absolute; left: 50%; bottom: calc(var(--i) * 8.4cqw); width: 54cqw; height: 7.8cqw; margin-left: -37cqw; padding: 0 3cqw; border-radius: 1.4cqw; display: flex; align-items: center; gap: 2cqw; background: var(--c, var(--primario)); color: #fff; font: 750 3.6cqw/1 var(--f-display); box-shadow: 0 1cqw 0 rgba(0,0,0,.35); rotate: var(--r, 0deg);
+  animation: caer-item .55s cubic-bezier(.3,1.25,.6,1) calc(var(--d, 0s) + var(--i) * .11s) both; }
+.pila .item small { margin-left: auto; font: 600 2.8cqw/1 var(--f-cuerpo); opacity: .9; }
+.pila .item .precio-c { position: absolute; left: calc(100% + 1.4cqw); top: 0; height: 100%; min-width: 17cqw; padding: 0 2cqw; border-radius: 1.4cqw; display: grid; place-items: center; background: #dc2626; color: #fff; font: 900 3.8cqw/1 var(--f-display); white-space: nowrap; box-shadow: 0 1cqw 0 rgba(0,0,0,.35); }
+@keyframes caer-item { from { transform: translateY(-160cqw) } to { transform: none } }
+@keyframes barrer { to { transform: translateX(-170cqw) rotate(-20deg) } }
+.total { position: absolute; left: 50%; top: var(--y, 88cqw); translate: -50% 0; --giro-final: -4deg; z-index: 8; padding: 2.4cqw 4.4cqw; border-radius: 3cqw; background: #dc2626; color: #fff; text-align: center; white-space: nowrap; font: 900 7cqw/1.05 var(--f-display); font-stretch: var(--ancho-display); box-shadow: 0 2.4cqw 6cqw rgba(0,0,0,.55); }
+.total small { display: block; margin-top: 1cqw; font: 700 3.4cqw/1.2 var(--f-cuerpo); opacity: .92; }
+
+/* ── Fichas numeradas (pasos) ── */
+.fichas { position: absolute; left: 0; right: 0; top: var(--y, 66%); z-index: 5; display: flex; justify-content: center; gap: 3.2cqw; }
+.fichas b { width: 14cqw; height: 14cqw; border-radius: 50%; display: grid; place-items: center; background: var(--primario); color: #fff; font: 900 7cqw/1 var(--f-display); box-shadow: 0 1.4cqw 0 var(--primario-hondo);
+  animation: golpe .35s cubic-bezier(.3,1.6,.5,1) calc(var(--d, 0s) + var(--i) * .12s) both; }
+
+/* ── Lista que se marca (señales, errores, ventajas) ── */
+.lista { position: absolute; left: 9cqw; right: 12cqw; top: var(--y, 62cqw); z-index: 5; margin: 0; padding: 0; list-style: none; display: grid; gap: 4.4cqw; }
+.lista { font-size: 5.6cqw; }
+.lista li { display: flex; align-items: center; gap: 3.4cqw; font-weight: 800; font-size: 1em; line-height: 1.15; font-family: var(--f-display); font-stretch: var(--ancho-display); }
+.lista li::before { content: var(--marca, "✓"); flex: none; width: 9cqw; height: 9cqw; border-radius: 50%; display: grid; place-items: center; background: var(--color, var(--ok)); color: #06261a; font: 900 5cqw/1 var(--f-cuerpo); }
+.lista.errores li::before { --marca: "✕"; --color: var(--alerta); color: #fff; }
+
+/* ── Teléfono con una pantalla real ── */
+.tel { position: absolute; left: 50%; top: var(--y, 60cqw); width: var(--ancho, 66cqw); aspect-ratio: 9 / 19.5; translate: -50% 0; z-index: 3; padding: 1.4cqw; border-radius: 9cqw;
+  background: linear-gradient(145deg, #55516a, #1b1925 38%, #34303f 68%, #0e0d13);
+  box-shadow: 0 0 0 .35cqw #07060b, 0 -1cqw 7cqw -1cqw color-mix(in oklab, var(--primario) 40%, transparent), 0 4cqw 9cqw -2cqw rgba(0,0,0,.8);
+  animation: tel-entra .9s cubic-bezier(.2,1,.3,1) var(--d, 0s) both, tel-sale .6s cubic-bezier(.6,0,.4,1) var(--fuera, 9999s) forwards; }
+@keyframes tel-entra { from { transform: translateY(30cqw) rotate(4deg) } to { transform: none } }
+@keyframes tel-sale { to { transform: translateY(130cqw) } }
+.pant { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 7.8cqw; background: #f6f5fb; }
+.estado-tel { position: absolute; inset: 0 0 auto; z-index: 4; height: 4.4cqw; padding: 0 5cqw; display: flex; align-items: center; justify-content: space-between; background: #0b0a10; color: #fff; font: 700 2.3cqw/1 -apple-system, "SF Pro Text", var(--f-cuerpo); }
+.estado-tel svg { height: 2.1cqw; width: auto; }
+.vista { position: absolute; top: 4.4cqw; left: 0; right: 0; bottom: 0; overflow: hidden; }
+.vista img { position: absolute; left: 0; top: calc(-1 * var(--s, 0cqw)); width: 100%; height: auto; display: block; }
+.toque { position: absolute; left: var(--x); top: var(--y); width: 10cqw; height: 10cqw; margin: -5cqw 0 0 -5cqw; border-radius: 50%; z-index: 6; pointer-events: none;
+  background: radial-gradient(circle, rgba(255,255,255,.95) 0 28%, rgba(255,255,255,.35) 30% 100%); box-shadow: 0 .8cqw 2.4cqw rgba(0,0,0,.45);
+  animation: tocar .9s ease-out var(--d, 0s) both; }
+.toque::after { content: ""; position: absolute; inset: -2cqw; border-radius: 50%; border: .6cqw solid #fff; animation: onda .9s ease-out var(--d, 0s) both; }
+@keyframes tocar { 0% { opacity: 0; transform: scale(1.4) } 22% { opacity: 1; transform: scale(1) } 36% { transform: scale(.82) } 50% { transform: scale(1) } 80% { opacity: 1 } 100% { opacity: 0 } }
+@keyframes onda { 0%, 34% { opacity: 0; transform: scale(.6) } 40% { opacity: .9 } 75%, 100% { opacity: 0; transform: scale(2.1) } }
+.marco { position: absolute; left: var(--x); top: var(--y); width: var(--w); height: var(--h); z-index: 5; border: 1.2cqw solid var(--acento); border-radius: 3.4cqw; box-shadow: 0 0 2.4cqw color-mix(in oklab, var(--acento) 55%, transparent); }
+.flecha { position: absolute; left: var(--x); top: var(--y); width: 13cqw; z-index: 7; filter: drop-shadow(0 1cqw 1.6cqw rgba(0,0,0,.5)); }
+.etiqueta { position: absolute; left: var(--x, auto); right: var(--r, auto); top: var(--y); z-index: 11; padding: 1.4cqw 3.2cqw; border-radius: 2.2cqw; background: var(--acento); color: var(--acento-texto); font: 900 var(--tam, 6cqw)/1.05 var(--f-display); white-space: nowrap; box-shadow: 0 1.4cqw 3cqw rgba(0,0,0,.45); }
+
+/* ── Tarjetas que pasan una por una (consejos, beneficios) ── */
+.tarjeta { position: absolute; left: 7cqw; right: 11cqw; top: var(--y, 62cqw); z-index: 5; padding: 5cqw 5cqw 5.4cqw; border-radius: 4.4cqw;
+  background: color-mix(in oklab, var(--primario) 9%, #fff); border: .5cqw solid color-mix(in oklab, var(--primario) 25%, #fff); color: #241b3a; box-shadow: 0 4cqw 9cqw -3cqw rgba(0,0,0,.6); }
+.tarjeta .rot { display: flex; align-items: center; gap: 1.6cqw; font: 850 3.2cqw/1 var(--f-display); letter-spacing: .06em; text-transform: uppercase; color: var(--primario-hondo); }
+.tarjeta .rot img { width: 6cqw; height: 6cqw; }
+.tarjeta b { display: block; margin-top: 2.6cqw; font: 850 6.2cqw/1.12 var(--f-display); text-wrap: balance; }
+.tarjeta p { margin: 2.2cqw 0 0; font-size: 4.2cqw; line-height: 1.35; color: #463b5e; text-wrap: pretty; }
+
+/* ── Cifra que cuenta (un dato real) ── */
+@property --n { syntax: "<integer>"; inherits: false; initial-value: 0; }
+.cifra { position: absolute; left: 0; right: 0; top: var(--y, 58cqw); z-index: 6; text-align: center; color: var(--acento); font: 900 var(--tam, 30cqw)/1 var(--f-display); font-stretch: var(--ancho-display); letter-spacing: -.03em; counter-reset: n var(--n); animation: contar var(--dura, 1.2s) cubic-bezier(.2,.8,.3,1) var(--d, 0s) both; }
+.cifra::before { content: attr(data-antes) counter(n) attr(data-despues); }
+@keyframes contar { from { --n: var(--desde, 0) } to { --n: var(--hasta) } }
+
+/* ── Precio ── */
+.precio { position: absolute; left: 0; right: 0; top: var(--y, 24cqw); z-index: 5; text-align: center; color: var(--texto); font: 900 1em/.9 var(--f-display); font-stretch: 118%; }
+.precio b { font-size: 30cqw; letter-spacing: -.03em; }
+.precio span { display: block; margin-top: 1.6cqw; font-size: 8cqw; font-weight: 750; opacity: .9; }
+.sticker { position: absolute; right: 8cqw; top: var(--y, 58cqw); z-index: 8; width: 29cqw; height: 29cqw; border-radius: 50%; display: grid; place-items: center; text-align: center; background: var(--acento); color: var(--acento-texto); font: 900 5.2cqw/1 var(--f-display); --giro-final: 12deg; box-shadow: 0 2cqw 5cqw rgba(0,0,0,.45); }
+
+/* ── Logo o producto que se presenta ── */
+.logo-grande { position: absolute; left: 50%; top: var(--y, 34cqw); width: var(--ancho, 66cqw); translate: -50% 0; z-index: 6; border-radius: var(--radio, 13cqw);
+  box-shadow: 0 0 0 .5cqw rgba(255,255,255,.08), 0 4cqw 12cqw -2cqw color-mix(in oklab, var(--primario) 75%, transparent);
+  animation: logo-entra .6s cubic-bezier(.3,1.5,.5,1) var(--d, 0s) both, salir-quieto .3s ease-in var(--fuera, 9999s) forwards; }
+@keyframes logo-entra { from { opacity: 0; transform: scale(.2) rotate(-8deg) } 70% { transform: scale(1.06, .95) } to { opacity: 1; transform: none } }
+
+/* ── Foto o video real a sangre ── */
+.foto { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
+.foto img, .foto .secuencia { width: 100%; height: 100%; object-fit: cover; display: block; }
+.foto.deriva img { animation: deriva var(--t) linear both; }
+@keyframes deriva { from { transform: scale(1.07) } to { transform: scale(1) } }
+.velo { position: absolute; inset: 0; z-index: 2; background: linear-gradient(180deg, rgba(8,6,16,.78) 0 26%, rgba(8,6,16,0) 46% 66%, rgba(8,6,16,.72) 100%); }
+
+/* ── Antes y después (barrido) ── */
+.ad { position: absolute; left: 7cqw; right: 7cqw; top: var(--y, 50cqw); aspect-ratio: var(--proporcion, 4 / 5); z-index: 4; overflow: hidden; border-radius: 4cqw; box-shadow: 0 4cqw 9cqw -3cqw rgba(0,0,0,.7); }
+.ad img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ad .despues { animation: revelar 1.1s cubic-bezier(.6,0,.3,1) var(--d, 0s) both; }
+.ad .linea { position: absolute; top: 0; bottom: 0; width: 1cqw; margin-left: -.5cqw; background: #fff; box-shadow: 0 0 3cqw rgba(0,0,0,.6); animation: linea 1.1s cubic-bezier(.6,0,.3,1) var(--d, 0s) both; }
+.ad .rot { position: absolute; top: 3cqw; z-index: 3; padding: 1cqw 2.6cqw; border-radius: 99cqw; background: rgba(0,0,0,.6); color: #fff; font: 800 3.6cqw/1.2 var(--f-display); text-transform: uppercase; letter-spacing: .06em; }
+.ad .rot.antes { left: 3cqw; animation: salir-quieto .3s ease-in calc(var(--d, 0s) + .2s) forwards; }
+.ad .rot.despues-rot { right: 3cqw; animation: fundir .3s ease-out calc(var(--d, 0s) + .9s) both; }
+@keyframes revelar { from { clip-path: inset(0 0 0 100%) } to { clip-path: inset(0 0 0 0) } }
+@keyframes linea { from { left: 100%; opacity: 1 } 90% { opacity: 1 } to { left: 0%; opacity: 0 } }
+
+/* ── Público: la mira encuentra al comprador ── */
+.gente { position: absolute; left: 9cqw; right: 13cqw; top: 62cqw; z-index: 3; display: grid; grid-template-columns: repeat(6, 1fr); gap: 3.4cqw 2.6cqw; }
+.gente img { width: 100%; display: block; opacity: .55; filter: grayscale(1) brightness(1.6); }
+.gente .elegido { position: relative; animation: elegido var(--t) ease-out both; }
+.gente .elegido img { animation: elegido-img var(--t) ease-out both; }
+.gente .elegido::after { content: "✓"; position: absolute; right: -1cqw; top: -1cqw; width: 5cqw; height: 5cqw; border-radius: 50%; display: grid; place-items: center; background: var(--ok); color: #05261a; font: 900 3.4cqw/1 var(--f-cuerpo); opacity: 0; animation: check var(--t) ease-out both; }
+@keyframes elegido { 0%, 70% { transform: none } 78%, 100% { transform: scale(1.3) } }
+@keyframes elegido-img { 0%, 70% { opacity: .55; filter: grayscale(1) brightness(1.6) } 76%, 100% { opacity: 1; filter: drop-shadow(0 0 2cqw rgba(52,211,153,.9)) hue-rotate(95deg) saturate(3) brightness(1.4) } }
+@keyframes check { 0%, 76% { opacity: 0; transform: scale(.3) } 82%, 100% { opacity: 1; transform: none } }
+.mira { position: absolute; left: 0; top: 0; width: 17cqw; height: 17cqw; z-index: 5; border: .7cqw solid var(--acento); border-radius: 50%; animation: escanear var(--t) cubic-bezier(.5,0,.3,1) both; }
+.mira::before, .mira::after { content: ""; position: absolute; background: var(--acento); }
+.mira::before { left: 50%; top: -3cqw; bottom: -3cqw; width: .5cqw; translate: -50% 0; }
+.mira::after { top: 50%; left: -3cqw; right: -3cqw; height: .5cqw; translate: 0 -50%; }
+@keyframes escanear { 0% { transform: translate(8cqw, 60cqw) } 18% { transform: translate(62cqw, 70cqw) } 36% { transform: translate(16cqw, 108cqw) } 54% { transform: translate(58cqw, 118cqw) } 70%, 100% { transform: translate(46.2cqw, 87.4cqw) } }
+
+/* ── Bucle abierto: resplandor que se carga, emoji y tres puntos ── */
+.pulso { position: absolute; left: 50%; top: 92cqw; width: 120cqw; height: 120cqw; margin: -60cqw 0 0 -60cqw; z-index: 1; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--acento) 26%, transparent), color-mix(in oklab, var(--primario) 18%, transparent) 40%, transparent 68%); animation: pulso var(--t) ease-in both; }
+@keyframes pulso { from { transform: scale(.55); opacity: .5 } to { transform: scale(1.25); opacity: 1 } }
+.emoji { position: absolute; left: 50%; top: var(--y, 74cqw); width: var(--ancho, 40cqw); margin-left: calc(var(--ancho, 40cqw) / -2); z-index: 6; filter: drop-shadow(0 2.4cqw 3cqw rgba(0,0,0,.5)); animation: emoji .5s cubic-bezier(.3,1.6,.5,1) var(--d, 0s) both; }
+@keyframes emoji { from { opacity: 0; transform: scale(.3) rotate(-14deg) } 60% { opacity: 1; transform: scale(1.1) rotate(5deg) } to { opacity: 1; transform: none } }
+.puntos { position: absolute; left: 0; right: 0; top: var(--y, 124cqw); z-index: 6; display: flex; justify-content: center; gap: 3cqw; }
+.puntos i { width: 4.4cqw; height: 4.4cqw; border-radius: 50%; background: var(--acento); animation: fundir .2s ease-out var(--d, 0s) both, saltito .5s ease-in-out calc(var(--d, 0s) + var(--i) * .12s) infinite alternate; }
+@keyframes saltito { to { transform: translateY(-2.4cqw) } }
+
+/* ── Mapa conceptual: nodos que flotan, líneas que se dibujan y datos que
+   viajan por ellas. Coordenadas sin unidad, en cqw (x de 0 a 100, y de 0 a
+   177,8): --x y --y en los nodos; --x0 --y0 → --x1 --y1 (y --xm --ym si la
+   línea es curva) en los paquetes. Las líneas van en un <svg class="lineas"
+   viewBox="0 0 100 177.78"> con pathLength="1". Para que una escena siga a
+   la anterior sin salto, lo que ya estaba lleva la clase .ya y la transición
+   es «corte». ── */
+.mapa { position: absolute; inset: 0; z-index: 2; transform-origin: 50% 50%; animation: camara var(--cam-dura, 1s) cubic-bezier(.6,0,.3,1) var(--cam-d, 0s) both, mapa-luz .45s ease var(--luz-d, 9999s) forwards; opacity: var(--luz-desde, 1); }
+@keyframes camara { from { transform: var(--cam-desde, none) } to { transform: var(--cam-hasta, none) } }
+@keyframes mapa-luz { to { opacity: var(--luz-hasta, 1) } }
+.mapa svg.lineas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; z-index: 1; }
+.linea { fill: none; stroke: color-mix(in oklab, var(--primario) 70%, white); stroke-width: .7; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: dibujar var(--dura, .8s) cubic-bezier(.6,0,.3,1) var(--d, 0s) forwards; }
+.linea.ya { stroke-dashoffset: 0; animation: none; }
+.linea.dinero { stroke: var(--acento); }
+.linea.datos { stroke: var(--ok); }
+@keyframes dibujar { to { stroke-dashoffset: 0 } }
+.flujo { fill: none; stroke: #fff; stroke-width: .5; stroke-linecap: round; stroke-dasharray: .012 .045; opacity: 0; animation: fundir .3s ease-out var(--d, 0s) both, fluir 1.1s linear var(--d, 0s) infinite; }
+.flujo.vuelve { animation: fundir .3s ease-out var(--d, 0s) both, fluir-vuelve 1.1s linear var(--d, 0s) infinite; }
+@keyframes fluir { to { stroke-dashoffset: -.057 } }
+@keyframes fluir-vuelve { to { stroke-dashoffset: .057 } }
+.nodo { position: absolute; left: calc(var(--x) * 1cqw); top: calc(var(--y) * 1cqw); width: var(--tam, 20cqw); height: var(--tam, 20cqw); margin: calc(var(--tam, 20cqw) / -2) 0 0 calc(var(--tam, 20cqw) / -2); z-index: 4;
+  border-radius: 50%; display: grid; place-items: center; background: var(--superficie); border: .6cqw solid color-mix(in oklab, var(--primario) 65%, transparent);
+  box-shadow: 0 0 7cqw -1cqw color-mix(in oklab, var(--primario) 70%, transparent), 0 3cqw 6cqw -2cqw rgba(0,0,0,.7);
+  animation: nodo-entra .55s cubic-bezier(.3,1.6,.5,1) var(--d, 0s) both, boya 2.8s ease-in-out var(--fase, 0s) infinite alternate, salir-quieto .3s ease-in var(--fuera, 9999s) forwards; }
+.nodo.ya { animation: boya 2.8s ease-in-out var(--fase, 0s) infinite alternate; }
+.nodo.blanco { background: #fff; border-color: rgba(255,255,255,.6); }
+.nodo.cuadrado { border-radius: 26%; }
+.nodo img:not(.insignia) { width: var(--img, 64%); height: auto; display: block; }
+.nodo.lleno { padding: 0; overflow: visible; }
+.nodo.lleno > img:not(.insignia) { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.nodo .nombre { position: absolute; top: calc(100% + 2.2cqw); left: 50%; translate: -50% 0; white-space: nowrap; font: 800 4.6cqw/1 var(--f-display); font-stretch: var(--ancho-display); color: var(--texto); text-shadow: var(--sombra-texto); }
+.nodo .nombre.izq { top: 50%; left: auto; right: calc(100% + 2.6cqw); translate: 0 -50%; }
+.nodo .nombre.der { top: 50%; left: calc(100% + 2.6cqw); translate: 0 -50%; }
+.nodo .nombre.arriba { top: auto; bottom: calc(100% + 2.2cqw); }
+.nodo.foco::after { content: ""; position: absolute; inset: -2.6cqw; border-radius: inherit; border: .6cqw solid var(--acento); animation: latido-foco 1.2s ease-out var(--d-foco, 0s) infinite both; }
+.nodo .insignia { position: absolute; right: -6.5cqw; top: -6.5cqw; width: 12cqw; filter: drop-shadow(0 1cqw 1.4cqw rgba(0,0,0,.5)); }
+@keyframes nodo-entra { from { opacity: 0; transform: scale(.2) } to { opacity: 1; transform: none } }
+@keyframes boya { from { translate: 0 0 } to { translate: 0 -1.1cqw } }
+@keyframes latido-foco { from { transform: scale(.92); opacity: 1 } to { transform: scale(1.3); opacity: 0 } }
+.paquete { position: absolute; left: 0; top: 0; z-index: 6; width: var(--tam, 9cqw); margin: calc(var(--tam, 9cqw) / -2) 0 0 calc(var(--tam, 9cqw) / -2); filter: drop-shadow(0 1cqw 1.6cqw rgba(0,0,0,.55)); opacity: 0;
+  animation: viaje var(--dura, 1.2s) cubic-bezier(.45,0,.35,1) var(--d, 0s) both; }
+.paquete.chip { width: auto; margin: 0; translate: -50% -50%; padding: 1.2cqw 2.6cqw; border-radius: 99cqw; background: var(--superficie); border: .4cqw solid currentColor; color: var(--acento); font: 800 3.8cqw/1 var(--f-display); white-space: nowrap; filter: none; box-shadow: 0 1.6cqw 3cqw rgba(0,0,0,.5); }
+@keyframes viaje {
+  0% { opacity: 0; left: calc(var(--x0) * 1cqw); top: calc(var(--y0) * 1cqw); transform: scale(.4) }
+  12% { opacity: 1; transform: none }
+  50% { left: calc(var(--xm, calc((var(--x0) + var(--x1)) / 2)) * 1cqw); top: calc(var(--ym, calc((var(--y0) + var(--y1)) / 2)) * 1cqw) }
+  86% { opacity: 1; transform: none }
+  100% { opacity: 0; left: calc(var(--x1) * 1cqw); top: calc(var(--y1) * 1cqw); transform: scale(.6) } }
+.rotulo { position: absolute; left: calc(var(--x) * 1cqw); top: calc(var(--y) * 1cqw); translate: -50% -50%; z-index: 7; padding: 1.3cqw 2.8cqw; border-radius: 99cqw; white-space: nowrap;
+  background: var(--superficie); border: .45cqw solid currentColor; color: var(--color, var(--acento)); font: 800 3.9cqw/1 var(--f-display); font-stretch: var(--ancho-display); box-shadow: 0 1.6cqw 3cqw rgba(0,0,0,.5); }
+.rotulo.datos { --color: var(--ok); }
+.rotulo img { width: 5.4cqw; height: 5.4cqw; object-fit: contain; vertical-align: -1.4cqw; margin-right: 1.2cqw; }
+
+/* ── Lista con íconos o logos en vez del ✓ ── */
+.lista.iconos li::before { display: none; }
+.lista.iconos li img { flex: none; width: 2em; height: 2em; object-fit: contain; filter: drop-shadow(0 1cqw 1.4cqw rgba(0,0,0,.45)); }
+.lista.iconos li small { display: block; font: 600 .66em/1.25 var(--f-cuerpo); opacity: .8; margin-top: .8cqw; }
+
+/* ── Cierre: el teléfono sale y queda la tarjeta de contacto ── */
+.final { position: absolute; left: 7cqw; right: 11cqw; top: var(--y, 40cqw); z-index: 12; display: grid; gap: 4cqw; text-align: center; }
+.final h3 { margin: 0; font: 880 8cqw/1.08 var(--f-display); font-stretch: var(--ancho-display); color: var(--texto); text-wrap: balance; }
+.final h3 .hl { color: var(--acento-texto); background: var(--acento); padding: 0 .16em; border-radius: .14em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.final p { margin: 0; font-size: 4.6cqw; font-weight: 600; opacity: .9; }
+.contacto { display: grid; gap: 2.4cqw; justify-items: center; }
+.contacto span { display: inline-flex; align-items: center; gap: 2cqw; padding: 2.4cqw 4.4cqw; border-radius: 99cqw; white-space: nowrap; background: color-mix(in oklab, var(--texto) 10%, transparent); border: .4cqw solid color-mix(in oklab, var(--texto) 22%, transparent); font: 800 5cqw/1 var(--f-display); }
+.contacto img { width: 9cqw; height: 9cqw; border-radius: 50%; background: #0b0a10; padding: .8cqw; object-fit: contain; }
+</style>
+</head>
+<body>
+<div class="mesa">
+  <header>
+    <p class="bajada" id="sello-tipo">Guion y storyboard · video vertical 9:16</p>
+    <h1 id="titulo">Video</h1>
+    <p class="bajada" id="resumen"></p>
+  </header>
+  <table class="piezas" id="piezas" aria-label="Las 8 piezas"></table>
+  <nav class="linea-tiempo" id="linea" aria-label="Línea de tiempo"></nav>
+  <div class="controles">
+    <button type="button" id="pausa" aria-pressed="false">⏸ Pausar</button>
+    <button type="button" id="ver-zonas" aria-pressed="false">Ver zonas que tapan Reels y TikTok</button>
+  </div>
+  <main id="escenas" class="mesa" style="gap:16px"></main>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-estado" viewBox="0 0 70 14"><rect x="0" y="9" width="3" height="5" rx="1" fill="#fff"/><rect x="5" y="6" width="3" height="8" rx="1" fill="#fff"/><rect x="10" y="3" width="3" height="11" rx="1" fill="#fff"/><rect x="15" y="0" width="3" height="14" rx="1" fill="#fff"/><path d="M28 5a10 10 0 0 1 14 0l-2 2a7 7 0 0 0-10 0zM31 8a6 6 0 0 1 8 0l-4 4z" fill="#fff"/><rect x="48" y="1" width="19" height="12" rx="3" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.5"/><rect x="50" y="3" width="15" height="8" rx="1.5" fill="#fff"/><rect x="68" y="5" width="2" height="4" rx="1" fill="#fff" fill-opacity=".5"/></symbol>
+  <symbol id="flecha" viewBox="0 0 60 40"><path d="M58 20 L30 2 L30 13 L2 13 L2 27 L30 27 L30 38 Z" transform="rotate(180 30 20)" fill="#ffc533" stroke="#16101f" stroke-width="3" stroke-linejoin="round"/></symbol>
+</svg>
+
+<!-- ═══════════════ ESCENAS ═══════════════
+  Una plantilla por escena. data-sfx: los sonidos (nombre@segundo, ver
+  references/sonido.md). data-entrada: la transición con la que entra.
+  EJEMPLO: el video 2 de JuditoADS resumido. Al hacer un video nuevo se
+  reemplaza TODO: textos, imágenes, sonidos y la lista de escenas. -->
+
+<template id="gancho" data-sfx="grave@0 moneda@0">
+  <div class="cap arriba" style="font-size:9.6cqw">Este anuncio te llegó por <span class="hl">menos de 5¢</span>.</div>
+  <div class="objeto girando moneda" style="--ancho:38cqw">5¢</div>
+</template>
+
+<template id="intro" data-sfx="brillo@0.1 bloop-sube@0.75 pop@0.8 sello@1.75 bloop-baja@2.4" data-entrada="smoothleft">
+  <div class="cap arriba" style="font-size:7.6cqw">Quédate:<br>te enseño a lanzar<br>el tuyo <span class="hl">sin gurú</span>.</div>
+  <img class="objeto brota" src="img/genio.webp" alt="Genio con lentes" style="--y:72cqw;--ancho:54cqw;--d:.25s;--fuera:2.6s">
+  <div class="globo entra encima" style="--d:.75s;--fuera:1.75s">Te enseño todo por <b>$$</b></div>
+  <img class="objeto" src="img/lampara.webp" alt="Lámpara mágica" style="--y:128cqw;--ancho:70cqw">
+  <div class="sello encima" style="--d:1.75s;--fuera:2.7s">NO</div>
+</template>
+
+<template id="cuerpo1-cursos" data-sfx="plop@0.8 plop@0.92 plop@1.03 plop@1.14 plop@1.25 plop@1.36 caja@1.5 whoosh@3.2" data-entrada="fade">
+  <div class="cap arriba" style="font-size:9.4cqw">Ni pagar<br><span class="hl">más cursos</span>.</div>
+  <div class="pila" style="--d:.8s;--fuera:3.2s">
+    <div class="item" style="--i:0;--c:#c2410c;--r:-1.5deg">Escala tu negocio<small>25 h</small><span class="precio-c">$1,997</span></div>
+    <div class="item" style="--i:1;--c:#4338ca;--r:1.5deg">Retargeting total<small>9 h</small><span class="precio-c">$347</span></div>
+    <div class="item" style="--i:2;--c:#0f766e;--r:-1deg">Públicos avanzados<small>14 h</small><span class="precio-c">$597</span></div>
+    <div class="item" style="--i:3;--c:#be185d;--r:2deg">Copy que convierte<small>10 h</small><span class="precio-c">$397</span></div>
+    <div class="item" style="--i:4;--c:#6d28d9;--r:-2deg">Píxel sin miedo<small>6 h</small><span class="precio-c">$197</span></div>
+    <div class="item" style="--i:5;--c:#1d4ed8;--r:1deg">Reels que venden<small>8 h</small><span class="precio-c">$297</span></div>
+  </div>
+  <div class="total golpea encima" style="--d:1.5s;--fuera:3.2s;--giro:-10deg">$3,832 y 72 horas<small>en promedio $639 por curso</small></div>
+</template>
+
+<template id="cuerpo1-app" data-sfx="grave@0.05 brillo@0.1 whoosh-suave@0.9" data-entrada="zoomin">
+  <div class="cap arriba" style="font-size:9.4cqw">Y creé…</div>
+  <img class="logo-grande" src="img/juditoads.webp" alt="JuditoADS" style="--d:.05s">
+  <div class="cap abajo entra" style="--d:.8s;font-size:4.6cqw;font-family:var(--f-cuerpo);font-weight:600;top:104cqw">5 años de experiencia,<br>metidos en una app.</div>
+</template>
+
+<template id="bucle1" data-sfx="pop@0 pop@0.12 pop@0.24 pop@0.34 pop-fuerte@0.55 plop@0.75 bip@1.05 subida@0:1.75" data-entrada="zoomin">
+  <div class="pulso" aria-hidden="true"></div>
+  <div class="cap bucle"><span class="w">Pero</span> <span class="w" style="--d:.12s">eso</span> <span class="w" style="--d:.24s">no</span> <span class="w" style="--d:.34s">es</span><br><span class="w" style="--d:.55s"><span class="hl">lo más loco</span>…</span></div>
+  <img class="emoji" src="img/cabeza.webp" alt="" style="--d:.7s">
+  <div class="puntos" aria-hidden="true" style="--d:1s"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+</template>
+
+<template id="cuerpo2-pasos" data-sfx="pop@0.1 pop@0.22 pop@0.34 pop@0.46" data-entrada="smoothup">
+  <div class="cap centro" style="font-size:10.4cqw">Lo lanzas<br><span class="hl">tú solo</span>.<br>En 4 pasos:</div>
+  <div class="fichas" aria-hidden="true" style="--d:.1s"><b style="--i:0">1</b><b style="--i:1">2</b><b style="--i:2">3</b><b style="--i:3">4</b></div>
+</template>
+
+<template id="cuerpo2-meta" data-sfx="tap@1.2 campana@1.45" data-entrada="smoothleft">
+  <div class="cap arriba" style="font-size:8.6cqw">Conectas tu cuenta de <span class="hl">Meta</span></div>
+  <div class="tel"><div class="pant"><div class="estado-tel"><span>9:41</span><svg><use href="#ic-estado"/></svg></div>
+    <div class="vista"><img style="--s:22.3cqw" src="img/panel.webp" alt="Panel con el botón Conectar Meta"><img class="funde" style="--s:62.4cqw;--d:1.45s" src="img/cuentas-lista.webp" alt="Cuentas publicitarias conectadas"></div>
+    <div class="toque" style="--x:73%;--y:40cqw;--d:1s"></div></div></div>
+</template>
+
+<template id="bucle2" data-sfx="pop@0 pop@0.1 pop@0.2 pop@0.3 pop@0.5 pop-fuerte@0.7 plop@0.85 bip@1.2 subida@0:1.95" data-entrada="zoomin">
+  <div class="pulso" aria-hidden="true"></div>
+  <div class="cap bucle"><span class="w">Y</span> <span class="w" style="--d:.1s">lo</span> <span class="w" style="--d:.2s">que</span> <span class="w" style="--d:.3s">sigue,</span><br><span class="w" style="--d:.5s"><span class="hl">casi nadie</span></span><br><span class="w" style="--d:.7s"><span class="hl">te lo dice</span>…</span></div>
+  <img class="emoji" src="img/secreto.webp" alt="" style="--d:.8s">
+  <div class="puntos" aria-hidden="true" style="--d:1.15s"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+</template>
+
+<template id="cuerpo3-consejos" data-sfx="brillo@0.25 brillo@2.25 brillo@4.25" data-entrada="smoothup">
+  <div class="cap arriba" style="font-size:9.4cqw">Judito<br><span class="hl">sí te lo dice</span>:</div>
+  <div class="tarjeta entra" style="--d:.25s;--fuera:2s"><div class="rot"><img src="img/foco.webp" alt="">El consejo de Judito</div><b>La oferta pesa más que el público</b><p>Di qué se llevan: “2 por 1 los martes”.</p></div>
+  <div class="tarjeta entra" style="--d:2.25s;--fuera:4s"><div class="rot"><img src="img/foco.webp" alt="">El consejo de Judito</div><b>Tres creativos, no uno</b><p>Meta le pasa el presupuesto a la que gana.</p></div>
+  <div class="tarjeta entra" style="--d:4.25s"><div class="rot"><img src="img/foco.webp" alt="">El consejo de Judito</div><b>No la toques los primeros tres días</b><p>Los primeros días los números se ven mal: es normal.</p></div>
+</template>
+
+<template id="llamado-precio" data-sfx="caja@0.05 plop@1.35 sello@2.7" data-entrada="zoomin">
+  <div class="precio golpea" style="--giro:0deg"><b>$20</b><span>al mes</span></div>
+  <img class="objeto cae" src="img/hamburguesa.webp" alt="Hamburguesa" style="--y:90cqw;--ancho:32cqw;--d:1.2s">
+  <div class="cap abajo entra" style="--d:1.5s;top:110cqw;font-size:5.8cqw">Lo que cuesta una hamburguesa.</div>
+  <div class="sticker golpea" style="--d:2.7s;--giro:20deg;--y:63cqw">14 días<br>GRATIS</div>
+  <div class="texto-chico">+ el presupuesto de tus anuncios, que pagas directo a Meta.</div>
+</template>
+
+<template id="llamado-cierre" data-sfx="tap@1.15 whoosh-baja@2.0 acorde-final@2.5" data-entrada="smoothup">
+  <div class="cap arriba funde" style="--fuera:2.2s">Si llegaste<br>hasta aquí,<br>pruébalo <span class="hl">gratis</span><span class="sub">judomarketing.net/juditoads</span></div>
+  <div class="tel" style="--fuera:2s"><div class="pant"><div class="estado-tel"><span>9:41</span><svg><use href="#ic-estado"/></svg></div>
+    <div class="vista"><img style="--s:26cqw" src="img/landing-largo.webp" alt="Botón Empieza con 14 días de prueba"></div>
+    <div class="toque" style="--x:50%;--y:64cqw;--d:.95s"></div></div></div>
+  <div class="final entra" style="--d:2.5s">
+    <h3>¿Necesitas ayuda creando tu <span class="hl">perfil de Meta</span>?</h3>
+    <p>Sígueme o escríbeme:</p>
+    <div class="contacto"><span><img src="img/judo-logo.webp" alt="">@judo.marketing</span><span>WhatsApp +1 305 934 9981</span></div>
+  </div>
+</template>
+
+<!-- La lista de escenas, en orden. dur en segundos. pieza: cuál de las 8.
+     texto: lo que se lee en pantalla. ve: lo que se ve. ojo: lo que falta
+     confirmar (sale en naranja en la mesa). -->
+<script type="application/json" id="escenas">
+[
+  { "id": "e01", "plantilla": "gancho", "dur": 2.6, "pieza": "1 · Gancho",
+    "texto": "Este anuncio te llegó por menos de 5¢.",
+    "ve": "Una moneda de 5¢ enorme entra girando desde el primer cuadro y frena en el centro.",
+    "ojo": "Por confirmar: que la campaña de verdad llegó a cada persona por menos de 5¢ (gasto ÷ alcance)." },
+  { "id": "e02", "plantilla": "intro", "dur": 3.2, "pieza": "2 · Introducción",
+    "texto": "Quédate: te enseño a lanzar el tuyo sin gurú.",
+    "ve": "Sale el genio de la lámpara: “Te enseño todo por $$”. Cae el sello NO y el genio vuelve a la lámpara." },
+  { "id": "e03", "plantilla": "cuerpo1-cursos", "dur": 3.5, "pieza": "3 · Cuerpo 1",
+    "texto": "Ni pagar más cursos.",
+    "ve": "Seis cursos caen en torre con su precio y sus horas; cae el total y un barrido saca todo." },
+  { "id": "e04", "plantilla": "cuerpo1-app", "dur": 2.8, "pieza": "3 · Cuerpo 1",
+    "texto": "Y creé… JuditoADS · 5 años de experiencia, metidos en una app.",
+    "ve": "El logo de la app entra grande con rebote." },
+  { "id": "e05", "plantilla": "bucle1", "dur": 1.6, "pieza": "4 · Bucle abierto",
+    "texto": "Pero eso no es lo más loco…",
+    "ve": "La frase entra palabra por palabra, la cabeza que explota y tres puntos." },
+  { "id": "e06", "plantilla": "cuerpo2-pasos", "dur": 1.8, "pieza": "5 · Cuerpo 2",
+    "texto": "Lo lanzas tú solo. En 4 pasos:",
+    "ve": "Cuatro fichas numeradas suben en cascada. Cierra el bucle." },
+  { "id": "e07", "plantilla": "cuerpo2-meta", "dur": 2.8, "pieza": "5 · Cuerpo 2",
+    "texto": "Conectas tu cuenta de Meta",
+    "ve": "El panel real; el dedo toca “Conectar Meta” y aparecen las cuentas conectadas." },
+  { "id": "e08", "plantilla": "bucle2", "dur": 1.8, "pieza": "6 · Bucle abierto",
+    "texto": "Y lo que sigue, casi nadie te lo dice…",
+    "ve": "La frase palabra por palabra, la carita que pide silencio y los tres puntos." },
+  { "id": "e09", "plantilla": "cuerpo3-consejos", "dur": 6.0, "pieza": "7 · Cuerpo 3",
+    "texto": "Judito sí te lo dice: (tres consejos)",
+    "ve": "Tres consejos reales de la app, unos 2 segundos cada uno." },
+  { "id": "e10", "plantilla": "llamado-precio", "dur": 4.0, "pieza": "8 · Llamado a la acción",
+    "texto": "$20 al mes · Lo que cuesta una hamburguesa · 14 días GRATIS",
+    "ve": "El precio de golpe, cae la hamburguesa 3D y se pega el sello de 14 días gratis." },
+  { "id": "e11", "plantilla": "llamado-cierre", "dur": 7.5, "pieza": "8 · Llamado a la acción",
+    "texto": "Si llegaste hasta aquí, pruébalo gratis · judomarketing.net/juditoads → contacto",
+    "ve": "El dedo toca “Empieza con 14 días de prueba”, el teléfono sale por abajo y queda la tarjeta de contacto unos 5 segundos." }
+]
+</script>
+
+<script>
+// ── Mesa de revisión: arma una ficha por escena con su cuadro en bucle ──
+const ESCENAS = JSON.parse(document.getElementById("escenas").textContent);
+const EXTRA = 0.25;
+const fmt = (s) => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, "0")}`;
+const total = ESCENAS.reduce((a, e) => a + e.dur, 0);
+document.getElementById("titulo").textContent = document.title.replace(/^Video · /, "");
+document.getElementById("resumen").textContent = `${ESCENAS.length} escenas · ${total.toFixed(1)} s · 1080 × 1920`;
+
+// Tabla de las 8 piezas
+const piezas = [];
+let t0 = 0;
+for (const e of ESCENAS) {
+  const ult = piezas.at(-1);
+  if (ult && ult.pieza === e.pieza) { ult.fin += e.dur; ult.n++; }
+  else piezas.push({ pieza: e.pieza, ini: t0, fin: t0 + e.dur, n: 1 });
+  t0 += e.dur;
+}
+document.getElementById("piezas").innerHTML = "<tr><th>Pieza</th><th>Escenas</th><th>Tiempo</th></tr>" +
+  piezas.map((p) => `<tr><td>${p.pieza}</td><td>${p.n}</td><td>${fmt(p.ini)} – ${fmt(p.fin)}</td></tr>`).join("");
+
+const linea = document.getElementById("linea");
+const cont = document.getElementById("escenas");
+const sonidos = (f) => (document.getElementById(f)?.dataset.sfx || "").split(/\s+/).filter(Boolean).map((s) => s.replace(/@/, " en ").replace(/:/, " por ")).join(" · ");
+t0 = 0;
+for (const [i, e] of ESCENAS.entries()) {
+  const a = document.createElement("a");
+  a.href = `#${e.id}`; a.style.setProperty("--d", e.dur); a.textContent = i + 1; a.title = `${i + 1}. ${e.pieza}`;
+  linea.append(a);
+  const art = document.createElement("article");
+  art.className = "escena"; art.id = e.id;
+  art.innerHTML = `
+    <div class="marco"><div class="cuadro" style="--t:${e.dur + EXTRA}s" role="img" aria-label="Escena ${i + 1}"><div class="zonas" aria-hidden="true"></div></div></div>
+    <div class="det">
+      <div class="cab"><span class="num">${String(i + 1).padStart(2, "0")}</span><h2>${e.pieza}</h2><span class="tc">${fmt(t0)} – ${fmt(t0 + e.dur)} · ${e.dur.toFixed(1)} s</span></div>
+      <p class="en-pantalla">${e.texto}</p>
+      <dl>${e.voz ? `<dt>Voz</dt><dd>${e.voz}</dd>` : ""}<dt>Se ve</dt><dd>${e.ve || ""}</dd><dt>Sonido</dt><dd class="sonido">${sonidos(e.plantilla)}</dd>${e.ojo ? `<dt>Ojo</dt><dd class="ojo">${e.ojo}</dd>` : ""}</dl>
+    </div>`;
+  const cuadro = art.querySelector(".cuadro");
+  const plantilla = document.getElementById(e.plantilla);
+  if (plantilla) cuadro.prepend(plantilla.content.cloneNode(true));
+  // Un video real (img.secuencia con data-video) se ve como video en la mesa
+  for (const img of cuadro.querySelectorAll("img.secuencia[data-video]")) {
+    const v = document.createElement("video");
+    Object.assign(v, { src: img.dataset.video, muted: true, loop: true, playsInline: true, autoplay: true, className: img.className });
+    img.replaceWith(v);
+  }
+  cont.append(art);
+  t0 += e.dur;
+}
+// Cada escena vuelve a empezar al terminar, con todos sus eventos en su segundo
+for (const cuadro of document.querySelectorAll(".escena .cuadro")) {
+  const dur = parseFloat(cuadro.style.getPropertyValue("--t")) * 1000;
+  setInterval(() => {
+    if (document.body.classList.contains("pausado")) return;
+    for (const an of cuadro.getAnimations({ subtree: true })) { an.currentTime = 0; an.play(); }
+  }, dur);
+}
+const pausa = document.getElementById("pausa");
+pausa.onclick = () => { const on = document.body.classList.toggle("pausado"); pausa.setAttribute("aria-pressed", on); pausa.textContent = on ? "▶ Seguir" : "⏸ Pausar"; };
+const zonas = document.getElementById("ver-zonas");
+zonas.onclick = () => { const on = document.body.classList.toggle("ver-zonas"); zonas.setAttribute("aria-pressed", on); };
+</script>
+</body>
+</html>

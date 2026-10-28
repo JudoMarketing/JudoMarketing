@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carrusel · 5 errores que hacen que tu anuncio no venda (ejemplo)</title>
+<!-- FUENTES:INICIO -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<!-- FUENTES:FIN -->
+<style>
+/* MARCA:INICIO */
+:root {
+  --fondo: #0d0a17;
+  --superficie: #1c1829;
+  --texto: #ffffff;
+  --acento: #ffc533;
+  --acento-texto: #16101f;
+  --primario: #8b5cf6;
+  --primario-hondo: #6d28d9;
+  --ok: #34d399;
+  --alerta: #ff4d4d;
+  --f-display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --f-cuerpo: "Instrument Sans", "Segoe UI", Arial, sans-serif;
+  --ancho-display: 112%;
+  --sombra-texto: 0 .4cqw 1.8cqw rgba(0,0,0,.45);
+  --esquema: dark;
+}
+/* MARCA:FIN */
+
+/* ════════════════════════════════════════════════════════════════════
+   FORMATO: --ancho × --alto de cada lámina. 4:5 (1080 × 1350) para el
+   feed de Instagram y Facebook y para LinkedIn; 1:1 (1080 × 1080) si se
+   pide cuadrado. Se cambia en .tira (style="--alto:1350px").
+   Medidas en cqw: el ancho de la lámina es 100 (y el alto, 125 en 4:5).
+   Márgenes: 7 cqw a cada lado. En la cuadrícula del perfil, Instagram
+   recorta la portada a 3:4: lo importante de la lámina 1 va dentro de
+   los 88 cqw del centro.
+   ════════════════════════════════════════════════════════════════════ */
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #0c0a14; }
+body { color: #f3effb; font: 15px/1.55 "Instrument Sans", "Segoe UI", Arial, sans-serif; }
+
+/* ── Mesa de revisión (se esconde al renderizar: ?render=1) ── */
+.mesa { max-width: 1100px; margin: 0 auto; padding: 28px max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left)); }
+.mesa h1 { font: 850 clamp(26px, 4.4vw, 42px)/1.08 var(--f-display); margin: 0 0 6px; }
+.mesa p { margin: 0; color: #a8a0c0; }
+.visor { overflow-x: auto; padding: 0 16px 24px; }
+.visor .tira { zoom: var(--zoom, .3); margin: 0 auto; }
+.notas { max-width: 1100px; margin: 0 auto; padding: 0 16px 64px; display: grid; gap: 10px; }
+.notas article { background: #15121f; border: 1px solid #2c2541; border-radius: 14px; padding: 12px 16px; }
+.notas b { color: var(--acento); font-family: var(--f-display); }
+.notas small { display: block; color: #a8a0c0; margin-top: 4px; }
+.render .mesa, .render .notas { display: none; }
+.render .visor { padding: 0; overflow: visible; }
+.render .visor .tira { zoom: 1; margin: 0; }
+
+/* ── La tira: todas las láminas una al lado de la otra ── */
+.tira { --ancho: 1080px; --alto: 1350px; position: relative; display: flex; width: calc(var(--ancho) * var(--n, 1)); height: var(--alto); isolation: isolate; color-scheme: var(--esquema);
+  background:
+    radial-gradient(60% 50% at 15% 10%, color-mix(in oklab, var(--primario) 35%, transparent), transparent 70%),
+    radial-gradient(50% 45% at 85% 100%, color-mix(in oklab, var(--acento) 14%, transparent), transparent 70%),
+    var(--fondo); background-size: var(--ancho) var(--alto); }
+.lamina { position: relative; flex: none; width: var(--ancho); height: var(--alto); overflow: hidden; container-type: inline-size; color: var(--texto); font-family: var(--f-cuerpo); }
+.lamina::after { content: ""; position: absolute; inset: 0; z-index: 30; pointer-events: none; opacity: .08; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+/* El hilo que cruza todas las láminas: invita a deslizar (lo dibuja el script) */
+.hilo { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.hilo path { fill: none; stroke: color-mix(in oklab, var(--primario) 70%, transparent); stroke-width: 6; stroke-linecap: round; }
+.hilo circle { fill: var(--acento); }
+
+/* ── Lo que llevan todas las láminas ── */
+.cuerpo { position: absolute; inset: 8cqw 7cqw 15cqw; z-index: 2; display: flex; flex-direction: column; gap: 3.6cqw; }
+.cuerpo.centro { justify-content: center; }
+.pie-lamina { position: absolute; left: 7cqw; right: 7cqw; bottom: 5.4cqw; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 3cqw; font: 700 3.2cqw/1 var(--f-cuerpo); opacity: .9; }
+.pie-lamina .marca { display: flex; align-items: center; gap: 1.6cqw; }
+.pie-lamina .marca img { width: 6.4cqw; height: 6.4cqw; border-radius: 50%; object-fit: contain; background: #0b0a10; padding: .5cqw; }
+.pie-lamina .progreso { display: flex; gap: 1cqw; }
+.pie-lamina .progreso i { width: 2.2cqw; height: 1cqw; border-radius: 1cqw; background: color-mix(in oklab, var(--texto) 25%, transparent); }
+.pie-lamina .progreso i.aqui { width: 6cqw; background: var(--acento); }
+.desliza { display: inline-flex; align-items: center; gap: 1.4cqw; color: var(--acento); font: 800 3.4cqw/1 var(--f-display); }
+
+/* ── Texto ── */
+.kicker { align-self: flex-start; padding: 1.4cqw 3cqw; border-radius: 99cqw; border: .4cqw solid currentColor; color: var(--acento); font: 800 3.4cqw/1 var(--f-display); letter-spacing: .06em; text-transform: uppercase; }
+.titular { margin: 0; font: 900 11.5cqw/1.02 var(--f-display); font-stretch: var(--ancho-display); letter-spacing: -.02em; text-wrap: balance; text-shadow: var(--sombra-texto); }
+.titular.mediano { font-size: 8.8cqw; }
+.fichas-mini { display: flex; gap: 2.4cqw; }
+.fichas-mini b { width: 12cqw; height: 12cqw; border-radius: 50%; display: grid; place-items: center; background: var(--primario); color: #fff; font: 900 6cqw/1 var(--f-display); box-shadow: 0 1cqw 0 var(--primario-hondo); }
+.fichas-mini b:last-child { background: var(--acento); color: var(--acento-texto); box-shadow: 0 1cqw 0 color-mix(in oklab, var(--acento) 60%, black); }
+.abajo-der { margin-top: auto; align-self: flex-end; }
+.esquina { position: absolute; top: -1cqw; right: 0; --tam: 15cqw; }
+.texto { margin: 0; font-size: 5.3cqw; line-height: 1.32; text-wrap: pretty; opacity: .92; }
+.hl { color: var(--acento-texto); background: var(--acento); padding: 0 .14em; border-radius: .12em; box-decoration-break: clone; -webkit-box-decoration-break: clone; text-shadow: none; }
+.acento { color: var(--acento); }
+.bucle { text-wrap: balance; margin-top: auto; display: flex; align-items: center; gap: 2cqw; padding: 3cqw 3.6cqw; border-radius: 3cqw; background: color-mix(in oklab, var(--acento) 14%, transparent); border: .4cqw solid color-mix(in oklab, var(--acento) 55%, transparent); color: var(--acento); font: 800 5cqw/1.2 var(--f-display); font-stretch: var(--ancho-display); }
+.bucle::after { content: "→"; margin-left: auto; font-size: 7cqw; }
+
+/* ── Piezas ── */
+.numero { width: 13cqw; height: 13cqw; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--primario); color: #fff; font: 900 9cqw/1 var(--f-display); box-shadow: 0 1.4cqw 0 var(--primario-hondo); }
+.fila { display: flex; flex-direction: column; align-items: flex-start; gap: 3.4cqw; }
+.mal, .bien { display: flex; gap: 3cqw; align-items: flex-start; padding: 4cqw; border-radius: 4cqw; font-size: 4.8cqw; line-height: 1.3; text-wrap: pretty; }
+.mal { background: color-mix(in oklab, var(--alerta) 12%, transparent); border: .4cqw solid color-mix(in oklab, var(--alerta) 50%, transparent); }
+.bien { background: color-mix(in oklab, var(--ok) 12%, transparent); border: .4cqw solid color-mix(in oklab, var(--ok) 50%, transparent); }
+.mal::before, .bien::before { flex: none; width: 8cqw; height: 8cqw; border-radius: 50%; display: grid; place-items: center; font: 900 4.6cqw/1 var(--f-cuerpo); }
+.mal::before { content: "✕"; background: var(--alerta); color: #fff; }
+.bien::before { content: "✓"; background: var(--ok); color: #06261a; }
+.mal b, .bien b { display: block; font: 850 5.4cqw/1.15 var(--f-display); margin-bottom: 1cqw; }
+.dato { font: 900 30cqw/.9 var(--f-display); font-stretch: var(--ancho-display); color: var(--acento); letter-spacing: -.03em; }
+.emoji { width: var(--tam, 26cqw); flex: none; filter: drop-shadow(0 2cqw 3cqw rgba(0,0,0,.45)); }
+.foto-fondo { position: absolute; inset: 0; z-index: 0; }
+.foto-fondo img { width: 100%; height: 100%; object-fit: cover; }
+.velo { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(8,6,16,.82) 0 30%, rgba(8,6,16,.2) 55%, rgba(8,6,16,.85) 100%); }
+.telefono { align-self: center; width: var(--ancho-tel, 52cqw); aspect-ratio: 9 / 16; border-radius: 6cqw; padding: 1.2cqw; overflow: hidden; background: linear-gradient(145deg, #55516a, #1b1925 40%, #0e0d13); box-shadow: 0 3cqw 7cqw -2cqw rgba(0,0,0,.8); }
+.telefono img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 5cqw; display: block; }
+.contacto { display: grid; gap: 2.4cqw; }
+.contacto span { display: inline-flex; align-items: center; gap: 2cqw; justify-self: start; padding: 2.4cqw 4cqw; border-radius: 99cqw; background: color-mix(in oklab, var(--texto) 10%, transparent); border: .4cqw solid color-mix(in oklab, var(--texto) 22%, transparent); font: 800 4.8cqw/1 var(--f-display); white-space: nowrap; }
+.contacto img { width: 8cqw; height: 8cqw; border-radius: 50%; object-fit: contain; background: #0b0a10; padding: .6cqw; }
+.boton { align-self: flex-start; padding: 3.4cqw 6cqw; border-radius: 99cqw; background: var(--acento); color: var(--acento-texto); font: 900 5.6cqw/1 var(--f-display); box-shadow: 0 2cqw 4cqw rgba(0,0,0,.4); }
+</style>
+</head>
+<body>
+<header class="mesa">
+  <h1 id="titulo">Carrusel</h1>
+  <p id="resumen"></p>
+</header>
+
+<div class="visor">
+<main class="tira" id="tira" style="--alto:1350px">
+
+  <section class="lamina" data-pieza="1 · Gancho" data-alt="Portada: «Tu anuncio no vende por uno de estos 5 errores», con un emoji de alerta.">
+    <div class="cuerpo">
+      <span class="kicker">Anuncios en Meta</span>
+      <h2 class="titular">Tu anuncio no vende por <span class="hl">uno de estos</span> 5 errores</h2>
+      <img class="emoji" src="img/alerta.webp" alt="" style="--tam:30cqw;margin-top:auto;align-self:flex-end">
+    </div>
+  </section>
+
+  <section class="lamina" data-pieza="2 · Introducción" data-alt="«Desliza: los 5, en orden. Del más fácil de arreglar al que casi nadie ve venir.»">
+    <div class="cuerpo centro">
+      <h2 class="titular mediano">Desliza: los 5, en orden.</h2>
+      <div class="fichas-mini" aria-hidden="true"><b>1</b><b>2</b><b>3</b><b>4</b><b>5</b></div>
+      <p class="texto">Del más fácil de arreglar al que <span class="acento">casi nadie ve venir</span>.</p>
+    </div>
+  </section>
+
+  <section class="lamina" data-pieza="3 · Cuerpo 1" data-alt="Error 1: vender «calidad y servicio». Mejor: decir qué se llevan, como «2 por 1 los martes».">
+    <div class="cuerpo">
+      <img class="emoji esquina" src="img/megafono.webp" alt="">
+      <div class="fila"><span class="numero">1</span><h2 class="titular mediano">Vender «calidad y servicio»</h2></div>
+      <div class="mal"><div><b>Lo que no funciona</b>"Calidad y el mejor servicio de Miami."</div></div>
+      <div class="bien"><div><b>Lo que sí</b>Di qué se llevan: "2 por 1 los martes".</div></div>
+    </div>
+  </section>
+
+  <section class="lamina" data-pieza="3 · Cuerpo 1 + 4 · Bucle abierto" data-alt="Error 2: subir un solo creativo. Mejor: tres, y Meta le pasa el presupuesto al que gana. Abajo: «El 3 lo comete casi todo el mundo el primer día».">
+    <div class="cuerpo">
+      <img class="emoji esquina" src="img/cuadros.webp" alt="">
+      <div class="fila"><span class="numero">2</span><h2 class="titular mediano">Subir un solo creativo</h2></div>
+      <p class="texto">Sube tres versiones. En unos días, Meta le pasa el presupuesto <span class="acento">a la que mejor funciona</span>, sola.</p>
+      <div class="bucle">El 3 lo comete casi todo el mundo el primer día</div>
+    </div>
+  </section>
+
+  <section class="lamina" data-pieza="5 · Cuerpo 2" data-alt="Error 3: tocar el anuncio los primeros días, cuando Meta todavía está aprendiendo. Dale tres días.">
+    <div class="cuerpo">
+      <img class="emoji esquina" src="img/reloj.webp" alt="">
+      <div class="fila"><span class="numero">3</span><h2 class="titular mediano">Tocarlo los primeros días</h2></div>
+      <p class="texto">Los primeros días Meta está aprendiendo a quién mostrarlo, y los números <span class="acento">todavía no dicen nada</span>.</p>
+      <p class="texto">Si lo cambias, vuelve a empezar. Dale tres días.</p>
+    </div>
+  </section>
+
+  <section class="lamina" data-pieza="5 · Cuerpo 2 + 6 · Bucle abierto" data-alt="Error 4: pedirle clics a Meta cuando quieres ventas. Abajo: «Y el 5 casi nadie lo ve venir».">
+    <div class="cuerpo">
+      <div class="fila"><span class="numero">4</span><h2 class="titular mediano">Pedir clics si quieres ventas</h2></div>
+      <p class="texto">Meta busca exactamente lo que le pides. Si le pides clics, te trae a quien toca barato, <span class="acento">no a quien compra</span>.</p>
+      <div class="bucle">Y el 5 casi nadie lo ve venir</div>
+    </div>
+  </section>
+
+  <section class="lamina" data-pieza="7 · Cuerpo 3" data-alt="Error 5: no mirar el anuncio hasta fin de mes. Si Meta lo frena y no te enteras, pierdes días de ventas.">
+    <div class="cuerpo">
+      <img class="emoji esquina" src="img/campana.webp" alt="">
+      <div class="fila"><span class="numero">5</span><h2 class="titular mediano">No mirarlo hasta fin de mes</h2></div>
+      <p class="texto">Si Meta lo frena (un pago pendiente, un texto que no aprueba) y no te enteras, <span class="acento">pierdes días de ventas</span>.</p>
+      <div class="bien"><div><b>Lo que sí</b>Míralo cada día, o que una app te avise apenas pase.</div></div>
+    </div>
+  </section>
+
+  <section class="lamina" data-pieza="8 · Llamado a la acción" data-alt="«Si llegaste hasta aquí: Judito te guía al armar tu anuncio y te avisa si Meta lo frena. Pruébalo gratis 14 días», con el contacto de Judo Marketing.">
+    <div class="cuerpo">
+      <h2 class="titular mediano">Si llegaste hasta aquí:</h2>
+      <p class="texto">Judito te guía al armar tu anuncio y te avisa si Meta lo frena.</p>
+      <span class="boton">Pruébalo gratis 14 días</span>
+      <p class="texto" style="font-size:4.4cqw">judomarketing.net/juditoads</p>
+      <div class="contacto" style="margin-top:auto"><span><img src="img/judo-logo.webp" alt="">@judo.marketing</span><span>WhatsApp +1 305 934 9981</span></div>
+    </div>
+  </section>
+
+</main>
+</div>
+<section class="notas" id="notas" aria-label="Notas por lámina"></section>
+
+<script>
+// Arma lo que se repite (pie de cada lámina y el hilo) y la mesa de revisión
+const render = new URLSearchParams(location.search).has("render");
+if (render) document.body.classList.add("render");
+const tira = document.getElementById("tira");
+const laminas = [...tira.querySelectorAll(".lamina")];
+const N = laminas.length;
+tira.style.setProperty("--n", N);
+const MARCA = { logo: "img/judo-logo.webp", usuario: "@judo.marketing" };
+laminas.forEach((l, i) => {
+  if (l.querySelector(".pie-lamina")) return;
+  const pie = document.createElement("div");
+  pie.className = "pie-lamina";
+  pie.innerHTML = `<span class="marca"><img src="${MARCA.logo}" alt="">${MARCA.usuario}</span>` +
+    `<span class="progreso">${laminas.map((_, j) => `<i class="${j === i ? "aqui" : ""}"></i>`).join("")}</span>` +
+    (i < N - 1 ? `<span class="desliza">Desliza →</span>` : `<span class="desliza">Guárdalo</span>`);
+  l.append(pie);
+});
+// El hilo: una onda suave que cruza todas las láminas a la altura de los pies
+const W = parseFloat(getComputedStyle(tira).getPropertyValue("--ancho")) || 1080;
+const H = parseFloat(getComputedStyle(tira).getPropertyValue("--alto")) || 1350;
+const y0 = H * 0.86;
+let d = `M0 ${y0}`;
+for (let i = 0; i < N; i++) d += ` Q${i * W + W * 0.5} ${y0 + (i % 2 ? 40 : -40)} ${(i + 1) * W} ${y0}`;
+tira.insertAdjacentHTML("afterbegin", `<svg class="hilo" viewBox="0 0 ${W * N} ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}"/>${laminas.slice(1).map((_, i) => `<circle cx="${(i + 1) * W}" cy="${y0}" r="11"/>`).join("")}</svg>`);
+document.getElementById("titulo").textContent = document.title.replace(/^Carrusel · /, "");
+document.getElementById("resumen").textContent = `${N} láminas · ${W} × ${H}`;
+document.getElementById("notas").innerHTML = laminas.map((l, i) =>
+  `<article><b>${i + 1} · ${l.dataset.pieza || ""}</b><small>Texto alternativo: ${l.dataset.alt || "falta"}</small></article>`).join("");
+// En la mesa, la tira cabe en el ancho de la pantalla
+if (!render) {
+  const ajustar = () => tira.style.setProperty("--zoom", Math.min(0.42, (innerWidth - 32) / (W * Math.min(N, 3.2))));
+  ajustar(); addEventListener("resize", ajustar);
+}
+window.listo = (async () => {
+  await document.fonts.ready;
+  await Promise.all([...document.images].map((i) => i.decode().catch(() => {})));
+  return true;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!-- Catálogo de escenas que no salen en el ejemplo. Se ve y se prueba con:
+       python3 build.py --catalogo && node render.mjs --muestra
+     Usa los estilos de storyboard.html. Copia de aquí el marcado que te
+     sirva a una plantilla nueva del storyboard. -->
+
+<template id="cat-lista" data-sfx="pop@0.3 pop@0.9 pop@1.5 campana@2.1">
+  <div class="cap arriba" style="font-size:8.4cqw">3 señales de que tu canaleta <span class="hl">ya falló</span>:</div>
+  <ul class="lista errores">
+    <li class="entra" style="--d:.3s">Se desborda</li>
+    <li class="entra" style="--d:.9s">Manchas en la pared</li>
+    <li class="entra" style="--d:1.5s">Tierra lavada abajo</li>
+  </ul>
+  <div class="etiqueta golpea" style="--d:2.1s;--x:12cqw;--y:118cqw;--tam:5.4cqw">¿Te pasa una? Revísala.</div>
+</template>
+
+<template id="cat-cifra" data-sfx="subida@0:1.2 sello@1.3" data-entrada="zoomin">
+  <div class="cap arriba">Una pulgada de lluvia en tu techo son</div>
+  <div class="cifra" data-despues="" style="--hasta:620;--d:.1s;--dura:1.2s"></div>
+  <div class="cap abajo entra" style="--d:1.3s;top:96cqw">galones de agua</div>
+  <div class="texto-chico" style="--y:118cqw">En un techo de 1,000 pies².</div>
+</template>
+
+<template id="cat-antes-despues" data-sfx="whoosh@0.6 campana@1.7" data-entrada="smoothleft">
+  <div class="cap arriba" style="font-size:9cqw">Este patio, <span class="hl">en 6 horas</span>.</div>
+  <div class="ad" style="--d:.6s">
+    <img src="img/ejemplo-antes.jpg" alt="Antes">
+    <img class="despues" src="img/ejemplo-despues.jpg" alt="Después">
+    <div class="linea"></div>
+    <span class="rot antes">Antes</span><span class="rot despues-rot">Después</span>
+  </div>
+</template>
+
+<template id="cat-foto" data-sfx="whoosh-suave@0.1">
+  <div class="foto deriva"><img src="img/ejemplo-foto.jpg" alt="Foto real del negocio"></div>
+  <div class="velo"></div>
+  <div class="cap arriba entra" style="--d:.2s">POV: abres a las 6 y <span class="hl">ya hay fila</span>.</div>
+</template>
+
+<template id="cat-video" data-entrada="fade">
+  <div class="foto"><img class="secuencia" data-video="clips/ejemplo.mp4" alt=""></div>
+  <div class="velo"></div>
+  <div class="cap arriba" style="font-size:7.6cqw">Un video real,<br><span class="hl">cuadro por cuadro</span>.</div>
+</template>
+
+<template id="cat-publico" data-sfx="bip@0.1 bip@0.5 bip@0.9 bip@1.3 campana-grave@1.85">
+  <div class="cap arriba" style="font-size:8cqw">Encuentra a quien<br><span class="hl">sí te compra</span>.</div>
+  <div class="gente" aria-hidden="true">
+    <div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div>
+    <div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div>
+    <div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div class="elegido"><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div>
+    <div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div>
+    <div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div><div><img src="img/persona.webp" alt=""></div>
+  </div>
+  <div class="mira" aria-hidden="true"></div>
+</template>
+
+<template id="cat-objeto" data-sfx="plop@0.2 brillo@0.9">
+  <div class="cap arriba">Un producto que <span class="hl">cae y flota</span>.</div>
+  <img class="objeto cae" src="img/hamburguesa.webp" alt="" style="--y:88cqw;--ancho:44cqw;--d:.2s">
+  <img class="objeto flota" src="img/foco.webp" alt="" style="--y:120cqw;--ancho:18cqw;--d:.9s">
+</template>
+
+<script type="application/json" id="escenas">
+[
+  { "id": "c01", "plantilla": "cat-lista", "dur": 3.0, "pieza": "3 · Cuerpo 1", "texto": "3 señales…" },
+  { "id": "c02", "plantilla": "cat-cifra", "dur": 2.6, "pieza": "1 · Gancho", "texto": "620 galones" },
+  { "id": "c03", "plantilla": "cat-antes-despues", "dur": 2.6, "pieza": "5 · Cuerpo 2", "texto": "Antes y después" },
+  { "id": "c04", "plantilla": "cat-foto", "dur": 2.4, "pieza": "1 · Gancho", "texto": "POV" },
+  { "id": "c05", "plantilla": "cat-video", "dur": 2.0, "pieza": "5 · Cuerpo 2", "texto": "Video real" },
+  { "id": "c06", "plantilla": "cat-publico", "dur": 2.4, "pieza": "3 · Cuerpo 1", "texto": "Público" },
+  { "id": "c07", "plantilla": "cat-objeto", "dur": 2.2, "pieza": "7 · Cuerpo 3", "texto": "Objeto" }
+]
+</script>
