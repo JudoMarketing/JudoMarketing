@@ -65,6 +65,10 @@ confirmar"**. No inventes datos para no preguntar.
 4. **La autocrítica** (la lista de `estrategia-8-piezas.md`). Corrige antes
    de diseñar, y anota qué cambiaste y por qué.
 
+**Lo que está "Por confirmar" no va en las láminas.** Se escribe la lámina sin
+ese dato (o sin la frase que lo necesita) y se lista aparte. Cuando el cliente
+lo confirma, se agrega.
+
 Cuando el texto guía trae algo que no se puede sostener, cámbialo y explícalo.
 Si tienes el código o el sitio del producto, **comprueba ahí** lo que dice el
 texto.
@@ -76,14 +80,19 @@ no muestra; lo cierto era "pierdes días de ventas".
 ## 3. Diseñar y producir
 
 ```bash
-cp -r <esta skill>/assets/proyecto <destino>/<nombre>
+cp -r <esta skill>/assets/proyecto <destino>/<nombre>   # ya trae los scripts de revisión y de marca
 cd <destino>/<nombre>
-cp <esta skill>/scripts/*.mjs <esta skill>/scripts/*.js <esta skill>/scripts/*.py .   # navegador, revisión y marca
 python3 aplicar-marca.py marca.json carrusel.html
 ```
 
+- **`marca.json`** va en la carpeta del proyecto (formato en `marca.md`). El
+  logo, en `marca/logo.png`.
+- **Para sacar la marca de un sitio web:**
+  `node <esta skill>/scripts/marca.mjs https://sitio.com marca`.
+
 1. **Escribe las láminas** en `carrusel.html` con los tipos de `diseno.md`.
-   Pon el logo y el @ de la marca en `MARCA`, dentro del script.
+   Pon el logo, el @ y el nombre de la marca en la tira (`data-logo`,
+   `data-usuario`, `data-nombre`).
    - **Reemplaza todo el ejemplo**: es de JuditoADS.
    - **Borra de `img/` lo que no uses.**
 2. `node revisar.mjs` y corrige **todo** lo que avise:
@@ -113,7 +122,10 @@ Manda los PNG en orden (y el PDF si es para LinkedIn) y responde con:
 - **Los otros cuatro titulares de portada**, una línea cada uno.
 
 Si el usuario tiene una forma de respuesta propia (por ejemplo, "Te toca a
-ti / Listo / Ojo" en Judo Marketing), úsala en vez de esta.
+ti / Listo / Ojo" en Judo Marketing), úsala. Las mismas cosas van adentro:
+- el pie y los textos alternativos, en "Listo" o al final;
+- lo que falta confirmar, en "Te toca a ti";
+- los riesgos, en "Ojo".
 
 ## Lo que no se negocia
 

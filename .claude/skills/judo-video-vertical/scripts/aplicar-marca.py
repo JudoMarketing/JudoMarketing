@@ -99,6 +99,7 @@ variables = f""":root {{
   --ancho-display: {m.get("ancho-display", "112%" if display == "Archivo" else "100%")};
   --sombra-texto: {"0 .6cqw 2.4cqw rgba(0,0,0,.55)" if oscuro else "none"};
   --esquema: {"dark" if oscuro else "light"};
+  --escala-titulares: {m.get("escala-titulares", 1.16 if re.search(r"condensed|anton|oswald|bebas|compressed|narrow|league gothic", display, re.I) else 1)};
 }}"""
 
 n1 = len(re.findall(r"/\* MARCA:INICIO \*/.*?/\* MARCA:FIN \*/", html, flags=re.S))
@@ -126,6 +127,6 @@ if logo:
 # ── Contraste ──
 print(f"Marca «{m.get('nombre', '')}» aplicada en {ruta_html}")
 for nombre, a, b, minimo in (("texto sobre fondo", texto, fondo, 4.5), ("letra sobre acento", acento_texto, acento, 4.5),
-                             ("acento sobre fondo", acento, fondo, 3.0)):
+                             ("acento sobre fondo", acento, fondo, 3.0), ("letra blanca sobre primario (fichas)", "#ffffff", primario, 3.0)):
     c = contraste(a, b)
     print(f"  {'✓' if c >= minimo else '⚠'} {nombre}: {c:.2f}:1 (mínimo {minimo}:1)")

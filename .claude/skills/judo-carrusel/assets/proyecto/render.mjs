@@ -12,7 +12,8 @@ const args = process.argv.slice(2);
 const archivo = args.find((a) => a.endsWith(".html")) || "carrusel.html";
 const P = join(D, "salida");
 mkdirSync(P, { recursive: true });
-for (const f of readdirSync(P)) if (/^\d\d\.png$/.test(f)) rmSync(join(P, f));
+// Fuera lo de un render anterior (otras láminas, un PDF viejo)
+for (const f of readdirSync(P)) if (/^\d\d\.png$/.test(f) || f === "carrusel.pdf" || f === "hoja.jpg") rmSync(join(P, f));
 
 const web = await servir([D]);
 const b = await abrirNavegador();

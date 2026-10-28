@@ -76,6 +76,8 @@ Un sonido que acompaña algo va en el mismo segundo que su `--d`.
   de marcas.
 
 **Partir las líneas a mano** con `<br>`, pensando en dónde respira la frase.
+Para que dos palabras no se separen (y no quede una sola al final), únelas con
+`&nbsp;`.
 El resaltado no se parte en dos líneas y ninguna palabra queda sola en la
 última; `revisar.mjs` lo avisa. Cabe más o menos esto por línea:
 
@@ -84,6 +86,11 @@ El resaltado no se parte en dos líneas y ninguna palabra queda sola en la
 | 7 cqw | 16 |
 | 8,4 cqw | 13 |
 | 9,6 cqw | 12 |
+
+Si la letra de la marca es condensada (Anton, Barlow Condensed), caben más y
+`aplicar-marca.py` agranda los tamaños de las clases. Si escribes el tamaño en
+la escena, escríbelo como `calc(8.4cqw * var(--escala-titulares))` para que
+crezca igual.
 
 ## 4. Eventos de uso general
 
@@ -111,6 +118,9 @@ Variantes:
 - `.flota`: entra y queda flotando.
 
 `.moneda` es una moneda dorada hecha con CSS.
+
+Los emojis 3D de Fluent vienen de 256 px: hasta unos 40 cqw de ancho se ven
+bien; más grandes se ven blandos.
 
 ### Globo de diálogo y sello
 ```html

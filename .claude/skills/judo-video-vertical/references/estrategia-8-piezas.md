@@ -59,7 +59,7 @@ En video, el gancho **se mueve desde el primer cuadro** y el texto está en
 pantalla antes de los 0,2 s. Nunca abre con el logo, con "Hola, soy…" ni con
 una pantalla vacía: eso es lo que hace pasar de largo.
 
-En carrusel, la lámina 1 es un titular de 10 palabras o menos, grande, con
+En carrusel, la lámina 1 es un titular de 12 palabras o menos, grande, con
 una imagen que sorprende o un número, y algo que pide deslizar.
 
 ### Rúbrica (0, 1 o 2 puntos cada una; gana el de más puntos)
@@ -186,7 +186,7 @@ usuario que la estrategia pide uno solo.
 | --- | --- | --- |
 | Largo | 20 a 35 s para anuncio en frío; 45 a 60 s para explicar un producto (JuditoADS: 56 s) | 7 a 10 láminas (Instagram admite 20) |
 | Unidad | Escena de 2 a 4 s, una idea por escena | Una idea por lámina |
-| Texto | 3 palabras por segundo como máximo | Portada de 10 palabras o menos; láminas de 25 palabras o menos |
+| Texto | 3 palabras por segundo como máximo | Titular de portada de 12 palabras o menos; láminas de 25 palabras, nunca más de 40 |
 | Listas | Un elemento por vez, unos 2 s cada uno | Un elemento por lámina o 3 por lámina como máximo |
 | Bucles | Menos de 2 s | Una línea |
 

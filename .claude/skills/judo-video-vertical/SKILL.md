@@ -57,6 +57,9 @@ Si el usuario pide ir directo, avanza con lo que hay y marca lo que falta
 como **"Por confirmar"**. Inventar un dato para no preguntar es peor que
 preguntar.
 
+**Lo que está "Por confirmar" no sale en pantalla.** La escena se escribe sin
+ese dato y se lista aparte; cuando el cliente lo confirma, se agrega.
+
 ## 2. Escribir el guion
 
 1. **Clasifica el nicho** (`nichos.md`) y anota en una línea quién mira y qué
@@ -143,7 +146,10 @@ Manda el MP4 (y la portada) y responde con:
 - **Los otros cuatro ganchos**, una línea cada uno, por si prefiere otro.
 
 Si el usuario tiene una forma de respuesta propia (por ejemplo, "Te toca a
-ti / Listo / Ojo" en Judo Marketing), úsala en vez de esta.
+ti / Listo / Ojo" en Judo Marketing), úsala. Las mismas cosas van adentro:
+- el pie de video y los ganchos, en "Listo" o al final;
+- lo que falta confirmar, en "Te toca a ti";
+- los riesgos, en "Ojo".
 
 ## Lo que no se negocia
 

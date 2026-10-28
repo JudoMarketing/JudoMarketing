@@ -37,6 +37,16 @@ const res = await p.evaluate(() => {
     if (i === 0 && cuenta(".titular") > 12) r.problemas.push(`el titular de la portada tiene ${cuenta(".titular")} palabras (máximo 12)`);
     if (cuenta(".cuerpo") > 40) r.problemas.push(`tiene ${cuenta(".cuerpo")} palabras (máximo 40): recorta`);
     if (!l.dataset.alt) r.problemas.push("le falta el texto alternativo (data-alt)");
+    // Cajas con fondo o borde (botones, chips, recuadros) también respetan los márgenes
+    const L = l.getBoundingClientRect();
+    for (const x of l.querySelectorAll(".cuerpo *")) {
+      const cs = getComputedStyle(x);
+      const conFondo = !/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor) || parseFloat(cs.borderTopWidth) > 0;
+      if (!conFondo || x.closest(".pie-lamina")) continue;
+      const r2 = x.getBoundingClientRect();
+      if (r2.width === 0) continue;
+      if (r2.left - L.left < m - 1 || L.right - r2.right < m - 1) r.problemas.push(`${x.className ? "." + String(x.className).split(" ")[0] : x.tagName.toLowerCase()} queda pegado al borde (a menos de 5 cqw)`);
+    }
     // Lo que no cabe en el cuerpo se mete en el pie de la lámina (marca, progreso, «Desliza»)
     for (const c of l.querySelectorAll(".cuerpo")) {
       const limite = c.getBoundingClientRect().bottom + 2;
@@ -56,4 +66,4 @@ for (const r of res) {
 const piezas = new Set(res.flatMap((r) => (r.pieza.match(/\d/g) || [])));
 const faltan = [..."12345678"].filter((x) => !piezas.has(x));
 if (faltan.length) { console.log(`\nFaltan piezas de la estructura: ${faltan.join(", ")} (data-pieza de cada lámina).`); total++; }
-console.log(total ? `\n${total} cosas que revisar.` : "\nSin problemas.");
+console.log(total ? `\n${total} cosas que revisar.${res.some((r) => r.problemas.some((p) => p.includes("queda sola"))) ? "\nPara una palabra sola al final: une las dos últimas palabras con &nbsp; o cambia la frase." : ""}` : "\nSin problemas.");

@@ -43,6 +43,8 @@ python3 scripts/aplicar-marca.py marca.json storyboard.html
 
 Hace lo siguiente:
 - reescribe los dos bloques;
+- agranda los titulares si la letra es condensada (Anton, Barlow Condensed,
+  Oswald, Bebas): a igual tamaño se ven más chicas;
 - prueba que Google Fonts tenga esas letras, y si no, avisa y deja una de
   respaldo;
 - mide el contraste de texto sobre fondo y de texto de acento sobre acento;
@@ -69,8 +71,10 @@ Formato de `marca.json`:
 - `acento` es el color que resalta palabras clave y botones; tiene que verse
   sobre el fondo.
 - `acento-texto` es el color de la letra encima del acento.
-- `primario` es el color de los brillos y las fichas; puede ser el mismo que
-  el acento.
+- `primario` es el color de los brillos y de las fichas numeradas, que llevan
+  letra blanca encima: tiene que dar 3:1 o más con el blanco.
+  `aplicar-marca.py` lo mide. Si el acento de la marca es claro (un naranja,
+  un amarillo), el primario es otro color de la marca más oscuro.
 
 ## Parejas de letras que funcionan (Google Fonts)
 

@@ -26,14 +26,16 @@ Contenido:
 
 ## 2. Lo que lleva cada lámina
 
-El script de `carrusel.html` lo agrega solo:
+El script de `carrusel.html` lo agrega solo, con lo que diga la tira:
+`<main class="tira" data-logo="marca/logo.png" data-usuario="@negocio"
+data-nombre="Negocio">`. Sin logo va solo el texto; sin @, el nombre.
 
 - **El pie:**
   - el logo y el @ de la marca (`MARCA` en el script);
   - el progreso (una barra por lámina, la actual resaltada);
   - "Desliza →" en todas menos la última, que dice "Guárdalo".
-- **El hilo:** una línea suave que cruza todas las láminas a la altura del
-  pie, con un punto en cada unión. Hace que el carrusel se lea como una sola
+- **El hilo:** una línea suave que cruza todas las láminas entre el cuerpo y
+  el pie, con un punto en cada unión. Hace que el carrusel se lea como una sola
   pieza e invita a deslizar.
 
 **Una idea por lámina.** Si una lámina necesita dos títulos, son dos
@@ -93,12 +95,22 @@ usa casi todos. Cada lámina es una `<section class="lamina">` con un
   - el titular de la portada, 12 como mucho;
   - cada lámina, 40 como mucho.
   - Si no cabe, sobra texto: recorta, no achiques la letra.
+- **Una palabra sola al final de un párrafo:** une las dos últimas palabras con
+  `&nbsp;` o cambia la frase.
+- **Letras condensadas** (Anton, Barlow Condensed): `aplicar-marca.py`
+  agranda los titulares solo (`--escala-titulares`).
+- **Emojis 3D de Fluent:** vienen de 256 px. Hasta unos 30 cqw de ancho se ven
+  bien; más grandes se ven blandos.
+- **Lo que va encima del hilo** (un recuadro, un chip con fondo transparente)
+  lleva fondo opaco o queda por arriba de él.
 - **Contraste medido:**
   - 4,5:1 para el texto;
   - 3:1 para los titulares muy grandes;
   - lo mismo para el texto sobre el resaltado.
 - **El contenido cabe en el cuerpo.** Si se mete en el pie, `revisar.mjs`
   avisa: recorta texto o achica la imagen.
+- **Los botones y recuadros también respetan los márgenes;** `revisar.mjs` lo
+  mide.
 
 ## 6. Producción y revisión
 
@@ -111,8 +123,8 @@ node render.mjs --pdf                               # salida/01.png … y carrus
 python3 hoja.py                                     # salida/hoja.jpg: todas en fila
 ```
 
-1. **Pon en el script** de `carrusel.html` el logo y el @ de la marca
-   (`MARCA`).
+1. **Pon en la tira** (`<main class="tira">`) el logo, el @ y el nombre de la
+   marca: `data-logo`, `data-usuario` y `data-nombre`.
 2. **Abre `carrusel.html`** en el navegador para ver la mesa: la tira entera y
    las notas de cada lámina.
 3. **Mira `salida/hoja.jpg`** antes de entregar. Busca:

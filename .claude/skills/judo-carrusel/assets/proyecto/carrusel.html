@@ -83,8 +83,8 @@ body { color: #f3effb; font: 15px/1.55 "Instrument Sans", "Segoe UI", Arial, san
 
 /* ── Texto ── */
 .kicker { align-self: flex-start; padding: 1.4cqw 3cqw; border-radius: 99cqw; border: .4cqw solid currentColor; color: var(--acento); font: 800 3.4cqw/1 var(--f-display); letter-spacing: .06em; text-transform: uppercase; }
-.titular { margin: 0; font: 900 11.5cqw/1.02 var(--f-display); font-stretch: var(--ancho-display); letter-spacing: -.02em; text-wrap: balance; text-shadow: var(--sombra-texto); }
-.titular.mediano { font-size: 8.8cqw; }
+.titular { margin: 0; font: 900 calc(11.5cqw * var(--escala-titulares, 1))/1.02 var(--f-display); font-stretch: var(--ancho-display); letter-spacing: -.02em; text-wrap: balance; text-shadow: var(--sombra-texto); }
+.titular.mediano { font-size: calc(8.8cqw * var(--escala-titulares, 1)); }
 .fichas-mini { display: flex; gap: 2.4cqw; }
 .fichas-mini b { width: 12cqw; height: 12cqw; border-radius: 50%; display: grid; place-items: center; background: var(--primario); color: #fff; font: 900 6cqw/1 var(--f-display); box-shadow: 0 1cqw 0 var(--primario-hondo); }
 .fichas-mini b:last-child { background: var(--acento); color: var(--acento-texto); box-shadow: 0 1cqw 0 color-mix(in oklab, var(--acento) 60%, black); }
@@ -106,7 +106,7 @@ body { color: #f3effb; font: 15px/1.55 "Instrument Sans", "Segoe UI", Arial, san
 .mal::before { content: "✕"; background: var(--alerta); color: #fff; }
 .bien::before { content: "✓"; background: var(--ok); color: #06261a; }
 .mal b, .bien b { display: block; font: 850 5.4cqw/1.15 var(--f-display); margin-bottom: 1cqw; }
-.dato { font: 900 30cqw/.9 var(--f-display); font-stretch: var(--ancho-display); color: var(--acento); letter-spacing: -.03em; }
+.dato { font: 900 calc(30cqw * var(--escala-titulares, 1))/.9 var(--f-display); font-stretch: var(--ancho-display); color: var(--acento); letter-spacing: -.03em; }
 .emoji { width: var(--tam, 26cqw); flex: none; filter: drop-shadow(0 2cqw 3cqw rgba(0,0,0,.45)); }
 .foto-fondo { position: absolute; inset: 0; z-index: 0; }
 .foto-fondo img { width: 100%; height: 100%; object-fit: cover; }
@@ -126,7 +126,7 @@ body { color: #f3effb; font: 15px/1.55 "Instrument Sans", "Segoe UI", Arial, san
 </header>
 
 <div class="visor">
-<main class="tira" id="tira" style="--alto:1350px">
+<main class="tira" id="tira" style="--alto:1350px" data-logo="img/judo-logo.webp" data-usuario="@judo.marketing" data-nombre="Judo Marketing">
 
   <section class="lamina" data-pieza="1 · Gancho" data-alt="Portada: «Tu anuncio no vende por uno de estos 5 errores», con un emoji de alerta.">
     <div class="cuerpo">
@@ -210,12 +210,14 @@ const tira = document.getElementById("tira");
 const laminas = [...tira.querySelectorAll(".lamina")];
 const N = laminas.length;
 tira.style.setProperty("--n", N);
-const MARCA = { logo: "img/judo-logo.webp", usuario: "@judo.marketing" };
+// La marca del pie: data-logo, data-usuario y data-nombre de la tira. Sin logo va solo el texto;
+// sin @ va el nombre del negocio.
+const MARCA = { logo: tira.dataset.logo || "", usuario: tira.dataset.usuario || tira.dataset.nombre || "" };
 laminas.forEach((l, i) => {
   if (l.querySelector(".pie-lamina")) return;
   const pie = document.createElement("div");
   pie.className = "pie-lamina";
-  pie.innerHTML = `<span class="marca"><img src="${MARCA.logo}" alt="">${MARCA.usuario}</span>` +
+  pie.innerHTML = `<span class="marca">${MARCA.logo ? `<img src="${MARCA.logo}" alt="">` : ""}${MARCA.usuario}</span>` +
     `<span class="progreso">${laminas.map((_, j) => `<i class="${j === i ? "aqui" : ""}"></i>`).join("")}</span>` +
     (i < N - 1 ? `<span class="desliza">Desliza →</span>` : `<span class="desliza">Guárdalo</span>`);
   l.append(pie);
@@ -223,9 +225,10 @@ laminas.forEach((l, i) => {
 // El hilo: una onda suave que cruza todas las láminas a la altura de los pies
 const W = parseFloat(getComputedStyle(tira).getPropertyValue("--ancho")) || 1080;
 const H = parseFloat(getComputedStyle(tira).getPropertyValue("--alto")) || 1350;
-const y0 = H * 0.86;
+// Entre el final del cuerpo (15 cqw del borde) y el pie: no cruza el contenido
+const y0 = H - W * 0.135;
 let d = `M0 ${y0}`;
-for (let i = 0; i < N; i++) d += ` Q${i * W + W * 0.5} ${y0 + (i % 2 ? 40 : -40)} ${(i + 1) * W} ${y0}`;
+for (let i = 0; i < N; i++) d += ` Q${i * W + W * 0.5} ${y0 + (i % 2 ? 9 : -9)} ${(i + 1) * W} ${y0}`;
 tira.insertAdjacentHTML("afterbegin", `<svg class="hilo" viewBox="0 0 ${W * N} ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}"/>${laminas.slice(1).map((_, i) => `<circle cx="${(i + 1) * W}" cy="${y0}" r="11"/>`).join("")}</svg>`);
 document.getElementById("titulo").textContent = document.title.replace(/^Carrusel · /, "");
 document.getElementById("resumen").textContent = `${N} láminas · ${W} × ${H}`;
