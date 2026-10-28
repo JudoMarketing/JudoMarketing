@@ -27,6 +27,8 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-10-28 | **Skills de contenido: `judo-video-vertical` y `judo-carrusel`** (`.claude/skills/`). Con un texto guía arman el contenido de cualquier negocio: el gancho, las 8 piezas, la marca del cliente, la producción (MP4 1080×1920 o láminas PNG y PDF), el guion para voz y el pie de foto. Una revisión automática avisa de líneas partidas, zonas que tapa la app, encimados, contraste y tiempo de lectura. Se suben a cada cuenta de Claude con los .zip de `scripts/skills/dist/`. La fuente de lo compartido está en `scripts/skills/compartido/`, y `scripts/skills/empacar.py` lo copia y empaca. |
+| 2026-10-28 | **Video 3 de JuditoADS: cómo funciona por dentro**, con un mapa conceptual flotante (`scripts/video/juditoads-3/`). Es para la gente que ya preguntó. |
 | 2026-10-28 | **Videos en 8 piezas (sección 8).** Gancho, introducción, cuerpo, bucle abierto, cuerpo, bucle abierto, cuerpo y llamado a la acción, siempre en ese orden (audio de Junior). El video 2 de JuditoADS se rearmó así: `scripts/video/juditoads-2/`. |
 | 2026-10-26 | **Errores que ya cometimos (sección 10).** Lo que salió mal trabajando con Claude, con lo que costó y la regla que lo evita: mediciones sin comprobar, ramas de producción, deploys manuales, npm, claves impresas, la terminal, rendimiento, formularios y videos. Se lee antes de tocar git, Vercel, dependencias o claves. Cada error nuevo se anota ahí el mismo día; desde otro proyecto, por `CEREBRO-APORTES.md`. |
 | 2026-10-22 | **Seguridad de fábrica (sección 9).** El día de PHP2Shell y de la RCE del optimizador de imágenes de Next.js se revisaron los 34 repos y los 30 sitios: ninguno corre PHP. 20 repos se parcharon y los cuatro que seguían en Next 14 se migraron a Next 15. Todo proyecto nuevo nace sin PHP, en una línea de Next con parches y con `.github/workflows/seguridad.yml`, que avisa por correo. La plantilla JudiWEB ya lo trae. Inventario y procedimiento de emergencia: `SEGURIDAD.md`. |
@@ -424,6 +426,8 @@ Cómo se ve un bucle abierto: la frase entra palabra por palabra, un emoji 3D
 y tres puntos que avisan que viene algo, con un sonido que sube y corta en
 seco. Dura menos de 2 segundos.
 
+**Las skills.** `judo-video-vertical` y `judo-carrusel` (`.claude/skills/`) llevan todo lo de esta sección, más la biblioteca de escenas, el sonido, la voz y la revisión automática. Un video o un carrusel nuevo se hace con ellas. Lo que se aprenda se agrega en la skill (y en `scripts/skills/compartido/` si es de las dos) y se vuelve a empacar.
+
 **El teléfono nunca toca el texto.** Fue la corrección de casi todas las
 escenas de la primera versión. La pantalla se reparte en franjas:
 - el texto entre el 14% y el 56% del ancho, contado desde arriba;
@@ -747,3 +751,20 @@ las trampas técnicas.
     de tiempo.
   - Regla: antes de cada foto se esperan dos cuadros del navegador
     (`requestAnimationFrame` dos veces). Ya está en `render-escenas.mjs`.
+- **Dos animaciones en un mismo elemento** (2026-10-28, video 3).
+  - Qué pasó: al logo grande se le puso `.funde` para que saliera, pero el
+    logo ya tenía su propia animación de entrada y pisó la otra. El logo
+    nunca se fue y la tarjeta de contacto quedó encima.
+  - Regla: los tipos de escena que traen animación aceptan `--fuera` para
+    salir. No se les agrega otra clase de animación.
+- **Una regla de CSS más específica agrandó la insignia de un nodo**
+  (2026-10-28).
+  - Qué pasó: `.nodo.lleno > img` también agarraba el escudo y lo puso del
+    tamaño del logo, tapándolo.
+  - Regla: las reglas generales de imágenes excluyen las piezas chicas
+    (`:not(.insignia)`). Se mira el cuadro de cerca, no solo la hoja.
+- **El revisor no veía lo que se metía en el pie de las láminas** del
+  carrusel (2026-10-28).
+  - Qué pasó: la hoja lo mostraba, pero `revisar.mjs` decía "sin problemas".
+  - Regla: una herramienta de revisión también se revisa contra la imagen.
+    Se agregó el control de lo que no cabe.

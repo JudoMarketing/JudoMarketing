@@ -164,7 +164,32 @@ de 2026 está en la carpeta: `JuditoADS-video2-es.mp4` (56 s). Las capturas de l
 lámpara se rehacen desde `juditoads-1/` y se copian a `img/` y
 `vuelo-hd.mp4`.
 
+## Video 3 de JuditoADS: cómo funciona por dentro
+
+Es para la gente que ya preguntó y quiere entender cómo funciona JuditoADS
+(28 de octubre de 2026). Dura 58 segundos. Un mapa conceptual flotante (tú,
+JuditoADS y Meta) muestra por dónde viajan el permiso, las órdenes, el dinero
+y la información.
+
+- **Carpeta:** `scripts/video/juditoads-3/`.
+- **Cómo se arma:** el storyboard lo genera `armar.py`, porque el mapa se
+  repite en casi todas las escenas y escrito a mano se corre.
+- **Para cambiarlo:**
+
+  ```bash
+  python3 armar.py && python3 build.py && node revisar.mjs && node render.mjs && python3 sfx.py && python3 montar.py JuditoADS-como-funciona
+  ```
+
+- **Guion de voz:** `guion-voz.md`. Lleva los tiempos, el tono y lo que se
+  corrigió del texto de Junior: página de Facebook obligatoria, tarjeta en la
+  cuenta de anuncios y nada de "tiempo real".
+
 ## El siguiente video
+
+Se hace con la skill `judo-video-vertical` (`.claude/skills/`). Trae la
+plantilla de este proyecto en genérico, para cualquier marca, más la revisión
+automática de textos y la mezcla de voz. Lo de abajo sigue valiendo para
+entender cómo se hizo el primero.
 
 Copiar la carpeta `juditoads-2/` a `scripts/video/<nombre>/` y empezar por el
 storyboard:
