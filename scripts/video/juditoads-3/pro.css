@@ -1,0 +1,299 @@
+/* ════════════════════════════════════════════════════════════════════
+   JuditoADS por dentro · sistema visual «pro» (28 de octubre de 2026)
+   Lo que se aprendió de los buenos y se aplica aquí:
+   - una idea y un objeto por plano, con mucho aire;
+   - fondo neutro (negro o claro) o UN color de marca a sangre; cambia de
+     escena a escena;
+   - una familia de letra (Inter Tight) y una mono para rótulos;
+   - el texto entra por máscara (sube desde abajo de su línea), sin rebote;
+   - curvas suaves y cortas (expo), nada de resortes de dibujo animado;
+   - el cambio de escena es un panel del color siguiente que empuja (desde
+     abajo, desde el lado o en círculo) o un corte seco en el tiempo fuerte.
+   Las animaciones de aquí llevan nombres propios para no pisar las de la
+   biblioteca de la skill.
+   ════════════════════════════════════════════════════════════════════ */
+:root {
+  --tinta: #0b0b12;
+  --claro: #f4f2ee;
+  --violeta: #6e3bff;
+  --azul-meta: #0866ff;
+  --oro: #f5b700;
+  --verde: #12b76a;
+  --rojo: #f04438;
+  --gris: #6f6c7a;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --sale: cubic-bezier(.16, 1, .3, 1);
+  --entra-sale: cubic-bezier(.7, 0, .2, 1);
+  --g-negro: radial-gradient(80% 50% at 50% 38%, #1c1830 0%, #0b0b12 64%);
+  --g-claro: radial-gradient(90% 60% at 50% 30%, #ffffff 0%, #f4f2ee 70%, #e9e5de 100%);
+  --g-violeta: radial-gradient(90% 60% at 50% 32%, #8a5cff 0%, #6e3bff 48%, #4b1fd1 100%);
+  --g-azul: radial-gradient(90% 60% at 50% 32%, #3c84ff 0%, #0866ff 52%, #0548c4 100%);
+  --g-oro: radial-gradient(90% 60% at 50% 32%, #ffd75e 0%, #f5b700 56%, #e39c00 100%);
+  --g-mezcla: radial-gradient(60% 40% at 18% 18%, #9a6bff 0%, transparent 70%), radial-gradient(60% 45% at 88% 62%, #2f7bff 0%, transparent 70%), radial-gradient(55% 35% at 25% 98%, #ff5ca8 0%, transparent 70%);
+}
+
+/* ── Fondos: uno por escena. El color base es el que mide el contraste. ── */
+.fondo { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.fondo.negro { background-color: #0b0b12; background-image: var(--g-negro); color: #fff; }
+.fondo.claro { background-color: #f4f2ee; background-image: var(--g-claro); color: var(--tinta); }
+.fondo.violeta { background-color: #6e3bff; background-image: var(--g-violeta); color: #fff; }
+.fondo.azul { background-color: #0866ff; background-image: var(--g-azul); color: #fff; }
+.fondo.oro { background-color: #f5b700; background-image: var(--g-oro); color: var(--tinta); }
+.fondo.mezcla { background-color: #4b1fd1; background-image: var(--g-mezcla); color: #fff; }
+/* Una luz que respira despacio, por debajo del contenido */
+.fondo::before { content: ""; position: absolute; inset: -20%; z-index: -1; background: radial-gradient(40% 30% at 50% 45%, rgba(255,255,255,.12), transparent 70%); animation: p-respira var(--t) ease-in-out both; }
+@keyframes p-respira { from { transform: translateY(3%) scale(1) } to { transform: translateY(-3%) scale(1.08) } }
+/* Rejilla de puntos que deriva: textura que se mueve desde el primer cuadro */
+.puntos-fondo { position: absolute; inset: -12cqw; z-index: 1; background-image: radial-gradient(circle, var(--punto, rgba(255,255,255,.16)) .32cqw, transparent .4cqw); background-size: 6cqw 6cqw;
+  -webkit-mask-image: radial-gradient(60% 45% at 50% 50%, #000 10%, transparent 75%); mask-image: radial-gradient(60% 45% at 50% 50%, #000 10%, transparent 75%); animation: p-deriva-puntos var(--t) linear both; }
+@keyframes p-deriva-puntos { from { transform: translate(0, 0) } to { transform: translate(-6cqw, -6cqw) } }
+
+/* ── Tipografía ── */
+.pro-cap { position: absolute; left: 8cqw; right: 8cqw; z-index: 10; font-family: "Inter Tight", var(--f-display); letter-spacing: -.035em; line-height: 1.02; text-align: left; }
+.pro-cap.arriba { top: 23cqw; }
+.pro-cap.centrado { text-align: center; }
+.t-xxl { font-size: 34cqw; font-weight: 800; letter-spacing: -.05em; line-height: .95; font-variant-numeric: tabular-nums; }
+.t-xl { font-size: 14cqw; font-weight: 800; }
+.t-l { font-size: 11.2cqw; font-weight: 800; }
+.t-m { font-size: 8.4cqw; font-weight: 750; letter-spacing: -.03em; }
+.t-s { font-size: 5.4cqw; font-weight: 500; letter-spacing: -.015em; line-height: 1.25; }
+.ligera { font-weight: 300; }
+.tenue { opacity: .62; }
+.color-violeta { color: var(--violeta); }
+.color-oro { color: var(--oro); }
+.color-verde { color: var(--verde); }
+.color-azul { color: var(--azul-meta); }
+.rotulo-mono { position: absolute; left: 8cqw; top: 16cqw; z-index: 10; display: flex; align-items: center; gap: 2cqw; font: 600 3.1cqw/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; }
+.rotulo-mono::before { content: ""; width: 5cqw; height: .5cqw; background: currentColor; transform-origin: left; animation: p-rayita .6s var(--sale) var(--d, 0s) both; }
+@keyframes p-rayita { from { transform: scaleX(0) } }
+/* Línea con máscara: el texto sube desde abajo de su propia línea */
+.m { display: block; overflow: hidden; padding: 0 .06em .1em; margin: 0 -.06em -.1em; }
+.m > span { display: inline-block; white-space: nowrap; transform: translateY(135%); animation: p-subir .8s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-subir { to { transform: none } }
+/* Subrayado que se dibuja bajo una palabra */
+.raya { position: relative; white-space: nowrap; }
+.raya::after { content: ""; position: absolute; left: 0; right: 0; bottom: .04em; height: .09em; border-radius: .05em; background: var(--raya, var(--violeta)); transform: scaleX(0); transform-origin: left; animation: p-rayar .7s var(--sale) var(--dr, .8s) forwards; }
+@keyframes p-rayar { to { transform: scaleX(1) } }
+/* Un número que cuenta (con la propiedad registrada --n) */
+@property --n { syntax: "<integer>"; inherits: false; initial-value: 0; }
+.cuenta { font-variant-numeric: tabular-nums; counter-reset: n var(--n); animation: p-contar var(--dc, 1s) var(--sale) var(--d, 0s) both; }
+.cuenta::after { content: counter(n); }
+@keyframes p-contar { from { --n: var(--desde, 0) } to { --n: var(--hasta, 0) } }
+
+/* ── Entradas sobrias ── */
+.aparece { opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-aparecer { from { opacity: 0; transform: translateY(5cqw) } to { opacity: 1; transform: none } }
+.escala { opacity: 0; animation: p-escalar .8s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-escalar { from { opacity: 0; transform: scale(.86) } to { opacity: 1; transform: none } }
+.voltea { opacity: 0; animation: p-voltear 1s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-voltear { from { opacity: 0; transform: perspective(140cqw) rotateX(62deg) translateY(12cqw) scale(.9) } to { opacity: 1; transform: none } }
+.revela { clip-path: inset(0 100% 0 0); animation: p-revela 1.3s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-revela { to { clip-path: inset(0 0 0 0) } }
+.deriva-lenta { animation: p-deriva-lenta var(--t) linear both; }
+@keyframes p-deriva-lenta { from { transform: scale(1) } to { transform: scale(1.05) } }
+.sale-antes { animation: p-sale .45s var(--entra-sale) var(--fuera, 9999s) forwards; }
+@keyframes p-sale { to { opacity: 0; transform: translateY(-8cqw) } }
+.entra-despues { opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+
+/* ── Salida: el contenido se va mientras el panel del color que sigue entra ── */
+.contenido { position: absolute; inset: 0; z-index: 5; }
+.contenido.sal-abajo { animation: p-empujado-arriba .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.contenido.sal-lado { animation: p-empujado-lado .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.contenido.sal-circulo { animation: p-empujado-fondo .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+@keyframes p-empujado-arriba { to { transform: translateY(-16cqw); opacity: .25 } }
+@keyframes p-empujado-lado { to { transform: translateX(-22cqw); opacity: .25 } }
+@keyframes p-empujado-fondo { to { transform: scale(.92); opacity: .3 } }
+.panel { position: absolute; inset: 0; z-index: 30; }
+.panel.abajo { transform: translateY(101%); animation: p-panel-sube .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.panel.lado { transform: translateX(101%); animation: p-panel-entra .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.panel.circulo { clip-path: circle(0 at var(--cx, 50%) var(--cy, 50%)); animation: p-panel-circulo .55s var(--entra-sale) var(--sal, 9999s) forwards; }
+@keyframes p-panel-sube { to { transform: none } }
+@keyframes p-panel-entra { to { transform: none } }
+@keyframes p-panel-circulo { to { clip-path: circle(150% at var(--cx, 50%) var(--cy, 50%)) } }
+.panel.negro { background-color: #0b0b12; background-image: var(--g-negro); }
+.panel.claro { background-color: #f4f2ee; background-image: var(--g-claro); }
+.panel.violeta { background-color: #6e3bff; background-image: var(--g-violeta); }
+.panel.azul { background-color: #0866ff; background-image: var(--g-azul); }
+.panel.oro { background-color: #f5b700; background-image: var(--g-oro); }
+.panel.mezcla { background-color: #4b1fd1; background-image: var(--g-mezcla); }
+
+/* ── Capas isométricas (soluciones que se arman) ── */
+.iso { position: absolute; left: 50%; width: 46cqw; margin-left: -23cqw; z-index: 4; filter: drop-shadow(0 3cqw 3cqw rgba(30,20,60,.16)); }
+.iso svg { display: block; width: 100%; height: auto; }
+.iso.cae { opacity: 0; animation: p-iso-cae .9s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-iso-cae { from { opacity: 0; transform: translateY(-26cqw) } 40% { opacity: 1 } to { opacity: 1; transform: none } }
+.sombra-piso { position: absolute; left: 50%; width: 60cqw; height: 10cqw; margin-left: -30cqw; border-radius: 50%; background: radial-gradient(closest-side, rgba(30,20,60,.2), transparent); z-index: 3; opacity: 0; animation: p-aparecer .8s ease var(--d, 0s) forwards; }
+
+/* ── Tarjetas de interfaz ── */
+.tarjeta-ui { position: absolute; left: 9cqw; right: 9cqw; z-index: 6; display: flex; align-items: center; gap: 4cqw; padding: 3.4cqw 4.4cqw; border-radius: 5.4cqw; background: #fff; color: var(--tinta);
+  box-shadow: 0 .4cqw 0 rgba(255,255,255,.6) inset, 0 2.4cqw 6cqw -1.6cqw rgba(20,14,50,.2), 0 .6cqw 1.6cqw rgba(20,14,50,.07); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.tarjeta-ui .icono { flex: none; width: 12.4cqw; height: 12.4cqw; border-radius: 3.6cqw; display: grid; place-items: center; background: #f1eefc; color: var(--violeta); }
+.tarjeta-ui .icono svg { width: 7.6cqw; height: 7.6cqw; }
+.tarjeta-ui .icono img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.tarjeta-ui .icono.blanco { background: #fff; box-shadow: 0 0 0 .3cqw #ece9f6 inset; }
+.tarjeta-ui .icono.blanco img { width: 72%; height: auto; object-fit: contain; }
+.tarjeta-ui b { display: block; font: 750 5.6cqw/1.05 "Inter Tight", var(--f-display); letter-spacing: -.02em; }
+.tarjeta-ui small { display: block; margin-top: 1cqw; font: 500 3.3cqw/1.2 var(--f-mono); letter-spacing: .01em; color: var(--gris); }
+.tarjeta-ui .marca-ok { margin-left: auto; width: 7.4cqw; height: 7.4cqw; color: var(--verde); opacity: 0; animation: p-escalar .5s var(--sale) var(--dok, 9999s) forwards; }
+.tarjeta-ui .marca-ok svg { width: 100%; height: 100%; }
+/* El contorno que se enciende cuando la tarjeta queda activa */
+.tarjeta-ui .borde { position: absolute; inset: -.9cqw; border-radius: 6.3cqw; border: .7cqw solid var(--bc, var(--violeta)); opacity: 0; transform: scale(1.04); animation: p-escalar-borde .5s var(--sale) var(--dac, 9999s) forwards; }
+@keyframes p-escalar-borde { to { opacity: 1; transform: none } }
+
+/* ── El hilo que une las tarjetas y lo que viaja por él ── */
+.hilo-v { position: absolute; left: 50%; width: .6cqw; margin-left: -.3cqw; z-index: 5; border-radius: 1cqw; background: linear-gradient(var(--hilo-a, #b69bff), var(--hilo-b, var(--violeta))); transform-origin: top; transform: scaleY(0); animation: p-hilo-crece .5s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-hilo-crece { to { transform: none } }
+.viajero { position: absolute; left: 50%; z-index: 7; width: 3.4cqw; height: 3.4cqw; margin: -1.7cqw 0 0 -1.7cqw; border-radius: 50%; background: var(--violeta); box-shadow: 0 0 0 1.2cqw rgba(110,59,255,.18), 0 0 4cqw rgba(110,59,255,.6); opacity: 0;
+  animation: p-viajar var(--dura, .8s) var(--entra-sale) var(--d, 0s) forwards; }
+@keyframes p-viajar { 0% { opacity: 0; top: calc(var(--y0) * 1cqw) } 20% { opacity: 1 } 80% { opacity: 1 } 100% { opacity: 0; top: calc(var(--y1) * 1cqw) } }
+.pastilla { display: inline-flex; align-items: center; gap: 1.6cqw; padding: 1.9cqw 3.4cqw; border-radius: 99cqw; white-space: nowrap; background: var(--tinta); color: #fff; font: 600 3.8cqw/1 var(--f-mono); letter-spacing: .01em; box-shadow: 0 1.6cqw 4cqw -1cqw rgba(0,0,0,.3); }
+.pastilla svg { width: 4.8cqw; height: 4.8cqw; }
+.pastilla.clara { background: #fff; color: var(--tinta); }
+.pastilla.grande { padding: 2.4cqw 4.2cqw; font-size: 4.6cqw; gap: 2cqw; }
+.pastilla.grande svg { width: 5.8cqw; height: 5.8cqw; }
+.pastilla.verde { background: #0b7a4b; color: #fff; }
+.en-hilo { position: absolute; left: 50%; z-index: 8; translate: -50% -50%; opacity: 0; animation: p-escalar .6s var(--sale) var(--d, 0s) forwards; }
+
+.viajero-h { position: absolute; z-index: 5; width: 3.2cqw; height: 3.2cqw; margin: -1.6cqw 0 0 -1.6cqw; border-radius: 50%; background: var(--violeta); box-shadow: 0 0 0 1.1cqw rgba(110,59,255,.18), 0 0 4cqw rgba(110,59,255,.55); opacity: 0;
+  animation: p-viajar-h .9s var(--entra-sale) var(--d, 0s) forwards; }
+@keyframes p-viajar-h { 0% { opacity: 0; left: calc(var(--x0) * 1cqw) } 15% { opacity: 1 } 85% { opacity: 1 } 100% { opacity: 0; left: calc(var(--x1) * 1cqw) } }
+
+/* ── Logos grandes ── */
+.logo-pro { position: absolute; left: 50%; z-index: 6; width: var(--ancho, 50cqw); margin-left: calc(var(--ancho, 50cqw) / -2); }
+.logo-pro img { display: block; width: 100%; height: auto; }
+.logo-app { position: relative; border-radius: 23%; overflow: hidden; box-shadow: 0 6cqw 12cqw -3cqw rgba(20,0,80,.6), 0 0 0 .4cqw rgba(255,255,255,.2); }
+/* Un reflejo que cruza el logo una vez */
+.brillo-cruza { position: absolute; inset: 0; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.5) 50%, transparent 65%); transform: translateX(-130%); animation: p-cruzar 1.2s var(--entra-sale) var(--dbr, .9s) forwards; }
+@keyframes p-cruzar { to { transform: translateX(130%) } }
+.circulo-blanco { position: absolute; z-index: 6; width: var(--ancho, 34cqw); aspect-ratio: 1; margin: calc(var(--ancho, 34cqw) / -2) 0 0 calc(var(--ancho, 34cqw) / -2); border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 4cqw 9cqw -2cqw rgba(0,20,80,.45); }
+.circulo-blanco img { width: 64%; height: auto; }
+.circulo-blanco.fb img, .circulo-blanco.ig img { width: 72%; }
+.chapa { display: block; width: 100%; height: 100%; border-radius: 50%; background: #fff; box-shadow: 0 1.4cqw 3cqw rgba(60,30,0,.3); }
+/* Un anillo que se abre cuando algo llega */
+.anillo { position: absolute; z-index: 5; width: var(--ancho, 34cqw); aspect-ratio: 1; margin: calc(var(--ancho, 34cqw) / -2) 0 0 calc(var(--ancho, 34cqw) / -2); border-radius: 50%; border: .6cqw solid var(--anillo, rgba(255,255,255,.7)); opacity: 0; animation: p-anillo .9s var(--sale) var(--d, 0s) both; }
+@keyframes p-anillo { from { opacity: .9; transform: scale(.95) } to { opacity: 0; transform: scale(1.55) } }
+
+/* ── Objetos vectoriales ── */
+.objeto-pro { position: absolute; left: 50%; z-index: 6; width: var(--ancho, 40cqw); margin-left: calc(var(--ancho, 40cqw) / -2); filter: drop-shadow(0 4cqw 5cqw rgba(0,0,0,.28)); }
+.objeto-pro svg { width: 100%; height: auto; display: block; }
+.flota-pro { animation: p-flota 2.4s ease-in-out var(--df, 0s) infinite alternate; }
+@keyframes p-flota { from { transform: translateY(0) rotate(-3deg) } to { transform: translateY(-2.6cqw) rotate(3deg) } }
+.gira-lento { animation: p-gira-lento 3.6s ease-in-out both; }
+@keyframes p-gira-lento { from { transform: rotateY(-40deg) } to { transform: rotateY(40deg) } }
+.luz-cenital { position: absolute; left: 50%; top: 0; width: 100cqw; height: 130cqw; margin-left: -50cqw; z-index: 2; background: radial-gradient(38% 62% at 50% 0%, var(--luz, rgba(255,214,102,.3)), transparent 72%); opacity: 0; animation: p-aparecer 1s ease var(--d, 0s) forwards; }
+.halo { position: absolute; left: 50%; z-index: 3; width: var(--ancho, 70cqw); aspect-ratio: 1; margin-left: calc(var(--ancho, 70cqw) / -2); border-radius: 50%; background: radial-gradient(closest-side, var(--halo, rgba(18,183,106,.35)), transparent); opacity: 0; animation: p-escalar 1.2s var(--sale) var(--d, 0s) forwards; }
+.icono-pro { position: absolute; left: 50%; z-index: 6; width: var(--ancho, 40cqw); margin-left: calc(var(--ancho, 40cqw) / -2); color: var(--c, #fff); }
+.icono-pro svg { display: block; width: 100%; height: 100%; }
+.circulo-traza { position: absolute; left: 50%; z-index: 5; width: var(--ancho, 60cqw); margin-left: calc(var(--ancho, 60cqw) / -2); }
+.circulo-traza circle { fill: none; stroke: var(--c, #fff); stroke-width: .6; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: p-trazar 1.4s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-trazar { to { stroke-dashoffset: 0 } }
+.lupa { animation: p-lupa 1.8s var(--entra-sale) both; }
+@keyframes p-lupa { from { transform: translate(-14cqw, 4cqw) rotate(-8deg) } to { transform: translate(10cqw, -2cqw) rotate(6deg) } }
+
+/* ── Cosas que caen dentro de un círculo ── */
+.absorbe { position: absolute; left: 50%; z-index: 7; translate: -50% -50%; opacity: 0; animation: p-absorbe 1.15s var(--d, 0s) forwards; }
+/* Entra desde arriba y cae acelerando: así la que sigue no se encima con la que se va */
+@keyframes p-absorbe {
+  0% { opacity: 0; top: calc(var(--y0) * 1cqw); transform: translateY(-5cqw); animation-timing-function: var(--sale) }
+  30% { opacity: 1; top: calc(var(--y0) * 1cqw); transform: none; animation-timing-function: cubic-bezier(.4, 0, .6, 1) }
+  100% { opacity: 0; top: calc(var(--y1) * 1cqw); transform: scale(.35) } }
+.linea-svg { position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; overflow: visible; }
+.linea-svg path { fill: none; stroke: var(--c, rgba(255,255,255,.6)); stroke-width: .5; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: p-trazar .7s var(--sale) var(--d, 0s) forwards; }
+.linea-svg path.punteada { stroke-dasharray: 1.2 1.6; stroke-dashoffset: 0; opacity: 0; animation: p-aparecer .5s ease var(--d, 0s) forwards; }
+
+/* ── La tarjeta de crédito que vuela hasta Meta ── */
+.vuela-a-meta { position: absolute; left: 50%; z-index: 7; width: 52cqw; margin-left: -26cqw; opacity: 0; animation: p-vuela 2s var(--d, 0s) forwards; }
+.vuela-a-meta svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 4cqw 5cqw rgba(60,30,0,.35)); }
+@keyframes p-vuela {
+  0% { opacity: 0; transform: translate(-70cqw, 8cqw) rotate(-24deg); animation-timing-function: var(--sale) }
+  10% { opacity: 1 }
+  48% { opacity: 1; transform: translate(-10cqw, 0) rotate(-8deg); animation-timing-function: linear }
+  60% { opacity: 1; transform: translate(-8cqw, -.6cqw) rotate(-6deg); animation-timing-function: var(--entra-sale) }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.25) rotate(0deg) } }
+
+/* ── Presupuesto que se elige (deslizador) ── */
+.ui-tarjeta { position: absolute; left: 8cqw; right: 8cqw; z-index: 6; padding: 6cqw 6cqw 6.4cqw; border-radius: 6cqw; background: #fff; color: var(--tinta); box-shadow: 0 3cqw 8cqw -2cqw rgba(20,0,80,.35); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.ui-tarjeta .cab-ui { display: flex; justify-content: space-between; align-items: center; font: 600 3.4cqw/1 var(--f-mono); color: var(--gris); }
+.ui-tarjeta .monto { margin: 4.4cqw 0 6cqw; font: 800 17cqw/1 "Inter Tight", var(--f-display); letter-spacing: -.045em; }
+.ui-tarjeta .monto small { font: 500 5cqw/1 "Inter Tight", var(--f-display); letter-spacing: -.01em; color: var(--gris); }
+.riel { position: relative; height: 2.2cqw; border-radius: 2cqw; background: #ece9f6; }
+.riel .lleno { position: absolute; left: 0; top: 0; bottom: 0; border-radius: inherit; background: linear-gradient(90deg, #a98bff, var(--violeta)); width: var(--desde-p); animation: p-lleno var(--dc, 1s) var(--sale) var(--d, 0s) both; }
+.riel .perilla { position: absolute; top: 50%; left: var(--desde-p); width: 8.4cqw; height: 8.4cqw; margin: -4.2cqw 0 0 -4.2cqw; border-radius: 50%; background: #fff; box-shadow: 0 0 0 .8cqw var(--violeta) inset, 0 1.4cqw 3cqw rgba(40,10,120,.35); animation: p-perilla var(--dc, 1s) var(--sale) var(--d, 0s) both; }
+.riel .perilla svg { position: absolute; left: 4.6cqw; top: 4cqw; width: 9cqw; height: 9cqw; color: var(--tinta); }
+@keyframes p-lleno { to { width: var(--hasta-p) } }
+@keyframes p-perilla { to { left: var(--hasta-p) } }
+.riel-marcas { display: flex; justify-content: space-between; margin-top: 4.4cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+
+/* ── Recibo ── */
+.recibo { position: absolute; left: 10cqw; right: 10cqw; z-index: 6; display: flex; align-items: center; gap: 4cqw; padding: 4cqw 5cqw; border-radius: 5cqw; background: #fff; color: var(--tinta); box-shadow: 0 2.4cqw 6cqw -1.6cqw rgba(20,14,50,.2); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.recibo img { width: 11cqw; height: 11cqw; border-radius: 3cqw; }
+.recibo b { display: block; font: 750 5cqw/1.1 "Inter Tight", var(--f-display); letter-spacing: -.02em; }
+.recibo small { display: block; margin-top: .8cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.recibo .precio-r { margin-left: auto; font: 800 6.4cqw/1 "Inter Tight", var(--f-display); letter-spacing: -.03em; }
+
+/* ── Panel de resultados (gráfica que se dibuja) ── */
+.tablero { position: absolute; left: 8cqw; right: 8cqw; z-index: 6; padding: 5.4cqw 6cqw 5cqw; border-radius: 6cqw; background: #fff; color: var(--tinta); box-shadow: 0 3cqw 8cqw -2cqw rgba(0,20,80,.4); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.tablero .cab { display: flex; justify-content: space-between; align-items: center; font: 600 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.tablero .cifras { display: flex; gap: 8cqw; margin: 4.4cqw 0 3cqw; }
+.tablero .cifras b { display: block; font: 800 9.4cqw/1 "Inter Tight", var(--f-display); letter-spacing: -.035em; }
+.tablero .cifras small { display: block; margin-top: 1cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.tablero svg { width: 100%; height: auto; display: block; overflow: visible; }
+.tablero .pie-tab { display: flex; align-items: center; gap: 2cqw; margin-top: 3cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.tablero .vivo { width: 2.4cqw; height: 2.4cqw; border-radius: 50%; background: var(--verde); box-shadow: 0 0 0 1cqw rgba(18,183,106,.2); }
+.trazo-pro { fill: none; stroke: var(--verde); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: p-trazar 1.6s var(--sale) var(--d, 0s) forwards; }
+.area-pro { opacity: 0; animation: p-fundir 1s ease var(--d, 0s) forwards; }
+@keyframes p-fundir { to { opacity: 1 } }
+.punto-vivo { opacity: 0; animation: p-fundir .3s ease var(--d, 0s) forwards; }
+.etiqueta-ejemplo { font: 600 2.8cqw/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; padding: 1.2cqw 2.2cqw; border-radius: 99cqw; background: #f1eefc; color: #4b1fd1; }
+
+/* ── Avisos que llegan (como en la pantalla bloqueada) ── */
+.aviso { position: absolute; left: 6cqw; right: 11cqw; z-index: 6; display: flex; gap: 4cqw; align-items: center; padding: 4cqw 4.6cqw; border-radius: 5cqw; background: rgba(255,255,255,.96); color: var(--tinta);
+  box-shadow: 0 2.4cqw 6cqw -1.6cqw rgba(0,0,0,.45); opacity: 0; animation: p-llega .75s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-llega { from { opacity: 0; transform: translateY(-6cqw) scale(.96) } to { opacity: 1; transform: none } }
+.aviso .ic { flex: none; width: 13cqw; height: 13cqw; border-radius: 3.8cqw; display: grid; place-items: center; color: #fff; }
+.aviso .ic svg { width: 8cqw; height: 8cqw; }
+.aviso .txt { min-width: 0; }
+.aviso .de { display: block; margin-bottom: 1cqw; font: 600 3cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--gris); }
+.aviso b { display: block; font: 700 5.3cqw/1.12 "Inter Tight", var(--f-display); letter-spacing: -.015em; }
+.aviso small { display: block; margin-top: .7cqw; font: 500 4cqw/1.22 "Inter Tight", var(--f-cuerpo); color: #55525f; }
+
+/* ── Cuadrícula de requisitos ── */
+.rejilla { position: absolute; left: 10cqw; right: 10cqw; z-index: 6; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4cqw; }
+.casilla { position: relative; aspect-ratio: 1 / 1.02; padding: 4.4cqw; border-radius: 5.4cqw; background: #fff; color: var(--tinta); display: flex; flex-direction: column; justify-content: space-between;
+  box-shadow: 0 2.4cqw 6cqw -1.6cqw rgba(20,0,80,.4); opacity: 0; animation: p-escalar .7s var(--sale) var(--d, 0s) forwards; }
+.casilla .ic { width: 11cqw; height: 11cqw; display: grid; place-items: center; }
+.casilla .ic img { width: 100%; height: 100%; object-fit: contain; }
+.casilla .ic svg { width: 100%; height: 100%; color: var(--violeta); }
+.casilla b { display: block; font: 750 5.2cqw/1.08 "Inter Tight", var(--f-display); letter-spacing: -.02em; }
+.casilla small { display: block; margin-top: 1.2cqw; font: 500 3.3cqw/1.25 "Inter Tight", var(--f-cuerpo); color: #55525f; }
+.casilla .ok { position: absolute; right: 3.6cqw; top: 3.6cqw; width: 7cqw; height: 7cqw; color: var(--verde); opacity: 0; animation: p-escalar .45s var(--sale) calc(var(--d, 0s) + .5s) forwards; }
+.casilla .ok svg { width: 100%; height: 100%; }
+
+/* El hueco se apaga cuando llega su ficha (--fuera): la ficha puede quedar más alta y el borde asomaría */
+.hueco { aspect-ratio: 1 / 1.02; border-radius: 5.4cqw; border: .45cqw dashed rgba(255,255,255,.45); opacity: 0; animation: p-fundir .5s ease var(--d, 0s) forwards, p-apagar .3s ease var(--fuera, 9999s) forwards; }
+@keyframes p-apagar { to { opacity: 0 } }
+
+/* ── Avisos que bajan cuando llega uno nuevo ── */
+.baja { position: absolute; inset: 0; z-index: 6; animation: p-baja .6s var(--sale) var(--db, 9999s) both; }
+@keyframes p-baja { from { transform: none } to { transform: translateY(26.5cqw) } }
+
+/* ── Dos momentos dentro de una escena ── */
+.fase { position: absolute; inset: 0; z-index: 6; }
+
+/* ── Los tres, en fila: tú, JuditoADS y Meta ── */
+.fila-nodos { position: absolute; left: 0; right: 0; z-index: 6; height: 30cqw; }
+.fila-nodos .nodo-f { position: absolute; top: 0; width: var(--tam, 22cqw); margin-left: calc(var(--tam, 22cqw) / -2); display: flex; flex-direction: column; align-items: center; gap: 2.4cqw; opacity: 0; animation: p-escalar .7s var(--sale) var(--d, 0s) forwards; }
+.fila-nodos .disco { width: var(--tam, 22cqw); aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; background: var(--tinta); color: #fff; box-shadow: 0 3cqw 6cqw -2cqw rgba(20,14,50,.4); overflow: hidden; }
+.fila-nodos .disco svg { width: 52%; height: 52%; }
+.fila-nodos .disco.app { border-radius: 23%; }
+.fila-nodos .disco.app img { width: 100%; height: 100%; object-fit: cover; }
+.fila-nodos .disco.blanco { background: #fff; }
+.fila-nodos .disco.blanco img { width: 64%; height: auto; }
+.fila-nodos span { font: 600 3.4cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
+
+/* ── Cierre ── */
+.contacto-pro { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; display: grid; gap: 2.8cqw; }
+.contacto-pro span { display: flex; align-items: center; gap: 3cqw; padding: 2.8cqw 4cqw; border-radius: 4.4cqw; background: rgba(255,255,255,.14); border: .3cqw solid rgba(255,255,255,.3); color: #fff; font: 700 4.6cqw/1 "Inter Tight", var(--f-display); letter-spacing: -.01em; opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.contacto-pro img { width: 8cqw; height: 8cqw; border-radius: 50%; background: #0b0a10; padding: .8cqw; object-fit: contain; }
+.contacto-pro svg { width: 8cqw; height: 8cqw; flex: none; }
+.legal { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; font: 500 2.3cqw/1.3 var(--f-mono); color: rgba(255,255,255,.72); }

@@ -28,7 +28,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 | Fecha | Qué cambió |
 | --- | --- |
 | 2026-10-28 | **Skills de contenido: `judo-video-vertical` y `judo-carrusel`** (`.claude/skills/`). Con un texto guía arman el contenido de cualquier negocio: el gancho, las 8 piezas, la marca del cliente, la producción (MP4 1080×1920 o láminas PNG y PDF), el guion para voz y el pie de foto. Una revisión automática avisa de líneas partidas, zonas que tapa la app, encimados, contraste y tiempo de lectura. Se suben a cada cuenta de Claude con los .zip de `scripts/skills/dist/`. La fuente de lo compartido está en `scripts/skills/compartido/`, y `scripts/skills/empacar.py` lo copia y empaca. |
-| 2026-10-28 | **Video 3 de JuditoADS: cómo funciona por dentro**, con un mapa conceptual flotante (`scripts/video/juditoads-3/`). Es para la gente que ya preguntó. |
+| 2026-10-28 | **Video 3 de JuditoADS, versión 2: el nivel «referente».** Junior rechazó la primera ("idéntico al anterior, los mismos sonidos, ejemplos repetitivos, sloppy"). Se rehízo con lo que hacen Apple, Stripe y Linear: un fondo distinto en cada escena, una idea y un objeto por plano, texto que sube por máscara, iconos vectoriales Phosphor, transiciones con un panel del color que sigue y música propia a 100 BPM que se abre en los bucles. Quedó como **capa pro** de la skill `judo-video-vertical` (`references/estilo-pro.md`), con los colores de cada marca. Carpeta: `scripts/video/juditoads-3/`. |
 | 2026-10-28 | **Videos en 8 piezas (sección 8).** Gancho, introducción, cuerpo, bucle abierto, cuerpo, bucle abierto, cuerpo y llamado a la acción, siempre en ese orden (audio de Junior). El video 2 de JuditoADS se rearmó así: `scripts/video/juditoads-2/`. |
 | 2026-10-26 | **Errores que ya cometimos (sección 10).** Lo que salió mal trabajando con Claude, con lo que costó y la regla que lo evita: mediciones sin comprobar, ramas de producción, deploys manuales, npm, claves impresas, la terminal, rendimiento, formularios y videos. Se lee antes de tocar git, Vercel, dependencias o claves. Cada error nuevo se anota ahí el mismo día; desde otro proyecto, por `CEREBRO-APORTES.md`. |
 | 2026-10-22 | **Seguridad de fábrica (sección 9).** El día de PHP2Shell y de la RCE del optimizador de imágenes de Next.js se revisaron los 34 repos y los 30 sitios: ninguno corre PHP. 20 repos se parcharon y los cuatro que seguían en Next 14 se migraron a Next 15. Todo proyecto nuevo nace sin PHP, en una línea de Next con parches y con `.github/workflows/seguridad.yml`, que avisa por correo. La plantilla JudiWEB ya lo trae. Inventario y procedimiento de emergencia: `SEGURIDAD.md`. |
@@ -394,10 +394,18 @@ escena por escena en cinco versiones antes de producirlo. Cada regla de
 abajo es una corrección suya o algo que costó rehacer. El cómo (carpeta,
 scripts y pasos) está en `VIDEOS.md`.
 
+**El nivel de la casa es la capa pro** (video 3, segunda versión, 28 de
+octubre de 2026): un fondo distinto en cada escena, una idea y un objeto por
+plano, texto que sube por máscara, iconos vectoriales, transiciones con
+panel y música propia. Nada se repite del video anterior: ni el esquema, ni
+los sonidos, ni los ejemplos. Detalle en la skill,
+`references/estilo-pro.md`.
+
 **Formato.**
 - 1080×1920 a 60 fps, alrededor de 60 segundos, sin voz.
-- El guion va en subtítulos grandes y amarillos sobre fondo morado oscuro,
-  con la marca de la casa.
+- En los videos 1 y 2, el guion va en subtítulos grandes y amarillos sobre
+  fondo morado oscuro, con la marca de la casa. En la capa pro, en la letra
+  de titulares sobre el fondo de cada escena.
 - Una idea por escena, de 2 a 4 segundos.
 - Lo que se cuenta en lista (los consejos) va uno por uno, unos 2 segundos
   cada uno.
@@ -763,6 +771,27 @@ las trampas técnicas.
     tamaño del logo, tapándolo.
   - Regla: las reglas generales de imágenes excluyen las piezas chicas
     (`:not(.insignia)`). Se mira el cuadro de cerca, no solo la hoja.
+- **El video 3 salió igual al video 2 y Junior lo rechazó** (2026-10-28).
+  - Qué pasó: el mismo mapa en casi todas las escenas, los mismos pops y
+    swishes del video anterior, el mismo fondo oscuro de principio a fin y
+    tres avisos que decían casi lo mismo. Costó rehacer el video entero.
+  - Regla: antes de diseñar, mira qué tenía el video anterior de la marca y
+    no lo repitas. Un fondo distinto en cada escena, una composición
+    distinta por idea, ejemplos que dicen cosas diferentes y sonidos que no
+    estaban en el video anterior (la capa pro de la skill:
+    `references/estilo-pro.md`).
+- **El revisor contaba como visible un texto con máscara que todavía no
+  había subido** (2026-10-28).
+  - Qué pasó: `revision-texto.js` recortaba el texto con los antepasados del
+    elemento pero no con el elemento mismo, y la línea con máscara es la
+    que recorta. Salieron 38 avisos de textos encimados que no se veían.
+  - Regla: ya recorta también con el propio elemento. Cuando el revisor da
+    muchos avisos de golpe, se mira un cuadro antes de corregir a ciegas.
+- **Esperar el render con `pgrep -f render.mjs` no terminaba nunca**
+  (2026-10-28).
+  - Qué pasó: el bucle de espera llevaba el patrón escrito y se encontraba a
+    sí mismo.
+  - Regla: se espera al número de proceso (`while kill -0 <pid>`).
 - **El revisor no veía lo que se metía en el pie de las láminas** del
   carrusel (2026-10-28).
   - Qué pasó: la hoja lo mostraba, pero `revisar.mjs` decía "sin problemas".

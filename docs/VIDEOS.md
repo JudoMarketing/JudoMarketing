@@ -167,28 +167,44 @@ lámpara se rehacen desde `juditoads-1/` y se copian a `img/` y
 ## Video 3 de JuditoADS: cómo funciona por dentro
 
 Es para la gente que ya preguntó y quiere entender cómo funciona JuditoADS
-(28 de octubre de 2026). Dura 58 segundos. Un mapa conceptual flotante (tú,
-JuditoADS y Meta) muestra por dónde viajan el permiso, las órdenes, el dinero
-y la información.
+(28 de octubre de 2026). Va en su segunda versión: 60 segundos, 16 escenas.
+
+La primera (un mapa conceptual en casi todas las escenas) la rechazó Junior:
+"idéntico al anterior, los mismos sonidos, ejemplos repetitivos". La segunda
+se hizo con la capa pro, la que ahora trae la skill
+(`.claude/skills/judo-video-vertical/references/estilo-pro.md`):
+
+- un fondo distinto en cada escena (negro, claro, violeta, azul de Meta,
+  oro, mezcla);
+- una idea y un objeto por plano;
+- texto en Inter Tight que sube por máscara;
+- iconos Phosphor duotono (`vectores/`, licencia MIT);
+- transiciones con un panel del color que sigue (desde abajo, desde el lado,
+  en círculo) o un corte seco en el golpe;
+- música propia (`musica.py`, 100 BPM) que se abre en los dos bucles, y
+  efectos suaves nuevos.
 
 - **Carpeta:** `scripts/video/juditoads-3/`.
-- **Cómo se arma:** el storyboard lo genera `armar.py`, porque el mapa se
-  repite en casi todas las escenas y escrito a mano se corre.
+- **Cómo se arma:** el storyboard lo genera `armar.py` desde `base.html` (la
+  plantilla de la skill) y `pro.css` (el sistema visual de este video).
 - **Para cambiarlo:**
 
   ```bash
-  python3 armar.py && python3 build.py && node revisar.mjs && node render.mjs && python3 sfx.py && python3 montar.py JuditoADS-como-funciona
+  python3 armar.py && python3 build.py && node revisar.mjs && node render.mjs --hilos 4 && python3 musica.py && python3 sfx.py && python3 montar.py JuditoADS-video3-como-funciona-es && python3 qa.py salida/JuditoADS-video3-como-funciona-es.mp4 --portada 2.8
   ```
 
-- **Guion de voz:** `guion-voz.md`. Lleva los tiempos, el tono y lo que se
-  corrigió del texto de Junior: página de Facebook obligatoria, tarjeta en la
-  cuenta de anuncios y nada de "tiempo real".
+  El render completo tarda unos 15 minutos.
+- **Entregado:** `JuditoADS-video3-como-funciona-es.mp4` y
+  `JuditoADS-video3-portada.jpg`, en la carpeta.
+- **Guion de voz:** `guion-voz.md`. Lleva los tiempos nuevos, el tono y lo
+  que se corrigió del texto de Junior: página de Facebook obligatoria,
+  tarjeta en la cuenta de anuncios y nada de "tiempo real".
 
 ## El siguiente video
 
 Se hace con la skill `judo-video-vertical` (`.claude/skills/`). Trae la
-plantilla de este proyecto en genérico, para cualquier marca, más la revisión
-automática de textos y la mezcla de voz. Lo de abajo sigue valiendo para
+plantilla de este proyecto en genérico, para cualquier marca, la capa pro
+del video 3, la música, la revisión automática de textos y la mezcla de voz. Lo de abajo sigue valiendo para
 entender cómo se hizo el primero.
 
 Copiar la carpeta `juditoads-2/` a `scripts/video/<nombre>/` y empezar por el

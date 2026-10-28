@@ -1,29 +1,32 @@
 # JuditoADS · video 3 · «Cómo funciona por dentro» · guion para tu voz
 
-Es para la gente que ya te escribió y quiere entender cómo funciona. Dura 58
-segundos. Cada línea cae sobre su imagen.
+Versión 2 (28 de octubre de 2026). Es para la gente que ya te escribió y
+quiere entender cómo funciona. Dura 60 segundos. Cada línea cae sobre su
+imagen.
 
 Ritmo: un poco más pausado que el anuncio, unas 5 a 6 sílabas por segundo.
 Aquí no hay que frenar a nadie: hay que dar confianza. Los "…" son una pausa
-corta.
+corta. La música va a 100 golpes por minuto y cada cambio de escena cae en un
+golpe; si te guías por el bombo, la voz cae sola.
 
 | Tiempo | Lo que se ve | Tu voz | Cómo decirlo |
 | --- | --- | --- | --- |
-| 0:00 – 0:03 | El logo de Judo y una red que se dibuja alrededor | **Judo Marketing no es solo una empresa de marketing.** | Seguro, con una sonrisa. |
-| 0:03 – 0:07 | La red se enciende y corren datos por las líneas | **También creamos soluciones complejas para problemas complejos.** | Con orgullo, sin apurarte. |
-| 0:07 – 0:11 | Entra el logo de JuditoADS al centro | **Por eso creamos JuditoADS. Te muestro cómo funciona por dentro.** | Como quien abre la puerta de su taller. |
-| 0:11 – 0:15 | La cámara se aleja y aparece el mapa: tú, JuditoADS y Meta. Una llave viaja de ti a JuditoADS | **Meta permite que JuditoADS maneje tus anuncios… con tu permiso.** | Claro. Marca "con tu permiso" cuando llega la llave. |
-| 0:15 – 0:18 | Bajan las órdenes a Meta: el anuncio, el público, el presupuesto | **Tú conectas tu cuenta, y Judito le dice a Meta qué hacer.** | Práctico. |
-| 0:18 – 0:21 | El mapa se apaga: "¿Y tu dinero?" | **¿Y tu dinero? Aquí viene lo importante…** | Más bajo y lento, de confianza. |
-| 0:21 – 0:24 | Una moneda viaja de ti a JuditoADS: "$20 al mes" | **A Judo solo le pagas veinte dólares al mes.** | Directo. Marca "veinte dólares". |
-| 0:24 – 0:27 | Se dibuja la línea dorada de ti a Meta y bajan monedas | **Tu presupuesto lo eliges tú, y se lo pagas directo a Meta.** | Marca "directo a Meta". |
-| 0:27 – 0:30 | A JuditoADS le cae un escudo: "no lo tocamos" | **Nosotros no tocamos tu dinero ni tu presupuesto.** | Firme y tranquilo. Es la frase que más confianza da: dila despacio. |
-| 0:30 – 0:32 | El mapa se apaga: "¿Y cómo sabes si está funcionando?" | **¿Y cómo sabes si está funcionando?** | Como una pregunta de verdad. |
-| 0:32 – 0:35 | Suben gráficas de Meta a JuditoADS | **Meta le cuenta a Judito cómo va tu anuncio…** | Explicando. |
-| 0:35 – 0:40 | De JuditoADS a ti llegan la gráfica, la campana y la alerta; aparecen tres avisos | **…y Judito te lo explica, y te avisa si algo falla. Para que no botes tu dinero.** | Cercano. "Para que no botes tu dinero", más bajito, como un consejo. |
-| 0:40 – 0:48 | La lista de lo que necesitas, con los logos | **Para empezar, solo necesitas tu cuenta de Meta… con una página de Facebook… tu Instagram, si lo tienes… y una tarjeta en tu cuenta de anuncios.** | Di cada cosa cuando aparece en pantalla: Meta en 0:40, Facebook en 0:42, Instagram en 0:44, la tarjeta en 0:45. |
-| 0:48 – 0:51 | Vuelve el mapa entero, con todo corriendo | **Y listo: ya puedes anunciarte en redes como todo un profesional.** | Sube la energía. |
-| 0:51 – 0:58 | "Pruébalo gratis 14 días" y después tu contacto | **Pruébalo gratis catorce días. Y si necesitas ayuda para empezar, escríbeme.** | Cálido, el tono más humano del video. |
+| 0:00 – 0:03,6 | Negro. «No somos solo marketing.» y el logo de Judo que se dibuja | **Judo Marketing no es solo una empresa de marketing.** | Seguro, con una sonrisa. |
+| 0:03,6 – 0:07,2 | Claro. Caen tres capas y se apilan | **También creamos soluciones complejas para problemas complejos.** | Con orgullo, sin apurarte. |
+| 0:07,2 – 0:10,8 | Violeta. «Por eso creamos JuditoADS.» y el ícono que se levanta | **Por eso creamos JuditoADS. Así funciona por dentro.** | Como quien abre la puerta de su taller. |
+| 0:10,8 – 0:15,0 | Tres tarjetas: tu negocio, JuditoADS y Meta. Aparece «tu permiso» | **Meta permite que JuditoADS maneje tus anuncios… con tu permiso.** | Claro. Marca "con tu permiso" cuando se enciende JuditoADS (0:12,7). |
+| 0:15,0 – 0:18,6 | Azul. Caen el anuncio, el público y el presupuesto dentro de Meta | **Tú conectas tu cuenta, y Judito le dice a Meta qué hacer.** | Práctico. |
+| 0:18,6 – 0:20,4 | Negro. «¿Y tu dinero?» y una moneda que gira | **¿Y tu dinero?** | Más bajo y lento. La música se queda sola: déjala respirar. |
+| 0:20,4 – 0:23,4 | Claro. El «$20» cuenta desde cero y sale el recibo | **A Judo solo le pagas veinte dólares al mes.** | Directo. Entra justo con el golpe de la música. Marca "veinte dólares". |
+| 0:23,4 – 0:25,8 | Violeta. El deslizador sube el presupuesto de $2 a $12 por día | **Tu presupuesto lo eliges tú…** | Tranquilo, como algo obvio. |
+| 0:25,8 – 0:28,8 | Oro. La tarjeta vuela y entra en Meta | **…y se lo pagas directo a Meta.** | Marca "directo a Meta". |
+| 0:28,8 – 0:32,4 | Negro. El escudo verde | **Nosotros no tocamos tu dinero ni tu presupuesto.** | Firme y tranquilo. Es la frase que más confianza da: dila despacio. |
+| 0:32,4 – 0:34,2 | Claro. «¿Y cómo sabes si funciona?» y la lupa | **¿Y cómo sabes si funciona?** | Como una pregunta de verdad. La música vuelve a quedarse sola. |
+| 0:34,2 – 0:37,8 | Azul. El tablero de una campaña de ejemplo | **Meta le cuenta a Judito cómo va tu anuncio…** | Explicando. Entra con el golpe. |
+| 0:37,8 – 0:43,2 | Negro. Llegan tres avisos: un consejo, que Meta frenó el anuncio y que va bien | **…y Judito te lo explica, y te avisa si algo falla. Para que no botes tu dinero.** | Cercano. "Para que no botes tu dinero", más bajito, como un consejo. |
+| 0:43,2 – 0:51,0 | Violeta. Cuatro huecos que se llenan con lo que necesitas | **Para empezar, solo necesitas tu cuenta de Meta… con una página de Facebook… tu Instagram, si lo tienes… y una tarjeta en tu cuenta de anuncios.** | Di cada cosa cuando se llena su ficha: Meta en 0:44,6; Facebook en 0:46,2; Instagram en 0:47,8; la tarjeta en 0:49,2. |
+| 0:51,0 – 0:54,0 | Claro. «Y listo.» y los tres en fila | **Y listo: ya puedes anunciarte en redes como todo un profesional.** | Sube la energía. |
+| 0:54,0 – 1:00,0 | «Pruébalo gratis. 14 días · sin tarjeta» y después tu contacto | **Pruébalo gratis catorce días. Y si necesitas ayuda para empezar, escríbeme.** | Cálido, el tono más humano del video. "Escríbeme" cuando sube «¿Necesitas ayuda?» (0:56,8). |
 
 ## El tono
 
@@ -31,7 +34,8 @@ corta.
   quiere entender y quiere confiar. Habla como si se lo explicaras en tu
   oficina, con una pizarra.
 - **Dos momentos para bajar la voz:** "¿Y tu dinero?" y "¿Y cómo sabes si
-  está funcionando?". Son las dos dudas que tiene todo el que pregunta.
+  funciona?". Son las dos dudas que tiene todo el que pregunta. Ahí la música
+  se abre a propósito.
 - **Las frases que se marcan:**
   - "con tu permiso";
   - "veinte dólares al mes";
@@ -56,11 +60,16 @@ corta.
   también lo avisa.
 - **"En tiempo real"** quedó fuera. JuditoADS actualiza cada 15 minutos y
   avisa cuando Meta frena un anuncio, pero "tiempo real" es una promesa que
-  alguien te puede reclamar.
+  alguien te puede reclamar. El tablero dice "Actualizado hace 5 min", que sí
+  se cumple.
 - **"Para que no pierdas dinero"** pasó a **"para que no botes tu dinero"**.
   Nadie puede garantizar que no se pierda un dólar en publicidad.
+- **En pantalla dice "No tocamos tu presupuesto"** y la voz dice "tu dinero
+  ni tu presupuesto". Lo escrito es lo más exacto: los $20 sí te los cobra
+  Judo; lo que nunca pasa por nosotros es lo que le pagas a Meta.
 
 ## Cómo grabarlo
 
 Igual que el otro: un cuarto sin eco, el teléfono a un palmo y un poco de
-lado, de pie, y tres tomas seguidas. Me las mandas y las calzo con el video.
+lado, de pie, y tres tomas seguidas. Me las mandas y las calzo con el video
+(la música se baja sola cuando hablas).

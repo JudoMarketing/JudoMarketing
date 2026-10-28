@@ -7,7 +7,7 @@
 <!-- FUENTES:INICIO -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
 <!-- FUENTES:FIN -->
 <style>
 /* MARCA:INICIO */
@@ -21,9 +21,9 @@
   --primario-hondo: #6d28d9;
   --ok: #34d399;
   --alerta: #ff4d4d;
-  --f-display: "Archivo", "Arial Narrow", Arial, sans-serif;
-  --f-cuerpo: "Instrument Sans", "Segoe UI", Arial, sans-serif;
-  --ancho-display: 112%;
+  --f-display: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  --f-cuerpo: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+  --ancho-display: 100%;
   --sombra-texto: 0 .6cqw 2.4cqw rgba(0,0,0,.55);
   --esquema: dark;
 }
@@ -314,6 +314,307 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
 .contacto span { display: inline-flex; align-items: center; gap: 2cqw; padding: 2.4cqw 4.4cqw; border-radius: 99cqw; white-space: nowrap; background: color-mix(in oklab, var(--texto) 10%, transparent); border: .4cqw solid color-mix(in oklab, var(--texto) 22%, transparent); font: 800 5cqw/1 var(--f-display); }
 .contacto img { width: 9cqw; height: 9cqw; border-radius: 50%; background: #0b0a10; padding: .8cqw; object-fit: contain; }
 </style>
+<style>
+/* ════════════════════════════════════════════════════════════════════
+   JuditoADS por dentro · sistema visual «pro» (28 de octubre de 2026)
+   Lo que se aprendió de los buenos y se aplica aquí:
+   - una idea y un objeto por plano, con mucho aire;
+   - fondo neutro (negro o claro) o UN color de marca a sangre; cambia de
+     escena a escena;
+   - una familia de letra (Inter Tight) y una mono para rótulos;
+   - el texto entra por máscara (sube desde abajo de su línea), sin rebote;
+   - curvas suaves y cortas (expo), nada de resortes de dibujo animado;
+   - el cambio de escena es un panel del color siguiente que empuja (desde
+     abajo, desde el lado o en círculo) o un corte seco en el tiempo fuerte.
+   Las animaciones de aquí llevan nombres propios para no pisar las de la
+   biblioteca de la skill.
+   ════════════════════════════════════════════════════════════════════ */
+:root {
+  --tinta: #0b0b12;
+  --claro: #f4f2ee;
+  --violeta: #6e3bff;
+  --azul-meta: #0866ff;
+  --oro: #f5b700;
+  --verde: #12b76a;
+  --rojo: #f04438;
+  --gris: #6f6c7a;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --sale: cubic-bezier(.16, 1, .3, 1);
+  --entra-sale: cubic-bezier(.7, 0, .2, 1);
+  --g-negro: radial-gradient(80% 50% at 50% 38%, #1c1830 0%, #0b0b12 64%);
+  --g-claro: radial-gradient(90% 60% at 50% 30%, #ffffff 0%, #f4f2ee 70%, #e9e5de 100%);
+  --g-violeta: radial-gradient(90% 60% at 50% 32%, #8a5cff 0%, #6e3bff 48%, #4b1fd1 100%);
+  --g-azul: radial-gradient(90% 60% at 50% 32%, #3c84ff 0%, #0866ff 52%, #0548c4 100%);
+  --g-oro: radial-gradient(90% 60% at 50% 32%, #ffd75e 0%, #f5b700 56%, #e39c00 100%);
+  --g-mezcla: radial-gradient(60% 40% at 18% 18%, #9a6bff 0%, transparent 70%), radial-gradient(60% 45% at 88% 62%, #2f7bff 0%, transparent 70%), radial-gradient(55% 35% at 25% 98%, #ff5ca8 0%, transparent 70%);
+}
+
+/* ── Fondos: uno por escena. El color base es el que mide el contraste. ── */
+.fondo { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.fondo.negro { background-color: #0b0b12; background-image: var(--g-negro); color: #fff; }
+.fondo.claro { background-color: #f4f2ee; background-image: var(--g-claro); color: var(--tinta); }
+.fondo.violeta { background-color: #6e3bff; background-image: var(--g-violeta); color: #fff; }
+.fondo.azul { background-color: #0866ff; background-image: var(--g-azul); color: #fff; }
+.fondo.oro { background-color: #f5b700; background-image: var(--g-oro); color: var(--tinta); }
+.fondo.mezcla { background-color: #4b1fd1; background-image: var(--g-mezcla); color: #fff; }
+/* Una luz que respira despacio, por debajo del contenido */
+.fondo::before { content: ""; position: absolute; inset: -20%; z-index: -1; background: radial-gradient(40% 30% at 50% 45%, rgba(255,255,255,.12), transparent 70%); animation: p-respira var(--t) ease-in-out both; }
+@keyframes p-respira { from { transform: translateY(3%) scale(1) } to { transform: translateY(-3%) scale(1.08) } }
+/* Rejilla de puntos que deriva: textura que se mueve desde el primer cuadro */
+.puntos-fondo { position: absolute; inset: -12cqw; z-index: 1; background-image: radial-gradient(circle, var(--punto, rgba(255,255,255,.16)) .32cqw, transparent .4cqw); background-size: 6cqw 6cqw;
+  -webkit-mask-image: radial-gradient(60% 45% at 50% 50%, #000 10%, transparent 75%); mask-image: radial-gradient(60% 45% at 50% 50%, #000 10%, transparent 75%); animation: p-deriva-puntos var(--t) linear both; }
+@keyframes p-deriva-puntos { from { transform: translate(0, 0) } to { transform: translate(-6cqw, -6cqw) } }
+
+/* ── Tipografía ── */
+.pro-cap { position: absolute; left: 8cqw; right: 8cqw; z-index: 10; font-family: "Inter Tight", var(--f-display); letter-spacing: -.035em; line-height: 1.02; text-align: left; }
+.pro-cap.arriba { top: 23cqw; }
+.pro-cap.centrado { text-align: center; }
+.t-xxl { font-size: 34cqw; font-weight: 800; letter-spacing: -.05em; line-height: .95; font-variant-numeric: tabular-nums; }
+.t-xl { font-size: 14cqw; font-weight: 800; }
+.t-l { font-size: 11.2cqw; font-weight: 800; }
+.t-m { font-size: 8.4cqw; font-weight: 750; letter-spacing: -.03em; }
+.t-s { font-size: 5.4cqw; font-weight: 500; letter-spacing: -.015em; line-height: 1.25; }
+.ligera { font-weight: 300; }
+.tenue { opacity: .62; }
+.color-violeta { color: var(--violeta); }
+.color-oro { color: var(--oro); }
+.color-verde { color: var(--verde); }
+.color-azul { color: var(--azul-meta); }
+.rotulo-mono { position: absolute; left: 8cqw; top: 16cqw; z-index: 10; display: flex; align-items: center; gap: 2cqw; font: 600 3.1cqw/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; }
+.rotulo-mono::before { content: ""; width: 5cqw; height: .5cqw; background: currentColor; transform-origin: left; animation: p-rayita .6s var(--sale) var(--d, 0s) both; }
+@keyframes p-rayita { from { transform: scaleX(0) } }
+/* Línea con máscara: el texto sube desde abajo de su propia línea */
+.m { display: block; overflow: hidden; padding: 0 .06em .1em; margin: 0 -.06em -.1em; }
+.m > span { display: inline-block; white-space: nowrap; transform: translateY(135%); animation: p-subir .8s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-subir { to { transform: none } }
+/* Subrayado que se dibuja bajo una palabra */
+.raya { position: relative; white-space: nowrap; }
+.raya::after { content: ""; position: absolute; left: 0; right: 0; bottom: .04em; height: .09em; border-radius: .05em; background: var(--raya, var(--violeta)); transform: scaleX(0); transform-origin: left; animation: p-rayar .7s var(--sale) var(--dr, .8s) forwards; }
+@keyframes p-rayar { to { transform: scaleX(1) } }
+/* Un número que cuenta (con la propiedad registrada --n) */
+@property --n { syntax: "<integer>"; inherits: false; initial-value: 0; }
+.cuenta { font-variant-numeric: tabular-nums; counter-reset: n var(--n); animation: p-contar var(--dc, 1s) var(--sale) var(--d, 0s) both; }
+.cuenta::after { content: counter(n); }
+@keyframes p-contar { from { --n: var(--desde, 0) } to { --n: var(--hasta, 0) } }
+
+/* ── Entradas sobrias ── */
+.aparece { opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-aparecer { from { opacity: 0; transform: translateY(5cqw) } to { opacity: 1; transform: none } }
+.escala { opacity: 0; animation: p-escalar .8s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-escalar { from { opacity: 0; transform: scale(.86) } to { opacity: 1; transform: none } }
+.voltea { opacity: 0; animation: p-voltear 1s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-voltear { from { opacity: 0; transform: perspective(140cqw) rotateX(62deg) translateY(12cqw) scale(.9) } to { opacity: 1; transform: none } }
+.revela { clip-path: inset(0 100% 0 0); animation: p-revela 1.3s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-revela { to { clip-path: inset(0 0 0 0) } }
+.deriva-lenta { animation: p-deriva-lenta var(--t) linear both; }
+@keyframes p-deriva-lenta { from { transform: scale(1) } to { transform: scale(1.05) } }
+.sale-antes { animation: p-sale .45s var(--entra-sale) var(--fuera, 9999s) forwards; }
+@keyframes p-sale { to { opacity: 0; transform: translateY(-8cqw) } }
+.entra-despues { opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+
+/* ── Salida: el contenido se va mientras el panel del color que sigue entra ── */
+.contenido { position: absolute; inset: 0; z-index: 5; }
+.contenido.sal-abajo { animation: p-empujado-arriba .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.contenido.sal-lado { animation: p-empujado-lado .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.contenido.sal-circulo { animation: p-empujado-fondo .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+@keyframes p-empujado-arriba { to { transform: translateY(-16cqw); opacity: .25 } }
+@keyframes p-empujado-lado { to { transform: translateX(-22cqw); opacity: .25 } }
+@keyframes p-empujado-fondo { to { transform: scale(.92); opacity: .3 } }
+.panel { position: absolute; inset: 0; z-index: 30; }
+.panel.abajo { transform: translateY(101%); animation: p-panel-sube .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.panel.lado { transform: translateX(101%); animation: p-panel-entra .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.panel.circulo { clip-path: circle(0 at var(--cx, 50%) var(--cy, 50%)); animation: p-panel-circulo .55s var(--entra-sale) var(--sal, 9999s) forwards; }
+@keyframes p-panel-sube { to { transform: none } }
+@keyframes p-panel-entra { to { transform: none } }
+@keyframes p-panel-circulo { to { clip-path: circle(150% at var(--cx, 50%) var(--cy, 50%)) } }
+.panel.negro { background-color: #0b0b12; background-image: var(--g-negro); }
+.panel.claro { background-color: #f4f2ee; background-image: var(--g-claro); }
+.panel.violeta { background-color: #6e3bff; background-image: var(--g-violeta); }
+.panel.azul { background-color: #0866ff; background-image: var(--g-azul); }
+.panel.oro { background-color: #f5b700; background-image: var(--g-oro); }
+.panel.mezcla { background-color: #4b1fd1; background-image: var(--g-mezcla); }
+
+/* ── Capas isométricas (soluciones que se arman) ── */
+.iso { position: absolute; left: 50%; width: 46cqw; margin-left: -23cqw; z-index: 4; filter: drop-shadow(0 3cqw 3cqw rgba(30,20,60,.16)); }
+.iso svg { display: block; width: 100%; height: auto; }
+.iso.cae { opacity: 0; animation: p-iso-cae .9s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-iso-cae { from { opacity: 0; transform: translateY(-26cqw) } 40% { opacity: 1 } to { opacity: 1; transform: none } }
+.sombra-piso { position: absolute; left: 50%; width: 60cqw; height: 10cqw; margin-left: -30cqw; border-radius: 50%; background: radial-gradient(closest-side, rgba(30,20,60,.2), transparent); z-index: 3; opacity: 0; animation: p-aparecer .8s ease var(--d, 0s) forwards; }
+
+/* ── Tarjetas de interfaz ── */
+.tarjeta-ui { position: absolute; left: 9cqw; right: 9cqw; z-index: 6; display: flex; align-items: center; gap: 4cqw; padding: 3.4cqw 4.4cqw; border-radius: 5.4cqw; background: #fff; color: var(--tinta);
+  box-shadow: 0 .4cqw 0 rgba(255,255,255,.6) inset, 0 2.4cqw 6cqw -1.6cqw rgba(20,14,50,.2), 0 .6cqw 1.6cqw rgba(20,14,50,.07); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.tarjeta-ui .icono { flex: none; width: 12.4cqw; height: 12.4cqw; border-radius: 3.6cqw; display: grid; place-items: center; background: #f1eefc; color: var(--violeta); }
+.tarjeta-ui .icono svg { width: 7.6cqw; height: 7.6cqw; }
+.tarjeta-ui .icono img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.tarjeta-ui .icono.blanco { background: #fff; box-shadow: 0 0 0 .3cqw #ece9f6 inset; }
+.tarjeta-ui .icono.blanco img { width: 72%; height: auto; object-fit: contain; }
+.tarjeta-ui b { display: block; font: 750 5.6cqw/1.05 "Inter Tight", var(--f-display); letter-spacing: -.02em; }
+.tarjeta-ui small { display: block; margin-top: 1cqw; font: 500 3.3cqw/1.2 var(--f-mono); letter-spacing: .01em; color: var(--gris); }
+.tarjeta-ui .marca-ok { margin-left: auto; width: 7.4cqw; height: 7.4cqw; color: var(--verde); opacity: 0; animation: p-escalar .5s var(--sale) var(--dok, 9999s) forwards; }
+.tarjeta-ui .marca-ok svg { width: 100%; height: 100%; }
+/* El contorno que se enciende cuando la tarjeta queda activa */
+.tarjeta-ui .borde { position: absolute; inset: -.9cqw; border-radius: 6.3cqw; border: .7cqw solid var(--bc, var(--violeta)); opacity: 0; transform: scale(1.04); animation: p-escalar-borde .5s var(--sale) var(--dac, 9999s) forwards; }
+@keyframes p-escalar-borde { to { opacity: 1; transform: none } }
+
+/* ── El hilo que une las tarjetas y lo que viaja por él ── */
+.hilo-v { position: absolute; left: 50%; width: .6cqw; margin-left: -.3cqw; z-index: 5; border-radius: 1cqw; background: linear-gradient(var(--hilo-a, #b69bff), var(--hilo-b, var(--violeta))); transform-origin: top; transform: scaleY(0); animation: p-hilo-crece .5s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-hilo-crece { to { transform: none } }
+.viajero { position: absolute; left: 50%; z-index: 7; width: 3.4cqw; height: 3.4cqw; margin: -1.7cqw 0 0 -1.7cqw; border-radius: 50%; background: var(--violeta); box-shadow: 0 0 0 1.2cqw rgba(110,59,255,.18), 0 0 4cqw rgba(110,59,255,.6); opacity: 0;
+  animation: p-viajar var(--dura, .8s) var(--entra-sale) var(--d, 0s) forwards; }
+@keyframes p-viajar { 0% { opacity: 0; top: calc(var(--y0) * 1cqw) } 20% { opacity: 1 } 80% { opacity: 1 } 100% { opacity: 0; top: calc(var(--y1) * 1cqw) } }
+.pastilla { display: inline-flex; align-items: center; gap: 1.6cqw; padding: 1.9cqw 3.4cqw; border-radius: 99cqw; white-space: nowrap; background: var(--tinta); color: #fff; font: 600 3.8cqw/1 var(--f-mono); letter-spacing: .01em; box-shadow: 0 1.6cqw 4cqw -1cqw rgba(0,0,0,.3); }
+.pastilla svg { width: 4.8cqw; height: 4.8cqw; }
+.pastilla.clara { background: #fff; color: var(--tinta); }
+.pastilla.grande { padding: 2.4cqw 4.2cqw; font-size: 4.6cqw; gap: 2cqw; }
+.pastilla.grande svg { width: 5.8cqw; height: 5.8cqw; }
+.pastilla.verde { background: #0b7a4b; color: #fff; }
+.en-hilo { position: absolute; left: 50%; z-index: 8; translate: -50% -50%; opacity: 0; animation: p-escalar .6s var(--sale) var(--d, 0s) forwards; }
+
+.viajero-h { position: absolute; z-index: 5; width: 3.2cqw; height: 3.2cqw; margin: -1.6cqw 0 0 -1.6cqw; border-radius: 50%; background: var(--violeta); box-shadow: 0 0 0 1.1cqw rgba(110,59,255,.18), 0 0 4cqw rgba(110,59,255,.55); opacity: 0;
+  animation: p-viajar-h .9s var(--entra-sale) var(--d, 0s) forwards; }
+@keyframes p-viajar-h { 0% { opacity: 0; left: calc(var(--x0) * 1cqw) } 15% { opacity: 1 } 85% { opacity: 1 } 100% { opacity: 0; left: calc(var(--x1) * 1cqw) } }
+
+/* ── Logos grandes ── */
+.logo-pro { position: absolute; left: 50%; z-index: 6; width: var(--ancho, 50cqw); margin-left: calc(var(--ancho, 50cqw) / -2); }
+.logo-pro img { display: block; width: 100%; height: auto; }
+.logo-app { position: relative; border-radius: 23%; overflow: hidden; box-shadow: 0 6cqw 12cqw -3cqw rgba(20,0,80,.6), 0 0 0 .4cqw rgba(255,255,255,.2); }
+/* Un reflejo que cruza el logo una vez */
+.brillo-cruza { position: absolute; inset: 0; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.5) 50%, transparent 65%); transform: translateX(-130%); animation: p-cruzar 1.2s var(--entra-sale) var(--dbr, .9s) forwards; }
+@keyframes p-cruzar { to { transform: translateX(130%) } }
+.circulo-blanco { position: absolute; z-index: 6; width: var(--ancho, 34cqw); aspect-ratio: 1; margin: calc(var(--ancho, 34cqw) / -2) 0 0 calc(var(--ancho, 34cqw) / -2); border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 4cqw 9cqw -2cqw rgba(0,20,80,.45); }
+.circulo-blanco img { width: 64%; height: auto; }
+.circulo-blanco.fb img, .circulo-blanco.ig img { width: 72%; }
+.chapa { display: block; width: 100%; height: 100%; border-radius: 50%; background: #fff; box-shadow: 0 1.4cqw 3cqw rgba(60,30,0,.3); }
+/* Un anillo que se abre cuando algo llega */
+.anillo { position: absolute; z-index: 5; width: var(--ancho, 34cqw); aspect-ratio: 1; margin: calc(var(--ancho, 34cqw) / -2) 0 0 calc(var(--ancho, 34cqw) / -2); border-radius: 50%; border: .6cqw solid var(--anillo, rgba(255,255,255,.7)); opacity: 0; animation: p-anillo .9s var(--sale) var(--d, 0s) both; }
+@keyframes p-anillo { from { opacity: .9; transform: scale(.95) } to { opacity: 0; transform: scale(1.55) } }
+
+/* ── Objetos vectoriales ── */
+.objeto-pro { position: absolute; left: 50%; z-index: 6; width: var(--ancho, 40cqw); margin-left: calc(var(--ancho, 40cqw) / -2); filter: drop-shadow(0 4cqw 5cqw rgba(0,0,0,.28)); }
+.objeto-pro svg { width: 100%; height: auto; display: block; }
+.flota-pro { animation: p-flota 2.4s ease-in-out var(--df, 0s) infinite alternate; }
+@keyframes p-flota { from { transform: translateY(0) rotate(-3deg) } to { transform: translateY(-2.6cqw) rotate(3deg) } }
+.gira-lento { animation: p-gira-lento 3.6s ease-in-out both; }
+@keyframes p-gira-lento { from { transform: rotateY(-40deg) } to { transform: rotateY(40deg) } }
+.luz-cenital { position: absolute; left: 50%; top: 0; width: 100cqw; height: 130cqw; margin-left: -50cqw; z-index: 2; background: radial-gradient(38% 62% at 50% 0%, var(--luz, rgba(255,214,102,.3)), transparent 72%); opacity: 0; animation: p-aparecer 1s ease var(--d, 0s) forwards; }
+.halo { position: absolute; left: 50%; z-index: 3; width: var(--ancho, 70cqw); aspect-ratio: 1; margin-left: calc(var(--ancho, 70cqw) / -2); border-radius: 50%; background: radial-gradient(closest-side, var(--halo, rgba(18,183,106,.35)), transparent); opacity: 0; animation: p-escalar 1.2s var(--sale) var(--d, 0s) forwards; }
+.icono-pro { position: absolute; left: 50%; z-index: 6; width: var(--ancho, 40cqw); margin-left: calc(var(--ancho, 40cqw) / -2); color: var(--c, #fff); }
+.icono-pro svg { display: block; width: 100%; height: 100%; }
+.circulo-traza { position: absolute; left: 50%; z-index: 5; width: var(--ancho, 60cqw); margin-left: calc(var(--ancho, 60cqw) / -2); }
+.circulo-traza circle { fill: none; stroke: var(--c, #fff); stroke-width: .6; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: p-trazar 1.4s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-trazar { to { stroke-dashoffset: 0 } }
+.lupa { animation: p-lupa 1.8s var(--entra-sale) both; }
+@keyframes p-lupa { from { transform: translate(-14cqw, 4cqw) rotate(-8deg) } to { transform: translate(10cqw, -2cqw) rotate(6deg) } }
+
+/* ── Cosas que caen dentro de un círculo ── */
+.absorbe { position: absolute; left: 50%; z-index: 7; translate: -50% -50%; opacity: 0; animation: p-absorbe 1.15s var(--d, 0s) forwards; }
+/* Entra desde arriba y cae acelerando: así la que sigue no se encima con la que se va */
+@keyframes p-absorbe {
+  0% { opacity: 0; top: calc(var(--y0) * 1cqw); transform: translateY(-5cqw); animation-timing-function: var(--sale) }
+  30% { opacity: 1; top: calc(var(--y0) * 1cqw); transform: none; animation-timing-function: cubic-bezier(.4, 0, .6, 1) }
+  100% { opacity: 0; top: calc(var(--y1) * 1cqw); transform: scale(.35) } }
+.linea-svg { position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; overflow: visible; }
+.linea-svg path { fill: none; stroke: var(--c, rgba(255,255,255,.6)); stroke-width: .5; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: p-trazar .7s var(--sale) var(--d, 0s) forwards; }
+.linea-svg path.punteada { stroke-dasharray: 1.2 1.6; stroke-dashoffset: 0; opacity: 0; animation: p-aparecer .5s ease var(--d, 0s) forwards; }
+
+/* ── La tarjeta de crédito que vuela hasta Meta ── */
+.vuela-a-meta { position: absolute; left: 50%; z-index: 7; width: 52cqw; margin-left: -26cqw; opacity: 0; animation: p-vuela 2s var(--d, 0s) forwards; }
+.vuela-a-meta svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 4cqw 5cqw rgba(60,30,0,.35)); }
+@keyframes p-vuela {
+  0% { opacity: 0; transform: translate(-70cqw, 8cqw) rotate(-24deg); animation-timing-function: var(--sale) }
+  10% { opacity: 1 }
+  48% { opacity: 1; transform: translate(-10cqw, 0) rotate(-8deg); animation-timing-function: linear }
+  60% { opacity: 1; transform: translate(-8cqw, -.6cqw) rotate(-6deg); animation-timing-function: var(--entra-sale) }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.25) rotate(0deg) } }
+
+/* ── Presupuesto que se elige (deslizador) ── */
+.ui-tarjeta { position: absolute; left: 8cqw; right: 8cqw; z-index: 6; padding: 6cqw 6cqw 6.4cqw; border-radius: 6cqw; background: #fff; color: var(--tinta); box-shadow: 0 3cqw 8cqw -2cqw rgba(20,0,80,.35); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.ui-tarjeta .cab-ui { display: flex; justify-content: space-between; align-items: center; font: 600 3.4cqw/1 var(--f-mono); color: var(--gris); }
+.ui-tarjeta .monto { margin: 4.4cqw 0 6cqw; font: 800 17cqw/1 "Inter Tight", var(--f-display); letter-spacing: -.045em; }
+.ui-tarjeta .monto small { font: 500 5cqw/1 "Inter Tight", var(--f-display); letter-spacing: -.01em; color: var(--gris); }
+.riel { position: relative; height: 2.2cqw; border-radius: 2cqw; background: #ece9f6; }
+.riel .lleno { position: absolute; left: 0; top: 0; bottom: 0; border-radius: inherit; background: linear-gradient(90deg, #a98bff, var(--violeta)); width: var(--desde-p); animation: p-lleno var(--dc, 1s) var(--sale) var(--d, 0s) both; }
+.riel .perilla { position: absolute; top: 50%; left: var(--desde-p); width: 8.4cqw; height: 8.4cqw; margin: -4.2cqw 0 0 -4.2cqw; border-radius: 50%; background: #fff; box-shadow: 0 0 0 .8cqw var(--violeta) inset, 0 1.4cqw 3cqw rgba(40,10,120,.35); animation: p-perilla var(--dc, 1s) var(--sale) var(--d, 0s) both; }
+.riel .perilla svg { position: absolute; left: 4.6cqw; top: 4cqw; width: 9cqw; height: 9cqw; color: var(--tinta); }
+@keyframes p-lleno { to { width: var(--hasta-p) } }
+@keyframes p-perilla { to { left: var(--hasta-p) } }
+.riel-marcas { display: flex; justify-content: space-between; margin-top: 4.4cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+
+/* ── Recibo ── */
+.recibo { position: absolute; left: 10cqw; right: 10cqw; z-index: 6; display: flex; align-items: center; gap: 4cqw; padding: 4cqw 5cqw; border-radius: 5cqw; background: #fff; color: var(--tinta); box-shadow: 0 2.4cqw 6cqw -1.6cqw rgba(20,14,50,.2); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.recibo img { width: 11cqw; height: 11cqw; border-radius: 3cqw; }
+.recibo b { display: block; font: 750 5cqw/1.1 "Inter Tight", var(--f-display); letter-spacing: -.02em; }
+.recibo small { display: block; margin-top: .8cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.recibo .precio-r { margin-left: auto; font: 800 6.4cqw/1 "Inter Tight", var(--f-display); letter-spacing: -.03em; }
+
+/* ── Panel de resultados (gráfica que se dibuja) ── */
+.tablero { position: absolute; left: 8cqw; right: 8cqw; z-index: 6; padding: 5.4cqw 6cqw 5cqw; border-radius: 6cqw; background: #fff; color: var(--tinta); box-shadow: 0 3cqw 8cqw -2cqw rgba(0,20,80,.4); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.tablero .cab { display: flex; justify-content: space-between; align-items: center; font: 600 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.tablero .cifras { display: flex; gap: 8cqw; margin: 4.4cqw 0 3cqw; }
+.tablero .cifras b { display: block; font: 800 9.4cqw/1 "Inter Tight", var(--f-display); letter-spacing: -.035em; }
+.tablero .cifras small { display: block; margin-top: 1cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.tablero svg { width: 100%; height: auto; display: block; overflow: visible; }
+.tablero .pie-tab { display: flex; align-items: center; gap: 2cqw; margin-top: 3cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.tablero .vivo { width: 2.4cqw; height: 2.4cqw; border-radius: 50%; background: var(--verde); box-shadow: 0 0 0 1cqw rgba(18,183,106,.2); }
+.trazo-pro { fill: none; stroke: var(--verde); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: p-trazar 1.6s var(--sale) var(--d, 0s) forwards; }
+.area-pro { opacity: 0; animation: p-fundir 1s ease var(--d, 0s) forwards; }
+@keyframes p-fundir { to { opacity: 1 } }
+.punto-vivo { opacity: 0; animation: p-fundir .3s ease var(--d, 0s) forwards; }
+.etiqueta-ejemplo { font: 600 2.8cqw/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; padding: 1.2cqw 2.2cqw; border-radius: 99cqw; background: #f1eefc; color: #4b1fd1; }
+
+/* ── Avisos que llegan (como en la pantalla bloqueada) ── */
+.aviso { position: absolute; left: 6cqw; right: 11cqw; z-index: 6; display: flex; gap: 4cqw; align-items: center; padding: 4cqw 4.6cqw; border-radius: 5cqw; background: rgba(255,255,255,.96); color: var(--tinta);
+  box-shadow: 0 2.4cqw 6cqw -1.6cqw rgba(0,0,0,.45); opacity: 0; animation: p-llega .75s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-llega { from { opacity: 0; transform: translateY(-6cqw) scale(.96) } to { opacity: 1; transform: none } }
+.aviso .ic { flex: none; width: 13cqw; height: 13cqw; border-radius: 3.8cqw; display: grid; place-items: center; color: #fff; }
+.aviso .ic svg { width: 8cqw; height: 8cqw; }
+.aviso .txt { min-width: 0; }
+.aviso .de { display: block; margin-bottom: 1cqw; font: 600 3cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--gris); }
+.aviso b { display: block; font: 700 5.3cqw/1.12 "Inter Tight", var(--f-display); letter-spacing: -.015em; }
+.aviso small { display: block; margin-top: .7cqw; font: 500 4cqw/1.22 "Inter Tight", var(--f-cuerpo); color: #55525f; }
+
+/* ── Cuadrícula de requisitos ── */
+.rejilla { position: absolute; left: 10cqw; right: 10cqw; z-index: 6; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4cqw; }
+.casilla { position: relative; aspect-ratio: 1 / 1.02; padding: 4.4cqw; border-radius: 5.4cqw; background: #fff; color: var(--tinta); display: flex; flex-direction: column; justify-content: space-between;
+  box-shadow: 0 2.4cqw 6cqw -1.6cqw rgba(20,0,80,.4); opacity: 0; animation: p-escalar .7s var(--sale) var(--d, 0s) forwards; }
+.casilla .ic { width: 11cqw; height: 11cqw; display: grid; place-items: center; }
+.casilla .ic img { width: 100%; height: 100%; object-fit: contain; }
+.casilla .ic svg { width: 100%; height: 100%; color: var(--violeta); }
+.casilla b { display: block; font: 750 5.2cqw/1.08 "Inter Tight", var(--f-display); letter-spacing: -.02em; }
+.casilla small { display: block; margin-top: 1.2cqw; font: 500 3.3cqw/1.25 "Inter Tight", var(--f-cuerpo); color: #55525f; }
+.casilla .ok { position: absolute; right: 3.6cqw; top: 3.6cqw; width: 7cqw; height: 7cqw; color: var(--verde); opacity: 0; animation: p-escalar .45s var(--sale) calc(var(--d, 0s) + .5s) forwards; }
+.casilla .ok svg { width: 100%; height: 100%; }
+
+/* El hueco se apaga cuando llega su ficha (--fuera): la ficha puede quedar más alta y el borde asomaría */
+.hueco { aspect-ratio: 1 / 1.02; border-radius: 5.4cqw; border: .45cqw dashed rgba(255,255,255,.45); opacity: 0; animation: p-fundir .5s ease var(--d, 0s) forwards, p-apagar .3s ease var(--fuera, 9999s) forwards; }
+@keyframes p-apagar { to { opacity: 0 } }
+
+/* ── Avisos que bajan cuando llega uno nuevo ── */
+.baja { position: absolute; inset: 0; z-index: 6; animation: p-baja .6s var(--sale) var(--db, 9999s) both; }
+@keyframes p-baja { from { transform: none } to { transform: translateY(26.5cqw) } }
+
+/* ── Dos momentos dentro de una escena ── */
+.fase { position: absolute; inset: 0; z-index: 6; }
+
+/* ── Los tres, en fila: tú, JuditoADS y Meta ── */
+.fila-nodos { position: absolute; left: 0; right: 0; z-index: 6; height: 30cqw; }
+.fila-nodos .nodo-f { position: absolute; top: 0; width: var(--tam, 22cqw); margin-left: calc(var(--tam, 22cqw) / -2); display: flex; flex-direction: column; align-items: center; gap: 2.4cqw; opacity: 0; animation: p-escalar .7s var(--sale) var(--d, 0s) forwards; }
+.fila-nodos .disco { width: var(--tam, 22cqw); aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; background: var(--tinta); color: #fff; box-shadow: 0 3cqw 6cqw -2cqw rgba(20,14,50,.4); overflow: hidden; }
+.fila-nodos .disco svg { width: 52%; height: 52%; }
+.fila-nodos .disco.app { border-radius: 23%; }
+.fila-nodos .disco.app img { width: 100%; height: 100%; object-fit: cover; }
+.fila-nodos .disco.blanco { background: #fff; }
+.fila-nodos .disco.blanco img { width: 64%; height: auto; }
+.fila-nodos span { font: 600 3.4cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
+
+/* ── Cierre ── */
+.contacto-pro { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; display: grid; gap: 2.8cqw; }
+.contacto-pro span { display: flex; align-items: center; gap: 3cqw; padding: 2.8cqw 4cqw; border-radius: 4.4cqw; background: rgba(255,255,255,.14); border: .3cqw solid rgba(255,255,255,.3); color: #fff; font: 700 4.6cqw/1 "Inter Tight", var(--f-display); letter-spacing: -.01em; opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.contacto-pro img { width: 8cqw; height: 8cqw; border-radius: 50%; background: #0b0a10; padding: .8cqw; object-fit: contain; }
+.contacto-pro svg { width: 8cqw; height: 8cqw; flex: none; }
+.legal { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; font: 500 2.3cqw/1.3 var(--f-mono); color: rgba(255,255,255,.72); }
+</style>
 </head>
 <body>
 <div class="mesa">
@@ -337,201 +638,214 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
 </svg>
 
 <!-- ═══════════════ ESCENAS (las arma armar.py) ═══════════════ -->
-<template id="gancho-red" data-sfx="grave@0.05 brillo@0.2 pop@0.85 pop@0.97 pop@1.09 pop@1.21 pop@1.33 pop@1.45 pop@1.57 pop@1.69" data-entrada="fade">
-  <div class="cap arriba" style="font-size:9cqw">Judo Marketing<br>no es solo <span class="hl">marketing</span>.</div><div class="mapa" style=""><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea" pathLength="1" d="M50.0 83.0 L50.0 72.8" style="--d:0.55s;--dura:.5s"/><path class="linea" pathLength="1" d="M60.6 87.4 L67.0 80.2" style="--d:0.67s;--dura:.5s"/><path class="linea" pathLength="1" d="M65.0 98.0 L74.0 98.0" style="--d:0.79s;--dura:.5s"/><path class="linea" pathLength="1" d="M60.6 108.6 L67.0 115.8" style="--d:0.91s;--dura:.5s"/><path class="linea" pathLength="1" d="M50.0 113.0 L50.0 123.2" style="--d:1.03s;--dura:.5s"/><path class="linea" pathLength="1" d="M39.4 108.6 L33.0 115.8" style="--d:1.15s;--dura:.5s"/><path class="linea" pathLength="1" d="M35.0 98.0 L26.0 98.0" style="--d:1.27s;--dura:.5s"/><path class="linea" pathLength="1" d="M39.4 87.4 L33.0 80.2" style="--d:1.39s;--dura:.5s"/></svg><div class="nodo cuadrado" style="--x:50;--y:98;--tam:28cqw;--img:80%;--d:0s;background:#0b0a10"><img src="img/judo-logo.webp" alt="Judo Marketing"></div><div class="nodo" style="--x:50.0;--y:65.4;--tam:13cqw;--fase:0.00s;--d:0.85s"><img src="img/pieza.webp" alt=""></div><div class="nodo" style="--x:71.9;--y:75.0;--tam:13cqw;--fase:-0.35s;--d:0.97s"><img src="img/grafica.webp" alt=""></div><div class="nodo" style="--x:81.0;--y:98.0;--tam:13cqw;--fase:-0.70s;--d:1.09s"><img src="img/cohete.webp" alt=""></div><div class="nodo" style="--x:71.9;--y:121.0;--tam:13cqw;--fase:-1.05s;--d:1.21s"><img src="img/campana.webp" alt=""></div><div class="nodo" style="--x:50.0;--y:130.6;--tam:13cqw;--fase:-1.40s;--d:1.33s"><img src="img/llave.webp" alt=""></div><div class="nodo" style="--x:28.1;--y:121.0;--tam:13cqw;--fase:-1.75s;--d:1.45s"><img src="img/escudo.webp" alt=""></div><div class="nodo" style="--x:19.0;--y:98.0;--tam:13cqw;--fase:-2.10s;--d:1.57s"><img src="img/moneda.webp" alt=""></div><div class="nodo" style="--x:28.1;--y:75.0;--tam:13cqw;--fase:-2.45s;--d:1.69s"><img src="img/check.webp" alt=""></div></div>
+<template id="gancho" data-sfx="sub@0 cristal@0.95:2/-24 barrido-suave@3.05" data-entrada="corte" data-swish="no">
+  <div class="fondo negro"><div class="contenido sal-abajo" style="--sal:3.1s"><div class="puntos-fondo"></div><div class="rotulo-mono aparece" style="--d:-0.1s">Judo Marketing · Miami</div><div class="pro-cap arriba t-xl"><span class="m"><span style="--d:-0.25s">No somos</span></span><span class="m"><span style="--d:-0.13s">solo</span></span><span class="m"><span style="--d:-0.01s"><span class="raya" style="--dr:.95s">marketing.</span></span></span></div><div class="logo-pro" style="top:79cqw;left:46cqw;--ancho:60cqw"><div class="deriva-lenta"><img class="revela" style="--d:.3s" src="img/judo-logo.webp" alt="Judo Marketing"></div></div></div></div><div class="panel abajo claro" style="--sal:3.1s"></div>
 </template>
 
-<template id="gancho-red-2" data-sfx="subida@0:1.2 brillo@1.2" data-entrada="corte">
-  <div class="cap arriba" style="font-size:8.2cqw">Creamos soluciones<br>para problemas<br><span class="hl">complejos</span>.</div><div class="mapa" style=""><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea ya" pathLength="1" d="M50.0 83.0 L50.0 72.8" style="--d:0.55s;--dura:.5s"/><path class="flujo" pathLength="1" d="M50.0 83.0 L50.0 72.8" style="--d:0.10s"/><path class="linea ya" pathLength="1" d="M60.6 87.4 L67.0 80.2" style="--d:0.67s;--dura:.5s"/><path class="flujo" pathLength="1" d="M60.6 87.4 L67.0 80.2" style="--d:0.15s"/><path class="linea ya" pathLength="1" d="M65.0 98.0 L74.0 98.0" style="--d:0.79s;--dura:.5s"/><path class="flujo" pathLength="1" d="M65.0 98.0 L74.0 98.0" style="--d:0.20s"/><path class="linea ya" pathLength="1" d="M60.6 108.6 L67.0 115.8" style="--d:0.91s;--dura:.5s"/><path class="flujo" pathLength="1" d="M60.6 108.6 L67.0 115.8" style="--d:0.25s"/><path class="linea ya" pathLength="1" d="M50.0 113.0 L50.0 123.2" style="--d:1.03s;--dura:.5s"/><path class="flujo" pathLength="1" d="M50.0 113.0 L50.0 123.2" style="--d:0.30s"/><path class="linea ya" pathLength="1" d="M39.4 108.6 L33.0 115.8" style="--d:1.15s;--dura:.5s"/><path class="flujo" pathLength="1" d="M39.4 108.6 L33.0 115.8" style="--d:0.35s"/><path class="linea ya" pathLength="1" d="M35.0 98.0 L26.0 98.0" style="--d:1.27s;--dura:.5s"/><path class="flujo" pathLength="1" d="M35.0 98.0 L26.0 98.0" style="--d:0.40s"/><path class="linea ya" pathLength="1" d="M39.4 87.4 L33.0 80.2" style="--d:1.39s;--dura:.5s"/><path class="flujo" pathLength="1" d="M39.4 87.4 L33.0 80.2" style="--d:0.45s"/></svg><div class="nodo cuadrado ya" style="--x:50;--y:98;--tam:28cqw;--img:80%;--d:0s;background:#0b0a10"><img src="img/judo-logo.webp" alt="Judo Marketing"></div><div class="nodo ya" style="--x:50.0;--y:65.4;--tam:13cqw;--fase:0.00s;--d:0.85s"><img src="img/pieza.webp" alt=""></div><div class="nodo ya" style="--x:71.9;--y:75.0;--tam:13cqw;--fase:-0.35s;--d:0.97s"><img src="img/grafica.webp" alt=""></div><div class="nodo ya" style="--x:81.0;--y:98.0;--tam:13cqw;--fase:-0.70s;--d:1.09s"><img src="img/cohete.webp" alt=""></div><div class="nodo ya" style="--x:71.9;--y:121.0;--tam:13cqw;--fase:-1.05s;--d:1.21s"><img src="img/campana.webp" alt=""></div><div class="nodo ya" style="--x:50.0;--y:130.6;--tam:13cqw;--fase:-1.40s;--d:1.33s"><img src="img/llave.webp" alt=""></div><div class="nodo ya" style="--x:28.1;--y:121.0;--tam:13cqw;--fase:-1.75s;--d:1.45s"><img src="img/escudo.webp" alt=""></div><div class="nodo ya" style="--x:19.0;--y:98.0;--tam:13cqw;--fase:-2.10s;--d:1.57s"><img src="img/moneda.webp" alt=""></div><div class="nodo ya" style="--x:28.1;--y:75.0;--tam:13cqw;--fase:-2.45s;--d:1.69s"><img src="img/check.webp" alt=""></div></div>
+<template id="soluciones" data-sfx="golpe-suave@0.72 golpe-suave@0.97:1 golpe-suave@1.22:2 barrido-suave@3.05" data-entrada="corte" data-swish="no">
+  <div class="fondo claro"><div class="contenido sal-lado" style="--sal:3.1s"><div class="pro-cap arriba t-l"><span class="m"><span style="--d:0.05s">Soluciones</span></span><span class="m"><span style="--d:0.14s">complejas</span></span></div><div class="pro-cap t-m" style="top:49cqw;"><span class="m"><span style="--d:0.30s"><span class="ligera">para problemas</span></span></span><span class="m"><span style="--d:0.39s"><span class="ligera">complejos.</span></span></span></div><div class="sombra-piso" style="top:127cqw;--d:.5s"></div><div class="iso cae" style="top:100cqw;width:44cqw;margin-left:-22cqw;--d:.45s"><svg viewBox="0 0 200 151.47" aria-hidden="true"><polygon points="0,57.74 100,115.47 100,151.47 0,93.74000000000001" fill="#5b2df0"/><polygon points="100,115.47 200,57.74 200,93.74000000000001 100,151.47" fill="#3f17c2"/><polygon points="100,0 200,57.74 100,115.47 0,57.74" fill="#8a5cff"/><polyline points="0,57.74 100,0 200,57.74" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.4"/><polyline points="0,57.74 100,115.47 200,57.74" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1"/><g transform="matrix(0.3906 0.2255 -0.3906 0.2255 100 0)"><g transform="translate(64 64) scale(.5)" fill="#fff" style="color:#fff"><path d="M230.1,108.76,198.25,90.62c-.64-1.16-1.31-2.29-2-3.41l-.12-36A104.61,104.61,0,0,0,162,32L130,49.89c-1.34,0-2.69,0-4,0L94,32A104.58,104.58,0,0,0,59.89,51.25l-.16,36c-.7,1.12-1.37,2.26-2,3.41l-31.84,18.1a99.15,99.15,0,0,0,0,38.46l31.85,18.14c.64,1.16,1.31,2.29,2,3.41l.12,36A104.61,104.61,0,0,0,94,224l32-17.87c1.34,0,2.69,0,4,0L162,224a104.58,104.58,0,0,0,34.08-19.25l.16-36c.7-1.12,1.37-2.26,2-3.41l31.84-18.1A99.15,99.15,0,0,0,230.1,108.76ZM128,168a40,40,0,1,1,40-40A40,40,0,0,1,128,168Z" opacity="0.2"/><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm109.94-52.79a8,8,0,0,0-3.89-5.4l-29.83-17-.12-33.62a8,8,0,0,0-2.83-6.08,111.91,111.91,0,0,0-36.72-20.67,8,8,0,0,0-6.46.59L128,41.85,97.88,25a8,8,0,0,0-6.47-.6A111.92,111.92,0,0,0,54.73,45.15a8,8,0,0,0-2.83,6.07l-.15,33.65-29.83,17a8,8,0,0,0-3.89,5.4,106.47,106.47,0,0,0,0,41.56,8,8,0,0,0,3.89,5.4l29.83,17,.12,33.63a8,8,0,0,0,2.83,6.08,111.91,111.91,0,0,0,36.72,20.67,8,8,0,0,0,6.46-.59L128,214.15,158.12,231a7.91,7.91,0,0,0,3.9,1,8.09,8.09,0,0,0,2.57-.42,112.1,112.1,0,0,0,36.68-20.73,8,8,0,0,0,2.83-6.07l.15-33.65,29.83-17a8,8,0,0,0,3.89-5.4A106.47,106.47,0,0,0,237.94,107.21Zm-15,34.91-28.57,16.25a8,8,0,0,0-3,3c-.58,1-1.19,2.06-1.81,3.06a7.94,7.94,0,0,0-1.22,4.21l-.15,32.25a95.89,95.89,0,0,1-25.37,14.3L134,199.13a8,8,0,0,0-3.91-1h-.19c-1.21,0-2.43,0-3.64,0a8.1,8.1,0,0,0-4.1,1l-28.84,16.1A96,96,0,0,1,67.88,201l-.11-32.2a8,8,0,0,0-1.22-4.22c-.62-1-1.23-2-1.8-3.06a8.09,8.09,0,0,0-3-3.06l-28.6-16.29a90.49,90.49,0,0,1,0-28.26L61.67,97.63a8,8,0,0,0,3-3c.58-1,1.19-2.06,1.81-3.06a7.94,7.94,0,0,0,1.22-4.21l.15-32.25a95.89,95.89,0,0,1,25.37-14.3L122,56.87a8,8,0,0,0,4.1,1c1.21,0,2.43,0,3.64,0a8,8,0,0,0,4.1-1l28.84-16.1A96,96,0,0,1,188.12,55l.11,32.2a8,8,0,0,0,1.22,4.22c.62,1,1.23,2,1.8,3.06a8.09,8.09,0,0,0,3,3.06l28.6,16.29A90.49,90.49,0,0,1,222.9,142.12Z"/></g></g></svg></div><div class="iso cae" style="top:86.4cqw;width:44cqw;margin-left:-22cqw;--d:.7s"><svg viewBox="0 0 200 151.47" aria-hidden="true"><polygon points="0,57.74 100,115.47 100,151.47 0,93.74000000000001" fill="#0866ff"/><polygon points="100,115.47 200,57.74 200,93.74000000000001 100,151.47" fill="#0548c4"/><polygon points="100,0 200,57.74 100,115.47 0,57.74" fill="#3c84ff"/><polyline points="0,57.74 100,0 200,57.74" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.4"/><polyline points="0,57.74 100,115.47 200,57.74" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1"/><g transform="matrix(0.3906 0.2255 -0.3906 0.2255 100 0)"><g transform="translate(64 64) scale(.5)" fill="#fff" style="color:#fff"><path d="M224,64V208H32V48H208A16,16,0,0,1,224,64Z" opacity="0.2"/><path d="M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V48a8,8,0,0,1,16,0V156.69l50.34-50.35a8,8,0,0,1,11.32,0L128,132.69,180.69,80H160a8,8,0,0,1,0-16h40a8,8,0,0,1,8,8v40a8,8,0,0,1-16,0V91.31l-58.34,58.35a8,8,0,0,1-11.32,0L96,123.31l-56,56V200H224A8,8,0,0,1,232,208Z"/></g></g></svg></div><div class="iso cae" style="top:72.8cqw;width:44cqw;margin-left:-22cqw;--d:.95s"><svg viewBox="0 0 200 151.47" aria-hidden="true"><polygon points="0,57.74 100,115.47 100,151.47 0,93.74000000000001" fill="#f5b700"/><polygon points="100,115.47 200,57.74 200,93.74000000000001 100,151.47" fill="#d08e00"/><polygon points="100,0 200,57.74 100,115.47 0,57.74" fill="#ffd24d"/><polyline points="0,57.74 100,0 200,57.74" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.4"/><polyline points="0,57.74 100,115.47 200,57.74" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1"/><g transform="matrix(0.3906 0.2255 -0.3906 0.2255 100 0)"><g transform="translate(64 64) scale(.5)" fill="#0b0b12" style="color:#0b0b12"><path d="M96,240l16-80L48,136,160,16,144,96l64,24Z" opacity="0.2"/><path d="M215.79,118.17a8,8,0,0,0-5-5.66L153.18,90.9l14.66-73.33a8,8,0,0,0-13.69-7l-112,120a8,8,0,0,0,3,13l57.63,21.61L88.16,238.43a8,8,0,0,0,13.69,7l112-120A8,8,0,0,0,215.79,118.17ZM109.37,214l10.47-52.38a8,8,0,0,0-5-9.06L62,132.71l84.62-90.66L136.16,94.43a8,8,0,0,0,5,9.06l52.8,19.8Z"/></g></g></svg></div></div></div><div class="panel lado violeta" style="--sal:3.1s"></div>
 </template>
 
-<template id="intro-jads" data-sfx="whoosh-suave@0.1 grave@0.35 brillo@0.4" data-entrada="fade">
-  <div class="cap arriba" style="font-size:9cqw">Por eso creamos<br><span class="hl">JuditoADS</span>.<span class="sub">Así funciona por dentro:</span></div><div class="mapa" style="--luz-d:0s;--luz-hasta:0"><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea ya" pathLength="1" d="M50.0 83.0 L50.0 72.8" style="--d:0.55s;--dura:.5s"/><path class="linea ya" pathLength="1" d="M60.6 87.4 L67.0 80.2" style="--d:0.67s;--dura:.5s"/><path class="linea ya" pathLength="1" d="M65.0 98.0 L74.0 98.0" style="--d:0.79s;--dura:.5s"/><path class="linea ya" pathLength="1" d="M60.6 108.6 L67.0 115.8" style="--d:0.91s;--dura:.5s"/><path class="linea ya" pathLength="1" d="M50.0 113.0 L50.0 123.2" style="--d:1.03s;--dura:.5s"/><path class="linea ya" pathLength="1" d="M39.4 108.6 L33.0 115.8" style="--d:1.15s;--dura:.5s"/><path class="linea ya" pathLength="1" d="M35.0 98.0 L26.0 98.0" style="--d:1.27s;--dura:.5s"/><path class="linea ya" pathLength="1" d="M39.4 87.4 L33.0 80.2" style="--d:1.39s;--dura:.5s"/></svg><div class="nodo cuadrado ya" style="--x:50;--y:98;--tam:28cqw;--img:80%;--d:0s;background:#0b0a10"><img src="img/judo-logo.webp" alt="Judo Marketing"></div><div class="nodo ya" style="--x:50.0;--y:65.4;--tam:13cqw;--fase:0.00s;--d:0.85s"><img src="img/pieza.webp" alt=""></div><div class="nodo ya" style="--x:71.9;--y:75.0;--tam:13cqw;--fase:-0.35s;--d:0.97s"><img src="img/grafica.webp" alt=""></div><div class="nodo ya" style="--x:81.0;--y:98.0;--tam:13cqw;--fase:-0.70s;--d:1.09s"><img src="img/cohete.webp" alt=""></div><div class="nodo ya" style="--x:71.9;--y:121.0;--tam:13cqw;--fase:-1.05s;--d:1.21s"><img src="img/campana.webp" alt=""></div><div class="nodo ya" style="--x:50.0;--y:130.6;--tam:13cqw;--fase:-1.40s;--d:1.33s"><img src="img/llave.webp" alt=""></div><div class="nodo ya" style="--x:28.1;--y:121.0;--tam:13cqw;--fase:-1.75s;--d:1.45s"><img src="img/escudo.webp" alt=""></div><div class="nodo ya" style="--x:19.0;--y:98.0;--tam:13cqw;--fase:-2.10s;--d:1.57s"><img src="img/moneda.webp" alt=""></div><div class="nodo ya" style="--x:28.1;--y:75.0;--tam:13cqw;--fase:-2.45s;--d:1.69s"><img src="img/check.webp" alt=""></div></div><img class="logo-grande" src="img/juditoads.webp" alt="JuditoADS" style="--y:61.9cqw;--ancho:54cqw;--radio:14cqw;--d:.35s">
+<template id="jads" data-sfx="golpe-suave@0.55:1/-24 cristal@1.25:4/-23 barrido-grave@3.00" data-entrada="corte" data-swish="no">
+  <div class="fondo violeta"><div class="contenido sal-circulo" style="--sal:3.05s"><div class="pro-cap arriba t-m"><span class="m"><span style="--d:0.05s">Por eso creamos</span></span></div><div class="pro-cap t-xl" style="top:33.5cqw;"><span class="m"><span style="--d:0.16s">JuditoADS.</span></span></div><div class="logo-pro voltea" style="top:56cqw;--ancho:54cqw;--d:.35s"><div class="logo-app"><img src="img/juditoads.webp" alt="JuditoADS"><i class="brillo-cruza" style="--dbr:1.2s"></i></div></div><div class="pro-cap t-s centrado aparece" style="top:118cqw;--d:1.6s">Así funciona por dentro ↓</div></div></div><div class="panel circulo claro" style="--sal:3.05s;--cx:50%;--cy:46.7%"></div>
 </template>
 
-<template id="conexion" data-sfx="whoosh@0.05 pop@0.9 pop@1.3 swish@1.6 swish@2.0 plop@2.45 tap@3.4" data-entrada="corte">
-  <div class="cap arriba" style="font-size:7.4cqw">Meta deja que JuditoADS<br>maneje tus anuncios,<br><span class="hl">con tu permiso</span>.</div><div class="mapa" style="--cam-desde:translate(-24cqw,-14.2cqw) scale(2);--cam-hasta:none;--cam-dura:1.1s"><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea  " pathLength="1" d="M34 76 Q46 76 52 86" style="--d:1.6s"/><path class="linea  " pathLength="1" d="M54 108 Q50 120 38 122" style="--d:2.0s"/></svg><div class="nodo cuadrado lleno ya" style="--x:62;--y:96;--tam:27cqw;--fase:-1.1s"><img src="img/juditoads.webp" alt=""></div><div class="nodo" style="--x:26;--y:70;--tam:22cqw;--fase:0s;--d:0.9s"><img src="img/negocio.webp" alt=""><span class="nombre izq">Tú</span></div><div class="nodo blanco" style="--x:30;--y:128;--tam:22cqw;--fase:-2s;--d:1.3s;--img:74%"><img src="img/meta-simbolo.png" alt=""><span class="nombre izq">Meta</span></div><img class="paquete" src="img/llave.webp" alt="" style="--x0:34;--y0:76;--xm:44.5;--ym:78.5;--x1:52;--y1:86;--d:2.4s;--dura:1.1s"><div class="rotulo  entra" style="--x:48;--y:67;--d:2.9s">tu permiso</div></div>
+<template id="conexion" data-sfx="cristal@1.2:1/-25 clic-suave@1.95 cristal@2.1:3/-25 clic-suave@3.05/-30 barrido-suave@3.65" data-entrada="corte" data-swish="no">
+  <div class="fondo claro"><div class="contenido sal-abajo" style="--sal:3.7s"><div class="rotulo-mono aparece" style="--d:0.0s">Cómo se conecta</div><div class="pro-cap arriba t-m"><span class="m"><span style="--d:0.05s">JuditoADS maneja</span></span><span class="m"><span style="--d:0.14s">tus anuncios,</span></span><span class="m"><span style="--d:0.23s"><span class="color-violeta">con tu permiso.</span></span></span></div><div class="tarjeta-ui" style="top:56cqw;--d:0.45s"><span class="icono"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,96v16a32,32,0,0,1-64,0V96H96v16a32,32,0,0,1-64,0V96L46.34,45.8A8,8,0,0,1,54,40H202a8,8,0,0,1,7.69,5.8Z" opacity="0.2"/><path d="M231.69,93.81,217.35,43.6A16.07,16.07,0,0,0,202,32H54A16.07,16.07,0,0,0,38.65,43.6L24.31,93.81A7.94,7.94,0,0,0,24,96v16a40,40,0,0,0,16,32v72a8,8,0,0,0,8,8H208a8,8,0,0,0,8-8V144a40,40,0,0,0,16-32V96A7.94,7.94,0,0,0,231.69,93.81ZM54,48H202l11.42,40H42.61Zm98,56v8a24,24,0,0,1-48,0v-8ZM51.06,132.2A24,24,0,0,1,40,112v-8H88v8a24,24,0,0,1-35.12,21.26A7.88,7.88,0,0,0,51.06,132.2ZM200,208H56V151.2a40.57,40.57,0,0,0,8,.8,40,40,0,0,0,32-16,40,40,0,0,0,64,0,40,40,0,0,0,32,16,40.57,40.57,0,0,0,8-.8Zm16-96a24,24,0,0,1-11.07,20.2,8.08,8.08,0,0,0-1.8,1.05A24,24,0,0,1,168,112v-8h48Z"/></svg></span><span><b>Tu negocio</b><small>Tu cuenta de Meta</small></span></div><div class="hilo-v" style="top:75.2cqw;height:12.8cqw;--d:1s"></div><div class="en-hilo" style="top:81.6cqw;--d:1.15s"><span class="pastilla"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M232,98.36C230.73,136.92,198.67,168,160.09,168a71.68,71.68,0,0,1-26.92-5.17h0L120,176H96v24H72v24H40a8,8,0,0,1-8-8V187.31a8,8,0,0,1,2.34-5.65l58.83-58.83h0A71.68,71.68,0,0,1,88,95.91c0-38.58,31.08-70.64,69.64-71.87A72,72,0,0,1,232,98.36Z" opacity="0.2"/><path d="M216.57,39.43A80,80,0,0,0,83.91,120.78L28.69,176A15.86,15.86,0,0,0,24,187.31V216a16,16,0,0,0,16,16H72a8,8,0,0,0,8-8V208H96a8,8,0,0,0,8-8V184h16a8,8,0,0,0,5.66-2.34l9.56-9.57A79.73,79.73,0,0,0,160,176h.1A80,80,0,0,0,216.57,39.43ZM224,98.1c-1.09,34.09-29.75,61.86-63.89,61.9H160a63.7,63.7,0,0,1-23.65-4.51,8,8,0,0,0-8.84,1.68L116.69,168H96a8,8,0,0,0-8,8v16H72a8,8,0,0,0-8,8v16H40V187.31l58.83-58.82a8,8,0,0,0,1.68-8.84A63.72,63.72,0,0,1,96,95.92c0-34.14,27.81-62.8,61.9-63.89A64,64,0,0,1,224,98.1ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"/></svg> tu permiso</span></div><div class="tarjeta-ui" style="top:88cqw;--d:0.6s"><i class="borde" style="--dac:1.9s"></i><span class="icono"><img src="img/juditoads.webp" alt=""></span><span><b>JuditoADS</b><small>Maneja tus anuncios</small></span><span class="marca-ok" style="--dok:2.05s"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z" opacity="0.2"/><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></svg></span></div><div class="hilo-v" style="top:107.2cqw;height:12.8cqw;--d:2.35s"></div><div class="viajero" style="--y0:107.5;--y1:120;--d:2.5s;--dura:.7s"></div><div class="tarjeta-ui" style="top:120cqw;--d:0.75s"><i class="borde" style="--dac:3.0s;--bc:#0866ff"></i><span class="icono blanco"><img class="meta" src="img/meta-simbolo.png" alt=""></span><span><b>Meta</b><small>Facebook · Instagram</small></span></div></div></div><div class="panel abajo azul" style="--sal:3.7s"></div>
 </template>
 
-<template id="instrucciones" data-sfx="swish@0.35 swish@1.05 swish@1.75 bip@1.3 bip@2.0 bip@2.7" data-entrada="corte">
-  <div class="cap arriba" style="font-size:7.4cqw">Tú conectas tu cuenta y<br>Judito le dice a Meta<br><span class="hl">qué hacer</span>.</div><div class="mapa" style=""><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea  ya" pathLength="1" d="M34 76 Q46 76 52 86"/><path class="linea  ya" pathLength="1" d="M54 108 Q50 120 38 122"/><path class="flujo" pathLength="1" d="M54 108 Q50 120 38 122" style="--d:0.2s"/></svg><div class="nodo ya" style="--x:26;--y:70;--tam:22cqw;--fase:0s"><img src="img/negocio.webp" alt=""><span class="nombre izq">Tú</span></div><div class="nodo cuadrado lleno ya" style="--x:62;--y:96;--tam:27cqw;--fase:-1.1s"><img src="img/juditoads.webp" alt=""></div><div class="nodo blanco ya" style="--x:30;--y:128;--tam:22cqw;--fase:-2s;--img:74%"><img src="img/meta-simbolo.png" alt=""><span class="nombre izq">Meta</span></div><div class="rotulo " style="--x:48;--y:67">tu permiso</div><div class="paquete chip" style="--x0:54;--y0:108;--xm:48;--ym:117.5;--x1:38;--y1:122;--d:0.3s;--dura:1.2s;color:var(--acento)">el anuncio</div><div class="paquete chip" style="--x0:54;--y0:108;--xm:48;--ym:117.5;--x1:38;--y1:122;--d:1.0s;--dura:1.2s;color:var(--acento)">el público</div><div class="paquete chip" style="--x0:54;--y0:108;--xm:48;--ym:117.5;--x1:38;--y1:122;--d:1.7s;--dura:1.2s;color:var(--acento)">el presupuesto</div></div>
+<template id="ordenes" data-sfx="clic-suave@1.3 clic-suave@1.9/-29 clic-suave@2.5/-28 cristal@2.6:5/-25 barrido-grave@3.00" data-entrada="corte" data-swish="no">
+  <div class="fondo azul"><div class="contenido sal-circulo" style="--sal:3.05s"><div class="pro-cap arriba t-l"><span class="m"><span style="--d:0.05s">Judito le dice</span></span><span class="m"><span style="--d:0.14s">a Meta</span></span><span class="m"><span style="--d:0.23s"><span class="ligera">qué hacer.</span></span></span></div><div class="absorbe" style="--y0:67;--y1:99;--d:0.3s"><span class="pastilla clara grande"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M240,120a40,40,0,0,1-40,40H160V80h40A40,40,0,0,1,240,120Z" opacity="0.2"/><path d="M248,120a48.05,48.05,0,0,0-48-48H160.2c-2.91-.17-53.62-3.74-101.91-44.24A16,16,0,0,0,32,40V200a16,16,0,0,0,26.29,12.25c37.77-31.68,77-40.76,93.71-43.3v31.72A16,16,0,0,0,159.12,214l11,7.33A16,16,0,0,0,194.5,212l11.77-44.36A48.07,48.07,0,0,0,248,120ZM48,199.93V40h0c42.81,35.91,86.63,45,104,47.24v65.48C134.65,155,90.84,164.07,48,199.93Zm131,8,0,.11-11-7.33V168h21.6ZM200,152H168V88h32a32,32,0,1,1,0,64Z"/></svg> el anuncio</span></div><div class="absorbe" style="--y0:67;--y1:99;--d:0.9s"><span class="pastilla clara grande"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M168,144a40,40,0,1,1-40-40A40,40,0,0,1,168,144ZM64,56A32,32,0,1,0,96,88,32,32,0,0,0,64,56Zm128,0a32,32,0,1,0,32,32A32,32,0,0,0,192,56Z" opacity="0.2"/><path d="M244.8,150.4a8,8,0,0,1-11.2-1.6A51.6,51.6,0,0,0,192,128a8,8,0,0,1,0-16,24,24,0,1,0-23.24-30,8,8,0,1,1-15.5-4A40,40,0,1,1,219,117.51a67.94,67.94,0,0,1,27.43,21.68A8,8,0,0,1,244.8,150.4ZM190.92,212a8,8,0,1,1-13.85,8,57,57,0,0,0-98.15,0,8,8,0,1,1-13.84-8,72.06,72.06,0,0,1,33.74-29.92,48,48,0,1,1,58.36,0A72.06,72.06,0,0,1,190.92,212ZM128,176a32,32,0,1,0-32-32A32,32,0,0,0,128,176ZM72,120a8,8,0,0,0-8-8A24,24,0,1,1,87.24,82a8,8,0,1,0,15.5-4A40,40,0,1,0,37,117.51,67.94,67.94,0,0,0,9.6,139.19a8,8,0,1,0,12.8,9.61A51.6,51.6,0,0,1,64,128,8,8,0,0,0,72,120Z"/></svg> el público</span></div><div class="absorbe" style="--y0:67;--y1:99;--d:1.5s"><span class="pastilla clara grande"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M240,132c0,19.88-35.82,36-80,36-19.6,0-37.56-3.17-51.47-8.44h0C146.76,156.85,176,142,176,124V96.72h0C212.52,100.06,240,114.58,240,132ZM176,84c0-19.88-35.82-36-80-36S16,64.12,16,84s35.82,36,80,36S176,103.88,176,84Z" opacity="0.2"/><path d="M184,89.57V84c0-25.08-37.83-44-88-44S8,58.92,8,84v40c0,20.89,26.25,37.49,64,42.46V172c0,25.08,37.83,44,88,44s88-18.92,88-44V132C248,111.3,222.58,94.68,184,89.57ZM232,132c0,13.22-30.79,28-72,28-3.73,0-7.43-.13-11.08-.37C170.49,151.77,184,139,184,124V105.74C213.87,110.19,232,122.27,232,132ZM72,150.25V126.46A183.74,183.74,0,0,0,96,128a183.74,183.74,0,0,0,24-1.54v23.79A163,163,0,0,1,96,152,163,163,0,0,1,72,150.25Zm96-40.32V124c0,8.39-12.41,17.4-32,22.87V123.5C148.91,120.37,159.84,115.71,168,109.93ZM96,56c41.21,0,72,14.78,72,28s-30.79,28-72,28S24,97.22,24,84,54.79,56,96,56ZM24,124V109.93c8.16,5.78,19.09,10.44,32,13.57v23.37C36.41,141.4,24,132.39,24,124Zm64,48v-4.17c2.63.1,5.29.17,8,.17,3.88,0,7.67-.13,11.39-.35A121.92,121.92,0,0,0,120,171.41v23.46C100.41,189.4,88,180.39,88,172Zm48,26.25V174.4a179.48,179.48,0,0,0,24,1.6,183.74,183.74,0,0,0,24-1.54v23.79a165.45,165.45,0,0,1-48,0Zm64-3.38V171.5c12.91-3.13,23.84-7.79,32-13.57V172C232,180.39,219.59,189.4,200,194.87Z"/></svg> el presupuesto</span></div><div class="anillo" style="left:50cqw;top:99cqw;--ancho:42cqw;--d:1.35s"></div><div class="anillo" style="left:50cqw;top:99cqw;--ancho:42cqw;--d:1.95s"></div><div class="anillo" style="left:50cqw;top:99cqw;--ancho:42cqw;--d:2.55s"></div><div class="circulo-blanco escala" style="left:50cqw;top:99cqw;--ancho:42cqw;--d:.15s"><img src="img/meta-simbolo.png" alt="Meta"></div><svg class="linea-svg" viewBox="0 0 100 177.78" aria-hidden="true"><path pathLength="1" d="M40 117 L31 126" style="--d:2.45s"/><path pathLength="1" d="M60 117 L69 126" style="--d:2.45s"/></svg><div class="circulo-blanco fb escala" style="left:26cqw;top:132cqw;--ancho:17cqw;--d:2.55s"><img src="img/facebook.svg" alt="Facebook"></div><div class="circulo-blanco ig escala" style="left:74cqw;top:132cqw;--ancho:17cqw;--d:2.65s"><img src="img/instagram.svg" alt="Instagram"></div></div></div><div class="panel circulo negro" style="--sal:3.05s;--cx:50%;--cy:55.7%"></div>
 </template>
 
-<template id="bucle-dinero" data-sfx="pop@0 pop@0.12 pop@0.24 pop-fuerte@0.36 pop-fuerte@0.48 plop@0.6 bip@1.0 subida@0:2.5" data-entrada="fade">
-  <div class="mapa" style="--luz-d:0s;--luz-hasta:.18"><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea  ya" pathLength="1" d="M34 76 Q46 76 52 86"/><path class="linea  ya" pathLength="1" d="M54 108 Q50 120 38 122"/></svg><div class="nodo ya" style="--x:26;--y:70;--tam:22cqw;--fase:0s"><img src="img/negocio.webp" alt=""><span class="nombre izq">Tú</span></div><div class="nodo cuadrado lleno ya" style="--x:62;--y:96;--tam:27cqw;--fase:-1.1s"><img src="img/juditoads.webp" alt=""></div><div class="nodo blanco ya" style="--x:30;--y:128;--tam:22cqw;--fase:-2s;--img:74%"><img src="img/meta-simbolo.png" alt=""><span class="nombre izq">Meta</span></div></div><div class="pulso" aria-hidden="true"></div><div class="cap bucle" style="font-size:8.2cqw"><span class="w" style="--d:0.00s">¿Y</span> <span class="w" style="--d:0.12s">tu</span> <span class="w" style="--d:0.24s">dinero?</span> <br> <span class="w" style="--d:0.36s"><span class="hl">Aquí viene</span></span> <br> <span class="w" style="--d:0.48s"><span class="hl">lo importante</span>…</span></div><img class="emoji" src="img/bolsa.webp" alt="" style="--d:0.70s"><div class="puntos" aria-hidden="true" style="--d:1.00s"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+<template id="bucle-dinero" data-sfx="subida-suave@0:1.8" data-entrada="corte" data-swish="no">
+  <div class="fondo negro"><div class="contenido"><div class="luz-cenital" style="--d:0s"></div><div class="pro-cap t-xl centrado" style="top:26cqw;"><span class="m"><span style="--d:-0.10s">¿Y tu</span></span><span class="m"><span style="--d:0.02s">dinero?</span></span></div><div class="objeto-pro flota-pro" style="top:70cqw;--ancho:44cqw;perspective:120cqw"><div class="gira-lento"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="mo-a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3bf"/><stop offset=".45" stop-color="#f6c443"/><stop offset="1" stop-color="#a8700c"/></linearGradient><linearGradient id="mo-b" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffefaa"/><stop offset=".55" stop-color="#e3a926"/><stop offset="1" stop-color="#9c6608"/></linearGradient></defs><circle cx="100" cy="100" r="96" fill="url(#mo-a)"/><circle cx="100" cy="100" r="79" fill="url(#mo-b)"/><circle cx="100" cy="100" r="79" fill="none" stroke="#fff7d6" stroke-opacity=".55" stroke-width="2"/><circle cx="100" cy="100" r="88" fill="none" stroke="#8a5a06" stroke-opacity=".35" stroke-width="1.5" stroke-dasharray="3 5"/><g transform="translate(46 46) scale(.42)" fill="#7a4d04"><path d="M192,168a40,40,0,0,1-40,40H128V128h24A40,40,0,0,1,192,168ZM112,48a40,40,0,0,0,0,80h16V48Z" opacity="0.2"/><path d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"/></g><ellipse cx="72" cy="58" rx="34" ry="14" fill="#fff" fill-opacity=".28" transform="rotate(-30 72 58)"/></svg></div></div></div></div>
 </template>
 
-<template id="veinte" data-sfx="plop@0.45 caja@1.3" data-entrada="fade">
-  <div class="cap arriba" style="font-size:8.4cqw">A Judo solo le pagas<br><span class="hl">$20 al mes</span>.</div><div class="mapa" style="--luz-desde:.18;--luz-d:0s;--luz-hasta:1"><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea  ya" pathLength="1" d="M34 76 Q46 76 52 86"/><path class="linea  ya" pathLength="1" d="M54 108 Q50 120 38 122"/></svg><div class="nodo ya" style="--x:26;--y:70;--tam:22cqw;--fase:0s"><img src="img/negocio.webp" alt=""><span class="nombre izq">Tú</span></div><div class="nodo cuadrado lleno ya foco" style="--x:62;--y:96;--tam:27cqw;--fase:-1.1s"><img src="img/juditoads.webp" alt=""></div><div class="nodo blanco ya" style="--x:30;--y:128;--tam:22cqw;--fase:-2s;--img:74%"><img src="img/meta-simbolo.png" alt=""><span class="nombre izq">Meta</span></div><img class="paquete" src="img/moneda.webp" alt="" style="--x0:34;--y0:76;--xm:44.5;--ym:78.5;--x1:52;--y1:86;--d:0.4s;--dura:1.1s"><div class="rotulo  entra" style="--x:48;--y:67;--d:1.3s">$20 al mes</div></div>
+<template id="veinte" data-sfx="sub@0/-20 tecla@0.3 tecla@0.38/-29 tecla@0.47/-30 tecla@0.6/-31 tecla@0.8/-32 cristal@1.0:4/-23 clic-suave@1.3/-30 barrido-suave@2.45" data-entrada="corte" data-swish="no">
+  <div class="fondo claro"><div class="contenido sal-lado" style="--sal:2.5s"><div class="rotulo-mono aparece" style="--d:0.0s">Lo que pagas</div><div class="pro-cap arriba t-m"><span class="m"><span style="--d:0.05s">A Judo solo</span></span><span class="m"><span style="--d:0.14s">le pagas</span></span></div><div class="pro-cap t-xxl color-violeta" style="top:46cqw;"><span class="m"><span style="--d:0.10s">$<span class="cuenta" style="--hasta:20;--d:.25s;--dc:1.1s"></span></span></span></div><div class="pro-cap t-l" style="top:83cqw;"><span class="m"><span style="--d:0.30s"><span class="ligera">al mes.</span></span></span></div><div class="recibo" style="top:104cqw;--d:1.2s"><img src="img/juditoads.webp" alt=""><span><b>Plan JuditoADS</b><small>Cobro mensual</small></span><span class="precio-r">$20</span></div></div></div><div class="panel lado violeta" style="--sal:2.5s"></div>
 </template>
 
-<template id="presupuesto" data-sfx="swish@0.25 moneda@0.9 plop@1.5 plop@2.1 pop@1.0" data-entrada="corte">
-  <div class="cap arriba" style="font-size:7.6cqw">Tu presupuesto<br>lo eliges tú y va<br><span class="hl">directo a Meta</span>.</div><div class="mapa" style=""><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea  ya" pathLength="1" d="M34 76 Q46 76 52 86"/><path class="linea  ya" pathLength="1" d="M54 108 Q50 120 38 122"/><path class="linea dinero " pathLength="1" d="M21 79 Q8 99 23 119" style="--d:0.2s"/></svg><div class="nodo ya" style="--x:26;--y:70;--tam:22cqw;--fase:0s"><img src="img/negocio.webp" alt=""><span class="nombre izq">Tú</span></div><div class="nodo cuadrado lleno ya" style="--x:62;--y:96;--tam:27cqw;--fase:-1.1s"><img src="img/juditoads.webp" alt=""></div><div class="nodo blanco ya" style="--x:30;--y:128;--tam:22cqw;--fase:-2s;--img:74%"><img src="img/meta-simbolo.png" alt=""><span class="nombre izq">Meta</span></div><div class="rotulo " style="--x:48;--y:67">$20 al mes</div><img class="paquete" src="img/moneda.webp" alt="" style="--x0:21;--y0:79;--xm:15;--ym:99;--x1:23;--y1:119;--d:0.9s;--dura:1.2s"><img class="paquete" src="img/moneda.webp" alt="" style="--x0:21;--y0:79;--xm:15;--ym:99;--x1:23;--y1:119;--d:1.5s;--dura:1.2s"><img class="paquete" src="img/moneda.webp" alt="" style="--x0:21;--y0:79;--xm:15;--ym:99;--x1:23;--y1:119;--d:2.1s;--dura:1.2s"><div class="rotulo  entra" style="--x:34;--y:100;--d:1.0s">tu presupuesto</div></div>
+<template id="eliges" data-sfx="clic-suave@0.68/-27 tecla@0.76/-30 tecla@0.86/-31 tecla@0.98/-31 tecla@1.14/-32 tecla@1.36/-33 barrido-suave@1.85" data-entrada="corte" data-swish="no">
+  <div class="fondo violeta"><div class="contenido sal-abajo" style="--sal:1.9s"><div class="pro-cap arriba t-l"><span class="m"><span style="--d:0.05s">Tu presupuesto</span></span><span class="m"><span style="--d:0.14s"><span class="ligera">lo eliges tú.</span></span></span></div><div class="ui-tarjeta" style="top:56cqw;--d:.2s"><div class="cab-ui"><span>Presupuesto diario</span><span class="etiqueta-ejemplo">Ejemplo</span></div><div class="monto">$<span class="cuenta" style="--desde:2;--hasta:12;--d:.7s;--dc:1.1s"></span><small> / día</small></div><div class="riel" style="--desde-p:4.2%;--hasta-p:45.8%;--d:.7s;--dc:1.1s"><i class="lleno"></i><b class="perilla"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M213.66,201,201,213.66a8,8,0,0,1-11.31,0l-51.31-51.31a8,8,0,0,0-13,2.46l-17.82,46.41a8,8,0,0,1-14.85-.71L40.41,50.44a8,8,0,0,1,10-10L210.51,92.68a8,8,0,0,1,.71,14.85l-46.41,17.82a8,8,0,0,0-2.46,13l51.31,51.31A8,8,0,0,1,213.66,201Z" opacity="0.2"/><path d="M88,24V16a8,8,0,0,1,16,0v8a8,8,0,0,1-16,0ZM16,104h8a8,8,0,0,0,0-16H16a8,8,0,0,0,0,16ZM124.42,39.16a8,8,0,0,0,10.74-3.58l8-16a8,8,0,0,0-14.31-7.16l-8,16A8,8,0,0,0,124.42,39.16Zm-96,81.69-16,8a8,8,0,0,0,7.16,14.31l16-8a8,8,0,1,0-7.16-14.31ZM219.31,184a16,16,0,0,1,0,22.63l-12.68,12.68a16,16,0,0,1-22.63,0L132.7,168,115,214.09c0,.1-.08.21-.13.32a15.83,15.83,0,0,1-14.6,9.59l-.79,0a15.83,15.83,0,0,1-14.41-11L32.8,52.92A16,16,0,0,1,52.92,32.8L213,85.07a16,16,0,0,1,1.41,29.8l-.32.13L168,132.69ZM208,195.31,156.69,144h0a16,16,0,0,1,4.93-26l.32-.14,45.95-17.64L48,48l52.2,159.86,17.65-46c0-.11.08-.22.13-.33a16,16,0,0,1,11.69-9.34,16.72,16.72,0,0,1,3-.28,16,16,0,0,1,11.3,4.69L195.31,208Z"/></svg></b></div><div class="riel-marcas"><span>$1</span><span>$25</span></div></div></div></div><div class="panel abajo oro" style="--sal:1.9s"></div>
 </template>
 
-<template id="no-tocamos" data-sfx="sello@0.45 campana@0.95" data-entrada="corte">
-  <div class="cap arriba" style="font-size:8.4cqw"><span class="hl">No tocamos</span><br>tu dinero ni<br>tu presupuesto.</div><div class="mapa" style=""><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea  ya" pathLength="1" d="M34 76 Q46 76 52 86"/><path class="linea  ya" pathLength="1" d="M54 108 Q50 120 38 122"/><path class="linea dinero ya" pathLength="1" d="M21 79 Q8 99 23 119"/><path class="flujo" pathLength="1" d="M21 79 Q8 99 23 119" style="--d:0.1s"/></svg><div class="nodo ya" style="--x:26;--y:70;--tam:22cqw;--fase:0s"><img src="img/negocio.webp" alt=""><span class="nombre izq">Tú</span></div><div class="nodo cuadrado lleno ya" style="--x:62;--y:96;--tam:27cqw;--fase:-1.1s"><img src="img/juditoads.webp" alt=""><img class="insignia golpea encima" src="img/escudo.webp" alt="" style="--d:0.45s"></div><div class="nodo blanco ya" style="--x:30;--y:128;--tam:22cqw;--fase:-2s;--img:74%"><img src="img/meta-simbolo.png" alt=""><span class="nombre izq">Meta</span></div><div class="rotulo " style="--x:48;--y:67">$20 al mes</div><div class="rotulo " style="--x:34;--y:100">tu presupuesto</div><img class="paquete" src="img/moneda.webp" alt="" style="--x0:21;--y0:79;--xm:15;--ym:99;--x1:23;--y1:119;--d:0.5s;--dura:1.2s"><img class="paquete" src="img/moneda.webp" alt="" style="--x0:21;--y0:79;--xm:15;--ym:99;--x1:23;--y1:119;--d:1.4s;--dura:1.2s"><div class="rotulo  entra" style="--x:70;--y:117;--d:0.9s">no lo tocamos</div></div>
+<template id="directo" data-sfx="barrido-suave@0.25:0.7/-25 golpe-suave@1.85:1/-23 cristal@1.95:5/-24 barrido-grave@2.40" data-entrada="corte" data-swish="no">
+  <div class="fondo oro"><div class="contenido sal-circulo" style="--sal:2.45s"><div class="pro-cap arriba t-l" style="font-size:10.4cqw"><span class="m"><span style="--d:0.05s">Y se lo pagas</span></span><span class="m"><span style="--d:0.14s">directo a Meta.</span></span></div><div class="anillo" style="left:62cqw;top:104cqw;--ancho:44cqw;--anillo:rgba(11,11,18,.45);--d:1.85s"></div><div class="vuela-a-meta" style="top:86cqw;width:58cqw;margin-left:-29cqw;--d:.25s;--dx:12cqw;--dy:-.3cqw"><svg viewBox="0 0 340 214" aria-hidden="true"><defs><linearGradient id="tj-a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b2442"/><stop offset="1" stop-color="#0b0b12"/></linearGradient><radialGradient id="tj-b" cx=".9" cy="0" r=".95"><stop offset="0" stop-color="#7b4dff" stop-opacity=".75"/><stop offset="1" stop-color="#7b4dff" stop-opacity="0"/></radialGradient><linearGradient id="tj-c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbe3a0"/><stop offset="1" stop-color="#c59a3a"/></linearGradient></defs><rect width="340" height="214" rx="22" fill="url(#tj-a)"/><rect width="340" height="214" rx="22" fill="url(#tj-b)"/><rect x="1" y="1" width="338" height="212" rx="21" fill="none" stroke="#fff" stroke-opacity=".14"/><rect x="30" y="72" width="50" height="38" rx="7" fill="url(#tj-c)"/><path d="M30 91h50M48 72v38M62 72v38" stroke="#8a6a20" stroke-opacity=".5" stroke-width="1.5"/><path d="M98 80a16 16 0 0 1 0 22M106 74a26 26 0 0 1 0 34M114 68a36 36 0 0 1 0 46" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3.5" stroke-linecap="round"/><circle cx="34" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><circle cx="45" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><circle cx="56" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><circle cx="67" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><circle cx="96" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><circle cx="107" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><circle cx="118" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><circle cx="129" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><circle cx="158" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><circle cx="169" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><circle cx="180" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><circle cx="191" cy="156" r="3.6" fill="#fff" fill-opacity=".75"/><rect x="222" y="148" width="58" height="16" rx="8" fill="#fff" fill-opacity=".8"/><circle cx="270" cy="186" r="15" fill="#fff" fill-opacity=".3"/><circle cx="290" cy="186" r="15" fill="#fff" fill-opacity=".5"/><rect x="30" y="182" width="110" height="9" rx="4.5" fill="#fff" fill-opacity=".35"/></svg></div><div class="circulo-blanco escala" style="left:62cqw;top:104cqw;--ancho:44cqw;z-index:8;--d:.15s"><img src="img/meta-simbolo.png" alt="Meta"></div><div class="icono-pro escala" style="left:79cqw;top:84cqw;--ancho:13cqw;height:13cqw;margin-left:-6.5cqw;z-index:9;--c:#0b7a4b;--d:1.95s"><span class="chapa"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z" opacity="0.2"/><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></svg></span></div></div></div><div class="panel circulo negro" style="--sal:2.45s;--cx:62%;--cy:58.5%"></div>
 </template>
 
-<template id="bucle-funciona" data-sfx="pop@0 pop@0.12 pop@0.24 pop@0.36 pop@0.48 pop-fuerte@0.6 plop@0.75 bip@1.1 subida@0:2.3" data-entrada="fade">
-  <div class="mapa" style="--luz-d:0s;--luz-hasta:.18"><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea  ya" pathLength="1" d="M34 76 Q46 76 52 86"/><path class="linea  ya" pathLength="1" d="M54 108 Q50 120 38 122"/><path class="linea dinero ya" pathLength="1" d="M21 79 Q8 99 23 119"/></svg><div class="nodo ya" style="--x:26;--y:70;--tam:22cqw;--fase:0s"><img src="img/negocio.webp" alt=""><span class="nombre izq">Tú</span></div><div class="nodo cuadrado lleno ya" style="--x:62;--y:96;--tam:27cqw;--fase:-1.1s"><img src="img/juditoads.webp" alt=""></div><div class="nodo blanco ya" style="--x:30;--y:128;--tam:22cqw;--fase:-2s;--img:74%"><img src="img/meta-simbolo.png" alt=""><span class="nombre izq">Meta</span></div></div><div class="pulso" aria-hidden="true"></div><div class="cap bucle" style="font-size:9.6cqw"><span class="w" style="--d:0.00s">¿Y</span> <span class="w" style="--d:0.12s">cómo</span> <span class="w" style="--d:0.24s">sabes</span> <br> <span class="w" style="--d:0.36s">si</span> <span class="w" style="--d:0.48s"><span class="hl">está</span></span> <span class="w" style="--d:0.60s"><span class="hl">funcionando</span>?</span></div><img class="emoji" src="img/pensando.webp" alt="" style="--d:0.82s"><div class="puntos" aria-hidden="true" style="--d:1.12s"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
+<template id="no-tocamos" data-sfx="sub@0.3/-21 cristal@1.2:3/-24 barrido-suave@3.05" data-entrada="corte" data-swish="no">
+  <div class="fondo negro"><div class="contenido sal-abajo" style="--sal:3.1s"><div class="pro-cap arriba t-l" style="font-size:10.4cqw"><span class="m"><span style="--d:0.05s">No tocamos</span></span><span class="m"><span style="--d:0.14s"><span class="color-verde">tu presupuesto.</span></span></span></div><div class="halo" style="top:58cqw;--ancho:84cqw;--d:.2s"></div><svg class="circulo-traza" style="top:66cqw;--ancho:60cqw;--c:rgba(18,183,106,.75);--d:.45s" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" pathLength="1" transform="rotate(-90 50 50)"/></svg><div class="icono-pro escala" style="top:78cqw;--ancho:36cqw;height:36cqw;--c:#12b76a;--d:.3s"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M216,56v56c0,96-88,120-88,120S40,208,40,112V56a8,8,0,0,1,8-8H208A8,8,0,0,1,216,56Z" opacity="0.2"/><path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.26,47,25.53a8,8,0,0,0,4.2,0c1-.27,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a128.25,128.25,0,0,1-38.92-21.81C61.82,179.51,48,149.3,48,112l0-56,160,0ZM82.34,141.66a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32l-56,56a8,8,0,0,1-11.32,0Z"/></svg></div></div></div><div class="panel abajo claro" style="--sal:3.1s"></div>
 </template>
 
-<template id="meta-cuenta" data-sfx="bip@0.35 bip@1.15 campana@1.45" data-entrada="fade">
-  <div class="cap arriba" style="font-size:7.6cqw">Meta le cuenta<br>a Judito cómo va<br><span class="hl">tu anuncio</span>…</div><div class="mapa" style="--luz-desde:.18;--luz-d:0s;--luz-hasta:1"><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea  ya" pathLength="1" d="M34 76 Q46 76 52 86"/><path class="linea  ya" pathLength="1" d="M54 108 Q50 120 38 122"/><path class="linea dinero ya" pathLength="1" d="M21 79 Q8 99 23 119"/><path class="flujo vuelve" pathLength="1" d="M54 108 Q50 120 38 122" style="--d:0.2s"/></svg><div class="nodo ya" style="--x:26;--y:70;--tam:22cqw;--fase:0s"><img src="img/negocio.webp" alt=""><span class="nombre izq">Tú</span></div><div class="nodo cuadrado lleno ya" style="--x:62;--y:96;--tam:27cqw;--fase:-1.1s"><img src="img/juditoads.webp" alt=""></div><div class="nodo blanco ya" style="--x:30;--y:128;--tam:22cqw;--fase:-2s;--img:74%"><img src="img/meta-simbolo.png" alt=""><span class="nombre izq">Meta</span></div><img class="paquete" src="img/grafica.webp" alt="" style="--x0:38;--y0:122;--xm:48;--ym:117.5;--x1:54;--y1:108;--d:0.3s;--dura:1.2s"><img class="paquete" src="img/grafica.webp" alt="" style="--x0:38;--y0:122;--xm:48;--ym:117.5;--x1:54;--y1:108;--d:1.1s;--dura:1.2s"></div>
+<template id="bucle-funciona" data-sfx="subida-suave@0:1.8" data-entrada="corte" data-swish="no">
+  <div class="fondo claro"><div class="contenido"><div class="pro-cap t-xl centrado" style="top:24cqw;"><span class="m"><span style="--d:-0.10s">¿Y cómo</span></span><span class="m"><span style="--d:0.00s">sabes si</span></span><span class="m"><span style="--d:0.10s">funciona?</span></span></div><div class="icono-pro" style="top:80cqw;--ancho:40cqw;height:40cqw;--c:#6e3bff"><div class="lupa" style="width:100%;height:100%"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M192,112a80,80,0,1,1-80-80A80,80,0,0,1,192,112Z" opacity="0.2"/><path d="M229.66,218.34,179.6,168.28a88.21,88.21,0,1,0-11.32,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg></div></div></div></div>
 </template>
 
-<template id="te-avisa" data-sfx="bip@0.25 pop-agudo@1.3 campana@1.35 pop-agudo@2.3 sello@2.35/-14 pop-agudo@3.3 brillo@3.3" data-entrada="corte">
-  <div class="cap arriba" style="font-size:8cqw">…y Judito<br>te lo explica<br>y te avisa<br><span class="hl">si algo falla</span>.</div><div class="mapa" style=""><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea  ya" pathLength="1" d="M34 76 Q46 76 52 86"/><path class="linea  ya" pathLength="1" d="M54 108 Q50 120 38 122"/><path class="linea dinero ya" pathLength="1" d="M21 79 Q8 99 23 119"/><path class="flujo vuelve" pathLength="1" d="M34 76 Q46 76 52 86" style="--d:0.1s"/><path class="flujo vuelve" pathLength="1" d="M54 108 Q50 120 38 122" style="--d:0s"/></svg><div class="nodo ya" style="--x:26;--y:70;--tam:22cqw;--fase:0s"><img src="img/negocio.webp" alt=""><span class="nombre izq">Tú</span></div><div class="nodo cuadrado lleno ya" style="--x:62;--y:96;--tam:27cqw;--fase:-1.1s"><img src="img/juditoads.webp" alt=""></div><div class="nodo blanco ya" style="--x:30;--y:128;--tam:22cqw;--fase:-2s;--img:74%"><img src="img/meta-simbolo.png" alt=""><span class="nombre izq">Meta</span></div><img class="paquete" src="img/grafica.webp" alt="" style="--x0:52;--y0:86;--xm:44.5;--ym:78.5;--x1:34;--y1:76;--d:0.2s;--dura:1.2s"><img class="paquete" src="img/campana.webp" alt="" style="--x0:52;--y0:86;--xm:44.5;--ym:78.5;--x1:34;--y1:76;--d:1.2s;--dura:1.2s"><img class="paquete" src="img/alerta.webp" alt="" style="--x0:52;--y0:86;--xm:44.5;--ym:78.5;--x1:34;--y1:76;--d:2.2s;--dura:1.2s"><div class="rotulo datos entra" style="--x:64;--y:59;--d:1.25s"><img src="img/grafica.webp" alt="">cómo va</div><div class="rotulo datos entra" style="--x:66;--y:68;--d:2.25s"><img src="img/campana.webp" alt="">si Meta lo frena</div><div class="rotulo datos entra" style="--x:64;--y:77;--d:3.25s"><img src="img/foco.webp" alt="">qué cambiar</div></div>
+<template id="meta-cuenta" data-sfx="sub@0/-20 datos@0.7 cristal@2.1:4/-25 barrido-suave@3.05" data-entrada="corte" data-swish="no">
+  <div class="fondo azul"><div class="contenido sal-lado" style="--sal:3.1s"><div class="rotulo-mono aparece" style="--d:0.0s">Lo que ves</div><div class="pro-cap arriba t-m"><span class="m"><span style="--d:0.05s">Meta le cuenta</span></span><span class="m"><span style="--d:0.14s">a Judito cómo va</span></span><span class="m"><span style="--d:0.23s"><span class="ligera">tu anuncio…</span></span></span></div><div class="tablero" style="top:56cqw;--d:.3s"><div class="cab"><span>CAFÉ LUNA · MIAMI</span><span class="etiqueta-ejemplo">Ejemplo</span></div><div class="cifras"><div><b>18,4 mil</b><small>lo vieron</small></div><div><b><span class="cuenta" style="--hasta:612;--d:.7s;--dc:1.4s"></span></b><small>clics</small></div></div><svg viewBox="0 0 300 104" aria-hidden="true"><defs><linearGradient id="gr-a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12b76a" stop-opacity=".28"/><stop offset="1" stop-color="#12b76a" stop-opacity="0"/></linearGradient></defs><line x1="0" x2="300" y1="18" y2="18" stroke="#ebe8f2" stroke-width="1" stroke-dasharray="3 5"/><line x1="0" x2="300" y1="52" y2="52" stroke="#ebe8f2" stroke-width="1" stroke-dasharray="3 5"/><line x1="0" x2="300" y1="86" y2="86" stroke="#ebe8f2" stroke-width="1" stroke-dasharray="3 5"/><path class="area-pro" style="--d:1.2s" d="M0 90 C28 86 44 70 70 73 S114 60 140 52 S188 41 214 30 S264 20 300 10 L300 104 L0 104 Z" fill="url(#gr-a)"/><path class="trazo-pro" style="--d:.8s" pathLength="1" d="M0 90 C28 86 44 70 70 73 S114 60 140 52 S188 41 214 30 S264 20 300 10"/><g class="punto-vivo" style="--d:2.1s"><circle cx="300" cy="10" r="11" fill="#12b76a" fill-opacity=".2"/><circle cx="300" cy="10" r="5" fill="#12b76a"/></g></svg><div class="pie-tab"><i class="vivo"></i>Actualizado hace 5 min</div></div></div></div><div class="panel lado negro" style="--sal:3.1s"></div>
 </template>
 
-<template id="necesitas" data-sfx="pop@0.55 pop@2.15 pop@3.95 pop@5.65" data-entrada="smoothup">
-  <div class="cap arriba" style="font-size:8.4cqw">Para empezar,<br><span class="hl">solo necesitas</span>:</div><ul class="lista iconos" style="--y:50cqw;gap:6.4cqw;font-size:6cqw"><li class="entra" style="--d:.5s"><img src="img/meta-simbolo.png" alt="Meta"><span>Cuenta de Meta</span></li><li class="entra" style="--d:2.1s"><img src="img/facebook.svg" alt="Facebook"><span>Página de Facebook<small>Desde ahí salen tus anuncios.</small></span></li><li class="entra" style="--d:3.9s"><img src="img/instagram.svg" alt="Instagram"><span>Tu Instagram<small>Si tienes, también se conecta.</small></span></li><li class="entra" style="--d:5.6s"><img src="img/tarjeta.webp" alt=""><span>Una tarjeta<small>En tu cuenta de anuncios: ahí Meta cobra tu presupuesto.</small></span></li></ul>
+<template id="te-avisa" data-sfx="aviso@1.0:0 aviso@2.1:1 aviso@3.2:2 barrido-suave@4.85" data-entrada="corte" data-swish="no">
+  <div class="fondo negro"><div class="contenido sal-abajo" style="--sal:4.9s"><div class="pro-cap arriba t-l"><span class="m"><span style="--d:0.05s">…y Judito</span></span><span class="m"><span style="--d:0.14s">te lo explica</span></span><span class="m"><span style="--d:0.23s"><span class="ligera">y te avisa.</span></span></span></div><div class="baja" style="--db:3.2s"><div class="baja" style="--db:2.1s"><div class="aviso" style="top:63cqw;--d:1.0s"><span class="ic" style="background:#f5b700"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M208,104a79.86,79.86,0,0,1-30.59,62.92A24.29,24.29,0,0,0,168,186v6a8,8,0,0,1-8,8H96a8,8,0,0,1-8-8v-6a24.11,24.11,0,0,0-9.3-19A79.87,79.87,0,0,1,48,104.45C47.76,61.09,82.72,25,126.07,24A80,80,0,0,1,208,104Z" opacity="0.2"/><path d="M176,232a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,232Zm40-128a87.55,87.55,0,0,1-33.64,69.21A16.24,16.24,0,0,0,176,186v6a16,16,0,0,1-16,16H96a16,16,0,0,1-16-16v-6a16,16,0,0,0-6.23-12.66A87.59,87.59,0,0,1,40,104.49C39.74,56.83,78.26,17.14,125.88,16A88,88,0,0,1,216,104Zm-16,0a72,72,0,0,0-73.74-72c-39,.92-70.47,33.39-70.26,72.39a71.65,71.65,0,0,0,27.64,56.3A32,32,0,0,1,96,186v6h64v-6a32.15,32.15,0,0,1,12.47-25.35A71.65,71.65,0,0,0,200,104Zm-16.11-9.34a57.6,57.6,0,0,0-46.56-46.55,8,8,0,0,0-2.66,15.78c16.57,2.79,30.63,16.85,33.44,33.45A8,8,0,0,0,176,104a9,9,0,0,0,1.35-.11A8,8,0,0,0,183.89,94.66Z"/></svg></span><span class="txt"><span class="de">JuditoADS · ahora</span><b>Consejo de Judito</b><small>Prueba con 3 imágenes.</small></span></div></div></div><div class="baja" style="--db:3.2s"><div class="aviso" style="top:63cqw;--d:2.1s"><span class="ic" style="background:#f04438"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z" opacity="0.2"/><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V80a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"/></svg></span><span class="txt"><span class="de">JuditoADS · ahora</span><b>Meta frenó tu anuncio</b><small>Falta el pago en tu cuenta.</small></span></div></div><div class="aviso" style="top:63cqw;--d:3.2s"><span class="ic" style="background:#12b76a"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,64V208H32V48H208A16,16,0,0,1,224,64Z" opacity="0.2"/><path d="M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V48a8,8,0,0,1,16,0V156.69l50.34-50.35a8,8,0,0,1,11.32,0L128,132.69,180.69,80H160a8,8,0,0,1,0-16h40a8,8,0,0,1,8,8v40a8,8,0,0,1-16,0V91.31l-58.34,58.35a8,8,0,0,1-11.32,0L96,123.31l-56,56V200H224A8,8,0,0,1,232,208Z"/></svg></span><span class="txt"><span class="de">JuditoADS · ahora</span><b>Tu anuncio va bien</b><small>18,4 mil personas lo vieron.</small></span></div></div></div><div class="panel abajo violeta" style="--sal:4.9s"></div>
 </template>
 
-<template id="listo" data-sfx="acorde@0.3 brillo@0.9 whoosh-suave@1.0" data-entrada="zoomin">
-  <div class="cap arriba" style="font-size:7cqw">Y listo:<br>ya anuncias como<br><span class="hl">un profesional</span>.</div><div class="mapa" style=""><svg class="lineas" viewBox="0 0 100 177.78" aria-hidden="true"><path class="linea  " pathLength="1" d="M34 76 Q46 76 52 86" style="--d:0.3s"/><path class="linea  " pathLength="1" d="M54 108 Q50 120 38 122" style="--d:0.45s"/><path class="linea dinero " pathLength="1" d="M21 79 Q8 99 23 119" style="--d:0.6s"/><path class="flujo" pathLength="1" d="M34 76 Q46 76 52 86" style="--d:0.9s"/><path class="flujo" pathLength="1" d="M54 108 Q50 120 38 122" style="--d:0.9s"/><path class="flujo" pathLength="1" d="M21 79 Q8 99 23 119" style="--d:0.9s"/></svg><div class="nodo" style="--x:26;--y:70;--tam:22cqw;--fase:0s;--d:0.05s"><img src="img/negocio.webp" alt=""><span class="nombre izq">Tú</span></div><div class="nodo cuadrado lleno" style="--x:62;--y:96;--tam:27cqw;--fase:-1.1s;--d:0.15s"><img src="img/juditoads.webp" alt=""></div><div class="nodo blanco" style="--x:30;--y:128;--tam:22cqw;--fase:-2s;--d:0.25s;--img:74%"><img src="img/meta-simbolo.png" alt=""><span class="nombre izq">Meta</span></div><img class="paquete" src="img/cohete.webp" alt="" style="--x0:54;--y0:108;--xm:48;--ym:117.5;--x1:38;--y1:122;--d:1.0s;--dura:1.4s"></div>
+<template id="necesitas" data-sfx="cristal@1.9:1/-24 cristal@3.5:2/-24 cristal@5.1:3/-24 cristal@6.5:4/-24 barrido-grave@7.20" data-entrada="corte" data-swish="no">
+  <div class="fondo violeta"><div class="contenido sal-circulo" style="--sal:7.25s"><div class="rotulo-mono aparece" style="--d:0.0s">Para empezar</div><div class="pro-cap arriba t-l"><span class="m"><span style="--d:0.05s">Solo</span></span><span class="m"><span style="--d:0.14s">necesitas:</span></span></div><div class="rejilla" style="top:52cqw"><i class="hueco" style="--d:0.35s;--fuera:1.6s"></i><i class="hueco" style="--d:0.43s;--fuera:3.2s"></i><i class="hueco" style="--d:0.51s;--fuera:4.8s"></i><i class="hueco" style="--d:0.59s;--fuera:6.2s"></i></div><div class="rejilla" style="top:52cqw"><div class="casilla" style="--d:1.4s"><span class="ok"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z" opacity="0.2"/><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></svg></span><span class="ic"><img src="img/meta-simbolo.png" alt=""></span><span><b>Cuenta de&nbsp;Meta</b><small>La que ya usas.</small></span></div><div class="casilla" style="--d:3.0s"><span class="ok"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z" opacity="0.2"/><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></svg></span><span class="ic"><img src="img/facebook.svg" alt=""></span><span><b>Página de&nbsp;Facebook</b><small>Desde ahí salen tus&nbsp;anuncios.</small></span></div><div class="casilla" style="--d:4.6s"><span class="ok"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z" opacity="0.2"/><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></svg></span><span class="ic"><img src="img/instagram.svg" alt=""></span><span><b>Instagram</b><small>Si tienes, también se&nbsp;conecta.</small></span></div><div class="casilla" style="--d:6.0s"><span class="ok"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z" opacity="0.2"/><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></svg></span><span class="ic"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M232,96v96a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V96Z" opacity="0.2"/><path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,16V88H32V64Zm0,128H32V104H224v88Zm-16-24a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h32A8,8,0,0,1,208,168Zm-64,0a8,8,0,0,1-8,8H120a8,8,0,0,1,0-16h16A8,8,0,0,1,144,168Z"/></svg></span><span><b>Una tarjeta</b><small>En tu cuenta de&nbsp;anuncios.</small></span></div></div></div></div><div class="panel circulo claro" style="--sal:7.25s;--cx:50%;--cy:50%"></div>
 </template>
 
-<template id="cierre" data-sfx="brillo@0.2 whoosh-baja@2.2 acorde-final@2.5" data-entrada="fade">
-  <div class="cap arriba funde" style="--fuera:2.3s;font-size:9cqw">Pruébalo gratis<br><span class="hl">14 días</span><span class="sub">judomarketing.net/juditoads</span></div><img class="logo-grande funde" src="img/juditoads.webp" alt="JuditoADS" style="--y:62cqw;--ancho:44cqw;--radio:11cqw;--d:.1s;--fuera:2.3s"><div class="final entra" style="--d:2.5s"><h3>¿Necesitas ayuda para <span class="hl">empezar</span>?</h3><p>Escríbeme:</p><div class="contacto"><span><img src="img/judo-logo.webp" alt="">@judo.marketing</span><span>WhatsApp +1 305 934 9981</span></div></div><div class="credito" style="bottom:40cqw;text-align:center;right:4cqw">Meta, Facebook e Instagram son marcas de Meta Platforms, Inc.</div>
+<template id="listo" data-sfx="cristal@0.4:1/-25 cristal@0.55:3/-25 cristal@0.7:5/-25 datos@1.1/-30 barrido-suave@2.45" data-entrada="corte" data-swish="no">
+  <div class="fondo claro"><div class="contenido sal-abajo" style="--sal:2.5s"><div class="pro-cap t-xl centrado" style="top:24cqw;"><span class="m"><span style="--d:0.05s">Y listo.</span></span></div><div class="pro-cap t-m centrado" style="top:42cqw;"><span class="m"><span style="--d:0.25s"><span class="ligera">Ya anuncias como</span></span></span><span class="m"><span style="--d:0.34s"><span class="ligera">un profesional.</span></span></span></div><svg class="linea-svg" style="--c:rgba(11,11,18,.35)" viewBox="0 0 100 177.78" aria-hidden="true"><path pathLength="1" d="M20 82 L80 82" style="--d:.55s"/></svg><div class="viajero-h" style="top:82cqw;--x0:20;--x1:80;--d:1.1s"></div><div class="viajero-h" style="top:82cqw;--x0:20;--x1:80;--d:1.7s"></div><div class="fila-nodos" style="top:70cqw"><div class="nodo-f" style="left:20cqw;--tam:24cqw;--d:.35s"><span class="disco"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,96v16a32,32,0,0,1-64,0V96H96v16a32,32,0,0,1-64,0V96L46.34,45.8A8,8,0,0,1,54,40H202a8,8,0,0,1,7.69,5.8Z" opacity="0.2"/><path d="M231.69,93.81,217.35,43.6A16.07,16.07,0,0,0,202,32H54A16.07,16.07,0,0,0,38.65,43.6L24.31,93.81A7.94,7.94,0,0,0,24,96v16a40,40,0,0,0,16,32v72a8,8,0,0,0,8,8H208a8,8,0,0,0,8-8V144a40,40,0,0,0,16-32V96A7.94,7.94,0,0,0,231.69,93.81ZM54,48H202l11.42,40H42.61Zm98,56v8a24,24,0,0,1-48,0v-8ZM51.06,132.2A24,24,0,0,1,40,112v-8H88v8a24,24,0,0,1-35.12,21.26A7.88,7.88,0,0,0,51.06,132.2ZM200,208H56V151.2a40.57,40.57,0,0,0,8,.8,40,40,0,0,0,32-16,40,40,0,0,0,64,0,40,40,0,0,0,32,16,40.57,40.57,0,0,0,8-.8Zm16-96a24,24,0,0,1-11.07,20.2,8.08,8.08,0,0,0-1.8,1.05A24,24,0,0,1,168,112v-8h48Z"/></svg></span><span>Tú</span></div><div class="nodo-f" style="left:50cqw;--tam:24cqw;--d:.5s"><span class="disco app"><img src="img/juditoads.webp" alt="JuditoADS"></span><span>JuditoADS</span></div><div class="nodo-f" style="left:80cqw;--tam:24cqw;--d:.65s"><span class="disco blanco"><img src="img/meta-simbolo.png" alt="Meta"></span><span>Meta</span></div></div></div></div><div class="panel abajo mezcla" style="--sal:2.5s"></div>
+</template>
+
+<template id="cierre" data-sfx="acorde-suave@0.05:4 cristal@0.75:5/-25 barrido-suave@2.4:0.5/-27 aviso@3.15:2/-26" data-entrada="corte" data-swish="no">
+  <div class="fondo mezcla"><div class="contenido"><div class="fase sale-antes" style="--fuera:2.45s"><div class="logo-pro voltea" style="top:19cqw;--ancho:36cqw;--d:.05s"><div class="logo-app"><img src="img/juditoads.webp" alt="JuditoADS"><i class="brillo-cruza" style="--dbr:.7s"></i></div></div><div class="pro-cap t-xl centrado" style="top:62cqw;"><span class="m"><span style="--d:0.15s">Pruébalo</span></span><span class="m"><span style="--d:0.24s">gratis.</span></span></div><div class="pro-cap t-s centrado aparece" style="top:94cqw;--d:.6s;font-size:6.4cqw;font-weight:600">14 días · sin tarjeta</div></div><div class="fase"><div class="pro-cap t-l" style="top:30cqw;"><span class="m"><span style="--d:2.75s">¿Necesitas</span></span><span class="m"><span style="--d:2.84s">ayuda?</span></span></div><div class="pro-cap t-m" style="top:56cqw;"><span class="m"><span style="--d:2.95s"><span class="ligera">Escríbeme.</span></span></span></div><div class="contacto-pro" style="top:72cqw"><span style="--d:3.1s"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M128,32A96,96,0,0,0,44.89,176.07L32.42,213.46a8,8,0,0,0,10.12,10.12l37.39-12.47A96,96,0,1,0,128,32Zm24,152a80,80,0,0,1-80-80,32,32,0,0,1,32-32l16,32-12.32,18.47a48.19,48.19,0,0,0,25.85,25.85L152,136l32,16A32,32,0,0,1,152,184Z" opacity="0.2"/><path d="M187.58,144.84l-32-16a8,8,0,0,0-8,.5l-14.69,9.8a40.55,40.55,0,0,1-16-16l9.8-14.69a8,8,0,0,0,.5-8l-16-32A8,8,0,0,0,104,64a40,40,0,0,0-40,40,88.1,88.1,0,0,0,88,88,40,40,0,0,0,40-40A8,8,0,0,0,187.58,144.84ZM152,176a72.08,72.08,0,0,1-72-72A24,24,0,0,1,99.29,80.46l11.48,23L101,118a8,8,0,0,0-.73,7.51,56.47,56.47,0,0,0,30.15,30.15A8,8,0,0,0,138,155l14.62-9.74,23,11.48A24,24,0,0,1,152,176ZM128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-.67L40,216,52.47,178.6a8,8,0,0,0-.66-6.54A88,88,0,1,1,128,216Z"/></svg>+1 305 934 9981</span><span style="--d:3.25s"><img src="img/judo-logo.webp" alt="">@judo.marketing</span><span style="--d:3.4s"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M213.66,201,201,213.66a8,8,0,0,1-11.31,0l-51.31-51.31a8,8,0,0,0-13,2.46l-17.82,46.41a8,8,0,0,1-14.85-.71L40.41,50.44a8,8,0,0,1,10-10L210.51,92.68a8,8,0,0,1,.71,14.85l-46.41,17.82a8,8,0,0,0-2.46,13l51.31,51.31A8,8,0,0,1,213.66,201Z" opacity="0.2"/><path d="M88,24V16a8,8,0,0,1,16,0v8a8,8,0,0,1-16,0ZM16,104h8a8,8,0,0,0,0-16H16a8,8,0,0,0,0,16ZM124.42,39.16a8,8,0,0,0,10.74-3.58l8-16a8,8,0,0,0-14.31-7.16l-8,16A8,8,0,0,0,124.42,39.16Zm-96,81.69-16,8a8,8,0,0,0,7.16,14.31l16-8a8,8,0,1,0-7.16-14.31ZM219.31,184a16,16,0,0,1,0,22.63l-12.68,12.68a16,16,0,0,1-22.63,0L132.7,168,115,214.09c0,.1-.08.21-.13.32a15.83,15.83,0,0,1-14.6,9.59l-.79,0a15.83,15.83,0,0,1-14.41-11L32.8,52.92A16,16,0,0,1,52.92,32.8L213,85.07a16,16,0,0,1,1.41,29.8l-.32.13L168,132.69ZM208,195.31,156.69,144h0a16,16,0,0,1,4.93-26l.32-.14,45.95-17.64L48,48l52.2,159.86,17.65-46c0-.11.08-.22.13-.33a16,16,0,0,1,11.69-9.34,16.72,16.72,0,0,1,3-.28,16,16,0,0,1,11.3,4.69L195.31,208Z"/></svg>judomarketing.net/juditoads</span></div><div class="legal aparece" style="top:128cqw;--d:3.3s">Meta, Facebook e Instagram son marcas de Meta Platforms,&nbsp;Inc.</div></div></div></div>
 </template>
 
 <script type="application/json" id="escenas">
 [
  {
   "id": "e01",
-  "plantilla": "gancho-red",
-  "dur": 3.4,
+  "plantilla": "gancho",
+  "dur": 3.6,
   "pieza": "1 · Gancho",
-  "texto": "Judo Marketing no es solo marketing.",
-  "ve": "El logo de Judo aparece y a su alrededor se dibuja una red de piezas.",
+  "texto": "No somos solo marketing.",
+  "ve": "Fondo negro con una rejilla de puntos que deriva. El titular sube por líneas y se subraya «marketing»; el logo de Judo se dibuja de izquierda a derecha.",
   "voz": "Judo Marketing no es solo una empresa de marketing."
  },
  {
   "id": "e02",
-  "plantilla": "gancho-red-2",
-  "dur": 3.4,
+  "plantilla": "soluciones",
+  "dur": 3.6,
   "pieza": "1 · Gancho",
-  "texto": "Creamos soluciones complejas para problemas complejos.",
-  "ve": "La red se enciende: por cada línea corren datos.",
+  "texto": "Soluciones complejas para problemas complejos.",
+  "ve": "Fondo claro. Caen tres capas isométricas (violeta, azul y oro) y se apilan; cada una lleva su icono acostado: engranaje, gráfica y rayo.",
   "voz": "También creamos soluciones complejas para problemas complejos."
  },
  {
   "id": "e03",
-  "plantilla": "intro-jads",
-  "dur": 3.8,
+  "plantilla": "jads",
+  "dur": 3.6,
   "pieza": "2 · Introducción",
-  "texto": "Por eso creamos JuditoADS. Así funciona por dentro:",
-  "ve": "La red se apaga y el logo de JuditoADS entra grande al centro.",
-  "voz": "Por eso creamos JuditoADS. Te muestro cómo funciona por dentro."
+  "texto": "Por eso creamos JuditoADS. Así funciona por dentro ↓",
+  "ve": "Fondo violeta. «Por eso creamos» y el nombre grande; el ícono de JuditoADS se levanta de acostado a de pie y lo cruza un reflejo.",
+  "voz": "Por eso creamos JuditoADS. Así funciona por dentro."
  },
  {
   "id": "e04",
   "plantilla": "conexion",
   "dur": 4.2,
   "pieza": "3 · Cuerpo 1",
-  "texto": "Meta deja que JuditoADS maneje tus anuncios, con tu permiso.",
-  "ve": "La cámara se aleja del logo y aparece el mapa: tú arriba, JuditoADS al centro, Meta abajo. Se dibujan las líneas y una llave viaja de ti a JuditoADS.",
+  "texto": "JuditoADS maneja tus anuncios, con tu permiso.",
+  "ve": "Fondo claro. Tres tarjetas en columna: tu negocio, JuditoADS y Meta. Crece la línea de la primera a la segunda con la pastilla «tu permiso»; JuditoADS se enciende y baja un punto hasta Meta.",
   "voz": "Meta permite que JuditoADS maneje tus anuncios… con tu permiso."
  },
  {
   "id": "e05",
-  "plantilla": "instrucciones",
-  "dur": 3.5,
+  "plantilla": "ordenes",
+  "dur": 3.6,
   "pieza": "3 · Cuerpo 1",
-  "texto": "Tú conectas tu cuenta y Judito le dice a Meta qué hacer.",
-  "ve": "Por la línea de JuditoADS a Meta bajan las órdenes: el anuncio, el público, el presupuesto.",
+  "texto": "Judito le dice a Meta qué hacer.",
+  "ve": "Fondo azul de Meta. Tres pastillas (el anuncio, el público, el presupuesto) caen una por una dentro del círculo de Meta; cada una abre un anillo. Al final brotan Facebook e Instagram.",
   "voz": "Tú conectas tu cuenta, y Judito le dice a Meta qué hacer."
  },
  {
   "id": "e06",
   "plantilla": "bucle-dinero",
-  "dur": 2.4,
+  "dur": 1.8,
   "pieza": "4 · Bucle abierto",
-  "texto": "¿Y tu dinero? Aquí viene lo importante…",
-  "ve": "El mapa se apaga; la frase entra palabra por palabra, la bolsa de dinero y tres puntos.",
-  "voz": "¿Y tu dinero? Aquí viene lo importante…"
+  "texto": "¿Y tu dinero?",
+  "ve": "Negro. Una luz dorada desde arriba y una moneda que gira despacio en el aire.",
+  "voz": "¿Y tu dinero?"
  },
  {
   "id": "e07",
   "plantilla": "veinte",
-  "dur": 2.8,
+  "dur": 3.0,
   "pieza": "5 · Cuerpo 2",
   "texto": "A Judo solo le pagas $20 al mes.",
-  "ve": "Vuelve el mapa. De ti a JuditoADS viaja una moneda y aparece «$20 al mes».",
+  "ve": "Corte seco a fondo claro en el tiempo fuerte. El «$20» cuenta desde cero; abajo, el recibo del plan.",
   "voz": "A Judo solo le pagas veinte dólares al mes."
  },
  {
   "id": "e08",
-  "plantilla": "presupuesto",
-  "dur": 3.6,
+  "plantilla": "eliges",
+  "dur": 2.4,
   "pieza": "5 · Cuerpo 2",
-  "texto": "Tu presupuesto lo eliges tú y va directo a Meta.",
-  "ve": "Se dibuja una línea dorada de ti a Meta, por fuera de JuditoADS, y por ella bajan monedas.",
-  "voz": ""
+  "texto": "Tu presupuesto lo eliges tú.",
+  "ve": "Fondo violeta. Una tarjeta de «Presupuesto diario» (marcada como ejemplo): el cursor arrastra el deslizador y el monto sube de $2 a $12 por día.",
+  "voz": "Tu presupuesto lo eliges tú…"
  },
  {
   "id": "e09",
-  "plantilla": "no-tocamos",
+  "plantilla": "directo",
   "dur": 3.0,
   "pieza": "5 · Cuerpo 2",
-  "texto": "Nosotros no tocamos tu dinero ni tu presupuesto.",
-  "ve": "A JuditoADS le cae un escudo; las monedas siguen bajando directo a Meta.",
-  "voz": ""
+  "texto": "Y se lo pagas directo a Meta.",
+  "ve": "Fondo oro. La tarjeta de crédito entra volando desde la izquierda, se detiene y se mete en el círculo de Meta, que abre un anillo y muestra el visto bueno.",
+  "voz": "…y se lo pagas directo a Meta."
  },
  {
   "id": "e10",
-  "plantilla": "bucle-funciona",
-  "dur": 2.2,
-  "pieza": "6 · Bucle abierto",
-  "texto": "¿Y cómo sabes si está funcionando?",
-  "ve": "El mapa se apaga; la frase palabra por palabra, la carita que piensa y los tres puntos.",
-  "voz": "¿Y cómo sabes si está funcionando?"
+  "plantilla": "no-tocamos",
+  "dur": 3.6,
+  "pieza": "5 · Cuerpo 2",
+  "texto": "No tocamos tu presupuesto.",
+  "ve": "Negro. Un escudo verde con su halo y un anillo que se dibuja alrededor.",
+  "voz": "Nosotros no tocamos tu dinero ni tu presupuesto."
  },
  {
   "id": "e11",
-  "plantilla": "meta-cuenta",
-  "dur": 2.8,
-  "pieza": "7 · Cuerpo 3",
-  "texto": "Meta le cuenta a Judito cómo va tu anuncio…",
-  "ve": "Vuelve el mapa. De Meta a JuditoADS suben gráficas por una línea verde.",
-  "voz": "Meta le cuenta a Judito cómo va tu anuncio…"
+  "plantilla": "bucle-funciona",
+  "dur": 1.8,
+  "pieza": "6 · Bucle abierto",
+  "texto": "¿Y cómo sabes si funciona?",
+  "ve": "Fondo claro. La pregunta grande y una lupa violeta que recorre el cuadro.",
+  "voz": "¿Y cómo sabes si funciona?"
  },
  {
   "id": "e12",
-  "plantilla": "te-avisa",
-  "dur": 4.8,
+  "plantilla": "meta-cuenta",
+  "dur": 3.6,
   "pieza": "7 · Cuerpo 3",
-  "texto": "…y Judito te lo explica y te avisa si algo falla.",
-  "ve": "De JuditoADS a ti suben la gráfica, la campana y la alerta; junto a ti aparecen tres avisos.",
-  "voz": "…y Judito te lo explica, y te avisa si algo falla. Para que no botes tu dinero."
+  "texto": "Meta le cuenta a Judito cómo va tu anuncio…",
+  "ve": "Corte seco a azul en el tiempo fuerte. El tablero de una campaña de ejemplo (Café Luna, Miami): las cifras cuentan, la gráfica se dibuja y se enciende el punto en vivo.",
+  "voz": "Meta le cuenta a Judito cómo va tu anuncio…"
  },
  {
   "id": "e13",
-  "plantilla": "necesitas",
-  "dur": 8.2,
-  "pieza": "8 · Llamado a la acción",
-  "texto": "Para empezar solo necesitas: tu cuenta de Meta, una página de Facebook, tu Instagram si tienes, y una tarjeta en tu cuenta de anuncios.",
-  "ve": "Una lista con los logos de Meta, Facebook e Instagram y la tarjeta, que se marcan una por una.",
-  "voz": "Para empezar, solo necesitas tu cuenta de Meta con una página de Facebook… tu Instagram, si lo tienes, y una tarjeta en tu cuenta de anuncios."
+  "plantilla": "te-avisa",
+  "dur": 5.4,
+  "pieza": "7 · Cuerpo 3",
+  "texto": "…y Judito te lo explica y te avisa.",
+  "ve": "Negro, como la pantalla bloqueada. Llegan tres avisos de JuditoADS y cada uno empuja hacia abajo al anterior: un consejo, que Meta frenó el anuncio, y que va bien.",
+  "voz": "…y Judito te lo explica, y te avisa si algo falla. Para que no botes tu dinero."
  },
  {
   "id": "e14",
-  "plantilla": "listo",
-  "dur": 3.2,
+  "plantilla": "necesitas",
+  "dur": 7.8,
   "pieza": "8 · Llamado a la acción",
-  "texto": "Y listo: ya anuncias como un profesional.",
-  "ve": "Vuelve el mapa completo, con todas las líneas corriendo a la vez.",
-  "voz": "Y listo: ya puedes anunciarte en redes como todo un profesional."
+  "texto": "Solo necesitas: cuenta de Meta, página de Facebook, tu Instagram si tienes y una tarjeta en tu cuenta de anuncios.",
+  "ve": "Fondo violeta. Cuatro huecos punteados; cada uno se llena con su ficha cuando la voz la nombra y se marca con un visto.",
+  "voz": "Para empezar, solo necesitas tu cuenta de Meta… con una página de Facebook… tu Instagram, si lo tienes… y una tarjeta en tu cuenta de anuncios."
  },
  {
   "id": "e15",
-  "plantilla": "cierre",
-  "dur": 6.5,
+  "plantilla": "listo",
+  "dur": 3.0,
   "pieza": "8 · Llamado a la acción",
-  "texto": "Pruébalo gratis 14 días · judomarketing.net/juditoads → contacto",
-  "ve": "El logo de JuditoADS con «Pruébalo gratis 14 días» y después la tarjeta de contacto.",
+  "texto": "Y listo. Ya anuncias como un profesional.",
+  "ve": "Fondo claro. «Y listo.» y, debajo, los tres en fila (tú, JuditoADS y Meta) unidos por una línea por la que corren dos puntos.",
+  "voz": "Y listo: ya puedes anunciarte en redes como todo un profesional."
+ },
+ {
+  "id": "e16",
+  "plantilla": "cierre",
+  "dur": 6.0,
+  "pieza": "8 · Llamado a la acción",
+  "texto": "Pruébalo gratis. 14 días · sin tarjeta → ¿Necesitas ayuda? Escríbeme.",
+  "ve": "Fondo de color mezclado. El ícono de JuditoADS con «Pruébalo gratis. 14 días · sin tarjeta»; después sube «¿Necesitas ayuda? Escríbeme.» con WhatsApp, Instagram y la dirección.",
   "voz": "Pruébalo gratis catorce días. Y si necesitas ayuda para empezar, escríbeme."
  }
 ]
