@@ -27,6 +27,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-10-28 | **Videos en 8 piezas (sección 8).** Gancho, introducción, cuerpo, bucle abierto, cuerpo, bucle abierto, cuerpo y llamado a la acción, siempre en ese orden (audio de Junior). El video 2 de JuditoADS se rearmó así: `scripts/video/juditoads-2/`. |
 | 2026-10-26 | **Errores que ya cometimos (sección 10).** Lo que salió mal trabajando con Claude, con lo que costó y la regla que lo evita: mediciones sin comprobar, ramas de producción, deploys manuales, npm, claves impresas, la terminal, rendimiento, formularios y videos. Se lee antes de tocar git, Vercel, dependencias o claves. Cada error nuevo se anota ahí el mismo día; desde otro proyecto, por `CEREBRO-APORTES.md`. |
 | 2026-10-22 | **Seguridad de fábrica (sección 9).** El día de PHP2Shell y de la RCE del optimizador de imágenes de Next.js se revisaron los 34 repos y los 30 sitios: ninguno corre PHP. 20 repos se parcharon y los cuatro que seguían en Next 14 se migraron a Next 15. Todo proyecto nuevo nace sin PHP, en una línea de Next con parches y con `.github/workflows/seguridad.yml`, que avisa por correo. La plantilla JudiWEB ya lo trae. Inventario y procedimiento de emergencia: `SEGURIDAD.md`. |
 | 2026-10-22 | **Videos explicativos verticales.** El primero, de JuditoADS (60 s, 1080×1920, sin voz, con efectos), quedó aprobado. Las reglas que salieron de las cinco vueltas de correcciones de Junior están en la sección 8. Todo lo necesario para rehacerlo o sacar el siguiente vive en `scripts/video/juditoads-1/`, y el cómo, en `VIDEOS.md`. |
@@ -400,6 +401,29 @@ scripts y pasos) está en `VIDEOS.md`.
   cada uno.
 - Si Junior sale a cámara, es al principio y dura 2 o 3 segundos.
 
+**Estructura: 8 piezas, siempre en este orden** (audio de Junior, 28 de
+octubre de 2026). Es lo que hace que la gente vea el video hasta el final.
+El video 2 de JuditoADS es el ejemplo armado así.
+1. **Gancho.** Algo que rompe con lo que venían viendo y los hace frenar. Se
+   mueve desde el primer cuadro: una pregunta cualquiera no frena a nadie.
+2. **Introducción.** En pocos segundos, qué se llevan si se quedan ("Quédate:
+   te enseño a lanzar el tuyo").
+3. **Cuerpo 1.** Algo que les sirve y no sabían.
+4. **Bucle abierto.** La pieza que de verdad los amarra: una frase como "Pero
+   eso no es lo más loco…" deja una pregunta en el aire. Se cierra en la
+   escena que sigue, dicho con todas las letras.
+5. **Cuerpo 2.**
+6. **Otro bucle abierto.**
+7. **Cuerpo 3.** El último cuerpo es lo más útil que se puede usar hoy (en
+   JuditoADS, los consejos de Judito).
+8. **Llamado a la acción.** Es la pieza que trae clientes. Se le habla al que
+   llegó hasta el final, que es el más interesado ("Si llegaste hasta aquí,
+   pruébalo gratis"), y se le da un solo siguiente paso.
+
+Cómo se ve un bucle abierto: la frase entra palabra por palabra, un emoji 3D
+y tres puntos que avisan que viene algo, con un sonido que sube y corta en
+seco. Dura menos de 2 segundos.
+
 **El teléfono nunca toca el texto.** Fue la corrección de casi todas las
 escenas de la primera versión. La pantalla se reparte en franjas:
 - el texto entre el 14% y el 56% del ancho, contado desde arriba;
@@ -708,3 +732,18 @@ las trampas técnicas.
   - Regla: se sirve local.
 - **La exportación de NAIP se corta en 4000 px.**
   - Regla: se pide por mosaicos.
+- **Textos que partían mal la línea** en el primer borrador del video 2
+  (2026-10-28).
+  - Qué pasó: palabras sueltas en una línea, el resaltado amarillo cortado
+    en dos y la frase de la introducción tapando el globo del genio.
+  - Regla: cada frase se mide en el navegador antes del render, con el mismo
+    marcado de la escena. Las palabras animadas (`.w`) parten la línea
+    distinto que el texto corrido. Después, cuadros sueltos con `--muestra`
+    y se miran.
+- **El render sacaba cuadros con el valor viejo de una animación**
+  (2026-10-28).
+  - Qué pasó: una animación que ya había corrido sola al cargar la página
+    salía con ese valor en la foto. La frase del primer bucle aparecía antes
+    de tiempo.
+  - Regla: antes de cada foto se esperan dos cuadros del navegador
+    (`requestAnimationFrame` dos veces). Ya está en `render-escenas.mjs`.

@@ -45,6 +45,9 @@ for (const e of escenas) {
         v.src = cuadroVuelo; await v.decode().catch(() => {});
         document.getElementById("cuadro").classList.toggle("llegó", t > total - 1.25);
       }
+      // Dos cuadros del navegador antes de la foto: sin esto, una animación que ya
+      // había corrido sola al cargar la página salía con su valor viejo.
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     };
   });
   const cuadros = muestra ? [0.1, 0.3, 0.5, 0.7, 0.9].map((x) => Math.round(x * (n - 1))) : [...Array(n).keys()];

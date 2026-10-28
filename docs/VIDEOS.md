@@ -130,12 +130,45 @@ Al terminar, el `prisma generate` de Postgres deja la app como estaba.
     los nombres de los botones están en español; hay que pasarlos a los de
     la app en inglés.
 
+## Video 2 de JuditoADS: el mismo material en 8 piezas
+
+El 28 de octubre de 2026 Junior mandó la estructura que hace que un video se
+vea hasta el final (CEREBRO, sección 8) y el video se rearmó con ella en
+`scripts/video/juditoads-2/`. El video 1 queda intacto en su carpeta.
+
+| Pieza | Escenas | Segundos |
+| --- | --- | --- |
+| 1 · Gancho | La moneda de 5¢, enorme desde el primer cuadro | 0 – 2.6 |
+| 2 · Introducción | "Quédate: te enseño a lanzar el tuyo sin gurú", con el genio | 2.6 – 5.8 |
+| 3 · Cuerpo 1 | Los 10 cursos, el vuelo a Miami, JuditoADS y el público ideal | 5.8 – 18.5 |
+| 4 · Bucle abierto | "Pero eso no es lo más loco…" | 18.5 – 20.1 |
+| 5 · Cuerpo 2 | "Lo lanzas tú solo. En 4 pasos", los cuatro pasos y el listo | 20.1 – 36.3 |
+| 6 · Bucle abierto | "Y lo que sigue, casi nadie te lo dice…" | 36.3 – 38.1 |
+| 7 · Cuerpo 3 | "Judito sí te lo dice": los tres consejos | 38.1 – 44.1 |
+| 8 · Llamado | El precio, "Si llegaste hasta aquí, pruébalo gratis" y el contacto | 44.1 – 56.1 |
+
+Qué cambia respecto de la carpeta del video 1:
+
+- Los efectos de `sfx.py` y las transiciones de `montar.py` van por
+  plantilla (`fNN`), no por número de escena. Así el orden se puede cambiar
+  sin tocarlos.
+- Los bucles abiertos son las plantillas `f17` y `f18`, con los emojis 3D
+  `cabeza.webp` y `secreto.webp` (Fluent, MIT).
+- `render-escenas.mjs` espera dos cuadros del navegador antes de cada foto.
+  Sin eso, una animación que ya había corrido al cargar salía con su valor
+  viejo.
+
+Se produce igual que el 1, desde su carpeta; sale
+`salida/JuditoADS-video2-es.mp4`. Las capturas de la app, el vuelo y la
+lámpara se rehacen desde `juditoads-1/` y se copian a `img/` y
+`vuelo-hd.mp4`.
+
 ## El siguiente video
 
-Copiar la carpeta completa a `scripts/video/<nombre>/` y empezar por el
+Copiar la carpeta `juditoads-2/` a `scripts/video/<nombre>/` y empezar por el
 storyboard:
 
-1. Escribir el guion por escenas.
+1. Escribir el guion por escenas, repartido en las 8 piezas.
 2. Publicarlo como artifact con comentarios por escena para que Junior lo
    revise. Este tomó cinco vueltas.
 3. Producir solo cuando lo apruebe.
