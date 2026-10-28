@@ -159,7 +159,8 @@ Qué cambia respecto de la carpeta del video 1:
   viejo.
 
 Se produce igual que el 1, desde su carpeta; sale
-`salida/JuditoADS-video2-es.mp4`. Las capturas de la app, el vuelo y la
+`salida/JuditoADS-video2-es.mp4`. La copia entregada a Junior el 28 de octubre
+de 2026 está en la carpeta: `JuditoADS-video2-es.mp4` (56 s). Las capturas de la app, el vuelo y la
 lámpara se rehacen desde `juditoads-1/` y se copian a `img/` y
 `vuelo-hd.mp4`.
 
