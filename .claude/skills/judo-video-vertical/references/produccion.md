@@ -48,9 +48,10 @@ cp <carpeta de la skill>/scripts/navegador.mjs <carpeta de la skill>/scripts/rev
   - van en `img/`; los videos reales, en `clips/`;
   - **borra las del ejemplo que no uses**: no deben viajar al proyecto del
     cliente;
-  - los emojis 3D de Fluent se bajan de
-    `https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/<Nombre>/3D/<nombre>_3d.png`,
-    por ejemplo `Light bulb/3D/light_bulb_3d.png` (256 px, licencia MIT).
+  - los emojis 3D de Fluent (256 px, licencia MIT) se bajan con
+    `python3 emoji.py "light bulb" img/foco.webp`; los nombres comprobados
+    están en `emojis.md`;
+  - los iconos vectoriales de la capa pro ya están en `vectores/`.
 - **Reemplaza TODO el ejemplo:** las plantillas, la lista de escenas y el
   `<title>`. Nada de JuditoADS se queda en el video de otro negocio.
 
@@ -60,16 +61,21 @@ cp <carpeta de la skill>/scripts/navegador.mjs <carpeta de la skill>/scripts/rev
 python3 build.py                  # storyboard → salida/video.html y escenas.json; avisa lo que no cuadra
 node revisar.mjs                  # textos: líneas partidas, zonas, encimados, contraste, tiempo de lectura
 node render.mjs --muestra         # cinco cuadros por escena en salida/escenas/<id>/: míralos
-node render.mjs                   # todas las escenas a 60 cuadros (unos 10 a 20 minutos)
-python3 sfx.py                    # el sonido
+node render.mjs                   # todas las escenas a 60 cuadros (unos 15 minutos por minuto de video)
+python3 musica.py                 # la música de fondo (salida/musica.wav); se puede saltar
+python3 sfx.py                    # los efectos, con la música debajo si existe
 python3 montar.py <nombre>        # salida/<nombre>.mp4
 python3 qa.py salida/<nombre>.mp4 # hojas de revisión y portada.jpg
 ```
 
 - **Para cambiar una sola escena:**
   `python3 build.py && node render.mjs e03 && python3 montar.py <nombre>`.
-- **Si cambia la duración de una escena**, corre `sfx.py` otra vez: cada
-  sonido se cuenta desde el inicio de su escena.
+- **Si cambia la duración de una escena**, corre `musica.py` y `sfx.py` otra
+  vez: cada sonido se cuenta desde el inicio de su escena y la música corta
+  la batería en los bucles.
+- **Esperar el render sin vigilarlo:** córrelo en segundo plano y espera al
+  número de proceso (`while kill -0 <pid>; do sleep 15; done`), no a un
+  `pgrep -f render.mjs`: ese se encuentra a sí mismo y no termina nunca.
 - **`render.mjs --hilos 4`** usa más núcleos; por defecto son 3.
 - **El render completo tarda:** córrelo en segundo plano y sigue con otra
   cosa (el pie de video, el guion de voz).
@@ -90,7 +96,7 @@ python3 qa.py salida/<nombre>.mp4 # hojas de revisión y portada.jpg
 | `slideup`, `slideleft` | Empuja la escena anterior |
 | `circleopen` | Se abre en círculo (para un vuelo o una revelación) |
 | `wipeleft` | Cortina |
-| `corte` | Corte seco: para dos escenas de un mismo mapa o de una misma pantalla |
+| `corte` | Corte seco: para dos escenas de un mismo mapa o de una misma pantalla, y en la capa pro siempre (la transición la hace el panel, `estilo-pro.md`) |
 
 ## 5. Capturas de un producto y material del cliente
 
@@ -110,6 +116,11 @@ python3 qa.py salida/<nombre>.mp4 # hojas de revisión y portada.jpg
 - **Dos animaciones en un mismo elemento.** Si un tipo de escena ya tiene su
   animación (`.logo-grande`, `.nodo`, `.sello`, `.tel`), ponerle `.funde` o
   `.entra` la pisa y no pasa nada. Esos tipos ya aceptan `--fuera`; usa eso.
+  En la capa pro, la entrada va en una caja y el movimiento continuo en otra
+  adentro.
+- **Un texto con máscara que todavía no subió se contaba como visible** (el
+  revisor no miraba el recorte del propio elemento) y salían avisos de textos
+  encimados que no se veían. Ya está corregido en `revision-texto.js`.
 - **Opacidad con un solo fotograma clave al 100%:** el cambio se reparte por
   toda la animación. El valor de partida va también en el fotograma donde
   empieza a cambiar.

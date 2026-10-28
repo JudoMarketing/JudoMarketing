@@ -56,6 +56,28 @@ def existe(url):
         return None if "urlopen error" in str(e) and "HTTP" not in str(e) else False
 
 
+def pesos_reales(nombre):
+    """Los pesos que Google Fonts tiene de verdad: se lee el CSS que devuelve."""
+    try:
+        url = f"https://fonts.googleapis.com/css2?family={urllib.parse.quote_plus(nombre)}:wght@100..900&display=swap"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 Chrome/120"})
+        with urllib.request.urlopen(req, timeout=15, context=contexto_ssl()) as r:
+            css = r.read().decode()
+    except Exception:
+        try:
+            url = f"https://fonts.googleapis.com/css2?family={urllib.parse.quote_plus(nombre)}&display=swap"
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 Chrome/120"})
+            with urllib.request.urlopen(req, timeout=15, context=contexto_ssl()) as r:
+                css = r.read().decode()
+        except Exception:
+            return None
+    pesos = set()
+    for m in re.finditer(r"font-weight:\s*(\d+)(?:\s+(\d+))?", css):
+        a, b = int(m.group(1)), int(m.group(2) or m.group(1))
+        pesos.update(range(a, b + 1, 100) if b > a else [a])
+    return sorted(pesos) or None
+
+
 def familia(nombre, pesos):
     base = urllib.parse.quote_plus(nombre)
     for p in pesos:
@@ -71,6 +93,9 @@ def familia(nombre, pesos):
 
 
 partes = []
+reales = pesos_reales(display)
+if reales and max(reales) < 700:
+    print(f"  · «{display}» solo viene en peso {', '.join(map(str, reales))}: los titulares van en ese peso, sin negrita inventada.")
 f_display = familia(display, ["500;600;700;800;900", "400;700", ""])
 if not f_display:
     display, f_display = "Inter", "family=Inter:wght@500;600;700;800;900"
@@ -80,6 +105,7 @@ if cuerpo != display:
     if not f_cuerpo:
         cuerpo, f_cuerpo = "Inter", "family=Inter:wght@400;500;600;700"
     partes.append(f_cuerpo)
+partes.append("family=JetBrains+Mono:wght@500;600")  # la mono de los rótulos (capa pro)
 fuentes = ('<link rel="preconnect" href="https://fonts.googleapis.com">\n'
            '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
            f'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?{"&".join(partes)}&display=swap">')
@@ -92,6 +118,7 @@ variables = f""":root {{
   --acento-texto: {acento_texto};
   --primario: {primario};
   --primario-hondo: {mover(primario, -40)};
+  --tercero: {m.get("tercero", mover(primario, -40))};
   --ok: {m.get("ok", "#34d399")};
   --alerta: {m.get("alerta", "#ff4d4d")};
   --f-display: "{display}", "Arial Narrow", Arial, sans-serif;
@@ -100,6 +127,7 @@ variables = f""":root {{
   --sombra-texto: {"0 .6cqw 2.4cqw rgba(0,0,0,.55)" if oscuro else "none"};
   --esquema: {"dark" if oscuro else "light"};
   --escala-titulares: {m.get("escala-titulares", 1.16 if re.search(r"condensed|anton|oswald|bebas|compressed|narrow|league gothic", display, re.I) else 1)};
+  --interlineado-titulares: {m.get("interlineado-titulares", 1.16 if re.search(r"anton|oswald|bebas|league gothic|condensed", display, re.I) else 1.06)};
 }}"""
 
 n1 = len(re.findall(r"/\* MARCA:INICIO \*/.*?/\* MARCA:FIN \*/", html, flags=re.S))

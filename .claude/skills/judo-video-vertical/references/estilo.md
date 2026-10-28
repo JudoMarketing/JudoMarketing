@@ -4,6 +4,11 @@ Salió de los videos de JuditoADS (octubre de 2026). Junior revisó el primero
 escena por escena en cinco versiones. Cada regla de aquí es una corrección
 suya o algo que costó rehacer.
 
+**El nivel de la casa es el de `estilo-pro.md`:** un fondo distinto en cada
+escena, una idea por plano, texto que entra por máscara, iconos vectoriales y
+sonido suave con música. Lo de este archivo vale para los dos estilos; donde
+dice "rebote" o "resaltado amarillo", es de la biblioteca enérgica.
+
 Contenido:
 1. Formato
 2. Zonas del cuadro
@@ -75,7 +80,10 @@ botón "Ver zonas" las pinta de rojo.
     `produccion.md` dice cómo bajarlos;
   - objetos modelados en 3D para la ocasión;
   - sombras de verdad (`drop-shadow`);
-  - movimiento con rebote y frenado suave (las curvas de la biblioteca).
+  - movimiento con rebote y frenado suave (las curvas de la biblioteca
+    enérgica) o, en la capa pro, curvas cortas sin rebote;
+  - iconos vectoriales Phosphor duotono (`assets/proyecto/vectores/`,
+    licencia MIT) en la capa pro.
 - **Fotos reales del negocio** antes que cualquier imagen genérica. Una foto
   de banco de imágenes no se hace pasar por el cliente.
 
@@ -95,8 +103,13 @@ botón "Ver zonas" las pinta de rojo.
 
 ## 6. Mapas conceptuales (videos que explican cómo funciona algo)
 
-Salió del video 3 de JuditoADS ("Cómo funciona por dentro", 28 de octubre de
-2026). Ver `escenas.md`, sección «Mapa».
+Salió de la primera versión del video 3 de JuditoADS ("Cómo funciona por
+dentro", 28 de octubre de 2026). Ver `escenas.md`, sección «Mapa».
+
+**Ojo:** un mapa en todas las escenas se lee como plantilla. Junior lo
+rechazó ("idéntico al anterior… los ejemplos son repetitivos"). Úsalo en dos
+o tres escenas como mucho y cuenta el resto con las piezas de
+`estilo-pro.md`, una composición distinta por idea.
 
 - **Un solo mapa para todo el video**, con los nodos siempre en el mismo
   lugar. Escena a escena cambia lo que se enciende y lo que viaja, nunca la

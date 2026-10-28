@@ -61,6 +61,7 @@ Formato de `marca.json`:
   "acento": "#ffc533",
   "acento-texto": "#16101f",
   "primario": "#7b2dff",
+  "tercero": "#0866ff",
   "fuente-display": "Poppins",
   "fuente-cuerpo": "Inter",
   "logo": "marca/logo.png",
@@ -75,6 +76,9 @@ Formato de `marca.json`:
   letra blanca encima: tiene que dar 3:1 o más con el blanco.
   `aplicar-marca.py` lo mide. Si el acento de la marca es claro (un naranja,
   un amarillo), el primario es otro color de la marca más oscuro.
+- `tercero` (opcional) es un tercer color para la capa pro de los videos
+  (`estilo-pro.md`): un fondo más que alterna con el primario y el acento.
+  Si no hay, se usa el primario más oscuro.
 
 ## Parejas de letras que funcionan (Google Fonts)
 
@@ -82,6 +86,7 @@ Formato de `marca.json`:
 | --- | --- | --- |
 | Fuerte, de oficio (contratistas, autos, comida a la parrilla) | Anton o Barlow Condensed | Inter |
 | Moderno y directo (SaaS, apps, agencias) | Archivo o Poppins | Inter o Instrument Sans |
+| Tecnología de primera, explicativo (la capa pro de los videos) | Inter Tight | Inter Tight |
 | Cálido y serio (salud, terapia) | Plus Jakarta Sans | Inter |
 | Personal y elegante (belleza, sastrería) | Playfair Display o Fraunces | Inter |
 | Amable (comunidad, educación) | Nunito o Figtree | Figtree |

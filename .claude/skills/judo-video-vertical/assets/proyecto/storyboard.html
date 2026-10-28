@@ -7,7 +7,7 @@
 <!-- FUENTES:INICIO -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
 <!-- FUENTES:FIN -->
 <style>
 /* MARCA:INICIO */
@@ -19,6 +19,7 @@
   --acento-texto: #16101f;
   --primario: #8b5cf6;
   --primario-hondo: #6d28d9;
+  --tercero: #0866ff;
   --ok: #34d399;
   --alerta: #ff4d4d;
   --f-display: "Archivo", "Arial Narrow", Arial, sans-serif;
@@ -75,7 +76,7 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
    salen antes del corte usan --fuera. Lo continuo (un brillo, la mira que
    recorre) dura var(--t).
    ════════════════════════════════════════════════════════════════════ */
-.cuadro { position: relative; aspect-ratio: 9 / 16; width: 100%; overflow: hidden; container-type: inline-size; isolation: isolate; border-radius: 14px; color-scheme: var(--esquema);
+.cuadro { position: relative; aspect-ratio: 9 / 16; width: 100%; overflow: hidden; container-type: inline-size; isolation: isolate; border-radius: 14px; color-scheme: var(--esquema); font-synthesis: none;
   color: var(--texto); font-family: var(--f-cuerpo);
   background:
     radial-gradient(70% 45% at 20% 12%, color-mix(in oklab, var(--primario) 40%, transparent), transparent 70%),
@@ -100,10 +101,10 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
 @keyframes salir-quieto { to { opacity: 0 } }
 
 /* ── Texto ── */
-.cap { position: absolute; left: 7cqw; right: 9cqw; z-index: 10; text-align: center; text-wrap: balance; font-family: var(--f-display); font-stretch: var(--ancho-display); font-weight: 880; font-size: calc(8.4cqw * var(--escala-titulares, 1)); line-height: 1.06; letter-spacing: -.01em; color: var(--texto); text-shadow: var(--sombra-texto); }
+.cap { position: absolute; left: 7cqw; right: 9cqw; z-index: 10; text-align: center; text-wrap: balance; font-family: var(--f-display); font-stretch: var(--ancho-display); font-weight: 880; font-size: calc(8.4cqw * var(--escala-titulares, 1)); line-height: var(--interlineado-titulares, 1.06); letter-spacing: -.01em; color: var(--texto); text-shadow: var(--sombra-texto); }
 .cap.arriba { top: 15cqw; }
 .cap.centro { top: 50%; translate: 0 -50%; font-size: calc(10cqw * var(--escala-titulares, 1)); }
-.cap.bucle { top: 30cqw; font-size: calc(9.6cqw * var(--escala-titulares, 1)); line-height: 1.08; }
+.cap.bucle { top: 30cqw; font-size: calc(9.6cqw * var(--escala-titulares, 1)); line-height: max(1.2, var(--interlineado-titulares, 1.06)); }
 .cap.abajo { top: 116cqw; font-size: 6.8cqw; }
 .cap .hl { color: var(--acento-texto); background: var(--acento); padding: 0 .16em; border-radius: .14em; box-decoration-break: clone; -webkit-box-decoration-break: clone; text-shadow: none; }
 .cap .sub { display: block; font-family: var(--f-cuerpo); font-stretch: 100%; font-weight: 600; font-size: 4.4cqw; line-height: 1.3; letter-spacing: 0; margin-top: 2.4cqw; opacity: .9; text-wrap: pretty; }
@@ -114,11 +115,12 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
 
 /* ── Objeto que entra (gancho): una imagen o la moneda ── */
 .objeto { position: absolute; left: 50%; top: var(--y, 92cqw); width: var(--ancho, 40cqw); translate: -50% -50%; z-index: 5; filter: drop-shadow(0 3cqw 4cqw rgba(0,0,0,.5)); }
+/* .girando es para cosas simétricas (una moneda): un reloj o un camión se ven al revés mientras gira */
 .objeto.girando { animation: girando 1s cubic-bezier(.2,.9,.3,1) var(--d, 0s) both; }
 .objeto.cae { animation: cae .75s cubic-bezier(.3,1.4,.5,1) var(--d, 0s) both; }
 .objeto.brota { transform-origin: 78% 100%; animation: brota .5s cubic-bezier(.3,1.45,.5,1) var(--d, 0s) both, vuelve .45s ease-in var(--fuera, 9999s) forwards; }
 .objeto.flota { animation: entra .42s cubic-bezier(.3,1.5,.5,1) var(--d, 0s) both, flotar 2.4s ease-in-out calc(var(--d, 0s) + .42s) infinite alternate; }
-@keyframes girando { from { transform: rotateY(0) scale(2.6) } to { transform: rotateY(720deg) scale(1) } }
+@keyframes girando { from { transform: rotateY(0) scale(var(--desde, 2.6)) } to { transform: rotateY(720deg) scale(1) } }
 @keyframes cae { from { transform: translateY(-130cqw) rotate(-20deg) } to { transform: none } }
 @keyframes brota { from { transform: translate(14cqw, 40cqw) scale(0) } to { transform: none } }
 @keyframes vuelve { to { transform: translate(14cqw, 40cqw) scale(0) rotate(18deg) } }
@@ -313,6 +315,312 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
 .contacto { display: grid; gap: 2.4cqw; justify-items: center; }
 .contacto span { display: inline-flex; align-items: center; gap: 2cqw; padding: 2.4cqw 4.4cqw; border-radius: 99cqw; white-space: nowrap; background: color-mix(in oklab, var(--texto) 10%, transparent); border: .4cqw solid color-mix(in oklab, var(--texto) 22%, transparent); font: 800 5cqw/1 var(--f-display); }
 .contacto img { width: 9cqw; height: 9cqw; border-radius: 50%; background: #0b0a10; padding: .8cqw; object-fit: contain; }
+
+/* ── AJUSTES de este video: van aquí, al final, para que ganen a la biblioteca ── */
+</style>
+<style>
+/* PRO:INICIO
+   ════════════════════════════════════════════════════════════════════
+   CAPA PRO · el nivel «referente» (references/estilo-pro.md)
+   Salió del video 3 de JuditoADS, versión 2 (28 de octubre de 2026):
+   - una idea y un objeto por plano, con mucho aire;
+   - fondo neutro (negro o claro) o UN color de la marca a sangre, distinto
+     en cada escena;
+   - la letra de titulares de la marca, apretada, y una mono para rótulos;
+   - el texto entra por máscara (sube desde abajo de su línea), sin rebote;
+   - curvas cortas y suaves (expo), nada de resortes de dibujo animado;
+   - el cambio de escena es un panel del color que sigue (desde abajo,
+     desde el lado o en círculo) o un corte seco en el golpe de la música.
+   Los colores salen de la marca (bloque MARCA): primario, acento y tercero.
+   ════════════════════════════════════════════════════════════════════ */
+:root {
+  --tinta: #0b0b12;
+  --claro: #f4f2ee;
+  --gris: #6f6c7a;
+  --verde: #12b76a;
+  --rojo: #f04438;
+  --f-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --tracking-pro: -.035em;
+  --sale: cubic-bezier(.16, 1, .3, 1);
+  --entra-sale: cubic-bezier(.7, 0, .2, 1);
+  --g-negro: radial-gradient(80% 50% at 50% 38%, #1c1830 0%, #0b0b12 64%);
+  --g-claro: radial-gradient(90% 60% at 50% 30%, #ffffff 0%, #f4f2ee 70%, #e9e5de 100%);
+  --g-marca: radial-gradient(90% 60% at 50% 32%, color-mix(in oklab, var(--primario) 78%, #fff) 0%, var(--primario) 48%, var(--primario-hondo) 100%);
+  --g-acento: radial-gradient(90% 60% at 50% 32%, color-mix(in oklab, var(--acento) 70%, #fff) 0%, var(--acento) 56%, color-mix(in oklab, var(--acento) 85%, #000) 100%);
+  --g-tercero: radial-gradient(90% 60% at 50% 32%, color-mix(in oklab, var(--tercero) 78%, #fff) 0%, var(--tercero) 52%, color-mix(in oklab, var(--tercero) 75%, #000) 100%);
+  --g-mezcla: radial-gradient(60% 40% at 18% 18%, color-mix(in oklab, var(--primario) 70%, #fff) 0%, transparent 70%), radial-gradient(60% 45% at 88% 62%, var(--tercero) 0%, transparent 70%), radial-gradient(55% 35% at 25% 98%, var(--acento) 0%, transparent 70%);
+}
+
+/* ── Fondos: uno por escena. El color base es el que mide el contraste. ── */
+.fondo { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.fondo.negro { background-color: #0b0b12; background-image: var(--g-negro); color: #fff; }
+.fondo.claro { background-color: #f4f2ee; background-image: var(--g-claro); color: var(--tinta); }
+/* El color base es el de los bordes del degradado, donde caen los rótulos: con ese se mide el contraste */
+.fondo.marca { background-color: color-mix(in oklab, var(--primario) 55%, var(--primario-hondo)); background-image: var(--g-marca); color: #fff; }
+.fondo.tercero { background-color: var(--tercero); background-image: var(--g-tercero); color: #fff; }
+.fondo.acento { background-color: var(--acento); background-image: var(--g-acento); color: var(--acento-texto); }
+.fondo.mezcla { background-color: var(--primario-hondo); background-image: var(--g-mezcla); color: #fff; }
+/* Una luz que respira despacio, por debajo del contenido */
+.fondo::before { content: ""; position: absolute; inset: -20%; z-index: -1; background: radial-gradient(40% 30% at 50% 45%, rgba(255,255,255,.12), transparent 70%); animation: p-respira var(--t) ease-in-out both; }
+@keyframes p-respira { from { transform: translateY(3%) scale(1) } to { transform: translateY(-3%) scale(1.08) } }
+/* Rejilla de puntos que deriva: textura que se mueve desde el primer cuadro */
+.puntos-fondo { position: absolute; inset: -12cqw; z-index: 1; background-image: radial-gradient(circle, var(--punto, rgba(255,255,255,.16)) .32cqw, transparent .4cqw); background-size: 6cqw 6cqw;
+  -webkit-mask-image: radial-gradient(60% 45% at 50% 50%, #000 10%, transparent 75%); mask-image: radial-gradient(60% 45% at 50% 50%, #000 10%, transparent 75%); animation: p-deriva-puntos var(--t) linear both; }
+@keyframes p-deriva-puntos { from { transform: translate(0, 0) } to { transform: translate(-6cqw, -6cqw) } }
+
+/* ── Tipografía ── */
+.pro-cap { position: absolute; left: 8cqw; right: 8cqw; z-index: 10; font-family: var(--f-display); letter-spacing: var(--tracking-pro); line-height: 1.02; text-align: left; }
+.pro-cap.arriba { top: 23cqw; }
+.pro-cap.centrado { text-align: center; }
+.t-xxl { font-size: 34cqw; font-weight: 800; letter-spacing: -.05em; line-height: .95; font-variant-numeric: tabular-nums; }
+.t-xl { font-size: 14cqw; font-weight: 800; }
+.t-l { font-size: 11.2cqw; font-weight: 800; }
+.t-m { font-size: 8.4cqw; font-weight: 750; letter-spacing: -.03em; }
+.t-s { font-size: 5.4cqw; font-weight: 500; letter-spacing: -.015em; line-height: 1.25; }
+.ligera { font-weight: 300; }
+.tenue { opacity: .62; }
+.color-marca { color: var(--primario); }
+.color-acento { color: var(--acento); }
+.color-verde { color: var(--verde); }
+.color-tercero { color: var(--tercero); }
+/* Iconos Phosphor (vectores/) en el color del texto: <i class="ico" style="--ico:url(vectores/key.svg)"></i> */
+.ico { display: inline-block; flex: none; width: 1em; height: 1em; background: currentColor; -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
+.rotulo-mono { position: absolute; left: 8cqw; top: 16cqw; z-index: 10; display: flex; align-items: center; gap: 2cqw; font: 600 3.1cqw/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; }
+.rotulo-mono::before { content: ""; width: 5cqw; height: .5cqw; background: currentColor; transform-origin: left; animation: p-rayita .6s var(--sale) var(--d, 0s) both; }
+@keyframes p-rayita { from { transform: scaleX(0) } }
+/* Línea con máscara: el texto sube desde abajo de su propia línea */
+.m { display: block; overflow: hidden; padding: 0 .06em .1em; margin: 0 -.06em -.1em; }
+.m > span { display: inline-block; white-space: nowrap; transform: translateY(135%); animation: p-subir .8s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-subir { to { transform: none } }
+/* Subrayado que se dibuja bajo una palabra */
+.raya { position: relative; white-space: nowrap; }
+.raya::after { content: ""; position: absolute; left: 0; right: 0; bottom: .04em; height: .09em; border-radius: .05em; background: var(--raya, var(--primario)); transform: scaleX(0); transform-origin: left; animation: p-rayar .7s var(--sale) var(--dr, .8s) forwards; }
+@keyframes p-rayar { to { transform: scaleX(1) } }
+/* Un número que cuenta (con la propiedad registrada --n) */
+@property --n { syntax: "<integer>"; inherits: false; initial-value: 0; }
+.cuenta { font-variant-numeric: tabular-nums; counter-reset: n var(--n); animation: p-contar var(--dc, 1s) var(--sale) var(--d, 0s) both; }
+.cuenta::after { content: counter(n); }
+@keyframes p-contar { from { --n: var(--desde, 0) } to { --n: var(--hasta, 0) } }
+
+/* ── Entradas sobrias ── */
+.aparece { opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-aparecer { from { opacity: 0; transform: translateY(5cqw) } to { opacity: 1; transform: none } }
+.escala { opacity: 0; animation: p-escalar .8s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-escalar { from { opacity: 0; transform: scale(.86) } to { opacity: 1; transform: none } }
+.voltea { opacity: 0; animation: p-voltear 1s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-voltear { from { opacity: 0; transform: perspective(140cqw) rotateX(62deg) translateY(12cqw) scale(.9) } to { opacity: 1; transform: none } }
+.revela { clip-path: inset(0 100% 0 0); animation: p-revela 1.3s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-revela { to { clip-path: inset(0 0 0 0) } }
+.deriva-lenta { animation: p-deriva-lenta var(--t) linear both; }
+@keyframes p-deriva-lenta { from { transform: scale(1) } to { transform: scale(1.05) } }
+.sale-antes { animation: p-sale .45s var(--entra-sale) var(--fuera, 9999s) forwards; }
+@keyframes p-sale { to { opacity: 0; transform: translateY(-8cqw) } }
+.entra-despues { opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+
+/* ── Salida: el contenido se va mientras el panel del color que sigue entra ── */
+.contenido { position: absolute; inset: 0; z-index: 5; }
+.contenido.sal-abajo { animation: p-empujado-arriba .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.contenido.sal-lado { animation: p-empujado-lado .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.contenido.sal-circulo { animation: p-empujado-fondo .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+@keyframes p-empujado-arriba { to { transform: translateY(-16cqw); opacity: .25 } }
+@keyframes p-empujado-lado { to { transform: translateX(-22cqw); opacity: .25 } }
+@keyframes p-empujado-fondo { to { transform: scale(.92); opacity: .3 } }
+.panel { position: absolute; inset: 0; z-index: 30; }
+.panel.abajo { transform: translateY(101%); animation: p-panel-sube .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.panel.lado { transform: translateX(101%); animation: p-panel-entra .5s var(--entra-sale) var(--sal, 9999s) forwards; }
+.panel.circulo { clip-path: circle(0 at var(--cx, 50%) var(--cy, 50%)); animation: p-panel-circulo .55s var(--entra-sale) var(--sal, 9999s) forwards; }
+@keyframes p-panel-sube { to { transform: none } }
+@keyframes p-panel-entra { to { transform: none } }
+@keyframes p-panel-circulo { to { clip-path: circle(150% at var(--cx, 50%) var(--cy, 50%)) } }
+.panel.negro { background-color: #0b0b12; background-image: var(--g-negro); }
+.panel.claro { background-color: #f4f2ee; background-image: var(--g-claro); }
+.panel.marca { background-color: var(--primario); background-image: var(--g-marca); }
+.panel.tercero { background-color: var(--tercero); background-image: var(--g-tercero); }
+.panel.acento { background-color: var(--acento); background-image: var(--g-acento); }
+.panel.mezcla { background-color: var(--primario-hondo); background-image: var(--g-mezcla); }
+
+/* ── Capas isométricas (soluciones que se arman) ── */
+.iso { position: absolute; left: 50%; width: 46cqw; margin-left: -23cqw; z-index: 4; filter: drop-shadow(0 3cqw 3cqw rgba(30,20,60,.16)); }
+.iso svg { display: block; width: 100%; height: auto; }
+.iso.cae { opacity: 0; animation: p-iso-cae .9s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-iso-cae { from { opacity: 0; transform: translateY(-26cqw) } 40% { opacity: 1 } to { opacity: 1; transform: none } }
+.sombra-piso { position: absolute; left: 50%; width: 60cqw; height: 10cqw; margin-left: -30cqw; border-radius: 50%; background: radial-gradient(closest-side, rgba(30,20,60,.2), transparent); z-index: 3; opacity: 0; animation: p-aparecer .8s ease var(--d, 0s) forwards; }
+
+/* ── Tarjetas de interfaz ── */
+.tarjeta-ui { position: absolute; left: 9cqw; right: 9cqw; z-index: 6; display: flex; align-items: center; gap: 4cqw; padding: 3.4cqw 4.4cqw; border-radius: 5.4cqw; background: #fff; color: var(--tinta);
+  box-shadow: 0 .4cqw 0 rgba(255,255,255,.6) inset, 0 2.4cqw 6cqw -1.6cqw rgba(20,14,50,.2), 0 .6cqw 1.6cqw rgba(20,14,50,.07); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.tarjeta-ui .icono { flex: none; width: 12.4cqw; height: 12.4cqw; border-radius: 3.6cqw; display: grid; place-items: center; background: color-mix(in oklab, var(--primario) 10%, #fff); color: var(--primario); }
+.tarjeta-ui .icono svg, .tarjeta-ui .icono .ico { width: 7.6cqw; height: 7.6cqw; }
+.tarjeta-ui .icono img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.tarjeta-ui .icono.blanco { background: #fff; box-shadow: 0 0 0 .3cqw #ece9f6 inset; }
+.tarjeta-ui .icono.blanco img { width: 72%; height: auto; object-fit: contain; }
+.tarjeta-ui b { display: block; font: 750 5.6cqw/1.05 var(--f-display); letter-spacing: -.02em; }
+.tarjeta-ui small { display: block; margin-top: 1cqw; font: 500 3.3cqw/1.2 var(--f-mono); letter-spacing: .01em; color: var(--gris); }
+.tarjeta-ui .marca-ok { margin-left: auto; width: 7.4cqw; height: 7.4cqw; color: var(--verde); opacity: 0; animation: p-escalar .5s var(--sale) var(--dok, 9999s) forwards; }
+.tarjeta-ui .marca-ok svg, .tarjeta-ui .marca-ok .ico { width: 100%; height: 100%; }
+/* El contorno que se enciende cuando la tarjeta queda activa */
+.tarjeta-ui .borde { position: absolute; inset: -.9cqw; border-radius: 6.3cqw; border: .7cqw solid var(--bc, var(--primario)); opacity: 0; transform: scale(1.04); animation: p-escalar-borde .5s var(--sale) var(--dac, 9999s) forwards; }
+@keyframes p-escalar-borde { to { opacity: 1; transform: none } }
+
+/* ── El hilo que une las tarjetas y lo que viaja por él ── */
+.hilo-v { position: absolute; left: 50%; width: .6cqw; margin-left: -.3cqw; z-index: 5; border-radius: 1cqw; background: linear-gradient(var(--hilo-a, color-mix(in oklab, var(--primario) 45%, #fff)), var(--hilo-b, var(--primario))); transform-origin: top; transform: scaleY(0); animation: p-hilo-crece .5s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-hilo-crece { to { transform: none } }
+.viajero { position: absolute; left: 50%; z-index: 7; width: 3.4cqw; height: 3.4cqw; margin: -1.7cqw 0 0 -1.7cqw; border-radius: 50%; background: var(--primario); box-shadow: 0 0 0 1.2cqw color-mix(in oklab, var(--primario) 18%, transparent), 0 0 4cqw color-mix(in oklab, var(--primario) 60%, transparent); opacity: 0;
+  animation: p-viajar var(--dura, .8s) var(--entra-sale) var(--d, 0s) forwards; }
+@keyframes p-viajar { 0% { opacity: 0; top: calc(var(--y0) * 1cqw) } 20% { opacity: 1 } 80% { opacity: 1 } 100% { opacity: 0; top: calc(var(--y1) * 1cqw) } }
+.pastilla { display: inline-flex; align-items: center; gap: 1.6cqw; padding: 1.9cqw 3.4cqw; border-radius: 99cqw; white-space: nowrap; background: var(--tinta); color: #fff; font: 600 3.8cqw/1 var(--f-mono); letter-spacing: .01em; box-shadow: 0 1.6cqw 4cqw -1cqw rgba(0,0,0,.3); }
+.pastilla svg, .pastilla .ico { width: 4.8cqw; height: 4.8cqw; }
+.pastilla.clara { background: #fff; color: var(--tinta); }
+.pastilla.grande { padding: 2.4cqw 4.2cqw; font-size: 4.6cqw; gap: 2cqw; }
+.pastilla.grande svg, .pastilla.grande .ico { width: 5.8cqw; height: 5.8cqw; }
+.pastilla.verde { background: #0b7a4b; color: #fff; }
+.en-hilo { position: absolute; left: 50%; z-index: 8; translate: -50% -50%; opacity: 0; animation: p-escalar .6s var(--sale) var(--d, 0s) forwards; }
+
+.viajero-h { position: absolute; z-index: 5; width: 3.2cqw; height: 3.2cqw; margin: -1.6cqw 0 0 -1.6cqw; border-radius: 50%; background: var(--primario); box-shadow: 0 0 0 1.1cqw color-mix(in oklab, var(--primario) 18%, transparent), 0 0 4cqw color-mix(in oklab, var(--primario) 55%, transparent); opacity: 0;
+  animation: p-viajar-h .9s var(--entra-sale) var(--d, 0s) forwards; }
+@keyframes p-viajar-h { 0% { opacity: 0; left: calc(var(--x0) * 1cqw) } 15% { opacity: 1 } 85% { opacity: 1 } 100% { opacity: 0; left: calc(var(--x1) * 1cqw) } }
+
+/* ── Logos grandes ── */
+.logo-pro { position: absolute; left: 50%; z-index: 6; width: var(--ancho, 50cqw); margin-left: calc(var(--ancho, 50cqw) / -2); }
+.logo-pro img { display: block; width: 100%; height: auto; }
+.logo-app { position: relative; border-radius: 23%; overflow: hidden; box-shadow: 0 6cqw 12cqw -3cqw rgba(20,0,80,.6), 0 0 0 .4cqw rgba(255,255,255,.2); }
+/* Un reflejo que cruza el logo una vez */
+.brillo-cruza { position: absolute; inset: 0; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.5) 50%, transparent 65%); transform: translateX(-130%); animation: p-cruzar 1.2s var(--entra-sale) var(--dbr, .9s) forwards; }
+@keyframes p-cruzar { to { transform: translateX(130%) } }
+.circulo-blanco { position: absolute; z-index: 6; width: var(--ancho, 34cqw); aspect-ratio: 1; margin: calc(var(--ancho, 34cqw) / -2) 0 0 calc(var(--ancho, 34cqw) / -2); border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 4cqw 9cqw -2cqw rgba(0,20,80,.45); }
+.circulo-blanco img { width: 64%; height: auto; }
+.circulo-blanco.chico img { width: 72%; }
+.chapa { display: block; width: 100%; height: 100%; border-radius: 50%; background: #fff; box-shadow: 0 1.4cqw 3cqw rgba(60,30,0,.3); }
+/* Un anillo que se abre cuando algo llega */
+.anillo { position: absolute; z-index: 5; width: var(--ancho, 34cqw); aspect-ratio: 1; margin: calc(var(--ancho, 34cqw) / -2) 0 0 calc(var(--ancho, 34cqw) / -2); border-radius: 50%; border: .6cqw solid var(--anillo, rgba(255,255,255,.7)); opacity: 0; animation: p-anillo .9s var(--sale) var(--d, 0s) both; }
+@keyframes p-anillo { from { opacity: .9; transform: scale(.95) } to { opacity: 0; transform: scale(1.55) } }
+
+/* ── Objetos vectoriales ── */
+.objeto-pro { position: absolute; left: 50%; z-index: 6; width: var(--ancho, 40cqw); margin-left: calc(var(--ancho, 40cqw) / -2); filter: drop-shadow(0 4cqw 5cqw rgba(0,0,0,.28)); }
+.objeto-pro svg { width: 100%; height: auto; display: block; }
+.flota-pro { animation: p-flota 2.4s ease-in-out var(--df, 0s) infinite alternate; }
+@keyframes p-flota { from { transform: translateY(0) rotate(-3deg) } to { transform: translateY(-2.6cqw) rotate(3deg) } }
+.gira-lento { animation: p-gira-lento 3.6s ease-in-out both; }
+@keyframes p-gira-lento { from { transform: rotateY(-40deg) } to { transform: rotateY(40deg) } }
+.luz-cenital { position: absolute; left: 50%; top: 0; width: 100cqw; height: 130cqw; margin-left: -50cqw; z-index: 2; background: radial-gradient(38% 62% at 50% 0%, var(--luz, rgba(255,214,102,.3)), transparent 72%); opacity: 0; animation: p-aparecer 1s ease var(--d, 0s) forwards; }
+.halo { position: absolute; left: 50%; z-index: 3; width: var(--ancho, 70cqw); aspect-ratio: 1; margin-left: calc(var(--ancho, 70cqw) / -2); border-radius: 50%; background: radial-gradient(closest-side, var(--halo, rgba(18,183,106,.35)), transparent); opacity: 0; animation: p-escalar 1.2s var(--sale) var(--d, 0s) forwards; }
+.icono-pro { position: absolute; left: 50%; z-index: 6; width: var(--ancho, 40cqw); margin-left: calc(var(--ancho, 40cqw) / -2); color: var(--c, #fff); }
+.icono-pro svg, .icono-pro .ico { display: block; width: 100%; height: 100%; }
+.circulo-traza { position: absolute; left: 50%; z-index: 5; width: var(--ancho, 60cqw); margin-left: calc(var(--ancho, 60cqw) / -2); }
+.circulo-traza circle { fill: none; stroke: var(--c, #fff); stroke-width: .6; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: p-trazar 1.4s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-trazar { to { stroke-dashoffset: 0 } }
+.lupa { animation: p-lupa 1.8s var(--entra-sale) both; }
+@keyframes p-lupa { from { transform: translate(-14cqw, 4cqw) rotate(-8deg) } to { transform: translate(10cqw, -2cqw) rotate(6deg) } }
+
+/* ── Cosas que caen dentro de un círculo ── */
+.absorbe { position: absolute; left: 50%; z-index: 7; translate: -50% -50%; opacity: 0; animation: p-absorbe 1.15s var(--d, 0s) forwards; }
+/* Entra desde arriba y cae acelerando: así la que sigue no se encima con la que se va */
+@keyframes p-absorbe {
+  0% { opacity: 0; top: calc(var(--y0) * 1cqw); transform: translateY(-5cqw); animation-timing-function: var(--sale) }
+  30% { opacity: 1; top: calc(var(--y0) * 1cqw); transform: none; animation-timing-function: cubic-bezier(.4, 0, .6, 1) }
+  100% { opacity: 0; top: calc(var(--y1) * 1cqw); transform: scale(.35) } }
+.linea-svg { position: absolute; inset: 0; z-index: 4; width: 100%; height: 100%; overflow: visible; }
+.linea-svg path { fill: none; stroke: var(--c, rgba(255,255,255,.6)); stroke-width: .5; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: p-trazar .7s var(--sale) var(--d, 0s) forwards; }
+.linea-svg path.punteada { stroke-dasharray: 1.2 1.6; stroke-dashoffset: 0; opacity: 0; animation: p-aparecer .5s ease var(--d, 0s) forwards; }
+
+/* ── La tarjeta de crédito que vuela hasta Meta ── */
+.vuela-dentro { position: absolute; left: 50%; z-index: 7; width: 52cqw; margin-left: -26cqw; opacity: 0; animation: p-vuela 2s var(--d, 0s) forwards; }
+.vuela-dentro svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 4cqw 5cqw rgba(60,30,0,.35)); }
+@keyframes p-vuela {
+  0% { opacity: 0; transform: translate(-70cqw, 8cqw) rotate(-24deg); animation-timing-function: var(--sale) }
+  10% { opacity: 1 }
+  48% { opacity: 1; transform: translate(-10cqw, 0) rotate(-8deg); animation-timing-function: linear }
+  60% { opacity: 1; transform: translate(-8cqw, -.6cqw) rotate(-6deg); animation-timing-function: var(--entra-sale) }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.25) rotate(0deg) } }
+
+/* ── Presupuesto que se elige (deslizador) ── */
+.ui-tarjeta { position: absolute; left: 8cqw; right: 8cqw; z-index: 6; padding: 6cqw 6cqw 6.4cqw; border-radius: 6cqw; background: #fff; color: var(--tinta); box-shadow: 0 3cqw 8cqw -2cqw rgba(20,0,80,.35); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.ui-tarjeta .cab-ui { display: flex; justify-content: space-between; align-items: center; font: 600 3.4cqw/1 var(--f-mono); color: var(--gris); }
+.ui-tarjeta .monto { margin: 4.4cqw 0 6cqw; font: 800 17cqw/1 var(--f-display); letter-spacing: -.045em; }
+.ui-tarjeta .monto small { font: 500 5cqw/1 var(--f-display); letter-spacing: -.01em; color: var(--gris); }
+.riel { position: relative; height: 2.2cqw; border-radius: 2cqw; background: #ece9f6; }
+.riel .lleno { position: absolute; left: 0; top: 0; bottom: 0; border-radius: inherit; background: linear-gradient(90deg, color-mix(in oklab, var(--primario) 55%, #fff), var(--primario)); width: var(--desde-p); animation: p-lleno var(--dc, 1s) var(--sale) var(--d, 0s) both; }
+.riel .perilla { position: absolute; top: 50%; left: var(--desde-p); width: 8.4cqw; height: 8.4cqw; margin: -4.2cqw 0 0 -4.2cqw; border-radius: 50%; background: #fff; box-shadow: 0 0 0 .8cqw var(--primario) inset, 0 1.4cqw 3cqw rgba(40,10,120,.35); animation: p-perilla var(--dc, 1s) var(--sale) var(--d, 0s) both; }
+.riel .perilla svg, .riel .perilla .ico { position: absolute; left: 4.6cqw; top: 4cqw; width: 9cqw; height: 9cqw; color: var(--tinta); }
+@keyframes p-lleno { to { width: var(--hasta-p) } }
+@keyframes p-perilla { to { left: var(--hasta-p) } }
+.riel-marcas { display: flex; justify-content: space-between; margin-top: 4.4cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+
+/* ── Recibo ── */
+.recibo { position: absolute; left: 10cqw; right: 10cqw; z-index: 6; display: flex; align-items: center; gap: 4cqw; padding: 4cqw 5cqw; border-radius: 5cqw; background: #fff; color: var(--tinta); box-shadow: 0 2.4cqw 6cqw -1.6cqw rgba(20,14,50,.2); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.recibo img { width: 11cqw; height: 11cqw; border-radius: 3cqw; }
+.recibo b { display: block; font: 750 5cqw/1.1 var(--f-display); letter-spacing: -.02em; }
+.recibo small { display: block; margin-top: .8cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.recibo .precio-r { margin-left: auto; font: 800 6.4cqw/1 var(--f-display); letter-spacing: -.03em; }
+
+/* ── Panel de resultados (gráfica que se dibuja) ── */
+.tablero { position: absolute; left: 8cqw; right: 8cqw; z-index: 6; padding: 5.4cqw 6cqw 5cqw; border-radius: 6cqw; background: #fff; color: var(--tinta); box-shadow: 0 3cqw 8cqw -2cqw rgba(0,20,80,.4); opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.tablero .cab { display: flex; justify-content: space-between; align-items: center; font: 600 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.tablero .cifras { display: flex; gap: 8cqw; margin: 4.4cqw 0 3cqw; }
+.tablero .cifras b { display: block; font: 800 9.4cqw/1 var(--f-display); letter-spacing: -.035em; }
+.tablero .cifras small { display: block; margin-top: 1cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.tablero svg { width: 100%; height: auto; display: block; overflow: visible; }
+.tablero .pie-tab { display: flex; align-items: center; gap: 2cqw; margin-top: 3cqw; font: 500 3.3cqw/1 var(--f-mono); color: var(--gris); }
+.tablero .vivo { width: 2.4cqw; height: 2.4cqw; border-radius: 50%; background: var(--verde); box-shadow: 0 0 0 1cqw rgba(18,183,106,.2); }
+.trazo-pro { fill: none; stroke: var(--verde); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; animation: p-trazar 1.6s var(--sale) var(--d, 0s) forwards; }
+.area-pro { opacity: 0; animation: p-fundir 1s ease var(--d, 0s) forwards; }
+@keyframes p-fundir { to { opacity: 1 } }
+.punto-vivo { opacity: 0; animation: p-fundir .3s ease var(--d, 0s) forwards; }
+.etiqueta-ejemplo { font: 600 2.8cqw/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; padding: 1.2cqw 2.2cqw; border-radius: 99cqw; background: color-mix(in oklab, var(--primario) 10%, #fff); color: var(--primario-hondo); }
+
+/* ── Avisos que llegan (como en la pantalla bloqueada) ── */
+.aviso { position: absolute; left: 6cqw; right: 11cqw; z-index: 6; display: flex; gap: 4cqw; align-items: center; padding: 4cqw 4.6cqw; border-radius: 5cqw; background: rgba(255,255,255,.96); color: var(--tinta);
+  box-shadow: 0 2.4cqw 6cqw -1.6cqw rgba(0,0,0,.45); opacity: 0; animation: p-llega .75s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-llega { from { opacity: 0; transform: translateY(-6cqw) scale(.96) } to { opacity: 1; transform: none } }
+.aviso .ic { flex: none; width: 13cqw; height: 13cqw; border-radius: 3.8cqw; display: grid; place-items: center; color: #fff; }
+.aviso .ic svg, .aviso .ic .ico { width: 8cqw; height: 8cqw; }
+.aviso .txt { min-width: 0; }
+.aviso .de { display: block; margin-bottom: 1cqw; font: 600 3cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--gris); }
+.aviso b { display: block; font: 700 5.3cqw/1.12 var(--f-display); letter-spacing: -.015em; }
+.aviso small { display: block; margin-top: .7cqw; font: 500 4cqw/1.22 var(--f-cuerpo); color: #55525f; }
+
+/* ── Cuadrícula de requisitos ── */
+.rejilla { position: absolute; left: 10cqw; right: 10cqw; z-index: 6; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4cqw; }
+.casilla { position: relative; aspect-ratio: 1 / 1.02; padding: 4.4cqw; border-radius: 5.4cqw; background: #fff; color: var(--tinta); display: flex; flex-direction: column; justify-content: space-between;
+  box-shadow: 0 2.4cqw 6cqw -1.6cqw rgba(20,0,80,.4); opacity: 0; animation: p-escalar .7s var(--sale) var(--d, 0s) forwards; }
+.casilla .ic { width: 11cqw; height: 11cqw; display: grid; place-items: center; }
+.casilla .ic img { width: 100%; height: 100%; object-fit: contain; }
+.casilla .ic svg, .casilla .ic .ico { width: 100%; height: 100%; color: var(--primario); }
+.casilla b { display: block; font: 750 5.2cqw/1.08 var(--f-display); letter-spacing: -.02em; }
+.casilla small { display: block; margin-top: 1.2cqw; font: 500 3.3cqw/1.25 var(--f-cuerpo); color: #55525f; }
+.casilla .ok { position: absolute; right: 3.6cqw; top: 3.6cqw; width: 7cqw; height: 7cqw; color: var(--verde); opacity: 0; animation: p-escalar .45s var(--sale) calc(var(--d, 0s) + .5s) forwards; }
+.casilla .ok svg, .casilla .ok .ico { width: 100%; height: 100%; }
+
+/* El hueco se apaga cuando llega su ficha (--fuera): la ficha puede quedar más alta y el borde asomaría */
+.hueco { aspect-ratio: 1 / 1.02; border-radius: 5.4cqw; border: .45cqw dashed rgba(255,255,255,.45); opacity: 0; animation: p-fundir .5s ease var(--d, 0s) forwards, p-apagar .3s ease var(--fuera, 9999s) forwards; }
+@keyframes p-apagar { to { opacity: 0 } }
+
+/* ── Avisos que bajan cuando llega uno nuevo ── */
+.baja { position: absolute; inset: 0; z-index: 6; animation: p-baja .6s var(--sale) var(--db, 9999s) both; }
+@keyframes p-baja { from { transform: none } to { transform: translateY(26.5cqw) } }
+
+/* ── Dos momentos dentro de una escena ── */
+.fase { position: absolute; inset: 0; z-index: 6; }
+
+/* ── Los tres, en fila: tú, JuditoADS y Meta ── */
+.fila-nodos { position: absolute; left: 0; right: 0; z-index: 6; height: 30cqw; }
+.fila-nodos .nodo-f { position: absolute; top: 0; width: var(--tam, 22cqw); margin-left: calc(var(--tam, 22cqw) / -2); display: flex; flex-direction: column; align-items: center; gap: 2.4cqw; opacity: 0; animation: p-escalar .7s var(--sale) var(--d, 0s) forwards; }
+.fila-nodos .disco { width: var(--tam, 22cqw); aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; background: var(--tinta); color: #fff; box-shadow: 0 3cqw 6cqw -2cqw rgba(20,14,50,.4); overflow: hidden; }
+.fila-nodos .disco svg, .fila-nodos .disco .ico { width: 52%; height: 52%; }
+.fila-nodos .disco.app { border-radius: 23%; }
+.fila-nodos .disco.app img { width: 100%; height: 100%; object-fit: cover; }
+.fila-nodos .disco.blanco { background: #fff; }
+.fila-nodos .disco.blanco img { width: 64%; height: auto; }
+.fila-nodos span { font: 600 3.4cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
+
+/* ── Cierre ── */
+.contacto-pro { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; display: grid; gap: 2.8cqw; }
+.contacto-pro span { display: flex; align-items: center; gap: 3cqw; padding: 2.8cqw 4cqw; border-radius: 4.4cqw; background: rgba(255,255,255,.14); border: .3cqw solid rgba(255,255,255,.3); color: #fff; font: 700 4.6cqw/1 var(--f-display); letter-spacing: -.01em; opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }
+.contacto-pro img { width: 8cqw; height: 8cqw; border-radius: 50%; background: #0b0a10; padding: .8cqw; object-fit: contain; }
+.contacto-pro svg, .contacto-pro .ico { width: 8cqw; height: 8cqw; flex: none; }
+
+.legal { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; font: 500 2.3cqw/1.3 var(--f-mono); color: rgba(255,255,255,.72); }
+/* PRO:FIN */
 </style>
 </head>
 <body>
@@ -333,7 +641,7 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="ic-estado" viewBox="0 0 70 14"><rect x="0" y="9" width="3" height="5" rx="1" fill="#fff"/><rect x="5" y="6" width="3" height="8" rx="1" fill="#fff"/><rect x="10" y="3" width="3" height="11" rx="1" fill="#fff"/><rect x="15" y="0" width="3" height="14" rx="1" fill="#fff"/><path d="M28 5a10 10 0 0 1 14 0l-2 2a7 7 0 0 0-10 0zM31 8a6 6 0 0 1 8 0l-4 4z" fill="#fff"/><rect x="48" y="1" width="19" height="12" rx="3" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.5"/><rect x="50" y="3" width="15" height="8" rx="1.5" fill="#fff"/><rect x="68" y="5" width="2" height="4" rx="1" fill="#fff" fill-opacity=".5"/></symbol>
-  <symbol id="flecha" viewBox="0 0 60 40"><path d="M58 20 L30 2 L30 13 L2 13 L2 27 L30 27 L30 38 Z" transform="rotate(180 30 20)" fill="#ffc533" stroke="#16101f" stroke-width="3" stroke-linejoin="round"/></symbol>
+  <symbol id="flecha" viewBox="0 0 60 40"><path d="M58 20 L30 2 L30 13 L2 13 L2 27 L30 27 L30 38 Z" transform="rotate(180 30 20)" style="fill: var(--acento); stroke: var(--acento-texto)" stroke-width="3" stroke-linejoin="round"/></symbol>
 </svg>
 
 <!-- ═══════════════ ESCENAS ═══════════════
@@ -343,7 +651,7 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
   reemplaza TODO: textos, imágenes, sonidos y la lista de escenas. -->
 
 <template id="gancho" data-sfx="grave@0 moneda@0">
-  <div class="cap arriba" style="font-size:9.6cqw">Este anuncio te llegó por <span class="hl">menos de 5¢</span>.</div>
+  <div class="cap arriba" style="font-size:9.6cqw">Este anuncio te llegó por&nbsp;<span class="hl">menos&nbsp;de&nbsp;5¢</span>.</div>
   <div class="objeto girando moneda" style="--ancho:38cqw">5¢</div>
 </template>
 
@@ -358,7 +666,7 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
 <template id="cuerpo1-cursos" data-sfx="plop@0.8 plop@0.92 plop@1.03 plop@1.14 plop@1.25 plop@1.36 caja@1.5 whoosh@3.2" data-entrada="fade">
   <div class="cap arriba" style="font-size:9.4cqw">Ni pagar<br><span class="hl">más cursos</span>.</div>
   <div class="pila" style="--d:.8s;--fuera:3.2s">
-    <div class="item" style="--i:0;--c:#c2410c;--r:-1.5deg">Escala tu negocio<small>25 h</small><span class="precio-c">$1,997</span></div>
+    <div class="item" style="--i:0;--c:#c2410c;--r:-1.5deg">Escalar negocios<small>25 h</small><span class="precio-c">$1,997</span></div>
     <div class="item" style="--i:1;--c:#4338ca;--r:1.5deg">Retargeting total<small>9 h</small><span class="precio-c">$347</span></div>
     <div class="item" style="--i:2;--c:#0f766e;--r:-1deg">Públicos avanzados<small>14 h</small><span class="precio-c">$597</span></div>
     <div class="item" style="--i:3;--c:#be185d;--r:2deg">Copy que convierte<small>10 h</small><span class="precio-c">$397</span></div>
@@ -387,7 +695,7 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
 </template>
 
 <template id="cuerpo2-meta" data-sfx="tap@1.2 campana@1.45" data-entrada="smoothleft">
-  <div class="cap arriba" style="font-size:8.6cqw">Conectas tu cuenta de <span class="hl">Meta</span></div>
+  <div class="cap arriba" style="font-size:8.6cqw">Conectas tu&nbsp;cuenta de <span class="hl">Meta</span></div>
   <div class="tel"><div class="pant"><div class="estado-tel"><span>9:41</span><svg><use href="#ic-estado"/></svg></div>
     <div class="vista"><img style="--s:22.3cqw" src="img/panel.webp" alt="Panel con el botón Conectar Meta"><img class="funde" style="--s:62.4cqw;--d:1.45s" src="img/cuentas-lista.webp" alt="Cuentas publicitarias conectadas"></div>
     <div class="toque" style="--x:73%;--y:40cqw;--d:1s"></div></div></div>
@@ -395,7 +703,7 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
 
 <template id="bucle2" data-sfx="pop@0 pop@0.1 pop@0.2 pop@0.3 pop@0.5 pop-fuerte@0.7 plop@0.85 bip@1.2 subida@0:1.95" data-entrada="zoomin">
   <div class="pulso" aria-hidden="true"></div>
-  <div class="cap bucle"><span class="w">Y</span> <span class="w" style="--d:.1s">lo</span> <span class="w" style="--d:.2s">que</span> <span class="w" style="--d:.3s">sigue,</span><br><span class="w" style="--d:.5s"><span class="hl">casi nadie</span></span><br><span class="w" style="--d:.7s"><span class="hl">te lo dice</span>…</span></div>
+  <div class="cap bucle" style="line-height:1.32"><span class="w">Y</span> <span class="w" style="--d:.1s">lo</span> <span class="w" style="--d:.2s">que</span> <span class="w" style="--d:.3s">sigue,</span><br><span class="w" style="--d:.5s"><span class="hl">casi nadie</span></span><br><span class="w" style="--d:.7s"><span class="hl">te lo dice</span>…</span></div>
   <img class="emoji" src="img/secreto.webp" alt="" style="--d:.8s">
   <div class="puntos" aria-hidden="true" style="--d:1.15s"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i></div>
 </template>
@@ -403,15 +711,15 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
 <template id="cuerpo3-consejos" data-sfx="brillo@0.25 brillo@2.25 brillo@4.25" data-entrada="smoothup">
   <div class="cap arriba" style="font-size:9.4cqw">Judito<br><span class="hl">sí te lo dice</span>:</div>
   <div class="tarjeta entra" style="--d:.25s;--fuera:2s"><div class="rot"><img src="img/foco.webp" alt="">El consejo de Judito</div><b>La oferta pesa más que el público</b><p>Di qué se llevan: “2 por 1 los martes”.</p></div>
-  <div class="tarjeta entra" style="--d:2.25s;--fuera:4s"><div class="rot"><img src="img/foco.webp" alt="">El consejo de Judito</div><b>Tres creativos, no uno</b><p>Meta le pasa el presupuesto a la que gana.</p></div>
-  <div class="tarjeta entra" style="--d:4.25s"><div class="rot"><img src="img/foco.webp" alt="">El consejo de Judito</div><b>No la toques los primeros tres días</b><p>Los primeros días los números se ven mal: es normal.</p></div>
+  <div class="tarjeta entra" style="--d:2.25s;--fuera:4s"><div class="rot"><img src="img/foco.webp" alt="">El consejo de Judito</div><b>Tres creativos, no uno</b><p>Meta le pasa el presupuesto a&nbsp;la&nbsp;que gana.</p></div>
+  <div class="tarjeta entra" style="--d:4.25s"><div class="rot"><img src="img/foco.webp" alt="">El consejo de Judito</div><b>No la toques los&nbsp;primeros tres días</b><p>Los primeros días los números se ven mal: es normal.</p></div>
 </template>
 
 <template id="llamado-precio" data-sfx="caja@0.05 plop@1.35 sello@2.7" data-entrada="zoomin">
   <div class="precio golpea" style="--giro:0deg"><b>$20</b><span>al mes</span></div>
   <img class="objeto cae" src="img/hamburguesa.webp" alt="Hamburguesa" style="--y:90cqw;--ancho:32cqw;--d:1.2s">
   <div class="cap abajo entra" style="--d:1.5s;top:110cqw;font-size:5.8cqw">Lo que cuesta una hamburguesa.</div>
-  <div class="sticker golpea" style="--d:2.7s;--giro:20deg;--y:63cqw">14 días<br>GRATIS</div>
+  <div class="sticker golpea" style="--d:2.7s;--giro:20deg;--y:63cqw">GRATIS<br>14 días</div>
   <div class="texto-chico">+ el presupuesto de tus anuncios, que pagas directo a Meta.</div>
 </template>
 
@@ -421,7 +729,7 @@ body { margin: 0; background: #0c0a14; color: #f3effb; font: 15px/1.55 "Instrume
     <div class="vista"><img style="--s:26cqw" src="img/landing-largo.webp" alt="Botón Empieza con 14 días de prueba"></div>
     <div class="toque" style="--x:50%;--y:64cqw;--d:.95s"></div></div></div>
   <div class="final entra" style="--d:2.5s">
-    <h3>¿Necesitas ayuda creando tu <span class="hl">perfil de Meta</span>?</h3>
+    <h3>¿Necesitas ayuda con&nbsp;tu&nbsp;<span class="hl">cuenta&nbsp;de&nbsp;Meta</span>?</h3>
     <p>Sígueme o escríbeme:</p>
     <div class="contacto"><span><img src="img/judo-logo.webp" alt="">@judo.marketing</span><span>WhatsApp +1 305 934 9981</span></div>
   </div>

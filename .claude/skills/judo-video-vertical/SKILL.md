@@ -25,13 +25,15 @@ Las referencias son cortas y cada una evita un error que ya se cometió.
 | `references/estrategia-8-piezas.md` | Siempre. Es la estructura y la autocrítica. |
 | `references/nichos.md` | Siempre: busca el nicho del negocio. |
 | `references/reglas.md` | Siempre: verdad, reglas de Meta y TikTok, derechos. |
-| `references/estilo.md` | Antes de diseñar escenas. |
+| `references/estilo-pro.md` | Antes de diseñar escenas: el nivel de la casa (fondos, letra, piezas, música). |
+| `references/estilo.md` | Antes de diseñar escenas: zonas, pantallas reales, cifras, cierre. |
 | `references/escenas.md` | Al escribir el storyboard: el catálogo de escenas con su marcado. |
 | `references/marca.md` | Para poner la marca del negocio. |
 | `references/voz.md` | Si el video va a llevar voz. |
 | `references/sonido.md` | Al poner los efectos. |
 | `references/produccion.md` | Para producir el MP4. |
 | `references/pie-de-foto.md` | Para el texto que acompaña la publicación. |
+| `references/emojis.md` | Si lleva emojis 3D: nombres comprobados y cómo bajarlos (`emoji.py`). |
 
 ## 1. Entender el pedido
 
@@ -96,9 +98,10 @@ necesita una página de Facebook y no solo Instagram.
    (`produccion.md` dice dónde y cómo).
 2. **Pon la marca:** `python3 aplicar-marca.py marca.json storyboard.html`.
    Los scripts de marca están en `scripts/`.
-3. **Escribe las plantillas** de cada escena con la biblioteca de
-   `escenas.md`, y la lista de escenas con su pieza, texto, lo que se ve y la
-   voz.
+3. **Escribe las plantillas** de cada escena con la capa pro
+   (`estilo-pro.md`, por defecto) o la biblioteca enérgica (`escenas.md`), y
+   la lista de escenas con su pieza, texto, lo que se ve y la voz. Un fondo
+   distinto en cada escena.
    - **Reemplaza todo el ejemplo**: es el video de JuditoADS, nada de eso se
      queda.
    - Si una escena se repite con cambios (un mapa conceptual), escríbela con
@@ -116,11 +119,11 @@ necesita una página de Facebook y no solo Instagram.
 ## 4. Producir
 
 ```bash
-python3 build.py && node revisar.mjs && node render.mjs && python3 sfx.py && python3 montar.py <nombre> && python3 qa.py salida/<nombre>.mp4
+python3 build.py && node revisar.mjs && node render.mjs && python3 musica.py && python3 sfx.py && python3 montar.py <nombre> && python3 qa.py salida/<nombre>.mp4
 ```
 
-- **El render tarda de 10 a 20 minutos:** déjalo corriendo en segundo plano y
-  mientras tanto escribe el pie de video.
+- **El render tarda unos 15 minutos por minuto de video:** déjalo corriendo
+  en segundo plano y mientras tanto escribe el pie de video.
 - **Al terminar, mira de verdad las hojas** `qa-cada2s.jpg` y `qa-cortes.jpg`.
   Busca:
   - textos cortados o encimados;
@@ -161,7 +164,10 @@ Detalle en `reglas.md` y `estilo.md`:
   nunca tocan el texto.
 - **Pantallas reales en modo demo, sin zoom.** Fotos reales del negocio.
   Nada que parezca hecho por IA.
-- **Sin música con derechos.** Sin Google Earth ni Google Maps.
+- **Sin música con derechos** (la de `musica.py` es propia). Sin Google
+  Earth ni Google Maps.
+- **Un fondo distinto en cada escena y una composición distinta por idea.**
+  Ni el mismo mapa en todo el video ni los sonidos del video anterior.
 - **Ningún texto con una palabra sola en la última línea, el resaltado
   partido ni contraste bajo.** `revisar.mjs` lo dice; no se entrega con
   avisos sin resolver.

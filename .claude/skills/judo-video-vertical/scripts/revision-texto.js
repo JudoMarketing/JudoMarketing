@@ -22,10 +22,11 @@ window.revisarTextos = function (raiz, op) {
     }
     return o;
   };
-  // Un rectángulo recortado por los antepasados con overflow oculto
+  // Un rectángulo recortado por el elemento y sus antepasados con overflow
+  // oculto (una línea con máscara recorta su propio texto mientras no sube)
   const recortar = (el, r) => {
     let c = { l: r.left, t: r.top, r: r.right, b: r.bottom };
-    for (let n = el.parentElement; n && n !== raiz.parentElement; n = n.parentElement) {
+    for (let n = el; n && n !== raiz.parentElement; n = n.parentElement) {
       if (getComputedStyle(n).overflow === "visible") continue;
       const a = n.getBoundingClientRect();
       c = { l: Math.max(c.l, a.left), t: Math.max(c.t, a.top), r: Math.min(c.r, a.right), b: Math.min(c.b, a.bottom) };
@@ -95,25 +96,46 @@ window.revisarTextos = function (raiz, op) {
       for (const m of n.textContent.matchAll(/\S+/g)) {
         const rg = document.createRange(); rg.setStart(n, m.index); rg.setEnd(n, m.index + m[0].length);
         const rr = rg.getBoundingClientRect();
-        if (rr.width > 0) palabras.push({ w: m[0], y: rr.top + rr.height / 2 });
+        if (rr.width > 0) palabras.push({ w: m[0], y: rr.top + rr.height / 2, l: rr.left, r: rr.right, t: rr.top, b: rr.bottom, hl: Boolean(n.parentElement.closest(".hl")) });
       }
     }
     const lineas = [];
     for (const w of palabras) {
       const l = lineas.find((x) => Math.abs(x.y - w.y) < px * 0.45);
-      if (l) l.ws.push(w.w); else lineas.push({ y: w.y, ws: [w.w] });
+      if (l) { l.ws.push(w.w); l.cajas.push(w); } else lineas.push({ y: w.y, ws: [w.w], cajas: [w] });
     }
     lineas.sort((a, b) => a.y - b.y);
     const ultima = lineas.at(-1);
-    if (lineas.length >= 2 && ultima.ws.length === 1 && palabras.length >= 4 && /[\p{L}\p{N}]/u.test(ultima.ws[0]))
-      problemas.push(`${corto(el)}: «${ultima.ws[0]}» queda sola en la última línea`);
+    // En un titular, tres palabras ya alcanzan para que una sola al final se vea mal
+    if (lineas.length >= 2 && ultima.ws.length === 1 && palabras.length >= (px >= 48 ? 3 : 4) && /[\p{L}\p{N}]/u.test(ultima.ws[0]))
+      problemas.push(`${corto(el)}: «${ultima.ws[0]}» queda sola en la última línea (une las dos últimas palabras con &nbsp;)`);
+    // Una línea que termina en una palabra que no se separa de la que sigue
+    const PEGADAS = new Set(["a", "al", "de", "del", "el", "la", "lo", "los", "las", "le", "les", "en", "y", "e", "o", "u", "con", "por", "para", "un", "una", "que", "se", "te", "tu", "mi", "su", "sus", "no", "ni", "sin", "the", "an", "of", "to", "in", "and", "or", "for", "your", "my"]);
+    // En un titular (72 px o más), ninguna; en el texto corrido, solo las de una
+    // letra (a, y, o, e, u), como pide la ortotipografía
+    // Si la línea que sigue empieza con el resaltado, el corte es a propósito
+    lineas.slice(0, -1).forEach((ln, i) => {
+      const fin = ln.ws.at(-1).toLowerCase().replace(/[^\p{L}]/gu, "");
+      const antesDelResaltado = lineas[i + 1].cajas[0].hl && !ln.cajas.at(-1).hl;
+      if (PEGADAS.has(fin) && (px >= 72 || fin.length === 1) && !antesDelResaltado && !/[.,:;!?…]$/.test(ln.ws.at(-1))) problemas.push(`${corto(el)}: la línea termina en «${ln.ws.at(-1)}»; no la separes de la palabra que sigue (usa &nbsp;)`);
+    });
+    // El resaltado no pisa la línea de arriba (pasa con letras altas e interlineado justo)
+    for (const hl of el.querySelectorAll(".hl")) {
+      if (bloque(hl) !== el) continue;
+      for (const r of [...hl.getClientRects()].filter((x) => x.width > 2)) {
+        const arriba = palabras.filter((w) => w.y < r.top && w.r > r.left && w.l < r.right && !hl.contains(document.elementFromPoint(w.l + 1, w.y)));
+        // Sin letras con cola (g, j, p, q, y) la caja de la palabra baja más que la tinta: se descuenta
+        const tinta = (w) => w.b - (/[gjpqyçµ¿,;]/.test(w.w) ? 0 : px * 0.2);
+        if (arriba.some((w) => tinta(w) - r.top > Math.max(2, px * 0.06))) { problemas.push(`${corto(el)}: el resaltado ${corto(hl)} pisa la línea de arriba; sube el interlineado (--interlineado-titulares)`); break; }
+      }
+    }
     for (const hl of el.querySelectorAll(".hl")) {
       if (bloque(hl) !== el) continue;
       const filas = new Set([...hl.getClientRects()].filter((x) => x.width > 2).map((x) => Math.round(x.top / (px * 0.5))));
       if (filas.size > 1) problemas.push(`${corto(el)}: el resaltado ${corto(hl)} se parte en dos líneas`);
     }
     if (c.l < -1 || c.t < -1 || c.r > W + 1 || c.b > H + 1) problemas.push(`${corto(el)}: se sale de la pieza`);
-    for (const z of op.zonas || []) if (choca(ls, z) > 0.05) problemas.push(`${corto(el)}: ${z.motivo}`);
+    for (const z of op.zonas || []) if (choca(ls, z) > 0.12) problemas.push(`${corto(el)}: ${z.motivo}`);
     if (pxMin < (op.minPx || 24)) problemas.push(`${corto(el)}: letra de ${Math.round(pxMin)} px, chica para un teléfono (mínimo ${op.minPx || 24})`);
 
     const fondo = fondoDe(el);

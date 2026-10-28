@@ -1,6 +1,9 @@
 # Biblioteca de escenas
 
 Todo lo de aquí ya tiene sus estilos en `assets/proyecto/storyboard.html`.
+Esta es la biblioteca enérgica (anuncios con pantallas y fotos). La capa pro,
+para explicar y dar confianza, está en `estilo-pro.md`; sus escenas de
+ejemplo son las c08 a c16 del catálogo.
 Para verlo funcionando:
 - `storyboard.html` es el ejemplo, el video 2 de JuditoADS resumido;
 - `catalogo-escenas.html` tiene los tipos que no salen en el ejemplo

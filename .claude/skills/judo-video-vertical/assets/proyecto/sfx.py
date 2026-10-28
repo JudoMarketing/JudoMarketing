@@ -142,6 +142,89 @@ def viento(dur=3.8, nivel=-14):
     return norm(w + retumbo * np.sin(np.pi * t) ** 0.5, nivel)
 
 
+# ── Sonidos suaves (los del video 3): poco volumen, poco brillo, nada de dibujo
+# animado. En cristal, golpe-suave y aviso el número después de «:» es el
+# grado (la nota), no la duración: cristal@1.2:3 suena más agudo que
+# cristal@1.2:1. Así una serie de vistos sube como una escala.
+ESCALA = [1046.5, 1174.7, 1318.5, 1568.0, 1760.0, 2093.0, 2349.3]  # do pentatónico, 6.ª octava
+
+
+def cristal(grado=0, nivel=-24):
+    f = ESCALA[int(grado) % len(ESCALA)]; n = int(0.9 * SR); t = np.arange(n) / SR
+    mod = np.sin(2 * np.pi * f * 3.5 * t) * 1.6 * np.exp(-t / 0.08)
+    s = np.sin(2 * np.pi * f * t + mod) * np.exp(-t / 0.32) + 0.25 * np.sin(2 * np.pi * f * 2 * t) * np.exp(-t / 0.12)
+    return norm(s * np.clip(t / 0.003, 0, 1), nivel)
+
+
+def sub(nivel=-16):
+    n = int(0.9 * SR); t = np.arange(n) / SR
+    s = np.sin(2 * np.pi * np.cumsum(np.geomspace(72, 42, n)) / SR) * np.exp(-t / 0.35) * np.clip(t / 0.01, 0, 1)
+    return norm(paso_bajo(s, 180), nivel)
+
+
+def clic_suave(nivel=-28):
+    n = int(0.03 * SR); t = np.arange(n) / SR
+    s = banda(rng.standard_normal(n), 2500, 6000) * np.exp(-t / 0.003) + np.sin(2 * np.pi * 1700 * t) * np.exp(-t / 0.008) * 0.5
+    return norm(s, nivel)
+
+
+def golpe_suave(grado=0, nivel=-20):
+    n = int(0.4 * SR); t = np.arange(n) / SR; f0 = 120 * (1.12 ** int(grado))
+    s = np.sin(2 * np.pi * np.cumsum(np.geomspace(f0, f0 * 0.5, n)) / SR) * np.exp(-t / 0.11)
+    s += paso_bajo(rng.standard_normal(n), 1200) * np.exp(-t / 0.02) * 0.35
+    return norm(s * np.clip(t / 0.002, 0, 1), nivel)
+
+
+def tecla(nivel=-30):
+    n = int(0.025 * SR); t = np.arange(n) / SR
+    s = banda(rng.standard_normal(n), 3000, 9000) * np.exp(-t / 0.0025) + np.sin(2 * np.pi * 3200 * t) * np.exp(-t / 0.004) * 0.4
+    return norm(s, nivel)
+
+
+def barrido_suave(dur=0.5, nivel=-26, f0=300, f1=1800):
+    n = int(dur * SR); ruido = rng.standard_normal(n); out = np.zeros(n); tramos = 20
+    for k in range(tramos):
+        a, b = k * n // tramos, (k + 1) * n // tramos
+        fc = f0 * (f1 / f0) ** (k / (tramos - 1))
+        out[a:b] = banda(ruido[max(0, a - 400):b], fc * 0.7, fc * 1.4)[-(b - a):]
+    return norm(paso_bajo(out, 2600) * np.sin(np.pi * np.linspace(0, 1, n)) ** 2, nivel)
+
+
+def subida_suave(dur=1.8, nivel=-25):
+    n = int(dur * SR); t = np.linspace(0, 1, n)
+    # Más tono que ruido: un soplo que se abre, no un chorro de estática
+    ruido = paso_bajo(banda(rng.standard_normal(n), 300, 2200), 1800) * t ** 2.4
+    tono = barrido(196, 587, dur) * t ** 1.4 * (0.65 + 0.35 * np.sin(2 * np.pi * np.cumsum(np.linspace(3, 10, n)) / SR))
+    return norm(paso_bajo(ruido * 0.35 + tono * 0.65, 2400), nivel)
+
+
+def aviso(grado=0, nivel=-22):
+    # 0: neutro (sube una tercera), 1: alerta (baja), 2: buena noticia (sube una quinta)
+    pares = {0: (1318.5, 1661.2), 1: (1568.0, 1244.5), 2: (1046.5, 1568.0)}
+    a, b = pares.get(int(grado), pares[0]); n = int(0.75 * SR); t = np.arange(n) / SR
+    nota = lambda f, t0: np.where(t >= t0, np.sin(2 * np.pi * f * (t - t0)) * np.exp(-np.clip(t - t0, 0, None) / 0.22) * np.clip((t - t0) / 0.004, 0, 1), 0)
+    s = nota(a, 0) + nota(b, 0.11) + 0.2 * nota(a * 2, 0) + 0.2 * nota(b * 2, 0.11)
+    return norm(s, nivel)
+
+
+def acorde_suave(dur=4.0, nivel=-20):
+    n = int(dur * SR); t = np.arange(n) / SR; s = np.zeros(n)
+    for f in (261.6, 329.6, 392.0, 493.9, 587.3):
+        for det in (-0.004, 0.004):
+            s += np.sin(2 * np.pi * f * (1 + det) * t) + 0.3 * np.sin(2 * np.pi * 2 * f * (1 + det) * t)
+    env_ = np.clip(t / 0.5, 0, 1) * np.clip((dur - t) / 1.6, 0, 1)
+    return norm(paso_bajo(s, 2200) * env_, nivel)
+
+
+def datos(nivel=-30):
+    s = np.zeros(int(0.8 * SR))
+    for i in range(10):
+        f = ESCALA[rng.integers(2, len(ESCALA))] * 2; n = int(0.04 * SR); t = np.arange(n) / SR
+        b = np.sin(2 * np.pi * f * t) * np.exp(-t / 0.012); a = int(i * 0.06 * SR)
+        s[a:a + n] += b * (0.5 + 0.5 * rng.random())
+    return norm(s, nivel)
+
+
 # nombre: (función que recibe duración y nivel, nivel por defecto, duración por defecto)
 SONIDOS = {
     "pop": (lambda d, n: pop(n), -17, None),
@@ -167,6 +250,18 @@ SONIDOS = {
     "whoosh-baja": (lambda d, n: whoosh(d, 2500, 400, n), -15, 0.5),
     "swish": (lambda d, n: whoosh(d, 900, 3500, n), -18, 0.28),
     "viento": (lambda d, n: viento(d, n), -14, 3.8),
+    # suaves
+    "cristal": (lambda d, n: cristal(d, n), -24, 0),
+    "sub": (lambda d, n: sub(n), -16, None),
+    "clic-suave": (lambda d, n: clic_suave(n), -28, None),
+    "golpe-suave": (lambda d, n: golpe_suave(d, n), -20, 0),
+    "tecla": (lambda d, n: tecla(n), -30, None),
+    "barrido-suave": (lambda d, n: barrido_suave(d, n), -26, 0.5),
+    "barrido-grave": (lambda d, n: barrido_suave(d, n, 140, 900), -23, 0.6),
+    "subida-suave": (lambda d, n: subida_suave(d, n), -29, 1.8),
+    "aviso": (lambda d, n: aviso(d, n), -22, 0),
+    "acorde-suave": (lambda d, n: acorde_suave(d, n), -20, 4.0),
+    "datos": (lambda d, n: datos(n), -30, None),
 }
 FORMA = re.compile(r"^([a-z-]+)@([\d.]+)(?::([\d.]+))?(?:/(-?[\d.]+))?$")
 
@@ -210,6 +305,20 @@ ir_n = int(0.35 * SR); ir = rng.standard_normal(ir_n) * np.exp(-np.arange(ir_n) 
 for c in range(2):
     mezcla[:, c] = mezcla[:, c] * 0.86 + fftconvolve(mezcla[:, c], ir)[:n] * 0.9
 mezcla = mezcla[: int(TOTAL * SR)]
+# La música de fondo (musica.py) va por debajo de los efectos, si existe
+MUSICA_DB = -9
+ruta_musica = os.path.join(P, "musica.wav")
+if os.path.exists(ruta_musica):
+    sr_m, mus = wavfile.read(ruta_musica)
+    mus = mus.astype(np.float64) / 32767
+    if mus.ndim == 1:
+        mus = np.stack([mus, mus], axis=1)
+    k = min(len(mus), len(mezcla))
+    pico_sfx = np.abs(mezcla).max() + 1e-9
+    mezcla = mezcla / pico_sfx * db(-6)
+    mezcla[:k] += mus[:k] * db(MUSICA_DB)
+    print(f"con música de fondo ({MUSICA_DB} dB)")
+mezcla = np.tanh(mezcla * 1.2) / np.tanh(1.2)  # un limitador suave
 mezcla = mezcla / (np.abs(mezcla).max() + 1e-9) * db(-1.5)
 wavfile.write(os.path.join(P, "sonido.wav"), SR, (mezcla * 32767).astype(np.int16))
 print(f"{len(cues)} sonidos, {TOTAL:.2f} s")

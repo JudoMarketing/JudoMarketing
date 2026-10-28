@@ -6,9 +6,14 @@
   "acento": "#ffc533",
   "acento-texto": "#16101f",
   "primario": "#8b5cf6",
+  "tercero": "#0866ff",
   "fuente-display": "Archivo",
   "fuente-cuerpo": "Instrument Sans",
   "ancho-display": "112%",
   "logo": "logo.png",
-  "contacto": { "whatsapp": "+1 305 934 9981", "instagram": "@judo.marketing", "web": "judomarketing.net/juditoads" }
+  "contacto": {
+    "whatsapp": "+1 305 934 9981",
+    "instagram": "@judo.marketing",
+    "web": "judomarketing.net/juditoads"
+  }
 }

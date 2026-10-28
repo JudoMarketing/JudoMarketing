@@ -4,8 +4,8 @@
 #
 # Qué hace:
 # 1. Copia a cada skill lo que es igual en las dos:
-#    - las referencias (estrategia, nichos, reglas, marca, pie de foto);
-#    - los scripts (navegador, revisión de textos, marca);
+#    - las referencias (estrategia, nichos, reglas, marca, pie de foto, emojis);
+#    - los scripts (navegador, revisión de textos, marca, emojis);
 #    - las marcas de la casa.
 #    La fuente es scripts/skills/compartido/: se edita ahí, no en las copias.
 # 2. Revisa:
@@ -21,9 +21,9 @@ SKILLS = os.path.join(RAIZ, ".claude", "skills")
 COMP = os.path.join(RAIZ, "scripts", "skills", "compartido")
 DIST = os.path.join(RAIZ, "scripts", "skills", "dist")
 NOMBRES = ["judo-video-vertical", "judo-carrusel"]
-REFS = ["estrategia-8-piezas.md", "nichos.md", "reglas.md", "marca.md", "pie-de-foto.md"]
-SCRIPTS = ["navegador.mjs", "revision-texto.js", "marca.mjs", "aplicar-marca.py"]
-AL_PROYECTO = ["navegador.mjs", "revision-texto.js", "aplicar-marca.py"]
+REFS = ["estrategia-8-piezas.md", "nichos.md", "reglas.md", "marca.md", "pie-de-foto.md", "emojis.md"]
+SCRIPTS = ["navegador.mjs", "revision-texto.js", "marca.mjs", "aplicar-marca.py", "emoji.py"]
+AL_PROYECTO = ["navegador.mjs", "revision-texto.js", "aplicar-marca.py", "emoji.py"]
 FUERA = {"salida", "node_modules", "__pycache__", ".DS_Store", "fuentes"}
 CLAVES = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
 

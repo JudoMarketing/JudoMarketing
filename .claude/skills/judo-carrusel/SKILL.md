@@ -29,6 +29,7 @@ con gancho, una idea y el llamado.
 | `references/diseno.md` | Al armar las láminas: formatos, tipos de lámina, medidas. |
 | `references/marca.md` | Para poner la marca del negocio. |
 | `references/pie-de-foto.md` | Para el texto que acompaña la publicación. |
+| `references/emojis.md` | Si lleva emojis 3D: nombres comprobados y cómo bajarlos (`emoji.py`). |
 
 ## 1. Entender el pedido
 

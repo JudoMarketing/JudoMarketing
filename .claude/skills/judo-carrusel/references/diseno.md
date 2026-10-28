@@ -81,10 +81,9 @@ usa casi todos. Cada lámina es una `<section class="lamina">` con un
   - `.hl` resalta con fondo del color de acento, para la idea principal;
   - `.acento` solo cambia el color, para las frases clave dentro de un
     párrafo.
-- **Emojis 3D de Fluent** (licencia MIT): se bajan de
-  `https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/<Nombre>/3D/<nombre>_3d.png`.
-  El nombre exacto se busca en el repositorio: 🎯 es `Bullseye`, no
-  `Direct hit`.
+- **Emojis 3D de Fluent** (licencia MIT): se bajan con
+  `python3 emoji.py "bullseye" img/diana.webp`. Los nombres comprobados están
+  en `emojis.md`: 🎯 es `Bullseye`, no `Direct hit`.
 
 ## 5. Medidas, letra y contraste
 
