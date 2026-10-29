@@ -62,6 +62,19 @@ sale de lo que hace distinta a la pieza, no del número:
    la ficha y se agrega una línea al `historial`. El archivo viejo se borra
    solo si ninguna ficha lo usa.
 
+## Borrar una pieza
+
+Junior (y quien pueda editar) tiene al final de cada ficha "Borrar de la
+biblioteca", con una confirmación en la misma ficha. Borra la ficha, sus
+pedidos y sus archivos del almacén, salvo los que use otra pieza. Lo que está
+en el repositorio no se toca, así que una pieza borrada se puede volver a
+subir desde ahí.
+
+Si un archivo no se pudo quitar, la página lo dice y queda guardado sin
+mostrarse. Para limpiarlo: listar los archivos (`action: "list"`,
+`scope: "assets"`), comparar con los ids de las fichas y borrar con
+`action: "delete"` y el id como `path` solo los que ninguna ficha usa.
+
 ## Los pedidos de Junior
 
 Desde cada ficha Junior escribe "Pedir un cambio". Se guarda en la colección

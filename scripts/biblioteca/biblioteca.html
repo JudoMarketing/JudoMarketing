@@ -20,6 +20,8 @@
   --warn: #f5c542;
   --info: #b69bff;
   --gris: #9a96aa;
+  --peligro: #ff8a8a;
+  --peligro-fondo: #c42b33;
   --shadow: 0 18px 40px -18px rgba(0, 0, 0, .7);
   --f-display: "Poppins", "Segoe UI", system-ui, sans-serif;
   --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
@@ -30,12 +32,14 @@
   :root:not([data-theme="dark"]) {
     --bg: #f5f4f9; --surface: #ffffff; --surface-2: #efedf6; --line: #e1ddec; --fg: #17151f; --muted: #5f5a70;
     --accent: #5b17d9; --accent-strong: #6a1fe6; --on-accent: #ffffff; --ok: #0c7a52; --warn: #8a5d00; --info: #5b17d9; --gris: #6b677a;
+    --peligro: #b42029; --peligro-fondo: #b42029;
     --shadow: 0 16px 36px -20px rgba(40, 20, 90, .35); color-scheme: light;
   }
 }
 :root[data-theme="light"] {
   --bg: #f5f4f9; --surface: #ffffff; --surface-2: #efedf6; --line: #e1ddec; --fg: #17151f; --muted: #5f5a70;
   --accent: #5b17d9; --accent-strong: #6a1fe6; --on-accent: #ffffff; --ok: #0c7a52; --warn: #8a5d00; --info: #5b17d9; --gris: #6b677a;
+  --peligro: #b42029; --peligro-fondo: #b42029;
   --shadow: 0 16px 36px -20px rgba(40, 20, 90, .35); color-scheme: light;
 }
 
@@ -155,6 +159,11 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .editar { display: grid; gap: 10px; padding: 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
 .editar label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
 .editar input, .editar select, .editar textarea { padding: 9px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); }
+.zona-borrar { padding-top: 16px; border-top: 1px solid var(--line); }
+.zona-borrar h3 { color: var(--peligro); }
+.zona-borrar .acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.boton.peligro { background: var(--peligro-fondo); color: #ffffff; }
+.enlace.peligro-texto { color: var(--peligro); font-size: 13.5px; align-self: flex-start; }
 .aviso-barra { position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 12px; background: var(--fg); color: var(--bg); font-weight: 500; box-shadow: var(--shadow); }
 @media (prefers-reduced-motion: reduce) { .miniatura { transition: none; } }
 </style>
@@ -206,7 +215,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
   const ICONO_HERRAMIENTA = '<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224 128a96 96 0 1 1-96-96 96 96 0 0 1 96 96Z" opacity=".2"/><path d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24Zm0 192a88 88 0 1 1 88-88 88.1 88.1 0 0 1-88 88Zm40-88a40 40 0 1 1-40-40 40 40 0 0 1 40 40Z"/></svg>';
   const CERRAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
 
-  let piezas = [], pedidos = [], filtro = "todo", busqueda = "", abierta = null, editando = false;
+  let piezas = [], pedidos = [], filtro = "todo", busqueda = "", abierta = null, editando = false, confirmandoBorrar = false;
   let db = null, downloads = null, assets = null, user = null, puedeEditar = false;
 
   function aviso(texto) {
@@ -289,7 +298,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
   function abrir(id, empujar = true) {
     const p = piezas.find((x) => x.id === id);
     if (!p) return;
-    abierta = id; editando = false;
+    abierta = id; editando = false; confirmandoBorrar = false;
     renderFicha();
     $("#velo").classList.remove("oculto");
     document.body.style.overflow = "hidden";
@@ -371,6 +380,11 @@ button, input, textarea, select { font: inherit; color: inherit; }
         ${p.ruta ? `<section class="bloque"><h3>Dónde vive en el repositorio</h3><div class="ruta"><code id="ruta">${esc(p.ruta)}</code><button class="boton suave" id="copiar-ruta">Copiar</button></div>${p.comoCambiar ? `<span class="nota">${esc(p.comoCambiar)}</span>` : ""}</section>` : ""}
         ${puedeEditar && assets && p.tipo !== "herramienta" ? `<section class="bloque"><h3>Subir una versión nueva</h3><span class="nota">Un MP4, una imagen o un PDF. Queda arriba en «Archivos» y se anota en el historial.</span><input type="file" id="subir" accept="video/mp4,image/png,image/jpeg,image/webp,application/pdf"></section>` : ""}
         ${historial ? `<section class="bloque"><h3>Historial</h3><ul class="historial">${historial}</ul></section>` : ""}
+        ${puedeEditar ? `<section class="bloque zona-borrar">${confirmandoBorrar ? `
+          <h3>¿Borrar «${esc(p.nombre)}»?</h3>
+          <p class="nota" style="margin:0">Se borran su ficha, ${idsDe(p).length === 1 ? "su archivo" : `sus ${idsDe(p).length} archivos`} y sus pedidos de la biblioteca, para todos los que la abren. Desde aquí no se puede deshacer. Lo que está en el repositorio no se toca.</p>
+          <span class="acciones"><button class="boton peligro" id="confirmar-borrar">Sí, borrar</button><button class="boton suave" id="cancelar-borrar">Cancelar</button></span>`
+          : `<button class="enlace peligro-texto" id="borrar">Borrar de la biblioteca</button>`}</section>` : ""}
       </div>`;
     if (conservar) $("#reproductor")?.replaceWith(conservar);
   }
@@ -458,6 +472,31 @@ button, input, textarea, select { font: inherit; color: inherit; }
     } finally { input.disabled = false; input.value = ""; }
   }
 
+  // Los archivos de una pieza (sin repetir): portada, video, láminas y lista de archivos
+  function idsDe(p) {
+    return [...new Set([p.portada, p.principal, ...(p.laminas || []), ...(p.archivos || []).map((a) => a.id)].filter(Boolean))];
+  }
+
+  async function borrarPieza(boton) {
+    const p = piezas.find((x) => x.id === abierta); if (!p || !db) return;
+    boton.disabled = true; boton.textContent = "Borrando…";
+    // Un archivo que también usa otra pieza se queda
+    const enOtras = new Set(piezas.filter((x) => x.id !== p.id).flatMap(idsDe));
+    const archivos = idsDe(p).filter((id) => !enOtras.has(id));
+    const nombre = p.nombre, suyos = pedidos.filter((x) => x.pieza === p.id);
+    try { await db.doc("piezas/" + p.id).delete(); }
+    catch { boton.disabled = false; boton.textContent = "Sí, borrar"; aviso("No se pudo borrar. Inténtalo otra vez en un momento."); return; }
+    confirmandoBorrar = false;
+    cerrarFicha();
+    for (const x of suyos) { try { await db.doc("pedidos/" + x.id).delete(); } catch {} }
+    let quedaron = 0;
+    if (assets) for (const id of archivos) { try { await assets.delete(id); } catch { quedaron++; } }
+    else quedaron = archivos.length;
+    aviso(quedaron
+      ? `«${nombre}» se borró de la biblioteca. ${quedaron === 1 ? "Un archivo quedó" : quedaron + " archivos quedaron"} guardado${quedaron === 1 ? "" : "s"} sin mostrarse: Claude los puede limpiar.`
+      : `«${nombre}» se borró de la biblioteca.`);
+  }
+
   async function copiarRuta() {
     const t = $("#ruta").textContent;
     try { await navigator.clipboard.writeText(t); aviso("Ruta copiada."); }
@@ -484,6 +523,9 @@ button, input, textarea, select { font: inherit; color: inherit; }
     if (t.closest("#copiar-ruta")) return copiarRuta();
     if (t.closest("#editar")) { editando = true; return renderFicha(); }
     if (t.closest("#cancelar-editar")) { editando = false; return renderFicha(); }
+    if (t.closest("#borrar")) { confirmandoBorrar = true; renderFicha(); return $("#confirmar-borrar")?.focus(); }
+    if (t.closest("#cancelar-borrar")) { confirmandoBorrar = false; return renderFicha(); }
+    const conf = t.closest("#confirmar-borrar"); if (conf) return borrarPieza(conf);
   });
   $("#ficha").addEventListener("submit", (e) => { if (e.target.id === "form-editar") guardarEdicion(e); });
   $("#ficha").addEventListener("change", (e) => { if (e.target.id === "subir") subirVersion(e.target); });
