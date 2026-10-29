@@ -167,7 +167,10 @@ lámpara se rehacen desde `juditoads-1/` y se copian a `img/` y
 ## Video 3 de JuditoADS: cómo funciona por dentro
 
 Es para la gente que ya preguntó y quiere entender cómo funciona JuditoADS
-(28 de octubre de 2026). Va en su segunda versión: 60 segundos, 16 escenas.
+(28 de octubre de 2026). Va en su segunda versión: 61 segundos, 16 escenas.
+El 29 se corrigieron los requisitos: se entra con Facebook y se da el permiso
+(no hay una «cuenta de Meta» que crear), una página de Facebook, Instagram
+opcional y la cuenta de anuncios con tarjeta.
 
 La primera (un mapa conceptual en casi todas las escenas) la rechazó Junior:
 "idéntico al anterior, los mismos sonidos, ejemplos repetitivos". La segunda

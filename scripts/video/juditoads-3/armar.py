@@ -137,8 +137,10 @@ def aviso(top, d, color, icono, titulo, sub, bajadas=()):
     return caja
 
 
-def casilla(d, icono, titulo, sub):
+def casilla(d, icono, titulo, sub, color=None):
     figura = f'<img src="{icono}" alt="">' if "/" in icono else ic(icono)
+    if color:
+        figura = figura.replace("<svg ", f'<svg style="color:{color}" ', 1)
     return (f'<div class="casilla" style="--d:{d}s"><span class="ok">{ic("check-circle")}</span><span class="ic">{figura}</span>'
             f'<span><b>{titulo}</b><small>{sub}</small></span></div>')
 
@@ -184,7 +186,7 @@ escena("conexion", 4.2, "3 · Cuerpo 1", "JuditoADS maneja tus anuncios, con tu 
        "claro",
        rotulo("Cómo se conecta")
        + cap(["JuditoADS maneja", "tus anuncios,", '<span class="color-violeta">con tu permiso.</span>'], clase="t-m")
-       + tarjeta(56, 0.45, "storefront", "Tu negocio", "Tu cuenta de Meta")
+       + tarjeta(56, 0.45, "storefront", "Tu negocio", "Tu Facebook y tu página")
        + '<div class="hilo-v" style="top:75.2cqw;height:12.8cqw;--d:1s"></div>'
        + f'<div class="en-hilo" style="top:81.6cqw;--d:1.15s"><span class="pastilla">{ic("key")} tu permiso</span></div>'
        + tarjeta(88, 0.6, '<img src="img/juditoads.webp" alt="">', "JuditoADS", "Maneja tus anuncios", activa=1.9, ok=2.05)
@@ -206,7 +208,7 @@ escena("ordenes", 3.6, "3 · Cuerpo 1", "Judito le dice a Meta qué hacer.",
        + '<div class="circulo-blanco fb escala" style="left:26cqw;top:132cqw;--ancho:17cqw;--d:2.55s"><img src="img/facebook.svg" alt="Facebook"></div>'
        + '<div class="circulo-blanco ig escala" style="left:74cqw;top:132cqw;--ancho:17cqw;--d:2.65s"><img src="img/instagram.svg" alt="Instagram"></div>',
        "clic-suave@1.3 clic-suave@1.9/-29 clic-suave@2.5/-28 cristal@2.6:5/-25", ("circulo", "negro", 50, 55.7),
-       voz="Tú conectas tu cuenta, y Judito le dice a Meta qué hacer.")
+       voz="Tú conectas tu Facebook, y Judito le dice a Meta qué hacer.")
 
 # ═══ 4 · Bucle abierto ═══
 escena("bucle-dinero", 1.8, "4 · Bucle abierto", "¿Y tu dinero?",
@@ -294,20 +296,26 @@ escena("te-avisa", 5.4, "7 · Cuerpo 3", "…y Judito te lo explica y te avisa."
        voz="…y Judito te lo explica, y te avisa si algo falla. Para que no botes tu dinero.")
 
 # ═══ 8 · Llamado a la acción ═══
-escena("necesitas", 7.8, "8 · Llamado a la acción", "Solo necesitas: cuenta de Meta, página de Facebook, tu Instagram si tienes y una tarjeta en tu cuenta de anuncios.",
+# Lo que pide JuditoADS de verdad (su lista «Revisa tu configuración»): entrar
+# con Facebook (no se crea ninguna «cuenta de Meta»: se da el permiso desde el
+# Facebook), una página de Facebook (los anuncios nunca salen de un perfil) y
+# una cuenta publicitaria, que Meta cobra de su tarjeta. Instagram es opcional:
+# si no está unido a la página, el anuncio sale en Instagram con el nombre de
+# la página.
+escena("necesitas", 9.0, "8 · Llamado a la acción", "Solo necesitas: tu Facebook (con él entras y das el permiso), una página de Facebook, tu Instagram si tienes y tu cuenta de anuncios con una tarjeta.",
        "Fondo violeta. Cuatro huecos punteados; cada uno se llena con su ficha cuando la voz la nombra y se marca con un visto.",
        "violeta",
        rotulo("Para empezar")
        + cap(["Solo", "necesitas:"])
-       + '<div class="rejilla" style="top:52cqw">' + "".join(f'<i class="hueco" style="--d:{0.35 + i * 0.08:.2f}s;--fuera:{f}s"></i>' for i, f in enumerate((1.6, 3.2, 4.8, 6.2))) + "</div>"
+       + '<div class="rejilla" style="top:52cqw">' + "".join(f'<i class="hueco" style="--d:{0.35 + i * 0.08:.2f}s;--fuera:{f}s"></i>' for i, f in enumerate((1.5, 3.8, 5.2, 6.8))) + "</div>"
        + '<div class="rejilla" style="top:52cqw">'
-       + casilla(1.4, "img/meta-simbolo.png", "Cuenta de&nbsp;Meta", "La que ya usas.")
-       + casilla(3.0, "img/facebook.svg", "Página de&nbsp;Facebook", "Desde ahí salen tus&nbsp;anuncios.")
-       + casilla(4.6, "img/instagram.svg", "Instagram", "Si tienes, también se&nbsp;conecta.")
-       + casilla(6.0, "credit-card", "Una tarjeta", "En tu cuenta de&nbsp;anuncios.")
+       + casilla(1.3, "img/facebook.svg", "Tu&nbsp;Facebook", "Entras con él y das el&nbsp;permiso.")
+       + casilla(3.6, "flag", "Página de&nbsp;Facebook", "Desde ahí salen tus&nbsp;anuncios.", color="#0866ff")
+       + casilla(5.0, "img/instagram.svg", "Instagram", "Opcional, unido a&nbsp;tu&nbsp;página.")
+       + casilla(6.6, "credit-card", "Cuenta de&nbsp;anuncios", "Con tu tarjeta: ahí cobra&nbsp;Meta.")
        + "</div>",
-       "cristal@1.9:1/-24 cristal@3.5:2/-24 cristal@5.1:3/-24 cristal@6.5:4/-24", ("circulo", "claro", 50, 50),
-       voz="Para empezar, solo necesitas tu cuenta de Meta… con una página de Facebook… tu Instagram, si lo tienes… y una tarjeta en tu cuenta de anuncios.")
+       "cristal@1.8:1/-24 cristal@4.1:2/-24 cristal@5.5:3/-24 cristal@7.1:4/-24", ("circulo", "claro", 50, 50),
+       voz="Para empezar, solo necesitas tu Facebook: con él entras y das el permiso… una página… tu Instagram, si lo tienes… y tu cuenta de anuncios, con una tarjeta.")
 
 escena("listo", 3.0, "8 · Llamado a la acción", "Y listo. Ya anuncias como un profesional.",
        "Fondo claro. «Y listo.» y, debajo, los tres en fila (tú, JuditoADS y Meta) unidos por una línea por la que corren dos puntos.",

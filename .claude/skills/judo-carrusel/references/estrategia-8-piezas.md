@@ -190,6 +190,23 @@ usuario que la estrategia pide uno solo.
 | Listas | Un elemento por vez, unos 2 s cada uno | Un elemento por lámina o 3 por lámina como máximo |
 | Bucles | Menos de 2 s | Una línea |
 
+**Cómo se reparten los segundos en un video** (los dos de JuditoADS y la
+prueba de 25 s de El Fogón):
+
+| Pieza | Anuncio de 25 s | Explicativo de 60 s |
+| --- | --- | --- |
+| 1 · Gancho | 2 a 3 s (una escena) | 3 a 7 s (una o dos) |
+| 2 · Introducción | 2 s | 3 a 4 s |
+| 3 · Cuerpo 1 | 4 a 5 s | 8 a 12 s |
+| 4 · Bucle abierto | 1 a 1,5 s | 1,5 a 2 s |
+| 5 · Cuerpo 2 | 4 a 5 s | 8 a 13 s |
+| 6 · Bucle abierto | 1 a 1,5 s | 1,5 a 2 s |
+| 7 · Cuerpo 3 | 4 a 5 s | 8 a 10 s |
+| 8 · Llamado a la acción | 3 a 4 s | 8 a 17 s (con los 5 s quietos del contacto) |
+
+En un anuncio de 25 s cada cuerpo es una sola escena. Si no cabe, sobra una
+idea: no se aprieta el texto.
+
 ---
 
 ## 8. Autocrítica antes de entregar

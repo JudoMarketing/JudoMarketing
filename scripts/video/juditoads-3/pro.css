@@ -259,7 +259,8 @@
 
 /* ── Cuadrícula de requisitos ── */
 .rejilla { position: absolute; left: 10cqw; right: 10cqw; z-index: 6; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4cqw; }
-.casilla { position: relative; aspect-ratio: 1 / 1.02; padding: 4.4cqw; border-radius: 5.4cqw; background: #fff; color: var(--tinta); display: flex; flex-direction: column; justify-content: space-between;
+/* Sin aspect-ratio: con alto mínimo, las fichas de una fila se estiran al alto de la más alta */
+.casilla { position: relative; min-height: 38.8cqw; padding: 4.4cqw; border-radius: 5.4cqw; background: #fff; color: var(--tinta); display: flex; flex-direction: column; justify-content: space-between;
   box-shadow: 0 2.4cqw 6cqw -1.6cqw rgba(20,0,80,.4); opacity: 0; animation: p-escalar .7s var(--sale) var(--d, 0s) forwards; }
 .casilla .ic { width: 11cqw; height: 11cqw; display: grid; place-items: center; }
 .casilla .ic img { width: 100%; height: 100%; object-fit: contain; }

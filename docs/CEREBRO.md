@@ -780,6 +780,17 @@ las trampas técnicas.
     distinta por idea, ejemplos que dicen cosas diferentes y sonidos que no
     estaban en el video anterior (la capa pro de la skill:
     `references/estilo-pro.md`).
+- **El video 3 pedía una «cuenta de Meta» que no existe** (2026-10-29).
+  - Qué pasó: la ficha de requisitos decía "Cuenta de Meta · La que ya
+    usas", como si hubiera que tener o crear una cuenta aparte. Junior lo
+    notó. En JuditoADS se entra con "Continuar con Facebook" y desde ahí se
+    da el permiso; lo que hace falta es el Facebook, una página y una cuenta
+    publicitaria con tarjeta. Instagram es opcional. Costó rehacer dos
+    escenas y el guion de voz.
+  - Regla: los requisitos de un producto se copian de lo que el producto le
+    pide al usuario (en JuditoADS, la lista "Revisa tu configuración" de
+    `src/lib/i18n.ts`), no del nombre de la empresa. "Meta" es la empresa;
+    la cuenta es la de Facebook.
 - **El revisor contaba como visible un texto con máscara que todavía no
   había subido** (2026-10-28).
   - Qué pasó: `revision-texto.js` recortaba el texto con los antepasados del
