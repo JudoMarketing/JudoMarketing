@@ -1,5 +1,8 @@
 # Videos explicativos verticales
 
+Cada video tiene un nombre propio en la Biblioteca Judo (`BIBLIOTECA.md`):
+el 1 es «Desde el espacio», el 2 «Cinco centavos» y el 3 «Por dentro».
+
 El primero se hizo para JuditoADS el 22 de octubre de 2026 y Junior lo aprobó
 ("excelente video"). Dura 60 segundos, en vertical 1080×1920 a 60 cuadros por
 segundo. No lleva voz: el guion va en subtítulos grandes y suenan efectos en
