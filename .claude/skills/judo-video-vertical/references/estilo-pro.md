@@ -160,6 +160,7 @@ plantilla.
 | Objeto con luz | `.luz-cenital` + `.objeto-pro.flota-pro` + `.gira-lento` | Para los bucles: flota bajo una luz |
 | Escudo, lupa, icono grande | `.icono-pro` (`--ancho`, `height`, `--c`) + `.halo` + `.circulo-traza` | Un icono grande con su halo y un anillo que se dibuja |
 | Los tres en fila | `.fila-nodos` con `.nodo-f` y `.disco`, `.viajero-h` | El resumen: quién, qué y con quién |
+| Máquina que se rompe y se arregla | `.engrane` con `.gira` (`--a0`, `--a1`, `--a2`, `--d2`), `.se-rompe`, `.esquirla` y `.astilla`, `.cinta` con `.tira-paquetes` y `.paquete-c`, `.arbitro` (`piezas.py arbitro`), `.carta-regla` (`--dx`, `--dy`) | Gira, se traba a los 0,9 s, el del medio se parte, la cinta se pone roja; el árbitro levanta la tarjeta, la tarjeta vuela al hueco, entra un engrane nuevo y todo vuelve a correr en verde. Engranes: `piezas.py engrane COLOR`; el de al lado va 15° girado y a 0,88 veces su ancho. Ejemplo armado: escena 2 del video 3 (`scripts/video/juditoads-3/armar.py`, `maquina()`) |
 | Cierre en dos tiempos | `.fase.sale-antes` (`--fuera`) y otra `.fase` | La oferta y después el contacto |
 | Contacto | `.contacto-pro` con `<span>` + `.ico` | WhatsApp, @ y dirección, uno por uno |
 

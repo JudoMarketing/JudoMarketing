@@ -292,6 +292,49 @@
 .fila-nodos .disco.blanco img { width: 64%; height: auto; }
 .fila-nodos span { font: 600 3.4cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
 
+/* ── Una máquina que se rompe y se arregla (engranes, cinta, árbitro) ── */
+.engrane { position: absolute; z-index: 5; width: var(--tam, 26cqw); aspect-ratio: 1; margin: calc(var(--tam, 26cqw) / -2) 0 0 calc(var(--tam, 26cqw) / -2); filter: drop-shadow(0 2cqw 2.4cqw rgba(20,14,50,.18)); }
+.engrane svg { display: block; width: 100%; height: 100%; }
+/* Gira hasta que la máquina se traba (0,9 s) y vuelve a girar desde --d2 */
+.engrane .gira { width: 100%; height: 100%; transform: rotate(var(--a0)); animation: p-gira-1 .9s linear 0s forwards, p-gira-2 2.4s linear var(--d2, 9999s) infinite; }
+.engrane .gira.solo-2 { transform: rotate(var(--a1)); animation: p-gira-2 2.4s linear var(--d2, 9999s) infinite; }
+@keyframes p-gira-1 { from { transform: rotate(var(--a0)) } to { transform: rotate(var(--a1)) } }
+@keyframes p-gira-2 { from { transform: rotate(var(--a1)) } to { transform: rotate(var(--a2)) } }
+.engrane.se-rompe { animation: p-tiembla .16s linear .89s 1, p-apagar .01s linear 1.05s forwards; }
+@keyframes p-tiembla { 0%, 100% { transform: none } 20% { transform: translate(.8cqw, -.5cqw) rotate(2deg) } 40% { transform: translate(-.9cqw, .4cqw) rotate(-2deg) } 60% { transform: translate(.6cqw, .6cqw) } 80% { transform: translate(-.5cqw, -.4cqw) rotate(1deg) } }
+.esquirla { position: absolute; z-index: 6; width: var(--tam, 26cqw); aspect-ratio: 1; margin: calc(var(--tam, 26cqw) / -2) 0 0 calc(var(--tam, 26cqw) / -2); opacity: 0; animation: p-esquirla .8s var(--d, 0s) forwards; }
+.esquirla svg { display: block; width: 100%; height: 100%; }
+.astilla { position: absolute; z-index: 6; width: 1.6cqw; height: 1.6cqw; margin: -.8cqw 0 0 -.8cqw; border-radius: .3cqw; background: #8a8796; opacity: 0; animation: p-esquirla .8s var(--d, 0s) forwards; }
+@keyframes p-esquirla {
+  0% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.2, .7, .4, 1) }
+  30% { opacity: 1; transform: translate(calc(var(--dx) * .35), var(--up)) rotate(calc(var(--r) * .3)); animation-timing-function: cubic-bezier(.5, 0, .9, .6) }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--r)) } }
+.aviso-roto { opacity: 0; animation: p-escalar .45s var(--sale) 1.15s forwards, p-apagar .25s ease 2.85s forwards; }
+/* La cinta: los paquetes corren, se paran en rojo y vuelven a correr en verde */
+.cinta { position: absolute; left: 8cqw; right: 14cqw; top: 89cqw; height: 6cqw; z-index: 4; overflow: hidden; }
+.cinta::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: .7cqw; margin-top: -.35cqw; border-radius: 1cqw; background: rgba(11,11,18,.12); }
+.tira-paquetes { position: absolute; inset: 0; animation: p-cinta-1 .6s linear 0s 1.5 forwards, p-cinta-2 .6s linear 3.1s infinite; }
+@keyframes p-cinta-1 { from { transform: translateX(0) } to { transform: translateX(12cqw) } }
+@keyframes p-cinta-2 { from { transform: translateX(6cqw) } to { transform: translateX(18cqw) } }
+.paquete-c { position: absolute; top: 50%; width: 4.2cqw; height: 4.2cqw; margin-top: -2.1cqw; border-radius: 1.2cqw; background: var(--violeta); box-shadow: 0 .8cqw 1.6cqw rgba(20,14,50,.18);
+  animation: p-a-rojo .25s ease 1.05s forwards, p-a-verde .3s ease 3.1s forwards; }
+@keyframes p-a-rojo { to { background: var(--rojo) } }
+@keyframes p-a-verde { to { background: var(--verde) } }
+/* El árbitro: entra, levanta el brazo y de su mano sale la tarjeta que vuela al hueco */
+.arbitro { position: absolute; left: 10cqw; top: 98cqw; z-index: 6; width: 26cqw; opacity: 0; animation: p-aparecer .6s var(--sale) 1.9s forwards; }
+.arbitro svg { display: block; width: 100%; height: auto; overflow: visible; }
+.arbitro .brazo { transform-box: view-box; transform-origin: 51px 41px; transform: rotate(150deg); animation: p-brazo .45s var(--sale) 2.1s forwards; }
+@keyframes p-brazo { to { transform: rotate(0deg) } }
+.carta-regla { position: absolute; z-index: 9; width: 7cqw; height: 9.6cqw; margin: -4.8cqw 0 0 -3.5cqw; border-radius: 1.2cqw; display: grid; place-items: center; color: var(--tinta);
+  background: linear-gradient(160deg, #ffd75e, #f5b700 60%, #e39c00); box-shadow: 0 1.4cqw 3cqw rgba(120,70,0,.35); opacity: 0; animation: p-carta .75s 2.35s forwards; }
+.carta-regla svg { width: 4.6cqw; height: 4.6cqw; }
+@keyframes p-carta {
+  0% { opacity: 0; transform: scale(.4) rotate(-10deg); animation-timing-function: var(--sale) }
+  20% { opacity: 1; transform: rotate(8deg) }
+  30% { opacity: 1; transform: rotate(8deg); animation-timing-function: var(--entra-sale) }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(200deg) scale(1.3) } }
+.regla-nueva { position: absolute; z-index: 7; }
+
 /* ── Cierre ── */
 .contacto-pro { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; display: grid; gap: 2.8cqw; }
 .contacto-pro span { display: flex; align-items: center; gap: 3cqw; padding: 2.8cqw 4cqw; border-radius: 4.4cqw; background: rgba(255,255,255,.14); border: .3cqw solid rgba(255,255,255,.3); color: #fff; font: 700 4.6cqw/1 "Inter Tight", var(--f-display); letter-spacing: -.01em; opacity: 0; animation: p-aparecer .7s var(--sale) var(--d, 0s) forwards; }

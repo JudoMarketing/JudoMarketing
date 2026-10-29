@@ -75,6 +75,9 @@ Poco volumen y poco brillo. Uno o dos por escena, más el del panel.
 | `barrido-grave` | Un soplo grave | El panel en círculo |
 | `subida-suave` | Una subida con tono | Los bucles: sube y corta con la escena |
 | `acorde-suave` | Un acorde que se abre | El cierre |
+| `rotura` | Metal que se parte y astillas que caen | Algo que se rompe |
+| `silbato` | Dos pitazos de árbitro | Una regla nueva, una jugada que se marca |
+| `arranque` | Un zumbido que sube | Una máquina que vuelve a andar |
 
 ## Música de fondo
 

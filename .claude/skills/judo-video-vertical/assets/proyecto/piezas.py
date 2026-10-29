@@ -7,10 +7,14 @@
 #   python3 piezas.py capa ARRIBA IZQ DER ICONO [COLOR]
 #                                              una capa isométrica con un icono acostado
 #                                              (ej.: capa "#8a5cff" "#5b2df0" "#3f17c2" gear-six "#fff")
+#   python3 piezas.py engrane COLOR [TAJADA]   un engrane de 12 dientes (TAJADA 0, 1 o 2: un pedazo,
+#                                              para la máquina que se rompe; pega antes «piezas.py tajadas»)
+#   python3 piezas.py tajadas                  los recortes de los tres pedazos (una vez por escena)
+#   python3 piezas.py arbitro                  el árbitro en pictograma, con el brazo (.brazo) que se levanta
 #   python3 piezas.py icono NOMBRE             el icono Phosphor en línea (si hace falta
 #                                              dentro de otro SVG; en HTML usa .ico)
 # Los iconos están en vectores/ (Phosphor, licencia MIT, vectores/LICENSE.txt).
-import os, re, sys
+import math, os, re, sys
 
 D = os.path.dirname(os.path.abspath(__file__))
 
@@ -75,6 +79,53 @@ def grafica():
             '<g class="punto-vivo" style="--d:2.1s"><circle cx="300" cy="10" r="11" fill="#12b76a" fill-opacity=".2"/><circle cx="300" cy="10" r="5" fill="#12b76a"/></g></svg>')
 
 
+def engrane_path(n=12, ro=48, ri=40, c=50):
+    paso = 2 * math.pi / n
+    wt, wb = paso * 0.22, paso * 0.32
+    pt = lambda r, a: f"{c + r * math.cos(a):.2f} {c + r * math.sin(a):.2f}"
+    d = ""
+    for i in range(n):
+        a = i * paso
+        d += ("M" if i == 0 else "L") + pt(ri, a - wb) + " L" + pt(ro, a - wt) + " L" + pt(ro, a + wt) + " L" + pt(ri, a + wb)
+        d += f" A{ri} {ri} 0 0 1 " + pt(ri, (i + 1) * paso - wb) + " "
+    d += "Z "
+    hueco = lambda cx, cy, r: f"M{cx + r:.2f} {cy:.2f} A{r} {r} 0 1 0 {cx - r:.2f} {cy:.2f} A{r} {r} 0 1 0 {cx + r:.2f} {cy:.2f} Z "
+    d += hueco(c, c, 9)
+    for k in range(4):
+        a = math.pi / 4 + k * math.pi / 2
+        d += hueco(c + 24 * math.cos(a), c + 24 * math.sin(a), 6)
+    return d
+
+
+def engrane(color, tajada=None):
+    """Dos engranes de 12 dientes engranan a 0,88 veces su ancho; el de al lado va girado 15°."""
+    clip = f' clip-path="url(#tajada-{tajada})"' if tajada is not None else ""
+    return (f'<svg viewBox="0 0 100 100" aria-hidden="true"><path d="{engrane_path()}" fill="{color}" fill-rule="evenodd"{clip}/>'
+            f'<circle cx="50" cy="50" r="31" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="1.6"{clip}/></svg>')
+
+
+def tajadas():
+    out = ""
+    for k in range(3):
+        a0, a1 = math.radians(-90 + k * 120 + 8), math.radians(-90 + (k + 1) * 120 + 8)
+        out += (f'<clipPath id="tajada-{k}"><path d="M50 50 L{50 + 70 * math.cos(a0):.1f} {50 + 70 * math.sin(a0):.1f} '
+                f'A70 70 0 0 1 {50 + 70 * math.cos(a1):.1f} {50 + 70 * math.sin(a1):.1f} Z"/></clipPath>')
+    return f'<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>{out}</defs></svg>'
+
+
+def arbitro(tinta="#0b0b12", fondo="#f4f2ee", silbato="#f5b700"):
+    """Pictograma de árbitro (estilo olímpico). El brazo derecho (.brazo) gira desde el hombro (51, 41)."""
+    return (f'<svg viewBox="0 -30 100 170" aria-hidden="true"><g fill="none" stroke="{tinta}" stroke-linecap="round">'
+            f'<circle cx="44" cy="16" r="10.5" fill="{tinta}" stroke="none"/>'
+            '<path d="M44 36 L44 78" stroke-width="17"/>'
+            '<path d="M44 80 L35 130" stroke-width="13"/><path d="M44 80 L53 130" stroke-width="13"/>'
+            '<path d="M39 42 L29 74" stroke-width="10"/>'
+            '<g class="brazo"><path d="M51 41 L63 7" stroke-width="10"/></g>'
+            f'<path d="M41 40 L47 40 L44 52 Z" fill="{fondo}" stroke="none"/>'
+            f'<path d="M38 33 Q41 46 49 50" stroke="{fondo}" stroke-width="1.4"/>'
+            f'<rect x="47" y="47" width="10" height="6" rx="3" fill="{silbato}" stroke="none"/></g></svg>')
+
+
 if __name__ == "__main__":
     a = sys.argv[1:]
     if not a:
@@ -83,5 +134,8 @@ if __name__ == "__main__":
     elif a[0] == "tarjeta": print(tarjeta())
     elif a[0] == "grafica": print(grafica())
     elif a[0] == "icono" and len(a) == 2: print(icono(a[1]))
+    elif a[0] == "engrane" and len(a) >= 2: print(engrane(a[1], int(a[2]) if len(a) > 2 else None))
+    elif a[0] == "tajadas": print(tajadas())
+    elif a[0] == "arbitro": print(arbitro())
     elif a[0] == "capa" and len(a) >= 5: print(capa(a[1], a[2], a[3], a[4], *(a[5:6] or ["#fff"])))
     else: sys.exit("No entiendo. Mira el uso al principio de piezas.py.")

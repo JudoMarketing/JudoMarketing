@@ -131,7 +131,7 @@ def tarjeta(top, d, icono, titulo, sub, activa=None, ok=None, color_borde=None):
 
 def aviso(top, d, color, icono, titulo, sub, bajadas=()):
     caja = (f'<div class="aviso" style="top:{top}cqw;--d:{d}s"><span class="ic" style="background:{color}">{ic(icono)}</span>'
-            f'<span class="txt"><span class="de">JuditoADS · ahora</span><b>{titulo}</b><small>{sub}</small></span></div>')
+            f'<span class="txt"><span class="de">Consejo de Judito · ahora</span><b>{titulo}</b><small>{sub}</small></span></div>')
     for db in bajadas:  # cada aviso nuevo empuja hacia abajo a los anteriores
         caja = f'<div class="baja" style="--db:{db}s">{caja}</div>'
     return caja
@@ -157,17 +157,107 @@ escena("gancho", 3.6, "1 · Gancho", "No somos solo marketing.",
        "sub@0 cristal@0.95:2/-24", ("abajo", "claro"),
        voz="Judo Marketing no es solo una empresa de marketing.")
 
-escena("soluciones", 3.6, "1 · Gancho", "Soluciones complejas para problemas complejos.",
-       "Fondo claro. Caen tres capas isométricas (violeta, azul y oro) y se apilan; cada una lleva su icono acostado: engranaje, gráfica y rayo.",
+# ── La máquina que se rompe y el árbitro que la arregla (escena 2) ──
+import math
+
+
+def engrane_path(n=12, ro=48, ri=40, c=50):
+    """Un engrane de n dientes trapezoidales, con su eje y cuatro agujeros."""
+    paso = 2 * math.pi / n
+    wt, wb = paso * 0.22, paso * 0.32
+    pt = lambda r, a: f"{c + r * math.cos(a):.2f} {c + r * math.sin(a):.2f}"
+    d = ""
+    for i in range(n):
+        a = i * paso
+        d += ("M" if i == 0 else "L") + pt(ri, a - wb) + " L" + pt(ro, a - wt) + " L" + pt(ro, a + wt) + " L" + pt(ri, a + wb)
+        d += f" A{ri} {ri} 0 0 1 " + pt(ri, (i + 1) * paso - wb) + " "
+    d += "Z "
+    hueco = lambda cx, cy, r: f"M{cx + r:.2f} {cy:.2f} A{r} {r} 0 1 0 {cx - r:.2f} {cy:.2f} A{r} {r} 0 1 0 {cx + r:.2f} {cy:.2f} Z "
+    d += hueco(c, c, 9)
+    for k in range(4):
+        a = math.pi / 4 + k * math.pi / 2
+        d += hueco(c + 24 * math.cos(a), c + 24 * math.sin(a), 6)
+    return d
+
+
+ENGRANE = engrane_path()
+
+
+def engrane_svg(color, recorte=None):
+    clip = f' clip-path="url(#{recorte})"' if recorte else ""
+    return (f'<svg viewBox="0 0 100 100" aria-hidden="true"><path d="{ENGRANE}" fill="{color}" fill-rule="evenodd"{clip}/>'
+            f'<circle cx="50" cy="50" r="31" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="1.6"{clip}/></svg>')
+
+
+def sectores_defs():
+    """Tres tajadas de 120° para partir el engrane en pedazos."""
+    out = ""
+    for k in range(3):
+        a0, a1 = math.radians(-90 + k * 120 + 8), math.radians(-90 + (k + 1) * 120 + 8)
+        out += (f'<clipPath id="tajada-{k}"><path d="M50 50 L{50 + 70 * math.cos(a0):.1f} {50 + 70 * math.sin(a0):.1f} '
+                f'A70 70 0 0 1 {50 + 70 * math.cos(a1):.1f} {50 + 70 * math.sin(a1):.1f} Z"/></clipPath>')
+    return f'<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>{out}</defs></svg>'
+
+
+# El árbitro, al estilo de los pictogramas olímpicos: cuerpo de trazos gruesos
+# y redondos, el brazo que se levanta (como el árbitro de judo que marca ippon)
+ARBITRO = ('<svg viewBox="0 -30 100 170" aria-hidden="true"><g fill="none" stroke="#0b0b12" stroke-linecap="round">'
+           '<circle cx="44" cy="16" r="10.5" fill="#0b0b12" stroke="none"/>'
+           '<path d="M44 36 L44 78" stroke-width="17"/>'
+           '<path d="M44 80 L35 130" stroke-width="13"/><path d="M44 80 L53 130" stroke-width="13"/>'
+           '<path d="M39 42 L29 74" stroke-width="10"/>'
+           '<g class="brazo"><path d="M51 41 L63 7" stroke-width="10"/></g>'
+           '<path d="M41 40 L47 40 L44 52 Z" fill="#f4f2ee" stroke="none"/>'
+           '<path d="M38 33 Q41 46 49 50" stroke="#f4f2ee" stroke-width="1.4"/>'
+           '<rect x="47" y="47" width="10" height="6" rx="3" fill="#f5b700" stroke="none"/>'
+           '</g></svg>')
+
+# Posiciones (cqw): engranes de 28 de ancho, a 24,6 de distancia, para que engranen
+G = [(25.4, 70), (50, 70), (74.6, 70)]
+TAM = 28
+
+
+def engrane(x, y, color, a0, giro, d2=3.1, solo_despues=False, extra_clase="", extra=""):
+    a1, a2 = a0 + giro * 135, a0 + giro * 135 + giro * 360
+    clase = "gira solo-2" if solo_despues else "gira"
+    return (f'<div class="engrane {extra_clase}" style="left:{x}cqw;top:{y}cqw;--tam:{TAM}cqw{extra}">'
+            f'<div class="{clase}" style="--a0:{a0}deg;--a1:{a1}deg;--a2:{a2}deg;--d2:{d2}s">{engrane_svg(color)}</div></div>')
+
+
+def maquina():
+    x2, y2 = G[1]
+    # El del medio se rompe: tiembla, se apaga y salen tres pedazos y unas astillas
+    pedazos = "".join(
+        f'<div class="esquirla" style="left:{x2}cqw;top:{y2}cqw;--tam:{TAM}cqw;--d:1.05s;--dx:{dx}cqw;--up:{up}cqw;--dy:{dy}cqw;--r:{r}deg">'
+        f'<div style="transform:rotate(-120deg)">{engrane_svg("#8a8796", f"tajada-{k}")}</div></div>'
+        for k, (dx, up, dy, r) in enumerate(((-22, -14, 95, -160), (24, -18, 100, 190), (4, -10, 110, 95))))
+    astillas = "".join(
+        f'<i class="astilla" style="left:{x2}cqw;top:{y2}cqw;--d:1.05s;--dx:{dx}cqw;--up:{up}cqw;--dy:{dy}cqw;--r:{r}deg"></i>'
+        for dx, up, dy, r in ((-24, -20, 40, 200), (26, -24, 46, -240), (-10, -26, 60, 300), (12, -12, 58, -180), (30, -8, 34, 160), (-30, -6, 50, -120)))
+    cinta = ('<div class="cinta"><div class="tira-paquetes">'
+             + "".join(f'<i class="paquete-c" style="left:{-12 + 12 * k}cqw"></i>' for k in range(9)) + "</div></div>")
+    return (sectores_defs()
+            + engrane(*G[0], "#6e3bff", 0, 1)
+            + engrane(*G[2], "#0866ff", 0, 1)
+            + engrane(x2, y2, "#8a8796", 15, -1, extra_clase="se-rompe")
+            + pedazos + astillas
+            + engrane(x2, y2, "#f5b700", 15, -1, solo_despues=True, extra_clase="escala", extra=";--d:2.95s")  # arranca donde se trabó el viejo
+            + cinta
+            + f'<div class="icono-pro aviso-roto" style="left:{x2}cqw;top:{y2 - 7}cqw;--ancho:14cqw;height:14cqw;margin-left:-7cqw;--c:#f04438">{ic("seal-warning")}</div>'
+            + f'<div class="icono-pro escala" style="left:91cqw;top:87.5cqw;--ancho:9cqw;height:9cqw;margin-left:-4.5cqw;--c:#12b76a;--d:3.5s">{ic("check-circle")}</div>'
+            + f'<div class="arbitro">{ARBITRO}</div>'
+            + f'<div class="carta-regla" style="left:27.2cqw;top:104.2cqw;--dx:22.8cqw;--dy:-34.2cqw">{ic("seal-check")}</div>'
+            + f'<div class="regla-nueva aparece" style="left:42cqw;top:116cqw;--d:2.45s"><span class="pastilla grande">{ic("seal-check")} regla nueva</span></div>')
+
+
+escena("soluciones", 4.8, "1 · Gancho", "Para problemas complejos… soluciones complejas.",
+       "Fondo claro. Una maquinaria de tres engranes mueve una cinta con paquetes. El del medio se traba, tiembla y se rompe en pedazos; la cinta se para y se pone roja. Entra un árbitro (pictograma), levanta el brazo con la tarjeta «regla nueva», la tarjeta vuela al hueco y se vuelve un engrane dorado: la máquina arranca y la cinta corre en verde.",
        "claro",
-       cap(["Soluciones", "complejas"], d=0.05)
-       + cap(['<span class="ligera">para problemas</span>', '<span class="ligera">complejos.</span>'], d=0.3, clase="t-m", top=49)
-       + '<div class="sombra-piso" style="top:127cqw;--d:.5s"></div>'
-       + f'<div class="iso cae" style="top:100cqw;width:44cqw;margin-left:-22cqw;--d:.45s">{slab("#8a5cff", "#5b2df0", "#3f17c2", "gear-six", "#fff")}</div>'
-       + f'<div class="iso cae" style="top:86.4cqw;width:44cqw;margin-left:-22cqw;--d:.7s">{slab("#3c84ff", "#0866ff", "#0548c4", "chart-line-up", "#fff")}</div>'
-       + f'<div class="iso cae" style="top:72.8cqw;width:44cqw;margin-left:-22cqw;--d:.95s">{slab("#ffd24d", "#f5b700", "#d08e00", "lightning", "#0b0b12")}</div>',
-       "golpe-suave@0.72 golpe-suave@0.97:1 golpe-suave@1.22:2", ("lado", "violeta"),
-       voz="También creamos soluciones complejas para problemas complejos.")
+       '<div class="fase sale-antes" style="--fuera:2.05s">' + cap(["Para problemas", '<span class="ligera">complejos…</span>'], d=0.0) + "</div>"
+       + '<div class="fase">' + cap(["…soluciones", '<span class="ligera">complejas.</span>'], d=2.5) + "</div>"
+       + maquina(),
+       "golpe-suave@0.9:0/-22 rotura@1.05 aviso@1.15:1/-25 silbato@2.2 golpe-suave@3.0:2/-22 arranque@3.1 cristal@3.5:4/-24", ("lado", "violeta"),
+       voz="Para problemas complejos… también creamos soluciones complejas.")
 
 # ═══ 2 · Introducción ═══
 escena("jads", 3.6, "2 · Introducción", "Por eso creamos JuditoADS. Así funciona por dentro ↓",
@@ -285,15 +375,15 @@ escena("meta-cuenta", 3.6, "7 · Cuerpo 3", "Meta le cuenta a Judito cómo va tu
        "sub@0/-20 datos@0.7 cristal@2.1:4/-25", ("lado", "negro"),
        voz="Meta le cuenta a Judito cómo va tu anuncio…")
 
-escena("te-avisa", 5.4, "7 · Cuerpo 3", "…y Judito te lo explica y te avisa.",
-       "Negro, como la pantalla bloqueada. Llegan tres avisos de JuditoADS y cada uno empuja hacia abajo al anterior: un consejo, que Meta frenó el anuncio, y que va bien.",
+escena("te-avisa", 5.4, "7 · Cuerpo 3", "…y Judito te da consejos para mejorar tus estrategias.",
+       "Negro, como la pantalla bloqueada. Llegan tres consejos de Judito (los que da la app) y cada uno empuja hacia abajo al anterior: subir de 3 a 5 imágenes, buscar clientes y no alcance, mostrarlo solo en español.",
        "negro",
-       cap(["…y Judito", "te lo explica", '<span class="ligera">y te avisa.</span>'])
-       + aviso(63, 1.0, "#f5b700", "lightbulb", "Consejo de Judito", "Prueba con 3 imágenes.", bajadas=(2.1, 3.2))
-       + aviso(63, 2.1, "#f04438", "warning-circle", "Meta frenó tu anuncio", "Falta el pago en tu cuenta.", bajadas=(3.2,))
-       + aviso(63, 3.2, "#12b76a", "chart-line-up", "Tu anuncio va bien", "18,4 mil personas lo vieron."),
-       "aviso@1.0:0 aviso@2.1:1 aviso@3.2:2", ("abajo", "violeta"),
-       voz="…y Judito te lo explica, y te avisa si algo falla. Para que no botes tu dinero.")
+       cap(["…y Judito te da", "consejos", '<span class="ligera">para mejorar</span>', '<span class="ligera">tus estrategias.</span>'], clase="t-m")
+       + aviso(63, 1.0, "#f5b700", "lightbulb", "De 3 a 5 imágenes", "Meta aprende cuál funciona.", bajadas=(2.1, 3.2))
+       + aviso(63, 2.1, "#6e3bff", "target", "Clientes, no alcance", "Elige un objetivo que venda.", bajadas=(3.2,))
+       + aviso(63, 3.2, "#12b76a", "translate", "Solo en español", "No pagues por quien no lo lee."),
+       "aviso@1.0:0 aviso@2.1:2 aviso@3.2:0", ("abajo", "violeta"),
+       voz="…y Judito te da consejos para mejorar tus estrategias. Para que no botes tu dinero.")
 
 # ═══ 8 · Llamado a la acción ═══
 # Lo que pide JuditoADS de verdad (su lista «Revisa tu configuración»): entrar

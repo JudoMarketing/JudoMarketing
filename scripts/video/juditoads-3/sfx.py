@@ -225,6 +225,42 @@ def datos(nivel=-30):
     return norm(s, nivel)
 
 
+# ── La máquina que se rompe y el árbitro (video 3, escena 2) ──
+def rotura(nivel=-15):
+    """Algo de metal que se parte: un crujido, unas notas metálicas y astillas que caen."""
+    n = int(0.9 * SR); t = np.arange(n) / SR
+    crujido = banda(rng.standard_normal(n), 900, 7000) * np.exp(-t / 0.05) * 1.2
+    metal = sum(np.sin(2 * np.pi * f * t) * np.exp(-t / (0.18 / k)) / k for k, f in enumerate((1180, 1715, 2390, 3310), 1))
+    golpe = np.sin(2 * np.pi * np.cumsum(np.geomspace(160, 60, n)) / SR) * np.exp(-t / 0.08)
+    s = crujido + metal * 0.5 + golpe * 0.8
+    for k in range(7):  # astillas que tocan el piso
+        a = int((0.22 + k * 0.07 + rng.random() * 0.03) * SR); m = int(0.03 * SR)
+        s[a:a + m] += banda(rng.standard_normal(m), 3000, 9000) * np.exp(-np.arange(m) / SR / 0.004) * (0.5 - k * 0.05)
+    return norm(s * np.clip(t / 0.001, 0, 1), nivel)
+
+
+def silbato(nivel=-20):
+    """El silbato del árbitro: dos pitazos con el trino de la bolita."""
+    out = np.zeros(int(0.62 * SR))
+    for ini, dur in ((0.0, 0.17), (0.24, 0.36)):
+        n = int(dur * SR); t = np.arange(n) / SR
+        trino = 1 + 0.035 * np.sin(2 * np.pi * 38 * t)
+        tono = np.sin(2 * np.pi * np.cumsum(2950 * trino) / SR) * (0.75 + 0.25 * np.sin(2 * np.pi * 38 * t))
+        aire = banda(rng.standard_normal(n), 2500, 6000) * 0.12
+        env_ = np.clip(t / 0.012, 0, 1) * np.clip((dur - t) / 0.03, 0, 1)
+        a = int(ini * SR); out[a:a + n] += (tono + aire) * env_
+    return norm(out, nivel)
+
+
+def arranque(dur=0.7, nivel=-24):
+    """La máquina que vuelve a andar: un zumbido que sube y se asienta."""
+    n = int(dur * SR); t = np.arange(n) / SR
+    f = 90 + 140 * (1 - np.exp(-t / 0.25))
+    s = np.sin(2 * np.pi * np.cumsum(f) / SR) + 0.4 * np.sin(4 * np.pi * np.cumsum(f) / SR)
+    s = paso_bajo(s, 1200) * np.clip(t / 0.05, 0, 1) * np.clip((dur - t) / 0.25, 0, 1)
+    return norm(s, nivel)
+
+
 # nombre: (función que recibe duración y nivel, nivel por defecto, duración por defecto)
 SONIDOS = {
     "pop": (lambda d, n: pop(n), -17, None),
@@ -262,6 +298,9 @@ SONIDOS = {
     "aviso": (lambda d, n: aviso(d, n), -22, 0),
     "acorde-suave": (lambda d, n: acorde_suave(d, n), -20, 4.0),
     "datos": (lambda d, n: datos(n), -30, None),
+    "rotura": (lambda d, n: rotura(n), -15, None),
+    "silbato": (lambda d, n: silbato(n), -20, None),
+    "arranque": (lambda d, n: arranque(d, n), -24, 0.7),
 }
 FORMA = re.compile(r"^([a-z-]+)@([\d.]+)(?::([\d.]+))?(?:/(-?[\d.]+))?$")
 
