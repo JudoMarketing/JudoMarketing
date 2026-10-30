@@ -19,7 +19,7 @@ efecto.
 | 0:18 – 0:20 | "Pero eso no es lo más loco…" | **Pero eso no es lo más loco…** | Más lento y más bajo, como un secreto. Deja la frase en el aire. |
 | 0:20 – 0:22 | Las cuatro fichas | **Es simple: solo cuatro pasos.** | Vuelve la energía. |
 | 0:22 – 0:24 | Paso 1, la pantalla de entrada | **Uno: te registras.** | Claro y práctico, con un golpe en cada número. |
-| 0:24 – 0:26 | Paso 2, conectar Meta | **Dos: conectas tu cuenta de Meta.** | Igual. |
+| 0:24 – 0:26 | Paso 2, conectar Meta | **Dos: conectas tu Facebook.** | Igual. |
 | 0:26 – 0:30 | Paso 3, el marco salta de una opción a la otra | **Tres: anuncias una imagen nueva… o un post que ya tienes.** | Di "o un post que ya tienes" cuando el marco salta a la segunda opción. |
 | 0:30 – 0:33 | Paso 4, el presupuesto | **Cuatro: pones tu presupuesto, por día o por campaña… tú decides.** | "Tú decides" justo cuando cae el sello amarillo. |
 | 0:33 – 0:36 | "¡Listo! Tu anuncio ya está en Meta" | **¡Listo! Y el presupuesto va directo a Meta, no a nosotros.** | Alegre en "¡Listo!", tranquilo en lo demás: es un dato que da confianza. |
@@ -29,7 +29,7 @@ efecto.
 | 0:44 – 0:47 | $20 al mes, la hamburguesa y "14 días gratis" | **Por veinte dólares al mes, un estratega que trabaja para ti.** | Con orgullo, sin gritar. Marca "veinte dólares". |
 | 0:47 – 0:50 | "Si llegaste hasta aquí, pruébalo gratis"; el dedo toca el botón | **Si llegaste hasta aquí, pruébalo gratis catorce días…** | Directo, como hablándole a una sola persona. |
 | 0:50 – 0:53 | Sale el teléfono y entra tu tarjeta de contacto | **Sin tarjeta. No hay motivo para no hacerlo.** | Seguro y corto. |
-| 0:53 – 0:56 | Tu @ y tu WhatsApp | **¿No tienes cuenta de Meta o necesitas ayuda? Escríbeme.** | Cálido, el tono más humano de todo el video. Sonriendo. |
+| 0:53 – 0:56 | Tu @ y tu WhatsApp | **¿Necesitas ayuda para empezar? Escríbeme.** | Cálido, el tono más humano de todo el video. Sonriendo. |
 
 ## El tono
 
@@ -51,6 +51,15 @@ efecto.
   - directo a Meta;
   - veinte dólares;
   - gratis y sin tarjeta.
+
+Las dos frases de Meta se corrigieron el 30 de octubre de 2026: no hay una
+«cuenta de Meta» que tener o crear; se entra con Facebook (CEREBRO,
+sección 10).
+
+## Con tu voz clonada (ElevenLabs)
+
+El mismo guion, en 4 bloques listos para pegar y con los ajustes:
+`guion-elevenlabs.md`.
 
 ## Cómo grabarlo
 
