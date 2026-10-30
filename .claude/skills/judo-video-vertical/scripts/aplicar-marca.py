@@ -64,12 +64,18 @@ def pesos_reales(nombre):
         with urllib.request.urlopen(req, timeout=15, context=contexto_ssl()) as r:
             css = r.read().decode()
     except Exception:
-        try:
-            url = f"https://fonts.googleapis.com/css2?family={urllib.parse.quote_plus(nombre)}&display=swap"
+        # Las letras que no son variables (Poppins, Montserrat Alternates) no aceptan un rango:
+        # se pide cada peso por separado y se quedan los que existen.
+        css = ""
+        for peso in range(100, 1000, 100):
+            url = f"https://fonts.googleapis.com/css2?family={urllib.parse.quote_plus(nombre)}:wght@{peso}&display=swap"
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 Chrome/120"})
-            with urllib.request.urlopen(req, timeout=15, context=contexto_ssl()) as r:
-                css = r.read().decode()
-        except Exception:
+            try:
+                with urllib.request.urlopen(req, timeout=15, context=contexto_ssl()) as r:
+                    css += r.read().decode()
+            except Exception:
+                continue
+        if not css:
             return None
     pesos = set()
     for m in re.finditer(r"font-weight:\s*(\d+)(?:\s+(\d+))?", css):

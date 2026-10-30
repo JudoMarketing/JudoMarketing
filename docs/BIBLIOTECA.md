@@ -22,6 +22,7 @@ sale de lo que hace distinta a la pieza, no del número:
 | Video 2 de JuditoADS (28 oct 2026) | Cinco centavos |
 | Video 3 de JuditoADS (29 oct 2026) | Por dentro |
 | Carrusel de ejemplo de la skill | El anuncio que no vende |
+| Carrusel de preguntas de Judo Marketing (30 oct 2026) | Apaga el teléfono |
 | Skill `judo-video-vertical` | Fábrica de videos |
 | Skill `judo-carrusel` | Fábrica de carruseles |
 
@@ -30,7 +31,10 @@ sale de lo que hace distinta a la pieza, no del número:
 1. **Los archivos**, con la herramienta Artifact (`url` de la biblioteca,
    `asset: true`):
    - imágenes, MP4 y PDF, hasta 25 por llamada en `file_paths`;
-   - cada texto (`.md`, `.txt`) en una llamada propia.
+   - cada texto (`.md`, `.txt`) en una llamada propia. La ficha lee el `.md`
+     con «Leer»: tablas, listas (con guion o numeradas) y bloques entre
+     ```. **El pie de foto va en un bloque entre ```**: así sale con sus
+     saltos de línea y un botón «Copiar».
    - **Máximo 20 MB por archivo.** Un MP4 más pesado se recomprime para la
      biblioteca (`-crf 21` con libx264 deja un minuto en unos 15 MB) y el
      original se queda en el repositorio.
