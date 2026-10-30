@@ -1,0 +1,37 @@
+{
+  "video": "JuditoADS-video2-es.mp4",
+  "fin": 56.1,
+  "silabas_por_segundo": 5.5,
+  "bloques": [
+    [
+      {"t": 0.0, "texto": "Te llegué por menos de cinco centavos.", "ve": "La moneda de 5¢", "como": "Con picardía, sonriendo, como quien cuenta un truco."},
+      {"t": 2.6, "texto": "Quédate: te enseño a hacerlo sin gurús...", "ve": "El genio sale de la lámpara y cae el sello NO", "como": "Cercano; más bajo en «sin gurús»."},
+      {"t": 5.8, "texto": "y sin comerte diez cursos carísimos.", "ve": "La torre de cursos: $6,823 y 134 horas", "como": "Con un poco de burla en «carísimos». Después suena la caja registradora."},
+      {"t": 8.8, "texto": "Lo logré en Miami, una de las ciudades más competitivas.", "ve": "El vuelo de la Tierra a la oficina", "como": "Con orgullo, subiendo la energía."}
+    ],
+    [
+      {"t": 13.3, "texto": "JuditoADS: cinco años de experiencia.", "ve": "«Y creé…» y el logo de JuditoADS", "como": "Firme. Marca «cinco años»."},
+      {"t": 16.1, "texto": "Judito encuentra a quien sí te compra.", "ve": "La mira encuentra a una persona", "como": "Seguro."},
+      {"t": 18.5, "texto": "Pero no es lo más loco...", "ve": "«Pero eso no es lo más loco…»", "como": "Más lento y más bajo, como un secreto."},
+      {"t": 20.1, "texto": "Tú solo, en cuatro pasos.", "ve": "«Lo lanzas tú solo. En 4 pasos:»", "como": "Vuelve la energía."}
+    ],
+    [
+      {"t": 21.9, "texto": "Uno: entras a la app.", "ve": "Paso 1: la pantalla de entrada", "como": "Claro y práctico, con un golpe en cada número."},
+      {"t": 23.9, "texto": "Dos: conectas tu Facebook.", "ve": "Paso 2: el panel y tus cuentas", "como": "Igual."},
+      {"t": 26.5, "texto": "Tres: algo nuevo... o un post que ya tienes.", "ve": "Paso 3: el marco salta de una opción a la otra", "como": "«O un post que ya tienes» cuando salta el marco."},
+      {"t": 29.7, "texto": "Cuatro: tu presupuesto... y tú decides cuánto.", "ve": "Paso 4: el presupuesto y el sello «Tú decides»", "como": "«Tú decides» cuando cae el sello."},
+      {"t": 33.3, "texto": "¡Listo! Tu anuncio ya está en Meta.", "ve": "«¡Listo! Tu anuncio ya está en Meta.»", "como": "Alegre."}
+    ],
+    [
+      {"t": 36.3, "texto": "Y casi nadie te lo dice...", "ve": "«Y lo que sigue, casi nadie te lo dice…»", "como": "Bajito, de secreto."},
+      {"t": 38.1, "texto": "Judito sí te lo dice.", "ve": "«Judito sí te lo dice:» y el primer consejo", "como": "Con complicidad, subiendo."},
+      {"t": 40.1, "texto": "Consejos que funcionan...", "ve": "El segundo consejo", "como": "Pausado: que se lean las tarjetas."},
+      {"t": 42.1, "texto": "y vigila tus anuncios por ti.", "ve": "El tercer consejo", "como": "Tranquilo."}
+    ],
+    [
+      {"t": 44.1, "texto": "Veinte dólares al mes... lo que cuesta una hamburguesa.", "ve": "$20 al mes, la hamburguesa y «14 días GRATIS»", "como": "Con orgullo, sin gritar. Marca «veinte dólares»."},
+      {"t": 48.1, "texto": "Si llegaste aquí, pruébalo gratis.", "ve": "«Si llegaste hasta aquí, pruébalo gratis»; el dedo toca el botón", "como": "Directo, como hablándole a una sola persona."},
+      {"t": 50.6, "texto": "Catorce días, sin tarjeta. ¿Necesitas ayuda? Escríbeme.", "ve": "Tu @ y tu WhatsApp", "como": "Cálido, el tono más humano del video. Sonriendo."}
+    ]
+  ]
+}

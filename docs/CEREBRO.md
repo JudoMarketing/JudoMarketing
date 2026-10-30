@@ -678,6 +678,21 @@ Los errores de diseño de los sitios están en la sección 2 y en
     más.
   - Las variables de Vercel no se descifran.
 
+### Voz de los videos
+
+- **El guion de voz de «Cinco centavos» no coincidía con el video**
+  (2026-10-30).
+  - Qué pasó: los tiempos venían de un corte anterior del video 2 (por
+    ejemplo, «Si llegaste hasta aquí» en 0:47 cuando la escena empieza en
+    0:48,1), y varias frases duraban más que su escena: el gancho necesitaba
+    unos 3,7 segundos y la moneda dura 2,6. Junior generó la voz con
+    ElevenLabs y no calzaba.
+  - Costó: rehacer el guion y la versión para ElevenLabs.
+  - Regla: los tiempos del guion salen de `salida/escenas.json` del video
+    final, y cada frase se mide contra su escena con
+    `python3 calzar-voz.py voz.json --guion` antes de entregarla. La voz que
+    llega en bloques se pone con `calzar-voz.py`, frase por frase.
+
 ### Carruseles
 
 - **La revisión dijo «Sin problemas» con una portada cortada** (2026-10-30).

@@ -32,6 +32,21 @@ las imágenes, para ponerle mi voz detrás, y ayúdame con el tono".
   - Ejemplos de JuditoADS: "en tiempo real" quedó fuera; "con solo Instagram"
     se corrigió a "página de Facebook".
 
+## Los tiempos salen del video final
+
+**Los tiempos del guion se sacan de `salida/escenas.json` del video ya
+armado, no del storyboard.** El guion del video 2 de JuditoADS salió de un
+corte anterior: cuando se puso la voz, «Si llegaste hasta aquí» caía un
+segundo antes de su escena y el gancho no cabía en su moneda.
+
+1. Copia cada inicio de escena a `voz.json`, con su frase:
+   `{"t": 0.0, "texto": "Te llegué por menos de cinco centavos."}`.
+2. `python3 calzar-voz.py voz.json --guion` mide cada frase contra su escena
+   (sílabas ÷ 5,5 por segundo) y avisa las que no caben. Se recorta la frase,
+   no la escena.
+3. El mismo comando escribe los bloques para ElevenLabs con las pausas
+   (`<break>`) que calzan.
+
 ## El tono
 
 Tres registros, y el guion marca cuál va en cada línea:
@@ -56,6 +71,22 @@ Tres registros, y el guion marca cuál va en cada línea:
 4. **Tres tomas seguidas del guion entero**, sin parar si se equivoca.
 
 ## Poner la voz en el video
+
+**Si la voz viene de ElevenLabs (o de cualquier lector) en bloques:**
+
+```bash
+python3 calzar-voz.py voz.json bloque-1.mp3 bloque-2.mp3 …
+```
+
+- Corta cada bloque en sus frases por los silencios, eligiendo los que dejan
+  frases del largo esperado: así una coma o unos «...» no se confunden con
+  el final de una frase.
+- Pone cada frase en el segundo de su escena. Si no cabe, la acelera hasta un
+  12 %. Si aun así se pasa, la siguiente entra un poco después en vez de
+  pisarla, y lo avisa.
+- Al final llama a `voz.py`, que baja los efectos mientras habla.
+
+**Si la voz es grabada de una sola toma:**
 
 ```bash
 python3 voz.py salida/video.mp4 voz.m4a --desfase 0.2 --efectos -9

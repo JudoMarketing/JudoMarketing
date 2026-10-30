@@ -131,6 +131,8 @@ python3 build.py && node revisar.mjs && node render.mjs && python3 musica.py && 
   - un corte que salta.
 - **Arregla, renderiza solo esas escenas** y monta otra vez.
 - **Si llega la voz grabada:** `python3 voz.py salida/<nombre>.mp4 voz.m4a`
+- **Si la voz llega en bloques de ElevenLabs:** `python3 calzar-voz.py voz.json bloque-1.mp3 …`
+  pone cada frase en su escena (`references/voz.md`).
   (`voz.md`).
 
 Si no hay navegador para renderizar (`produccion.md`, sección 1), entrega el
