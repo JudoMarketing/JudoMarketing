@@ -88,6 +88,10 @@ golpe; si te guías por el bombo, la voz cae sola.
   ni tu presupuesto". Lo escrito es lo más exacto: los $20 sí te los cobra
   Judo; lo que nunca pasa por nosotros es lo que le pagas a Meta.
 
+## Con tu voz clonada (ElevenLabs)
+
+El mismo guion, en 4 bloques listos para pegar y con los ajustes: `guion-elevenlabs.md`.
+
 ## Cómo grabarlo
 
 Igual que el otro: un cuarto sin eco, el teléfono a un palmo y un poco de
