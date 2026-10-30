@@ -24,6 +24,7 @@ sale de lo que hace distinta a la pieza, no del número:
 | Carrusel de ejemplo de la skill | El anuncio que no vende |
 | Carrusel de preguntas de Judo Marketing (30 oct 2026) | Apaga el teléfono |
 | Su versión para anuncio pagado (30 oct 2026) | Cada sí tiene arreglo |
+| Su versión en inglés (30 oct 2026) | Turn off your phone |
 | Skill `judo-video-vertical` | Fábrica de videos |
 | Skill `judo-carrusel` | Fábrica de carruseles |
 

@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carrusel · Turn off your phone (inglés)</title>
+<!-- FUENTES:INICIO -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<!-- FUENTES:FIN -->
+<style>
+/* MARCA:INICIO */
+:root {
+  --fondo: #12111d;
+  --superficie: #1b1928;
+  --texto: #f5f5f7;
+  --acento: #a855f7;
+  --acento-texto: #12111d;
+  --primario: #7b2dff;
+  --primario-hondo: #5305d7;
+  --tercero: #5305d7;
+  --ok: #34d399;
+  --alerta: #ff4d4d;
+  --f-display: "Poppins", "Arial Narrow", Arial, sans-serif;
+  --f-cuerpo: "Inter", "Segoe UI", Arial, sans-serif;
+  --ancho-display: 100%;
+  --sombra-texto: 0 .6cqw 2.4cqw rgba(0,0,0,.55);
+  --esquema: dark;
+  --escala-titulares: 1;
+  --interlineado-titulares: 1.06;
+}
+/* MARCA:FIN */
+
+/* ════════════════════════════════════════════════════════════════════
+   FORMATO: --ancho × --alto de cada lámina. 4:5 (1080 × 1350) para el
+   feed de Instagram y Facebook y para LinkedIn; 1:1 (1080 × 1080) si se
+   pide cuadrado. Se cambia en .tira (style="--alto:1350px").
+   Medidas en cqw: el ancho de la lámina es 100 (y el alto, 125 en 4:5).
+   Márgenes: 7 cqw a cada lado. En la cuadrícula del perfil, Instagram
+   recorta la portada a 3:4: lo importante de la lámina 1 va dentro de
+   los 88 cqw del centro.
+   ════════════════════════════════════════════════════════════════════ */
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #0c0a14; }
+body { color: #f3effb; font: 15px/1.55 "Instrument Sans", "Segoe UI", Arial, sans-serif; }
+
+/* ── Mesa de revisión (se esconde al renderizar: ?render=1) ── */
+.mesa { max-width: 1100px; margin: 0 auto; padding: 28px max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left)); }
+.mesa h1 { font: 850 clamp(26px, 4.4vw, 42px)/1.08 var(--f-display); margin: 0 0 6px; }
+.mesa p { margin: 0; color: #a8a0c0; }
+.visor { overflow-x: auto; padding: 0 16px 24px; }
+.visor .tira { zoom: var(--zoom, .3); margin: 0 auto; }
+.notas { max-width: 1100px; margin: 0 auto; padding: 0 16px 64px; display: grid; gap: 10px; }
+.notas article { background: #15121f; border: 1px solid #2c2541; border-radius: 14px; padding: 12px 16px; }
+.notas b { color: var(--acento); font-family: var(--f-display); }
+.notas small { display: block; color: #a8a0c0; margin-top: 4px; }
+.render .mesa, .render .notas { display: none; }
+.render .visor { padding: 0; overflow: visible; }
+.render .visor .tira { zoom: 1; margin: 0; }
+
+/* ── La tira: todas las láminas una al lado de la otra ── */
+.tira { --ancho: 1080px; --alto: 1350px; position: relative; display: flex; width: calc(var(--ancho) * var(--n, 1)); height: var(--alto); isolation: isolate; color-scheme: var(--esquema);
+  background:
+    radial-gradient(60% 50% at 15% 10%, color-mix(in oklab, var(--primario) 35%, transparent), transparent 70%),
+    radial-gradient(50% 45% at 85% 100%, color-mix(in oklab, var(--acento) 14%, transparent), transparent 70%),
+    var(--fondo); background-size: var(--ancho) var(--alto); }
+.lamina { position: relative; flex: none; width: var(--ancho); height: var(--alto); overflow: hidden; container-type: inline-size; color: var(--texto); font-family: var(--f-cuerpo); font-synthesis: none; }
+.lamina::after { content: ""; position: absolute; inset: 0; z-index: 30; pointer-events: none; opacity: .08; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+/* El hilo que cruza todas las láminas: invita a deslizar (lo dibuja el script) */
+.hilo { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.hilo path { fill: none; stroke: color-mix(in oklab, var(--primario) 70%, transparent); stroke-width: 6; stroke-linecap: round; }
+.hilo circle { fill: var(--acento); }
+
+/* ── Lo que llevan todas las láminas ── */
+.cuerpo { position: absolute; inset: 8cqw 7cqw 15cqw; z-index: 2; display: flex; flex-direction: column; gap: 3.6cqw; }
+.cuerpo.centro { justify-content: center; }
+.pie-lamina { position: absolute; left: 7cqw; right: 7cqw; bottom: 5.4cqw; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 3cqw; font: 700 3.2cqw/1 var(--f-cuerpo); opacity: .9; }
+.pie-lamina .marca { display: flex; align-items: center; gap: 1.6cqw; }
+.pie-lamina .marca img { width: 6.4cqw; height: 6.4cqw; border-radius: 50%; object-fit: contain; background: #0b0a10; padding: .5cqw; }
+.pie-lamina .progreso { display: flex; gap: 1cqw; }
+.pie-lamina .progreso i { width: 2.2cqw; height: 1cqw; border-radius: 1cqw; background: color-mix(in oklab, var(--texto) 25%, transparent); }
+.pie-lamina .progreso i.aqui { width: 6cqw; background: var(--acento); }
+.desliza { display: inline-flex; align-items: center; gap: 1.4cqw; color: var(--acento); font: 800 3.4cqw/1 var(--f-display); }
+
+/* ── Texto ── */
+.kicker { align-self: flex-start; padding: 1.4cqw 3cqw; border-radius: 99cqw; border: .4cqw solid currentColor; color: var(--acento); font: 800 3.4cqw/1 var(--f-display); letter-spacing: .06em; text-transform: uppercase; }
+.titular { margin: 0; font: 900 calc(11.5cqw * var(--escala-titulares, 1))/max(1.02, var(--interlineado-titulares, 1.02)) var(--f-display); font-stretch: var(--ancho-display); letter-spacing: -.02em; text-wrap: balance; text-shadow: var(--sombra-texto); }
+.titular.mediano { font-size: calc(8.8cqw * var(--escala-titulares, 1)); }
+.fichas-mini { display: flex; gap: 2.4cqw; }
+.fichas-mini b { width: 12cqw; height: 12cqw; border-radius: 50%; display: grid; place-items: center; background: var(--primario); color: #fff; font: 900 6cqw/1 var(--f-display); box-shadow: 0 1cqw 0 var(--primario-hondo); }
+.fichas-mini b:last-child { background: var(--acento); color: var(--acento-texto); box-shadow: 0 1cqw 0 color-mix(in oklab, var(--acento) 60%, black); }
+.abajo-der { margin-top: auto; align-self: flex-end; }
+.esquina { position: absolute; top: -1cqw; right: 0; --tam: 15cqw; }
+.texto { margin: 0; font-size: 5.3cqw; line-height: 1.32; text-wrap: pretty; opacity: .92; }
+.hl { color: var(--acento-texto); background: var(--acento); padding: 0 .14em; border-radius: .12em; box-decoration-break: clone; -webkit-box-decoration-break: clone; text-shadow: none; }
+.acento { color: var(--acento); }
+.bucle { text-wrap: balance; margin-top: auto; display: flex; align-items: center; gap: 2cqw; padding: 3cqw 3.6cqw; border-radius: 3cqw; background: color-mix(in oklab, var(--acento) 14%, transparent); border: .4cqw solid color-mix(in oklab, var(--acento) 55%, transparent); color: var(--acento); font: 800 5cqw/1.2 var(--f-display); font-stretch: var(--ancho-display); }
+.bucle::after { content: "→"; margin-left: auto; font-size: 7cqw; }
+
+/* ── Piezas ── */
+.numero { width: 13cqw; height: 13cqw; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--primario); color: #fff; font: 900 9cqw/1 var(--f-display); box-shadow: 0 1.4cqw 0 var(--primario-hondo); }
+.fila { display: flex; flex-direction: column; align-items: flex-start; gap: 3.4cqw; }
+.mal, .bien { display: flex; gap: 3cqw; align-items: flex-start; padding: 4cqw; border-radius: 4cqw; font-size: 4.8cqw; line-height: 1.3; text-wrap: pretty; }
+.mal { background: color-mix(in oklab, var(--alerta) 12%, transparent); border: .4cqw solid color-mix(in oklab, var(--alerta) 50%, transparent); }
+.bien { background: color-mix(in oklab, var(--ok) 12%, transparent); border: .4cqw solid color-mix(in oklab, var(--ok) 50%, transparent); }
+.mal::before, .bien::before { flex: none; width: 8cqw; height: 8cqw; border-radius: 50%; display: grid; place-items: center; font: 900 4.6cqw/1 var(--f-cuerpo); }
+.mal::before { content: "✕"; background: var(--alerta); color: #fff; }
+.bien::before { content: "✓"; background: var(--ok); color: #06261a; }
+.mal b, .bien b { display: block; font: 850 5.4cqw/1.15 var(--f-display); margin-bottom: 1cqw; }
+.dato { font: 900 calc(30cqw * var(--escala-titulares, 1))/.9 var(--f-display); font-stretch: var(--ancho-display); color: var(--acento); letter-spacing: -.03em; }
+.emoji { width: var(--tam, 26cqw); flex: none; filter: drop-shadow(0 2cqw 3cqw rgba(0,0,0,.45)); }
+.foto-fondo { position: absolute; inset: 0; z-index: 0; }
+.foto-fondo img { width: 100%; height: 100%; object-fit: cover; }
+.velo { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(8,6,16,.82) 0 30%, rgba(8,6,16,.2) 55%, rgba(8,6,16,.85) 100%); }
+.telefono { align-self: center; width: var(--ancho-tel, 52cqw); aspect-ratio: 9 / 16; border-radius: 6cqw; padding: 1.2cqw; overflow: hidden; background: linear-gradient(145deg, #55516a, #1b1925 40%, #0e0d13); box-shadow: 0 3cqw 7cqw -2cqw rgba(0,0,0,.8); }
+.telefono img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 5cqw; display: block; }
+.contacto { display: grid; gap: 2.4cqw; }
+.contacto span { display: inline-flex; align-items: center; gap: 2cqw; justify-self: start; padding: 2.4cqw 4cqw; border-radius: 99cqw; background: color-mix(in oklab, var(--texto) 10%, transparent); border: .4cqw solid color-mix(in oklab, var(--texto) 22%, transparent); font: 800 4.8cqw/1 var(--f-display); white-space: nowrap; }
+.contacto img { width: 8cqw; height: 8cqw; border-radius: 50%; object-fit: contain; background: #0b0a10; padding: .6cqw; }
+.boton { align-self: flex-start; padding: 3.4cqw 6cqw; border-radius: 99cqw; background: var(--acento); color: var(--acento-texto); font: 900 5.6cqw/1 var(--f-display); box-shadow: 0 2cqw 4cqw rgba(0,0,0,.4); }
+
+/* ── AJUSTES de este carrusel: van aquí, al final, para que ganen a la biblioteca ── */
+/* Cada pregunta: el número, la pregunta, una línea de contexto y una escena de pantalla real */
+.lamina.q .cuerpo { gap: 2.8cqw; }
+.lamina.q .texto { font-size: 4.8cqw; }
+.titular.pregunta { font-size: calc(7.4cqw * var(--escala-titulares, 1)); line-height: 1.1; }
+.cabeza { display: flex; align-items: center; justify-content: space-between; }
+.num { font: 800 10cqw/.85 var(--f-display); color: var(--acento); letter-spacing: -.04em; }
+.num small { font: 700 4cqw/1 var(--f-cuerpo); color: #b9b4c9; letter-spacing: 0; margin-left: .6cqw; }
+.sino { display: flex; gap: 2cqw; }
+.sino span { display: inline-flex; align-items: center; gap: 1.4cqw; padding: 1.6cqw 3cqw 1.6cqw 2.2cqw; border-radius: 99cqw; border: .35cqw solid #4a4560; background: #1b1928; font: 700 3.8cqw/1 var(--f-cuerpo); color: #f5f5f7; }
+.sino span::before { content: ""; width: 3.4cqw; height: 3.4cqw; border-radius: .9cqw; border: .35cqw solid #8d86a6; }
+
+.escena { position: relative; margin-top: auto; }
+.escena .emoji { position: absolute; z-index: 3; --tam: 17cqw; top: -10cqw; right: -1cqw; transform: rotate(8deg); }
+.tarjeta { position: relative; background: #1d1a2c; border: .3cqw solid #322c4a; border-radius: 4cqw; padding: 3cqw 3.4cqw; font-family: var(--f-cuerpo); box-shadow: 0 3cqw 8cqw -2cqw rgba(0,0,0,.75), 0 0 9cqw -3cqw rgba(123,45,255,.45); }
+.encab { display: flex; align-items: center; gap: 2cqw; font: 700 3.4cqw/1 var(--f-cuerpo); color: #c9c4d8; margin-bottom: 2.2cqw; }
+.insignia { padding: 1cqw 2.2cqw; border-radius: 99cqw; background: #c62f3a; color: #fff; font: 800 3.2cqw/1 var(--f-cuerpo); }
+.aviso { display: flex; align-items: center; gap: 2.2cqw; padding: 1.6cqw 2.4cqw; border-radius: 3cqw; background: #272339; color: #ecebf2; font: 500 3.5cqw/1.25 var(--f-cuerpo); }
+.aviso + .aviso { margin-top: 1.4cqw; }
+.aviso i { flex: none; width: 6.2cqw; height: 6.2cqw; border-radius: 50%; display: grid; place-items: center; background: #3a3452; color: #d6d1e6; font: 800 3.4cqw/1 var(--f-cuerpo); font-style: normal; }
+.aviso.real { background: #132a24; border: .3cqw solid #2f7d62; }
+.aviso.real i { background: #34d399; color: #062b1f; }
+.etiqueta { margin-left: auto; flex: none; padding: 1cqw 2cqw; border-radius: 99cqw; background: #34d399; color: #062b1f; font: 800 3cqw/1 var(--f-cuerpo); }
+
+/* El chat con quien te cambia la web */
+.chat { display: flex; flex-direction: column; gap: 1.4cqw; }
+.chat .encab i { width: 7cqw; height: 7cqw; border-radius: 50%; display: grid; place-items: center; background: #3a3452; color: #e6e2f1; font: 800 3.4cqw/1 var(--f-cuerpo); font-style: normal; }
+.dia { align-self: center; padding: .8cqw 2.4cqw; border-radius: 99cqw; background: #272339; color: #b9b4c9; font: 700 3cqw/1 var(--f-cuerpo); }
+.burbuja { max-width: 90%; padding: 1.8cqw 3cqw; border-radius: 4cqw; font: 500 3.6cqw/1.3 var(--f-cuerpo); }
+.burbuja.yo { align-self: flex-end; background: var(--primario); color: #fff; border-bottom-right-radius: 1cqw; }
+.burbuja.el { align-self: flex-start; background: #2b2740; color: #f0eef6; border-bottom-left-radius: 1cqw; }
+.visto { align-self: flex-end; color: #a29cb8; font: 600 3cqw/1 var(--f-cuerpo); }
+
+/* La alerta de PHP2Shell */
+.tarjeta.peligro { background: #2a1520; border-color: #6e2633; box-shadow: 0 3cqw 8cqw -2cqw rgba(0,0,0,.75), 0 0 10cqw -3cqw rgba(229,72,77,.5); }
+.tarjeta.peligro .encab { color: #ffb3b3; }
+.cve { font: 600 7cqw/1 "JetBrains Mono", monospace; color: #ff8a8a; letter-spacing: -.02em; }
+.medidor { height: 2.2cqw; border-radius: 2cqw; background: #4a2430; margin: 2.2cqw 0 1.8cqw; overflow: hidden; }
+.medidor b { display: block; width: 92%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ff9f43, #e5484d); }
+.fila-dato { display: flex; justify-content: space-between; color: #c9c4d8; font: 600 3.4cqw/1 var(--f-cuerpo); }
+.fuente { font: 500 3cqw/1.3 var(--f-cuerpo); color: #b9b4c9; }
+
+/* La pantalla bloqueada a las 11:47 */
+.bloqueo { text-align: center; background: #1a1630; }
+.bloqueo .encab .hora { font: 700 5.4cqw/1 var(--f-display); color: #f5f5f7; letter-spacing: -.02em; }
+.bloqueo .encab .insignia { margin-left: auto; }
+.bloqueo .aviso { text-align: left; }
+
+/* El presupuesto del anuncio */
+.presu .monto { font: 800 11cqw/1 var(--f-display); color: #fff; letter-spacing: -.03em; }
+.presu .monto small { font: 600 4.4cqw/1 var(--f-cuerpo); color: #c9c4d8; letter-spacing: 0; margin-left: 1.4cqw; }
+.riel { position: relative; height: 2.2cqw; border-radius: 2cqw; background: #3a3452; margin: 2.4cqw 0 3cqw; }
+.riel b { position: absolute; inset: 0 auto 0 0; width: 12%; border-radius: inherit; background: var(--acento); }
+.riel b::after { content: ""; position: absolute; right: -3cqw; top: 50%; width: 6cqw; height: 6cqw; margin-top: -3cqw; border-radius: 50%; background: #fff; box-shadow: 0 .8cqw 2cqw rgba(0,0,0,.5); }
+.presu .pie-tarjeta { display: flex; align-items: center; justify-content: space-between; gap: 2cqw; }
+.chip { padding: 1.6cqw 2.8cqw; border-radius: 99cqw; background: #272339; color: #e6e2f1; font: 600 3.4cqw/1 var(--f-cuerpo); }
+.publicar { padding: 2cqw 3.6cqw; border-radius: 99cqw; background: var(--acento); color: var(--acento-texto); font: 800 3.6cqw/1 var(--f-display); }
+
+/* La gráfica vacía */
+.grafica-vacia .valor { font: 800 10cqw/1 var(--f-display); color: #c08cff; }
+.barras { display: flex; align-items: flex-end; gap: 2.4cqw; height: 13cqw; margin-top: 1.6cqw; }
+.barras i { flex: 1; height: var(--h); border: .35cqw dashed #5b5575; border-radius: 1.6cqw 1.6cqw .6cqw .6cqw; }
+.dias { display: flex; gap: 2.4cqw; margin-top: 1.4cqw; }
+.dias span { flex: 1; text-align: center; color: #a29cb8; font: 600 3cqw/1 var(--f-cuerpo); }
+
+/* La portada: el botón de apagar */
+.apagar { position: relative; margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 3cqw; }
+.apagar::before { content: ""; position: absolute; inset: -12cqw -10cqw -6cqw; z-index: -1; background: radial-gradient(50% 55% at 50% 60%, rgba(123,45,255,.45), transparent 70%); }
+.deslizador { width: 84cqw; display: flex; align-items: center; gap: 6cqw; padding: 2cqw; border-radius: 99cqw; background: #24203a; border: .3cqw solid #3b3555; box-shadow: inset 0 .6cqw 2cqw rgba(0,0,0,.5), 0 0 10cqw rgba(123,45,255,.35); }
+.perilla { flex: none; width: 14cqw; height: 14cqw; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 1cqw 3cqw rgba(0,0,0,.45); }
+.perilla svg { width: 7cqw; height: 7cqw; }
+.deslizador span { font: 500 5cqw/1 var(--f-cuerpo); color: #e9e6f2; }
+
+/* Las respuestas */
+.respuestas { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.4cqw; counter-reset: r; }
+.respuestas li { counter-increment: r; display: flex; align-items: center; gap: 3cqw; padding: 1.4cqw 2.6cqw; border-radius: 3.4cqw; background: #1d1a2c; border: .3cqw solid #322c4a; color: #f5f5f7; font: 600 3.9cqw/1.25 var(--f-cuerpo); }
+.respuestas li::before { content: counter(r); flex: none; width: 7cqw; height: 7cqw; border-radius: 50%; display: grid; place-items: center; background: var(--primario); color: #fff; font: 800 3.8cqw/1 var(--f-display); }
+.respuestas b { color: #c08cff; }
+.telefono-grande { font: 800 7.4cqw/1 var(--f-display); letter-spacing: -.02em; }
+
+/* El llamado */
+.boton.ancho { align-self: stretch; text-align: center; font-size: 4.8cqw; padding: 3.4cqw 3cqw; }
+.contacto.fila-contacto { display: flex; flex-wrap: wrap; gap: 2cqw; }
+.contacto.fila-contacto span { font-size: 4cqw; padding: 2cqw 3.4cqw; }
+/* Con 10 láminas el progreso del pie se angosta para que «Desliza →» quepa en una línea */
+.pie-lamina .progreso { gap: .8cqw; }
+.pie-lamina .progreso i { width: 1.7cqw; }
+.pie-lamina .progreso i.aqui { width: 4.4cqw; }
+.desliza { white-space: nowrap; }
+/* El resaltado de una sola línea: caja justa, no pisa la línea de arriba */
+.hl.justo { display: inline-block; line-height: 1; padding: .02em .14em .1em; }
+.bucle { font-size: 4.4cqw; padding: 2.4cqw 3.2cqw; }
+.bucle::after { font-size: 6cqw; }
+.num { font-size: 9cqw; }
+.sino span { padding: 1.3cqw 2.6cqw 1.3cqw 2cqw; font-size: 3.5cqw; }
+.bloqueo .aviso { padding: 1.2cqw 2.2cqw; }
+.bloqueo .aviso i { width: 5.4cqw; height: 5.4cqw; font-size: 3cqw; }
+.chat { gap: 1.1cqw; }
+.contacto.fila-contacto span { font-size: 3.6cqw; padding: 1.8cqw 3cqw; }
+</style>
+</head>
+<body>
+<header class="mesa">
+  <h1 id="titulo">Carrusel</h1>
+  <p id="resumen"></p>
+</header>
+
+<div class="visor">
+<main class="tira" id="tira" style="--alto:1350px" data-logo="marca/logo.png" data-usuario="@judo.marketing" data-nombre="Judo Marketing" data-desliza="Swipe →" data-guardalo="Save it">
+
+  <section class="lamina" data-pieza="1 · Gancho" data-alt="Cover: “Is your business still selling with your phone off?” over a phone’s “slide to power off” button.">
+    <div class="cuerpo">
+      <span class="kicker">6-question test</span>
+      <h2 class="titular" style="font-size:calc(9.6cqw * var(--escala-titulares,1));line-height:1.2">Is&nbsp;your&nbsp;business still selling with <span class="hl justo">your&nbsp;phone&nbsp;off</span>?</h2>
+      <div class="apagar">
+        <div class="deslizador"><span class="perilla"><svg viewBox="0 0 24 24" fill="none" stroke="#e5484d" stroke-width="2.6" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg></span><span>slide to power off</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lamina" data-pieza="2 · Introducción" data-alt="“6 questions. Answer yes or no.” Six numbered chips. “Count your yeses. At the end, what to do about each one.”">
+    <div class="cuerpo centro">
+      <h2 class="titular mediano">6 questions. Answer yes&nbsp;or&nbsp;no.</h2>
+      <div class="fichas-mini" aria-hidden="true"><b>1</b><b>2</b><b>3</b><b>4</b><b>5</b><b>6</b></div>
+      <div class="sino" aria-hidden="true"><span>Yes</span><span>No</span></div>
+      <p class="texto">Count your yeses. At the end, <span class="acento">what to do about each&nbsp;one</span>.</p>
+    </div>
+  </section>
+
+  <section class="lamina q" data-pieza="3 · Cuerpo 1" data-alt="Question 1: “Is your contact form flooded with bot messages?” An inbox with 38 new messages: bot spam and, at the bottom, a message from a real customer.">
+    <div class="cuerpo">
+      <div class="cabeza"><span class="num">01<small>/06</small></span><div class="sino" aria-hidden="true"><span>Yes</span><span>No</span></div></div>
+      <h2 class="titular pregunta">Is your contact form flooded with bot&nbsp;messages?</h2>
+      <p class="texto">In all that spam, <span class="acento">the real customer</span> gets&nbsp;lost.</p>
+      <div class="escena">
+        <img class="emoji" src="img/robot.webp" alt="">
+        <div class="tarjeta">
+          <div class="encab">Website contact<span class="insignia">38</span></div>
+          <div class="aviso"><i>?</i>I’ll get you to #1 on&nbsp;Google!</div>
+          <div class="aviso"><i>?</i>Followers at 50%&nbsp;off</div>
+          <div class="aviso real"><i>M</i>Can I get a kitchen&nbsp;quote?<span class="etiqueta">Customer</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lamina q" data-pieza="3 · Cuerpo 1 + 4 · Bucle abierto" data-alt="Question 2: “To change a price on your website, do you wait on someone?” A chat: on Monday you ask to change the combo price, they say “this week,” and on Thursday you are still asking. At the bottom: “The next one made the news in October.”">
+    <div class="cuerpo">
+      <div class="cabeza"><span class="num">02<small>/06</small></span><div class="sino" aria-hidden="true"><span>Yes</span><span>No</span></div></div>
+      <h2 class="titular pregunta">To change a&nbsp;price on your website, do you wait on&nbsp;someone?</h2>
+      <div class="escena">
+        <img class="emoji" src="img/reloj-arena.webp" alt="">
+        <div class="tarjeta chat">
+          <span class="dia">Monday</span>
+          <div class="burbuja yo">Can you change the combo&nbsp;price?</div>
+          <div class="burbuja el">I’ll do it this&nbsp;week 👍</div>
+          <span class="dia">Thursday</span>
+          <div class="burbuja yo">Any luck?</div>
+        </div>
+      </div>
+      <div class="bucle" style="margin-top:0">The next one made the news in&nbsp;October</div>
+    </div>
+  </section>
+
+  <section class="lamina q" data-pieza="5 · Cuerpo 2" data-alt="Question 3: “PHP2Shell made the news. Does your site have the patch?” That PHP flaw can open your server without a password, and 7 in 10 websites run PHP. A red alert: critical severity, 9.2 out of 10, from October 21, 2026.">
+    <div class="cuerpo">
+      <div class="cabeza"><span class="num">03<small>/06</small></span><div class="sino" aria-hidden="true"><span>Yes</span><span>No</span></div></div>
+      <h2 class="titular pregunta">PHP2Shell made the&nbsp;news. Does your&nbsp;site have the&nbsp;patch?</h2>
+      <p class="texto">That PHP flaw can open your server without a&nbsp;password. <span class="acento">7 in 10&nbsp;websites</span> run&nbsp;PHP.</p>
+      <div class="escena">
+        <img class="emoji" src="img/alerta.webp" alt="">
+        <div class="tarjeta peligro">
+          <div class="encab">Alert · Oct 21, 2026</div>
+          <div class="cve">PHP2Shell</div>
+          <div class="medidor"><b></b></div>
+          <div class="fila-dato"><span>Critical severity</span><span>9.2/10</span></div>
+        </div>
+        <p class="fuente" style="margin:1.6cqw 0 0">Source: W3Techs, 2026.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="lamina q" data-pieza="5 · Cuerpo 2 + 6 · Bucle abierto" data-alt="Question 4: “When you don’t answer, do sales stop?” Answering, quoting, charging and booking don’t have to depend on you. A lock screen at 11:47 with two unanswered customer messages. At the bottom: “And the next one costs less than you think.”">
+    <div class="cuerpo">
+      <div class="cabeza"><span class="num">04<small>/06</small></span><div class="sino" aria-hidden="true"><span>Yes</span><span>No</span></div></div>
+      <h2 class="titular pregunta">When you don’t answer, do sales&nbsp;stop?</h2>
+      <p class="texto">Answering, quoting, charging and&nbsp;booking <span class="acento">don’t have to depend on&nbsp;you</span>.</p>
+      <div class="escena">
+        <img class="emoji" src="img/campana.webp" alt="" style="top:auto;bottom:4cqw;right:-3cqw">
+        <div class="tarjeta bloqueo">
+          <div class="encab"><span class="hora">11:47</span><span class="insignia">2 unanswered</span></div>
+          <div class="aviso"><i>A</i>Any openings tomorrow?</div>
+          <div class="aviso"><i>L</i>How much is it?</div>
+        </div>
+      </div>
+      <div class="bucle" style="margin-top:0">And the next one costs less than you&nbsp;think</div>
+    </div>
+  </section>
+
+  <section class="lamina q" data-pieza="7 · Cuerpo 3" data-alt="Question 5: “Want to advertise on social media but don’t know where to start?” It costs less than you think: with 5 dollars a day you can test an ad. A budget control set to 5 dollars a day, for Miami within 10 miles, with a “Publish ad” button.">
+    <div class="cuerpo">
+      <div class="cabeza"><span class="num">05<small>/06</small></span><div class="sino" aria-hidden="true"><span>Yes</span><span>No</span></div></div>
+      <h2 class="titular pregunta">Want to advertise on social media but don’t know where to&nbsp;start?</h2>
+      <p class="texto">It costs less than you think: <span class="acento">with $5 a&nbsp;day</span> you can test an&nbsp;ad.</p>
+      <div class="escena">
+        <img class="emoji" src="img/megafono.webp" alt="">
+        <div class="tarjeta presu">
+          <div class="encab">Daily budget</div>
+          <div class="monto">$5<small>a day</small></div>
+          <div class="riel"><b style="width:22%"></b></div>
+          <div class="pie-tarjeta"><span class="chip">Miami · 10 mi</span><span class="publicar">Publish ad</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lamina q" data-pieza="7 · Cuerpo 3" data-alt="Question 6: “How many people visited your website this week?” Without that number, you’re paying for your site blind. An empty visits chart with a question mark.">
+    <div class="cuerpo">
+      <div class="cabeza"><span class="num">06<small>/06</small></span><div class="sino" aria-hidden="true"><span>Yes</span><span>No</span></div></div>
+      <h2 class="titular pregunta">How many people visited your&nbsp;website this&nbsp;week?</h2>
+      <p class="texto">Without that number, <span class="acento">you’re paying for your site&nbsp;blind</span>.</p>
+      <div class="escena">
+        <img class="emoji" src="img/lupa.webp" alt="">
+        <div class="tarjeta grafica-vacia">
+          <div class="encab">Visits · this week</div>
+          <div class="valor">?</div>
+          <div class="barras" aria-hidden="true"><i style="--h:45%"></i><i style="--h:70%"></i><i style="--h:35%"></i><i style="--h:85%"></i><i style="--h:60%"></i><i style="--h:95%"></i><i style="--h:50%"></i></div>
+          <div class="dias" aria-hidden="true"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lamina" data-pieza="7 · Cuerpo 3" data-alt="“Every yes has a fix,” Judo Marketing’s answer: 1, contact forms with an anti-bot filter. 2, you change prices and products. 3, no PHP, with daily backups. 4, Juditos that answer 24/7. 5, guided ads with JuditoADS. 6, visits and sales in your portal.">
+    <div class="cuerpo">
+      <span class="kicker">Judo Marketing</span>
+      <h2 class="titular mediano">Every yes has a&nbsp;fix.</h2>
+      <ol class="respuestas">
+        <li>Contact forms with an anti‑bot&nbsp;filter</li>
+        <li>You change prices and&nbsp;products</li>
+        <li>No PHP, with daily&nbsp;backups</li>
+        <li><span><b>Juditos</b> that answer&nbsp;24/7</span></li>
+        <li><span>Guided ads with&nbsp;<b>JuditoADS</b></span></li>
+        <li>Visits and sales in your&nbsp;portal</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="lamina" data-pieza="8 · Llamado a la acción" data-alt="“All of this is fixed one chat away.” If you said yes to any, message us: we’ll tell you honestly if we can help. A “Message us on WhatsApp” button, the number +1 305 934 9981 and judomarketing.net.">
+    <div class="cuerpo">
+      <img class="emoji" src="img/globo.webp" alt="" style="position:absolute;--tam:16cqw;right:0;bottom:0">
+      <h2 class="titular mediano" style="line-height:1.2;font-size:calc(8cqw * var(--escala-titulares,1))">All of this is fixed <span class="hl justo">one&nbsp;chat</span> away.</h2>
+      <p class="texto">If you said yes to any, message us. We’ll tell you honestly if we can&nbsp;help.</p>
+      <span class="boton ancho">Message us on WhatsApp</span>
+      <p class="telefono-grande" style="margin:auto 0 0">+1 305 934 9981</p>
+      <p class="texto" style="font-size:4.6cqw;margin-top:-1.6cqw">judomarketing.net</p>
+    </div>
+  </section>
+
+</main>
+</main>
+</div>
+<section class="notas" id="notas" aria-label="Notas por lámina"></section>
+
+<script>
+// Arma lo que se repite (pie de cada lámina y el hilo) y la mesa de revisión
+const render = new URLSearchParams(location.search).has("render");
+if (render) document.body.classList.add("render");
+const tira = document.getElementById("tira");
+const laminas = [...tira.querySelectorAll(".lamina")];
+const N = laminas.length;
+tira.style.setProperty("--n", N);
+// La marca del pie: data-logo, data-usuario y data-nombre de la tira. Sin logo va solo el texto;
+// sin @ va el nombre del negocio.
+const MARCA = { logo: tira.dataset.logo || "", usuario: tira.dataset.usuario || tira.dataset.nombre || "" };
+laminas.forEach((l, i) => {
+  if (l.querySelector(".pie-lamina")) return;
+  const pie = document.createElement("div");
+  pie.className = "pie-lamina";
+  pie.innerHTML = `<span class="marca">${MARCA.logo ? `<img src="${MARCA.logo}" alt="">` : ""}${MARCA.usuario}</span>` +
+    `<span class="progreso">${laminas.map((_, j) => `<i class="${j === i ? "aqui" : ""}"></i>`).join("")}</span>` +
+    (i < N - 1 ? `<span class="desliza">${tira.dataset.desliza || "Desliza →"}</span>` : `<span class="desliza">${tira.dataset.guardalo || "Guárdalo"}</span>`);
+  l.append(pie);
+});
+// El hilo: una onda suave que cruza todas las láminas a la altura de los pies
+const W = parseFloat(getComputedStyle(tira).getPropertyValue("--ancho")) || 1080;
+const H = parseFloat(getComputedStyle(tira).getPropertyValue("--alto")) || 1350;
+// Entre el final del cuerpo (15 cqw del borde) y el pie: no cruza el contenido
+const y0 = H - W * 0.135;
+let d = `M0 ${y0}`;
+for (let i = 0; i < N; i++) d += ` Q${i * W + W * 0.5} ${y0 + (i % 2 ? 9 : -9)} ${(i + 1) * W} ${y0}`;
+tira.insertAdjacentHTML("afterbegin", `<svg class="hilo" viewBox="0 0 ${W * N} ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}"/>${laminas.slice(1).map((_, i) => `<circle cx="${(i + 1) * W}" cy="${y0}" r="11"/>`).join("")}</svg>`);
+document.getElementById("titulo").textContent = document.title.replace(/^Carrusel · /, "");
+document.getElementById("resumen").textContent = `${N} láminas · ${W} × ${H}`;
+document.getElementById("notas").innerHTML = laminas.map((l, i) =>
+  `<article><b>${i + 1} · ${l.dataset.pieza || ""}</b><small>Texto alternativo: ${l.dataset.alt || "falta"}</small></article>`).join("");
+// En la mesa, la tira cabe en el ancho de la pantalla
+if (!render) {
+  const ajustar = () => tira.style.setProperty("--zoom", Math.min(0.42, (innerWidth - 32) / (W * Math.min(N, 3.2))));
+  ajustar(); addEventListener("resize", ajustar);
+}
+window.listo = (async () => {
+  await document.fonts.ready;
+  await Promise.all([...document.images].map((i) => i.decode().catch(() => {})));
+  return true;
+})();
+</script>
+</body>
+</html>

@@ -29,6 +29,9 @@ Contenido:
 El script de `carrusel.html` lo agrega solo, con lo que diga la tira:
 `<main class="tira" data-logo="marca/logo.png" data-usuario="@negocio"
 data-nombre="Negocio">`. Sin logo va solo el texto; sin @, el nombre.
+En otro idioma, `data-desliza` y `data-guardalo` cambian las palabras del
+pie (en inglés: `data-desliza="Swipe →" data-guardalo="Save it"`), y el
+`<html lang>` va en ese idioma.
 
 - **El pie:**
   - el logo y el @ de la marca (`MARCA` en el script);

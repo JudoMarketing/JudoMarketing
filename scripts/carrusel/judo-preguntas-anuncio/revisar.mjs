@@ -39,6 +39,14 @@ const res = await p.evaluate(() => {
     if (!l.dataset.alt) r.problemas.push("le falta el texto alternativo (data-alt)");
     // Cajas con fondo o borde (botones, chips, recuadros) también respetan los márgenes
     const L = l.getBoundingClientRect();
+    // Texto más ancho que la lámina: la lámina lo recorta, así que la revisión de arriba
+    // (que mide lo que se ve) no lo nota. Pasó con una portada en inglés.
+    for (const x of l.querySelectorAll(".cuerpo *")) {
+      if (![...x.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue;
+      const rg = document.createRange(); rg.selectNodeContents(x);
+      if ([...rg.getClientRects()].some((q) => q.width > 1 && (q.right > L.right - m + 1 || q.left < L.left + m - 1)))
+        r.problemas.push(`«${x.textContent.trim().replace(/\s+/g, " ").slice(0, 40)}» se sale por el costado: la lámina lo corta. Achica la letra o cambia la frase`);
+    }
     for (const x of l.querySelectorAll(".cuerpo *")) {
       const cs = getComputedStyle(x);
       const conFondo = !/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor) || parseFloat(cs.borderTopWidth) > 0;

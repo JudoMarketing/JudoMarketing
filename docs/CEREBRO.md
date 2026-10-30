@@ -678,6 +678,19 @@ Los errores de diseño de los sitios están en la sección 2 y en
     más.
   - Las variables de Vercel no se descifran.
 
+### Carruseles
+
+- **La revisión dijo «Sin problemas» con una portada cortada** (2026-10-30).
+  - Qué pasó: en la versión en inglés de «Apaga el teléfono», «Does your
+    business» no cabía y se salía por la derecha. La lámina lo recortaba, y
+    la revisión solo medía lo que se veía, así que no avisó. Se vio al mirar
+    el PNG.
+  - Costó: una vuelta más de render; casi se entrega cortado.
+  - Regla: `revisar.mjs` ahora avisa cuando un texto se sale por el costado.
+    Aun así, **se mira cada PNG antes de entregar**: la revisión no reemplaza
+    al ojo. Una palabra pegada con `&nbsp;` puede volver una línea más ancha
+    que la lámina.
+
 ### Repos ajenos
 
 - **Un video nuestro quedó público en el fork de un repo de internet**

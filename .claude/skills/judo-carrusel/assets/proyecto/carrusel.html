@@ -214,6 +214,7 @@ const N = laminas.length;
 tira.style.setProperty("--n", N);
 // La marca del pie: data-logo, data-usuario y data-nombre de la tira. Sin logo va solo el texto;
 // sin @ va el nombre del negocio.
+// En otro idioma, data-desliza y data-guardalo cambian «Desliza →» y «Guárdalo» (en inglés: "Swipe →" y "Save it").
 const MARCA = { logo: tira.dataset.logo || "", usuario: tira.dataset.usuario || tira.dataset.nombre || "" };
 laminas.forEach((l, i) => {
   if (l.querySelector(".pie-lamina")) return;
@@ -221,7 +222,7 @@ laminas.forEach((l, i) => {
   pie.className = "pie-lamina";
   pie.innerHTML = `<span class="marca">${MARCA.logo ? `<img src="${MARCA.logo}" alt="">` : ""}${MARCA.usuario}</span>` +
     `<span class="progreso">${laminas.map((_, j) => `<i class="${j === i ? "aqui" : ""}"></i>`).join("")}</span>` +
-    (i < N - 1 ? `<span class="desliza">Desliza →</span>` : `<span class="desliza">Guárdalo</span>`);
+    (i < N - 1 ? `<span class="desliza">${tira.dataset.desliza || "Desliza →"}</span>` : `<span class="desliza">${tira.dataset.guardalo || "Guárdalo"}</span>`);
   l.append(pie);
 });
 // El hilo: una onda suave que cruza todas las láminas a la altura de los pies

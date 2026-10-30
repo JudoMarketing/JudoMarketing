@@ -18,7 +18,8 @@ Se publica como un test: el que desliza cuenta sus «sí».
   «¿Si tú no contestas, tu negocio no vende?». Abajo va qué se automatiza:
   contestar, cotizar, cobrar y agendar.
 - **El marketing en redes «sin presupuesto»** se contesta con un dato:
-  con $5 al día ya se prueba un anuncio en Meta.
+  con $2 al día ya se prueba un anuncio en Meta (Junior lo bajó de $5 el
+  mismo día; Meta y JuditoADS aceptan desde $1).
 - **Se agregó una pregunta:** «¿Sabes cuántas personas entraron a tu web esta
   semana?». Es un problema muy común: pagar una web sin saber qué trae.
   El portal de Judo muestra las visitas y las ventas.
@@ -69,7 +70,7 @@ Escríbenos por WhatsApp: +1 305 934 9981. Te decimos con honestidad si podemos 
 4. Pregunta 2: «¿Para cambiar un precio en tu web, esperas a alguien?» Un chat: el lunes pides cambiar el precio del combo, te dicen «esta semana», y el jueves sigues preguntando. Abajo: «La que sigue fue noticia en octubre».
 5. Pregunta 3: «PHP2Shell fue la noticia. ¿Tu web ya tiene el parche?» Una falla de PHP puede abrir tu servidor sin contraseña, y 7 de cada 10 webs usan PHP. Una alerta roja: gravedad crítica, 9,2 de 10, del 21 de octubre de 2026.
 6. Pregunta 4: «¿Si tú no contestas, tu negocio no vende?» Contestar, cotizar, cobrar y agendar no tiene que depender de ti. Una pantalla bloqueada a las 11:47 con dos mensajes de clientes sin responder. Abajo: «Y la que sigue cuesta menos de lo que crees».
-7. Pregunta 5: «¿Quieres anunciarte en redes y no sabes por dónde empezar?» Cuesta menos de lo que crees: con 5 dólares al día ya pruebas un anuncio. Un control de presupuesto en 5 dólares diarios, para Miami a 15 km, con el botón «Publicar anuncio».
+7. Pregunta 5: «¿Quieres anunciarte en redes y no sabes por dónde empezar?» Cuesta menos de lo que crees: con 2 dólares al día ya pruebas un anuncio. Un control de presupuesto en 2 dólares diarios, para Miami a 15 km, con el botón «Publicar anuncio».
 8. Pregunta 6: «¿Sabes cuántas personas entraron a tu web esta semana?» Sin ese número, pagas tu web a ciegas. Una gráfica de visitas vacía, con un signo de interrogación.
 9. «Cada sí tiene arreglo», la respuesta de Judo Marketing: 1, formularios con filtro anti-bots. 2, tú cambias precios y productos. 3, sin PHP y con respaldo diario. 4, Juditos que contestan 24/7. 5, anuncios guiados con JuditoADS. 6, visitas y ventas en tu portal.
 10. «Todo esto se arregla a un chat de distancia.» Si dijiste sí a alguna, escríbenos: te decimos con honestidad si podemos ayudarte. Botón «Escríbenos por WhatsApp», el número +1 305 934 9981 y judomarketing.net.
@@ -89,6 +90,7 @@ Escríbenos por WhatsApp: +1 305 934 9981. Te decimos con honestidad si podemos 
 - Formularios con trampa anti-bots y captcha verificado en el servidor: `docs/CEREBRO.md`, sección 9.
 - El cliente cambia precios y productos, y ve visitas y ventas en su portal: `src/content/documentos.ts`.
 - JuditoADS (14 días gratis, se recomienda empezar con $5 a $10 al día) y Juditos: `src/content/chatbot.ts`.
+- El mínimo de $1 al día: `src/lib/strategy.ts` de JuditoADS, que con menos de $3 a $5 (según el objetivo) avisa que los resultados llegan lentos.
 
 ## Cómo se cambia
 
