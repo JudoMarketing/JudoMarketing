@@ -1,0 +1,13 @@
+{
+  "nombre": "Judo Marketing",
+  "fondo": "#f3efe6",
+  "superficie": "#e9e3d6",
+  "texto": "#15131d",
+  "acento": "#6d28d9",
+  "acento-texto": "#ffffff",
+  "primario": "#6d28d9",
+  "fuente-display": "Poppins",
+  "fuente-cuerpo": "Inter",
+  "logo": "marca/logo.png",
+  "contacto": { "whatsapp": "+1 305 934 9981", "instagram": "@judo.marketing", "web": "judomarketing.net" }
+}
