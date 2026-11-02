@@ -7,7 +7,7 @@
 # Necesita Chromium (en la nube de Claude: /opt/pw-browsers/chromium-*/chrome-linux/chrome).
 set -u
 SALIDA="${1:-/tmp/velocidad}"; mkdir -p "$SALIDA"
-export CHROME_PATH="${CHROME_PATH:-$(ls -d /opt/pw-browsers/chromium-*/chrome-linux/chrome 2>/dev/null | head -1)}"
+export CHROME_PATH="${CHROME_PATH:-$(ls -d /opt/pw-browsers/chromium-*/chrome-linux*/chrome 2>/dev/null | head -1)}"
 for par in "https://www.judomarketing.net/|home|mobile" "https://www.judomarketing.net/|home|desktop" "https://www.judomarketing.net/es|es-home|mobile" "https://www.judomarketing.net/services|services|mobile" "https://www.judomarketing.net/showcase|showcase|mobile" "https://www.judomarketing.net/contact|contact|mobile" "https://www.judomarketing.net/juditoads|juditoads|mobile" "https://www.judomarketing.net/juditos|juditos|mobile"; do
   IFS='|' read -r u n s <<< "$par"; extra=""; [ "$s" = "desktop" ] && extra="--preset=desktop"
   npx --yes lighthouse@12 "$u" --quiet --chrome-flags="--headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --ignore-certificate-errors" --only-categories=performance,seo,accessibility,best-practices --output=json --output-path="$SALIDA/lh-$n-$s.json" $extra >/dev/null 2>"$SALIDA/lh-$n-$s.err" || echo "fallo $n $s: $(tail -1 "$SALIDA/lh-$n-$s.err")"
