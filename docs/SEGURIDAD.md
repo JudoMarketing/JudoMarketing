@@ -43,6 +43,39 @@ inventario, el procedimiento de emergencia y las excepciones conocidas.
   alta, PHP o un optimizador abierto, GitHub manda un correo. La plantilla
   JudiWEB ya lo trae, así que cada cliente nuevo nace vigilado.
 
+## 2 de noviembre de 2026: zod (GHSA-mrhx-c7xc-m3w5)
+
+El flujo de seguridad falló en casi todos los repos: zod antes de 4.6.6 puede
+agotar la memoria al validar listas grandes con límite (falla alta, sin parche
+en zod 3).
+
+- **Se subió zod a ^4.6.7 en 12 repos**, en su rama de producción:
+  - JuditoADS, AI-Assistants, ABA, Accustoms, DameUnaMano, HR-Gutters,
+    Jesucristoeltodopoderoso (godshome), JudiCRM, JudiWEB, milcoloresapp,
+    Pachy Pinchos y RBTCorner;
+  - May Baykery ya lo tenía.
+- **Copias anidadas:** JuditoADS, AI-Assistants y DameUnaMano traían otra
+  copia, la 4.1.11, fija dentro de `@vercel/cli-config`. Un override
+  (`"zod": "$zod"`) la iguala sin subir de versión mayor a `@vercel/blob`.
+- **Pachy Pinchos pasó de zod 3 a zod 4.** Su único esquema, el de la orden,
+  se probó con los dos: las mismas respuestas y los mismos mensajes. Solo
+  cambian los mensajes en inglés de errores que el formulario no deja
+  provocar.
+- **De paso, `npm audit fix`** cerró las fallas de undici en DameUnaMano y
+  RBTCorner.
+- **Cada repo pasó por su preview**, comparado ruta por ruta con producción:
+  mismo código y mismo título.
+  - DameUnaMano da 404 en los eventos del preview a propósito: el preview usa
+    su propia carpeta de datos (`preview/v1/`).
+  - JuditoADS y AI-Assistants se comparan contra
+    `judomarketing.net/juditoads` y `/juditos`, que es donde se ven.
+- **El flujo `seguridad.yml` de los 22 repos** pasó a `actions/checkout@v5`
+  y `setup-node@v5`. Las v4 corren con Node 20, que GitHub retiró; ese era el
+  aviso amarillo.
+- **Quedan las ramas `seguridad/zod`** de ABA y May Baykery, hechas sobre una
+  base vieja. Desde esta sesión no se pueden borrar. No se publican; se pueden
+  borrar desde GitHub.
+
 ## Inventario (dónde vive cada cosa)
 
 La rama de producción es la que Vercel publica. **No siempre es la
@@ -95,7 +128,14 @@ La lista para la revisión externa vive en `scripts/seguridad/sitios.txt`.
 
    Da las versiones de Next y React y las vulnerabilidades críticas y altas
    de producción, solo con el lockfile y sin instalar nada.
-4. **Parchar** con `bash scripts/seguridad/parchar.sh /ruta/del/repo`.
+   - **Se audita la rama de producción como está en GitHub**, no la del clon:
+     `git fetch origin +refs/heads/<rama>:refs/remotes/origin/<rama>`, y
+     `git ls-remote origin refs/heads/<rama>` tiene que dar el mismo commit.
+4. **Parchar** con `bash scripts/seguridad/parchar.sh /ruta/del/repo` si es
+   Next. Si la falla es de otro paquete (zod, undici…):
+   `bash scripts/seguridad/subir-paquete.sh /ruta/del/repo <rama> <paquete> <versión>`.
+   Ese script parte de GitHub y, si otro paquete trae su propia copia vieja,
+   la iguala con un override en vez de subir de versión mayor al que la trae.
    - Sube Next a la última versión de su línea.
    - Aplica `npm audit fix` sin saltos de versión mayor y con
      `--ignore-scripts`.

@@ -27,6 +27,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-11-02 | **zod con falla alta (GHSA-mrhx-c7xc-m3w5) en 12 repos: parchado y publicado.** zod ^4.6.7 en cada rama de producción, con override para las copias que trae `@vercel/cli-config`; cada preview comparado con producción. El flujo de seguridad pasó a las acciones v5. Para la próxima falla de un paquete que no es Next: `scripts/seguridad/subir-paquete.sh`. Detalle en `SEGURIDAD.md`. |
 | 2026-10-30 | **Repos de internet: copia privada, nunca fork.** Los videos explicativos con anything2explainer se hacen en `JudoMarketing/VideoCreator-explanatory-` (privado, sin la firma «built by…», con `CLAUDE.md` de reglas). Las reglas de GitHub para importar están en `scripts/seguridad/rulesets/`. La licencia es no comercial: venderlo necesita permiso del autor. Detalle en la sección 10, «Repos ajenos». |
 | 2026-10-29 | **Biblioteca Judo**: un artifact con todo el contenido de marketing (videos, carruseles y las dos skills), cada pieza con nombre propio, para verla, descargarla y pedir cambios. Lo nuevo se sube ahí el mismo día; los pedidos de Junior se leen de ahí. Cómo: `BIBLIOTECA.md`. |
 | 2026-10-28 | **Skills de contenido: `judo-video-vertical` y `judo-carrusel`** (`.claude/skills/`). Con un texto guía arman el contenido de cualquier negocio: el gancho, las 8 piezas, la marca del cliente, la producción (MP4 1080×1920 o láminas PNG y PDF), el guion para voz y el pie de foto. Una revisión automática avisa de líneas partidas, zonas que tapa la app, encimados, contraste y tiempo de lectura. Se suben a cada cuenta de Claude con los .zip de `scripts/skills/dist/`. La fuente de lo compartido está en `scripts/skills/compartido/`, y `scripts/skills/empacar.py` lo copia y empaca. |
@@ -655,6 +656,20 @@ Los errores de diseño de los sitios están en la sección 2 y en
 - **El showcase del preview sale solo con los proyectos fijos.** No es un
   error del cambio: el preview no tiene la clave de servicio de Supabase.
   Se revisa la parte fija y lo demás en producción.
+
+- **Casi se publica código viejo en ABA y May Baykery** (2026-11-02).
+  - Qué pasó: al parchar zod, el clon local tenía la rama de producción de
+    esos dos repos vieja. `git fetch origin <rama>` no la actualizó porque el
+    clon solo sigue otras ramas. La rama de arreglo salió de un commit
+    anterior: en ABA faltaban las cabeceras de seguridad y en May Baykery
+    cuatro cambios de la portada. Se notó antes de publicar, al comparar con
+    el commit que Vercel tenía en producción.
+  - Costó: rehacer ABA en otra rama. May Baykery no necesitaba el parche.
+  - Regla: antes de parchar se compara la base con GitHub
+    (`git ls-remote origin refs/heads/<rama>`) y con el `githubCommitSha` del
+    último despliegue de producción. Se baja con
+    `git fetch origin +refs/heads/<rama>:refs/remotes/origin/<rama>`.
+    `scripts/seguridad/subir-paquete.sh` ya lo hace.
 
 ### Dependencias (npm)
 
