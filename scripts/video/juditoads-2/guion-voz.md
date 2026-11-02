@@ -17,7 +17,7 @@ efecto.
 | 0:08,8 – 0:13,3 | El vuelo de la Tierra a la oficina | **Lo logré en Miami, una de las ciudades más competitivas.** | Con orgullo, subiendo la energía. |
 | 0:13,3 – 0:16,1 | «Y creé…» y el logo de JuditoADS | **JuditoADS: cinco años de experiencia.** | Firme. Marca «cinco años». |
 | 0:16,1 – 0:18,5 | La mira encuentra a una persona | **Judito encuentra a quien sí te compra.** | Seguro. |
-| 0:18,5 – 0:20,1 | «Pero eso no es lo más loco…» | **Pero no es lo más loco...** | Más lento y más bajo, como un secreto. |
+| 0:18,5 – 0:20,1 | «Pero eso no es lo más loco…» | **Y no es lo más loco...** | Más lento y más bajo, como un secreto. |
 | 0:20,1 – 0:21,9 | «Lo lanzas tú solo. En 4 pasos:» | **Tú solo, en cuatro pasos.** | Vuelve la energía. |
 | 0:21,9 – 0:23,9 | Paso 1: la pantalla de entrada | **Uno: entras a la app.** | Claro y práctico, con un golpe en cada número. |
 | 0:23,9 – 0:26,5 | Paso 2: el panel y tus cuentas | **Dos: conectas tu Facebook.** | Igual. |

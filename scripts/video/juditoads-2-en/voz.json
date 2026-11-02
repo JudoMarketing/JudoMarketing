@@ -1,0 +1,42 @@
+{
+  "video": "JuditoADS-video2-en.mp4",
+  "fin": 56.1,
+  "idioma": "en",
+  "silabas_por_segundo": 4.2,
+  "bloques": [
+    [
+      {"t": 0.0, "texto": "This ad reached you for under five cents.", "ve": "La moneda de 5¢", "como": "Con picardía, sonriendo, como quien cuenta un truco."},
+      {"t": 2.6, "texto": "Stick around: I'll show you how, no guru...", "ve": "El genio sale de la lámpara y cae el sello NO", "como": "Cercano; más bajo en «no guru»."},
+      {"t": 5.8, "texto": "or ten overpriced courses.", "ve": "La torre de cursos: $6,823 y 134 horas", "como": "Con un poco de burla en «overpriced». Después suena la caja registradora."}
+    ],
+    [
+      {"t": 8.8, "texto": "I made it in Miami, one of the toughest markets out there.", "ve": "El vuelo de la Tierra a la oficina", "como": "Con orgullo, subiendo la energía."},
+      {"t": 13.3, "texto": "Judito Ads: five years in one app.", "ve": "«And I built…» y el logo de JuditoADS", "como": "Firme. Marca «five years»."},
+      {"t": 16.1, "texto": "It finds the people who really buy.", "ve": "La mira encuentra a una persona", "como": "Seguro."}
+    ],
+    [
+      {"t": 18.5, "texto": "It gets crazier...", "ve": "«But wait, it gets crazier…»", "como": "Más lento y más bajo, como un secreto."},
+      {"t": 20.1, "texto": "Yourself, in four steps.", "ve": "«You launch it yourself. In 4 steps:»", "como": "Vuelve la energía."}
+    ],
+    [
+      {"t": 21.9, "texto": "One: sign in to the app.", "ve": "Paso 1: la pantalla de entrada", "como": "Claro y práctico, con un golpe en cada número."},
+      {"t": 23.9, "texto": "Two: connect your Facebook.", "ve": "Paso 2: el panel y tus cuentas", "como": "Igual."},
+      {"t": 26.5, "texto": "Three: create a new ad... or boost a post.", "ve": "Paso 3: el marco salta de una opción a la otra", "como": "«Or boost a post» cuando salta el marco."}
+    ],
+    [
+      {"t": 29.7, "texto": "Four: set your budget... and you decide.", "ve": "Paso 4: el presupuesto y el sello «You decide»", "como": "«You decide» cuando cae el sello."},
+      {"t": 33.3, "texto": "Done! Your ad is now in Meta.", "ve": "«Done! Your ad is now in Meta.»", "como": "Alegre."}
+    ],
+    [
+      {"t": 36.3, "texto": "What nobody tells you...", "ve": "«And what comes next, almost nobody tells you…»", "como": "Bajito, de secreto."},
+      {"t": 38.1, "texto": "Judito tells you.", "ve": "«Judito tells you:» y el primer consejo", "como": "Con complicidad, subiendo."},
+      {"t": 40.1, "texto": "Tips that really work...", "ve": "El segundo consejo", "como": "Pausado: que se lean las tarjetas."},
+      {"t": 42.1, "texto": "and watches your ads for you.", "ve": "El tercer consejo", "como": "Tranquilo."}
+    ],
+    [
+      {"t": 44.1, "texto": "Twenty dollars a month... what a burger costs.", "ve": "$20 al mes, la hamburguesa y «14 days FREE»", "como": "Con orgullo, sin gritar. Marca «twenty dollars»."},
+      {"t": 48.1, "texto": "Made it this far? Try it free.", "ve": "«If you made it this far, try it free»; el dedo toca el botón", "como": "Directo, como hablándole a una sola persona."},
+      {"t": 50.6, "texto": "Fourteen days, no card. Need help getting started? Message me.", "ve": "Tu @ y tu WhatsApp", "como": "Cálido, el tono más humano del video. Sonriendo."}
+    ]
+  ]
+}

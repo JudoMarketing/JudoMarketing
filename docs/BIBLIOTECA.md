@@ -21,6 +21,7 @@ sale de lo que hace distinta a la pieza, no del número:
 | Video 1 de JuditoADS (22 oct 2026) | Desde el espacio |
 | Video 2 de JuditoADS (28 oct 2026) | Cinco centavos |
 | Video 3 de JuditoADS (29 oct 2026) | Por dentro |
+| Video 2 en inglés (2 nov 2026) | Five cents |
 | Carrusel de ejemplo de la skill | El anuncio que no vende |
 | Carrusel de preguntas de Judo Marketing (30 oct 2026) | Apaga el teléfono |
 | Su versión para anuncio pagado (30 oct 2026) | Cada sí tiene arreglo |
@@ -80,6 +81,26 @@ Si un archivo no se pudo quitar, la página lo dice y queda guardado sin
 mostrarse. Para limpiarlo: listar los archivos (`action: "list"`,
 `scope: "assets"`), comparar con los ids de las fichas y borrar con
 `action: "delete"` y el id como `path` solo los que ninguna ficha usa.
+
+## La voz de Junior
+
+En la ficha de un video, «Subir una versión nueva o tu voz» acepta también
+MP3, WAV y M4A, varios a la vez. El almacén no acepta audio, así que la página
+guarda cada uno como texto en base64 (como los .zip) y lo anota en `archivos`
+con `formato: "mp3"` y `base64: true`; al descargarlo se devuelve el audio tal
+cual.
+
+Cuando Junior diga **«calza la voz de <pieza>»**:
+1. Leer la ficha con ArtifactData y tomar los archivos con `base64: true`,
+   en el orden de su nombre (`bloque-1.mp3`, `bloque-2.mp3`…).
+2. Bajar cada uno con Artifact (`action: "read"`, `path` = su id) y
+   decodificarlo con `base64 -d` a la carpeta `voz/` del video (está en
+   `.gitignore`: la voz no se sube al repositorio).
+3. Correr `python3 calzar-voz.py voz.json voz/bloque-1.mp3 …` desde la
+   carpeta del video y revisar lo que avisa (frases aceleradas o que entran
+   tarde).
+4. Subir el `salida/…-con-voz.mp4` como versión nueva de la pieza, con su
+   línea en el historial, y pasar el estado a «listo».
 
 ## Los pedidos de Junior
 

@@ -2,7 +2,10 @@
 #
 # Los tiempos y las frases viven en voz.json (uno por video):
 #   {"video": "salida/video.mp4", "fin": 56.1, "silabas_por_segundo": 5.5,
+#    "idioma": "es",
 #    "bloques": [[{"t": 0.0, "texto": "Te llegué por…"}, {"t": 2.6, "texto": "…"}], […]]}
+# "idioma" es "es" (por defecto) o "en". En inglés se habla a unas 4,2 sílabas
+# por segundo; en español, a 5,5.
 # "t" es el segundo en que empieza la escena de esa frase (sale de
 # salida/escenas.json del video final, no del storyboard). Cada bloque es una
 # generación de ElevenLabs.
@@ -10,7 +13,10 @@
 # Uso:
 #   python3 calzar-voz.py voz.json --guion
 #       Mide cada frase contra su escena (sílabas ÷ sílabas por segundo) y
-#       escribe los bloques para ElevenLabs con las pausas que calzan.
+#       escribe los bloques para ElevenLabs con las pausas que calzan. Cada
+#       pausa se calcula desde donde termina de verdad la frase anterior, así
+#       que el atraso no se suma: si una frase llena su escena, la pausa
+#       siguiente es corta (mínimo 0,3 s, lo justo para poder cortar ahí).
 #   python3 calzar-voz.py voz.json bloque-1.mp3 bloque-2.mp3 …
 #       Corta cada bloque en sus frases (por los silencios más largos), pone
 #       cada frase en el segundo de su escena (si no cabe, la acelera hasta un
@@ -21,11 +27,41 @@ D = os.path.dirname(os.path.abspath(__file__))
 FF = subprocess.run(["python3", "-c", "import imageio_ffmpeg as f;print(f.get_ffmpeg_exe())"],
                     capture_output=True, text=True).stdout.strip() or "ffmpeg"
 ACELERA_MAX = 1.12
+PAUSA_MIN, PAUSA_MAX = 0.3, 3.0  # ElevenLabs no lee pausas de más de 3 s
 
 
-def silabas(texto):
+def silabas_en(texto):
+    """Cuenta aproximada de sílabas en inglés: grupos de vocales, sin la «e»
+    muda del final («made», «price»), con la «-ed» que no suena («reached») y
+    con «-le» y «-es» que sí («people», «courses»)."""
+    raras = {"facebook": 2, "judito": 3, "miami": 3, "guru": 2, "meta": 2, "whatsapp": 2,
+             "instagram": 3, "every": 2, "business": 2, "area": 3, "idea": 3, "create": 2}
+    t = re.sub(r"(?i)juditoads", "judito ads", texto.lower()).replace("’", "'")
+    n = 0
+    for p in re.findall(r"[a-z']+", t):
+        p = p.replace("'", "")
+        if p in raras:
+            n += raras[p]; continue
+        if len(p) <= 3:
+            n += 1; continue
+        q = p
+        if q.endswith("es") and not re.search(r"(?:[sxz]|ch|sh|ge|ce)es$", q):
+            q = q[:-2]          # «makes» → «mak»; «courses» y «prices» se quedan
+        elif q.endswith("ed") and not re.search(r"[td]ed$", q):
+            q = q[:-2]          # «reached» → «reach»; «needed» se queda
+        elif q.endswith("e") and not re.search(r"[^aeiou]le$", q):
+            q = q[:-1]          # «made» → «mad»; «people» se queda
+        q = re.sub(r"(?<=[aeiou])y(?=[aeiou])", "y.", q)  # «paying»: pay-ing
+        q = re.sub(r"i(?=e[rnt])", "i.", q)               # «crazier», «experience»
+        n += max(1, len(re.findall(r"[aeiouy]+", q)))
+    return n
+
+
+def silabas(texto, idioma="es"):
     """Cuenta aproximada de sílabas en español: grupos de vocales, con los
     hiatos (dos vocales fuertes o una débil con tilde) contados como dos."""
+    if idioma == "en":
+        return silabas_en(texto)
     t = re.sub(r"(?i)juditoads", "juditoeids", texto.lower())
     t = re.sub(r"[^a-záéíóúüñ ]", " ", t)
     n = 0
@@ -36,11 +72,16 @@ def silabas(texto):
     return n
 
 
-def habla(texto, sps):
+def habla(texto, sps, idioma="es"):
     """Segundos que tarda en decirse, sin el silencio del final."""
     cuerpo = texto.rstrip(" .…!?")
     pausas = len(re.findall(r"(\.\.\.|…|[,:;.?!])\s", cuerpo))
-    return silabas(texto) / sps + 0.25 * pausas
+    return silabas(texto, idioma) / sps + 0.25 * pausas
+
+
+def ritmo(cfg):
+    idioma = cfg.get("idioma", "es")
+    return cfg.get("silabas_por_segundo", 4.2 if idioma == "en" else 5.5), idioma
 
 
 def frases(cfg):
@@ -51,27 +92,49 @@ def frases(cfg):
     return planas
 
 
-def guion(cfg):
-    sps = cfg.get("silabas_por_segundo", 5.5)
+def plan(cfg):
+    """Dónde cae cada frase si el bloque se lee de corrido: [(bloque, [(frase,
+    voz, sale, pausa)])]. «sale» es el segundo en que empieza a decirse; la
+    pausa que le sigue se mide desde donde termina, no desde el inicio de su
+    escena, para que el atraso de una frase no se pase a las siguientes."""
+    sps, idioma = ritmo(cfg)
     frases(cfg)
-    malas = 0
-    print(f"{'escena':>13}  {'hueco':>5}  {'voz':>5}  frase")
+    out = []
     for b in cfg["bloques"]:
-        for f in b:
-            d = habla(f["texto"], sps)
+        cursor, filas = b[0]["t"], []
+        for j, f in enumerate(b):
+            d = habla(f["texto"], sps, idioma)
+            sale = max(f["t"], cursor)
+            pausa = None
+            if j < len(b) - 1:
+                pausa = round(min(PAUSA_MAX, max(PAUSA_MIN, b[j + 1]["t"] - (sale + d))), 1)
+                cursor = sale + d + pausa
+            filas.append((f, d, sale, pausa))
+        out.append((b, filas))
+    return out
+
+
+def guion(cfg):
+    malas = 0
+    print(f"{'escena':>13}  {'hueco':>5}  {'voz':>5}  {'sale':>5}  frase")
+    planes = plan(cfg)
+    for b, filas in planes:
+        for f, d, sale, _ in filas:
             ok = d <= f["hueco"] * 0.95
             malas += not ok
-            print(f"{f['t']:5.1f}–{f['t'] + f['hueco']:5.1f}  {f['hueco']:4.1f}s  {d:4.1f}s  {'' if ok else '⚠ NO CABE  '}{f['texto']}")
+            tarde = f"  (+{sale - f['t']:.1f} s)" if sale - f["t"] > 0.05 else ""
+            print(f"{f['t']:5.1f}–{f['t'] + f['hueco']:5.1f}  {f['hueco']:4.1f}s  {d:4.1f}s  {sale:5.1f}{tarde}  "
+                  f"{'' if ok else '⚠ NO CABE  '}{f['texto']}")
     print()
-    for i, b in enumerate(cfg["bloques"], 1):
+    for i, (b, filas) in enumerate(planes, 1):
         partes = []
-        for j, f in enumerate(b):
+        for f, d, sale, pausa in filas:
             partes.append(f["texto"])
-            if j < len(b) - 1:
-                # Al menos 0,6 s: más que la pausa de una coma, para poder cortar ahí
-                pausa = min(2.0, max(0.6, round(f["hueco"] - habla(f["texto"], sps), 1)))
+            if pausa is not None:
                 partes.append(f'<break time="{pausa}s" />\n')
-        print(f"── Bloque {i} · {b[0]['t']:.1f} s a {b[-1]['t'] + b[-1]['hueco']:.1f} s ──")
+        f, d, sale, _ = filas[-1]
+        dura = sale + d - b[0]["t"]
+        print(f"── Bloque {i} · va en el segundo {b[0]['t']:.1f} · dura unos {dura:.1f} s ──")
         print(" ".join(partes).replace(" \n ", "\n").replace("\n ", "\n"))
         print()
     if malas:
@@ -135,7 +198,8 @@ def calzar(cfg, audios):
     print(f"{'escena':>6}  {'voz':>5}  {'hueco':>5}  ajuste")
     for i, (b, audio) in enumerate(zip(cfg["bloques"], audios)):
         entradas += ["-i", audio]
-        grupos = partir(tramos_de_voz(audio), [habla(f["texto"], cfg.get("silabas_por_segundo", 5.5)) for f in b])
+        sps, idioma = ritmo(cfg)
+        grupos = partir(tramos_de_voz(audio), [habla(f["texto"], sps, idioma) for f in b])
         filtros.append(f"[{i}:a]aformat=sample_rates=48000:channel_layouts=mono,asplit={len(b)}" +
                        "".join(f"[b{i}_{j}]" for j in range(len(b))))
         for j, ((a, z), f) in enumerate(zip(grupos, b)):

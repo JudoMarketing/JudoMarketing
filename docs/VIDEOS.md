@@ -127,11 +127,10 @@ Al terminar, el `prisma generate` de Postgres deja la app como estaba.
   2. Se pone en la escena con un `<img>` que el render cambia cuadro a cuadro.
      Un `<video>` no se puede sincronizar cuadro a cuadro.
   3. Se renderiza `e01` y se monta otra vez.
-- **Versión en inglés.** Requiere:
-  - copiar los textos de `storyboard.html` y traducirlos;
-  - volver a tomar las capturas con la app en inglés. En `capturar.mjs`,
-    los nombres de los botones están en español; hay que pasarlos a los de
-    la app en inglés.
+- **Versión en inglés.** La del video 2 ya está hecha
+  (`scripts/video/juditoads-2-en/`, ver «La versión en inglés: Five cents»).
+  Para el 1 sirve lo mismo: sus textos traducidos y las pantallas de
+  `juditoads-2-en/img/`.
 
 ## Video 2 de JuditoADS: el mismo material en 8 piezas
 
@@ -166,6 +165,29 @@ Se produce igual que el 1, desde su carpeta; sale
 de 2026 está en la carpeta: `JuditoADS-video2-es.mp4` (56 s). Las capturas de la app, el vuelo y la
 lámpara se rehacen desde `juditoads-1/` y se copian a `img/` y
 `vuelo-hd.mp4`.
+
+### La versión en inglés: «Five cents»
+
+Pedida por Junior el 2 de noviembre de 2026. Vive en
+`scripts/video/juditoads-2-en/`: es la misma fábrica con los textos en inglés,
+las mismas escenas y los mismos segundos (56,1 s). Sale
+`JuditoADS-video2-en.mp4`. El vuelo es un enlace a `../juditoads-2/vuelo-hd.mp4`.
+
+- **Las pantallas de la app son de la app en inglés.** Se tomaron con
+  `capturas/capturar.mjs` (botón EN, portada `/`, campaña de Café Luna en
+  Brickell) con el SQLite de prueba de `judito-ads`, y se pasan a `img/` con
+  `python3 preparar-img.py` de la misma carpeta. Cómo levantar la app está en
+  «Volver a tomar las pantallas de la app».
+- **Los títulos se acortaron para que no dejen una palabra sola:**
+  - «Or paying for 10 courses»;
+  - «But wait, it gets crazier…»;
+  - «3 Create a new ad… or boost a post»;
+  - «4 Set your budget: daily or total».
+- **`build.py` cambia el `<video>` del vuelo por los cuadros buscando su
+  `aria-label` exacto.** Si se traduce ese texto en el storyboard, hay que
+  traducirlo también en `build.py`; si no, la escena 4 sale negra.
+- **La voz:** `voz.json` lleva `"idioma": "en"`, y el guion para ElevenLabs
+  está en `guion-elevenlabs.md`.
 
 ## Video 3 de JuditoADS: cómo funciona por dentro
 

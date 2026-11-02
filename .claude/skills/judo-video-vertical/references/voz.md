@@ -45,7 +45,16 @@ segundo antes de su escena y el gancho no cabía en su moneda.
    (sílabas ÷ 5,5 por segundo) y avisa las que no caben. Se recorta la frase,
    no la escena.
 3. El mismo comando escribe los bloques para ElevenLabs con las pausas
-   (`<break>`) que calzan.
+   (`<break>`) que calzan. Cada pausa se mide desde donde termina la frase
+   anterior: si se midiera desde el inicio de su escena con un mínimo fijo,
+   el atraso se sumaría frase tras frase (al video 2 le pasó: 1,2 s en un
+   solo bloque). La columna «sale» tiene que coincidir con la escena.
+4. **Bloques cortos:** cada uno empieza en un cambio de escena y dura hasta
+   unos 11 s. El guion dice cuánto debe durar el bloque 1, con una tabla de
+   velocidad de ElevenLabs para cuando la voz habla más lento o más rápido.
+5. **En inglés** se pone `"idioma": "en"` en `voz.json`: cuenta sílabas en
+   inglés y mide a 4,2 por segundo. Las frases salen más cortas que en
+   español.
 
 ## El tono
 

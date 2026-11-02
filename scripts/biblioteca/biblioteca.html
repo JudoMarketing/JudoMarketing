@@ -394,7 +394,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
           ${listaPedidos ? `<div style="display:flex;flex-direction:column;gap:8px">${listaPedidos}</div>` : ""}
         </section>
         ${p.ruta ? `<section class="bloque"><h3>Dónde vive en el repositorio</h3><div class="ruta"><code id="ruta">${esc(p.ruta)}</code><button class="boton suave" id="copiar-ruta">Copiar</button></div>${p.comoCambiar ? `<span class="nota">${esc(p.comoCambiar)}</span>` : ""}</section>` : ""}
-        ${puedeEditar && assets && p.tipo !== "herramienta" ? `<section class="bloque"><h3>Subir una versión nueva</h3><span class="nota">Un MP4, una imagen o un PDF. Queda arriba en «Archivos» y se anota en el historial.</span><input type="file" id="subir" accept="video/mp4,image/png,image/jpeg,image/webp,application/pdf"></section>` : ""}
+        ${puedeEditar && assets && p.tipo !== "herramienta" ? `<section class="bloque"><h3>Subir una versión nueva o tu voz</h3><span class="nota">Un MP4, una imagen, un PDF o los audios de tu voz (MP3, WAV o M4A: puedes elegir varios a la vez). Quedan arriba en «Archivos» y se anotan en el historial. Con la voz arriba, dile a Claude «calza la voz de ${esc(p.nombre)}».</span><input type="file" id="subir" multiple accept="video/mp4,image/png,image/jpeg,image/webp,application/pdf,audio/mpeg,audio/wav,audio/x-wav,audio/mp4,audio/x-m4a,.mp3,.wav,.m4a"></section>` : ""}
         ${historial ? `<section class="bloque"><h3>Historial</h3><ul class="historial">${historial}</ul></section>` : ""}
         ${puedeEditar ? `<section class="bloque zona-borrar">${confirmandoBorrar ? `
           <h3>¿Borrar «${esc(p.nombre)}»?</h3>
@@ -415,8 +415,8 @@ button, input, textarea, select { font: inherit; color: inherit; }
       const r = await fetch(blob(a.id));
       if (!r.ok) throw { code: "missing" };
       let data;
-      if (a.formato === "zip") {
-        // Las skills se guardan como texto (base64): el almacén no acepta .zip
+      if (a.formato === "zip" || a.base64) {
+        // Las skills y los audios se guardan como texto (base64): el almacén no acepta .zip ni audio
         const txt = (await r.text()).trim(); const bin = atob(txt); const bytes = new Uint8Array(bin.length);
         for (let k = 0; k < bin.length; k++) bytes[k] = bin.charCodeAt(k);
         data = new Blob([bytes]);
@@ -468,24 +468,54 @@ button, input, textarea, select { font: inherit; color: inherit; }
     catch { aviso("No se pudo guardar el cambio."); }
   }
 
+  // El almacén no acepta audio: un MP3, WAV o M4A se guarda como texto en base64
+  // (como los .zip) y se marca con base64: true para devolverlo tal cual al descargar.
+  const TIPOS_SUBIR = { "video/mp4": "mp4", "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "application/pdf": "pdf",
+    "audio/mpeg": "mp3", "audio/mp3": "mp3", "audio/wav": "wav", "audio/x-wav": "wav", "audio/wave": "wav", "audio/mp4": "m4a", "audio/x-m4a": "m4a" };
+  const AUDIO = new Set(["mp3", "wav", "m4a"]);
+  function formatoDe(file) {
+    return TIPOS_SUBIR[file.type] || { mp3: "mp3", wav: "wav", m4a: "m4a" }[(file.name.split(".").pop() || "").toLowerCase()] || null;
+  }
+  function enBase64(file) {
+    return new Promise((ok, mal) => {
+      const r = new FileReader();
+      r.onload = () => ok(String(r.result).split(",")[1] || "");
+      r.onerror = () => mal(r.error);
+      r.readAsDataURL(file);
+    });
+  }
+
   async function subirVersion(input) {
-    const file = input.files?.[0]; const p = piezas.find((x) => x.id === abierta);
-    if (!file || !p || !assets || !db) return;
-    const tipos = { "video/mp4": "mp4", "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "application/pdf": "pdf" };
-    const formato = tipos[file.type];
-    if (!formato) { aviso("Ese tipo de archivo no se puede subir aquí: usa MP4, PNG, JPG, WebP o PDF."); return; }
-    input.disabled = true; aviso("Subiendo «" + file.name + "»…");
+    const lista = [...(input.files || [])]; const p = piezas.find((x) => x.id === abierta);
+    if (!lista.length || !p || !assets || !db) return;
+    const malos = lista.filter((f) => !formatoDe(f));
+    if (malos.length) { aviso(`«${malos[0].name}» no se puede subir aquí: usa MP4, PNG, JPG, WebP, PDF, MP3, WAV o M4A.`); input.value = ""; return; }
+    input.disabled = true;
+    const hoy = new Date().toISOString().slice(0, 10);
+    const nuevos = [], notas = []; let principal = null, fallo = null;
+    for (const [k, file] of lista.entries()) {
+      const formato = formatoDe(file), audio = AUDIO.has(formato);
+      aviso(`Subiendo «${file.name}»${lista.length > 1 ? ` (${k + 1} de ${lista.length})` : ""}…`);
+      try {
+        const r = audio
+          ? await assets.upload(new Blob([await enBase64(file)], { type: "text/plain" }), { type: "text/plain" })
+          : await assets.upload(file, { type: file.type });
+        nuevos.push({ etiqueta: (audio ? "Voz" : "Versión nueva") + " (" + fecha(hoy) + ")", nombre: file.name, id: r.id, bytes: audio ? file.size : r.sizeBytes, formato, ...(audio ? { base64: true } : {}) });
+        notas.push(file.name);
+        if (formato === "mp4" && p.tipo === "video") principal = r.id;
+      } catch (e) { fallo = { e, nombre: file.name }; break; }
+    }
     try {
-      const r = await assets.upload(file, { type: file.type });
-      const hoy = new Date().toISOString().slice(0, 10);
-      const archivo = { etiqueta: "Versión nueva (" + fecha(hoy) + ")", nombre: file.name, id: r.id, bytes: r.sizeBytes, formato };
-      const cambios = { archivos: [archivo].concat(p.archivos || []), historial: (p.historial || []).concat([{ fecha: hoy, nota: `Se subió una versión nueva: ${file.name}.` }]) };
-      if (formato === "mp4" && p.tipo === "video") cambios.principal = r.id;
-      await db.doc("piezas/" + p.id).update(cambios);
-      aviso("Listo: la versión nueva quedó arriba en «Archivos».");
-    } catch (e) {
-      aviso(e?.code === "too_large" ? "Ese archivo pasa de 20 MB. Comprímelo o pídeselo a Claude." : "No se pudo subir. Inténtalo otra vez.");
-    } finally { input.disabled = false; input.value = ""; }
+      if (nuevos.length) {
+        const voz = nuevos.every((a) => a.base64);
+        const cambios = { archivos: nuevos.concat(p.archivos || []), historial: (p.historial || []).concat([{ fecha: hoy, nota: `${voz ? "Se subió la voz" : notas.length === 1 ? "Se subió una versión nueva" : "Se subieron archivos nuevos"}: ${notas.join(", ")}.` }]) };
+        if (principal) cambios.principal = principal;
+        await db.doc("piezas/" + p.id).update(cambios);
+      }
+      if (fallo) aviso(`${nuevos.length ? `Se subieron ${nuevos.length}. ` : ""}«${fallo.nombre}» no se pudo subir${fallo.e?.code === "too_large" ? ": pasa de 20 MB." : ". Inténtalo otra vez."}`);
+      else aviso(nuevos.every((a) => a.base64) ? `Listo: ${nuevos.length === 1 ? "el audio quedó" : `los ${nuevos.length} audios quedaron`} arriba en «Archivos». Dile a Claude «calza la voz de ${p.nombre}».` : "Listo: quedó arriba en «Archivos».");
+    } catch { aviso("Los archivos se subieron, pero no se pudo anotar en la ficha. Inténtalo otra vez."); }
+    finally { input.disabled = false; input.value = ""; }
   }
 
   // Los archivos de una pieza (sin repetir): portada, video, láminas y lista de archivos

@@ -707,6 +707,21 @@ Los errores de diseño de los sitios están en la sección 2 y en
     final, y cada frase se mide contra su escena con
     `python3 calzar-voz.py voz.json --guion` antes de entregarla. La voz que
     llega en bloques se pone con `calzar-voz.py`, frase por frase.
+- **La versión 2 del mismo guion también se corría** (2026-11-02).
+  - Qué pasó: `calzar-voz.py --guion` ponía cada pausa de 0,6 segundos como
+    mínimo y la medía desde el inicio de la escena, no desde donde terminaba
+    la frase. Cuando una frase llenaba su escena, ese pedacito de más se
+    sumaba: en el bloque 2, «Tú solo, en cuatro pasos» entraba 1,2 s tarde
+    aunque la voz hablara al ritmo exacto. Los bloques, de hasta 14 s,
+    también dejaban crecer cualquier diferencia de ritmo de la voz.
+  - Costó: Junior generó los 5 bloques otra vez y seguían «un poco off»; se
+    rehízo como versión 3.
+  - Regla: cada pausa se mide desde donde termina la frase anterior (mínimo
+    0,3 s, lo justo para cortar), los bloques empiezan en un cambio de escena
+    y no pasan de unos 11 s, y el guion dice cuánto dura el bloque 1 para que
+    Junior elija la velocidad. Antes de entregar, la columna «sale» de
+    `--guion` tiene que coincidir con la escena. Lo exacto sigue siendo que
+    Junior suba los MP3 a la Biblioteca y se calcen con `calzar-voz.py`.
 
 ### Carruseles
 
