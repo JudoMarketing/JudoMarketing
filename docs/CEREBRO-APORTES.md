@@ -1108,3 +1108,436 @@ solo cuando hay otro equivalente: la firma del OAuth cae a
 producción por `SESSION_SECRET` vacía, y conectar una página habría fallado
 al cifrar el token por `ENCRYPTION_KEY` vacía. Las dos se rellenaron desde
 la API el mismo día; la salud ahora enseña `secretos` y `sessionSecret`.
+### 2026-09-20 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** cuando el que audita dice «no funciona», lo primero es
+reconstruir SU camino, no el nuestro. El revisor de Meta entra por la
+portada, sin credenciales, sin saber dónde está nada, y con una cuenta sin
+rol en la app. Recorrido así, el portal fallaba tres veces antes de llegar a
+nada: el login con Facebook estaba escondido detrás de nuestra contraseña,
+el botón pedía permisos que a esa cuenta no se le conceden, y una sesión de
+una cuenta borrada dejaba la app en bucle. Ninguna de las tres se veía
+desde dentro, con la cuenta del dueño, que tiene rol y contraseña. Regla:
+antes de mandar algo a un tercero que lo va a probar, probarlo como él —
+navegador limpio, sin cuenta, sin rol— y aceptar cada «no lo encuentro»
+como un fallo real, no como torpeza del revisor.
+**Evidencia:** la violación 7.a «Facebook Login is broken or app is not
+accessible». Se puso «Continuar con Facebook» en la puerta pidiendo solo lo
+aprobado, se separó la petición de permisos de anuncios y se hizo tolerante
+a lo que Meta no conceda, y se cerró el bucle de la sesión fantasma. El
+recorrido del revisor quedó como prueba automática (47 comprobaciones).
+
+---
+
+### 2026-09-20 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** «pedir todo de una vez» es cómodo para el código y caro
+para la persona. Un diálogo que pide siete permisos sirve solo a quien puede
+concederlos todos; a los demás les rompe la entrada entera, y la app ni se
+entera de cuáles faltaron. Lo robusto es pedir en dos tandas —lo mínimo para
+entrar, y el resto cuando de verdad hace falta— y, al volver, PREGUNTAR qué
+se concedió en vez de darlo por hecho. Con eso, un permiso que falta se
+convierte en una frase con nombre («Meta no concedió: ads_read») en lugar
+de en un error crudo, y el mismo código sirve al revisor sin rol, al cliente
+que desmarcó una casilla, y al dueño que tiene todo.
+**Evidencia:** el callback de Meta preguntaba /me/adaccounts sin saber si
+tenía ads_read; ahora lee /me/permissions, guarda la lista en la conexión y
+solo llama a lo que puede. Catorce casos contra la base, incluido «Meta
+lento: no se supo qué concedió → se intenta todo, como antes».
+
+---
+
+### 2026-09-20 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un identificador que viaja por la URL y vuelve no es un
+`state`: es una invitación. El state del OAuth era el id del usuario a
+secas; quien lo conociera podía armar un enlace de vuelta con su propio
+código y dejarle enganchado un Facebook ajeno a la cuenta de otro. Un state
+de verdad prueba dos cosas: que lo escribimos nosotros (firma) y que lo
+escribimos en ESE navegador (nonce en cookie). Y cuando el mismo callback
+sirve a dos viajes (entrar y conectar), el propósito va dentro del state,
+firmado, no en la URL donde cualquiera lo cambia.
+**Evidencia:** src/lib/oauth-estado.ts, con sus dieciséis formas de fallar
+probadas: sin firma, con otro secreto, caducado, sin nonce, con nonce
+ajeno, sin propósito.
+
+---
+
+### 2026-09-21 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** una violación de Meta («Platform Term 7.a — Facebook
+Login is broken or app is not accessible») no se contesta: se resuelve y
+DESPUÉS se contesta. Congela el App Review (`can_submit: false`), da 30 días
+y solo admite respuesta desde Compliance Center → «Resolve violation», con
+el correo de contacto de la app verificado. Contestar con la puerta rota es
+un segundo rechazo; contestar con un video viejo que enseña la puerta rota
+es peor, porque te contradice. El orden que funcionó: reproducir el fallo
+como el revisor (sin credenciales, sin rol), arreglarlo en código con
+pruebas, verificarlo en producción con `curl` y el user-agent
+`facebookexternalhit`, y solo entonces rellenar los cinco campos del
+formulario con la URL exacta de la puerta, pasos pantalla a pantalla,
+credenciales secundarias de una cuenta de prueba y un video nuevo. Después
+de enviar, comprobar que la acción pasa a `in_progress`: si sigue en
+`pending`, no se envió.
+**Evidencia:** `devtools_compliance status` de la app 3110235295833588 pasó
+de «Resolve violation: pending» a «in_progress» el 21 de septiembre, con 25
+días de plazo. El prompt reutilizable para preparar otra app está en la
+conversación de JuditoADS (prompt-juditos-app-review.txt).
+**Y un matiz que cuesta un rechazo:** «a ese correo me llega todo» no es
+«correo verificado». Meta manda avisos al Contact Email sin verificarlo;
+la bandera `contact_email_verified` es otra cosa, se enciende con un enlace
+de confirmación desde el panel, y solo se ve por la API. Antes de decir
+«está hecho», leerla.
+
+---
+
+### 2026-09-24 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** «el caso de uso está permitido, pero el video no enseña
+el recorrido completo» es el rechazo más común del App Review, y se evita
+con un guion, no con más texto. Meta mira tres cosas en el video: el login
+completo, el diálogo donde la persona CONCEDE ese permiso, y la app usándolo
+de punta a punta, todo en inglés y con subtítulos que explican cada botón.
+Dos trampas que lo arruinan sin que se note al grabar: si la app ya está
+autorizada en ese Facebook, el diálogo no vuelve a enseñar los permisos
+(hay que quitarla antes en Settings → Business integrations); y cualquier
+texto que se quedó escrito a mano en el otro idioma sale en todas las
+tomas. Un solo video con rótulos «PART 1…4» subido en todos los permisos,
+y cada texto diciendo qué parte mirar, le ahorra al revisor buscar.
+**Evidencia:** ads_management, ads_read e instagram_basic rechazados el
+24-sep con «Screencast Not Aligned with Use Case Details»; los cuatro de
+página, aprobados en el mismo envío. El revisor de instagram_basic pidió
+literalmente la cuenta con su @, sus campos de perfil leídos en vivo y su
+lista de publicaciones rotulada: la app hacía solo lo último, a medias.
+
+---
+
+### 2026-09-24 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** antes de proponer «quita ese permiso», buscar en el
+código TODAS las llamadas que protege. Recomendé quitar instagram_basic
+creyendo que solo servía para mostrar el @ en el anuncio; también leía la
+lista de publicaciones de Instagram para promocionarlas, y quitarlo habría
+matado esa función. Y al revés: pedir campos que dependen de un permiso no
+aprobado puede hacer que Meta rechace la llamada entera (el cliente se
+queda sin páginas). El arreglo es volver a pedir sin esos campos, pero solo
+si el fallo es de permiso: un Meta lento no es motivo para guardar datos
+incompletos.
+**Evidencia:** Judito-Ads 2cc1dcc — fetchUserPages con respaldo sin campos
+de Instagram y pruebas/instagram.test.mts (25 comprobaciones, incluidos los
+casos en que NO debe reintentar); barrido de las nueve pantallas en inglés
+con un detector de español que primero se probó contra el portal en español.
+
+---
+
+### 2026-09-24 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** si el sistema ya sabe que una combinación va a fallar,
+un aviso que deja seguir no sirve: es el mismo error que Meta dará después,
+solo que antes. La regla de «qué objetivo sale con qué anuncio» vivía en
+tres sitios (asistente, servidor, publicación) y cada uno tenía su propia
+versión. El asistente avisaba de Instagram + Tráfico en amarillo pero dejaba
+continuar; el servidor lo guardaba; Meta lo rechazaba al activar con su texto
+en crudo. Arreglo: un solo módulo que responde ok / falta un dato / bloqueado
++ alternativas, y los tres lo consultan. Bloquear o pedir el dato que falta
+en el paso donde se elige, nunca al final. Y dos trampas pequeñas: una
+función que valida «¿es una URL válida?» puede decir que sí a una cadena
+vacía (hay que exigir primero que exista); y los importes en Meta van en la
+unidad mínima de cada moneda: COP, CLP, JPY y parecidas no llevan centavos,
+así que multiplicar siempre por 100 envía 100 veces el presupuesto.
+**Evidencia:** Judito-Ads 6f51a93. src/lib/compatibilidad.ts;
+pruebas/compatibilidad.test.mts, 76 comprobaciones, incluida una que exige
+que el guard haga cero llamadas a Meta; una mutación de la regla la hizo
+fallar. Recorrido en navegador, 21/21: el botón Siguiente avanzaba con la web
+vacía hasta que se exigió que existiera. Error original: subcode 1815676,
+«Non-Website ads are not allowed in Ad Set with Website Destination Type».
+
+---
+
+### 2026-09-25 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un botón que tarda (publicar en una API externa) no
+necesita solo una pantalla de carga: necesita un candado en el servidor. Con
+el botón gris y nada más, la gente recarga, abre otra pestaña o vuelve y lo
+pulsa de nuevo. Mientras tanto la campaña seguía en «borrador», así que cada
+clic la publicaba otra vez en la cuenta del cliente. Arreglo en tres
+piezas. (1) Una marca «publicando desde» que se reclama con UN UPDATE
+condicionado (donde sigue en borrador y nadie la marcó, o la marca caducó),
+para que de dos peticiones a la vez solo pase una. Se suelta si falla, y
+caduca sola por si la función muere a mitad. (2) La página que se abre a
+mitad ve la marca y enseña la misma espera en vez del botón. (3) La pantalla
+de carga no se cierra al llegar la respuesta, sino cuando la página ya
+muestra el estado nuevo. Si se cerraba antes, reaparecía un instante el
+botón viejo, listo para otro clic. De paso: todo fetch de un botón necesita
+try/catch. Un corte de red dejaba el botón gris para siempre. Y lo que se
+guarda DESPUÉS de publicar va fuera del try de publicar: si fallaba,
+contestaba «no se pudo publicar» con la campaña ya creada.
+**Evidencia:** Judito-Ads 780702b. pruebas/activar-una-vez.test.mts: dos
+reclamos a la vez → solo uno; al quitar la condición, la prueba falla.
+Recorrido en navegador, 34/34: segundo Activar contra la ruta real → 409
+sin tocar Meta; tras el éxito el botón viejo no reaparece; al volver a
+mitad se ve la espera y se actualiza sola.
+
+---
+
+### 2026-09-25 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** si el idioma de una página pública depende solo de una
+cookie, para Google esa versión no existe. Google entra sin cookies y ve
+siempre el idioma por defecto. Arreglo: cada idioma de las páginas públicas
+en su propia dirección (/juditoads y /juditoads/es, como el sitio padre con
+/es), con canonical, hreflang (en, es, x-default) y el sitemap que las
+nombra. A las personas se les puede redirigir por su cookie; a Google
+nunca. Tres trampas que solo aparecieron al probar en el navegador:
+(1) El selector de idioma no puede ser un <Link> de Next entre dos páginas
+que comparten layout: el layout no se vuelve a pintar, y el <html lang> y
+los textos de los componentes cliente se quedan en el idioma anterior.
+Tiene que ser un <a> normal, que además es un enlace que Google sigue.
+(2) Quien entra por /es tiene que quedar con el español guardado. Si no, al
+pulsar «Iniciar sesión» la página sale en inglés por la cookie vieja,
+mezclada con componentes en español.
+(3) Las canonical, absolutas y con www, sin barra final: la versión sin www y
+la barra final redirigen, y una canonical que redirige confunde a Google.
+Lo que el SEO promete (precio, días gratis) tiene que salir de las mismas
+cifras que cobra el sistema, con una prueba que lo exija.
+**Evidencia:** Judito-Ads 57d08fe. pruebas/seo.test.mts (41 comprobaciones).
+Producción revisada como Googlebot, 31/31: /juditoads/es con <html lang=es> y
+contenido en español sin cookie; sitemap con hreflang; login noindex. El
+robots.txt de judomarketing.net todavía no nombra /juditoads/sitemap.xml:
+Google solo lee el robots de la raíz del dominio.
+
+---
+
+### 2026-10-04 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** «publiqué y no sale donde elegí» y «la gente comenta y
+no veo los comentarios» casi nunca son un fallo del código que publica. Son
+dos reglas de Meta que el portal tiene que ENSEÑAR, no esconder:
+(1) Elegir ubicaciones le permite a Meta usarlas, no la obliga. Reparte el
+presupuesto donde le sale más barato y puede dejar una red entera en cero.
+Solo lo dicen los insights con desglose publisher_platform y
+platform_position.
+(2) Una publicación de una red mostrada en la otra es otro objeto. Una de
+Instagram en Facebook sale como un anuncio de la página
+(effective_object_story_id), y sus comentarios viven ahí, no en Instagram.
+Antes de tocar el código, compararlo con el ejemplo de la guía oficial de
+Meta. El creativo era el mismo, así que no había nada que «arreglar» en la
+publicación: lo que faltaba era la vista. Y antes de prometer «verás los
+comentarios», mirar el permiso: los de Facebook se leen con el token de la
+página (pages_read_engagement), los de Instagram exigen
+instagram_manage_comments, que no está pedido. De esos solo se da el enlace.
+**Evidencia:** Judito-Ads 563fb3f. Sección «Dónde se está mostrando tu
+anuncio», ruta /api/campaigns/[id]/entrega, pruebas/entrega.test.mts
+(20 comprobaciones con un Meta de mentira) y recorrido en navegador, 15/15.
+Guía de Meta: developers.facebook.com/documentation/ads-commerce/instagram/
+ads-api/guides/use-posts-as-ads (el ejemplo con call_to_action LEARN_MORE es
+el mismo que manda JuditoADS).
+
+---
+
+### 2026-10-09 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** un anuncio que «no funciona» casi nunca falla en Meta:
+falla en lo que el portal decide SOLO, sin enseñárselo al cliente. En el de
+The RBT Corner fueron cinco cosas, todas comprobadas con datos de su cuenta:
+(1) Sin idioma, un anuncio en español sale en EE. UU. a cualquiera. El idioma
+va en targeting.locales con la clave que da /search?type=adlocale (pedir
+«Spanish (All)», con locale=en_US), y es de lo poco que Meta respeta como
+límite firme con Advantage+. Si no se puede confirmar, NO se publica: salir
+«para todos» es justo el error.
+(2) Nunca «el primer resultado» de un buscador de Meta. El catálogo de
+intereses está en inglés: «Educación en línea» devolvía «Green tea» y
+«Professional wrestling». El cliente elige el interés real (id, ruta,
+tamaño) y eso es lo que se manda; el texto viejo solo si coincide exacto.
+(3) Lo que se guarda por cuenta publicitaria tiene que ser de la cuenta. Una
+cuenta puede anunciar varias páginas: la audiencia «ya interactuaron contigo»
+guardada una sola vez hizo que RBT usara la de JuDo Marketing. Va por página,
+y se comprueba por su nombre antes de reutilizarla.
+(4) Una publicación se anuncia tal cual: si dice «Síguenos», eso pide el
+anuncio aunque se pague por visitas. Avisar antes (sin acción, sin precio,
+pide seguir) y ofrecer un anuncio nuevo con el texto ya puesto.
+(5) Sin píxel que reciba visitas, Meta no sabe quién compra. Meta da
+last_fired_time = 1970-01-01 para «nunca»: no es «hace mucho».
+**Evidencia:** Judito-Ads 247d0fc. Pruebas con un Meta de mentira:
+intereses (26), idioma (31), revisar-texto (17), pixel (14),
+publico-por-pagina (11); cada una falla si se deshace su arreglo. Banco
+SQLite 102/102 y recorrido en navegador 34/34. Datos reales (conector de
+Facebook, solo lectura): campañas 120251993789540389 y 120252060370320389
+sin locales, una con Green tea y Professional wrestling, una con la
+audiencia de JuDo; el píxel de RBT (cuenta 4630048677226499) nunca disparó.
+
+---
+
+### 2026-10-10 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** (1) Un código que nunca corrió en producción no está
+probado, aunque «funcione»: la audiencia de JuDo que parecía creada por
+JuditoADS la había creado otra cosa; la creación del portal falló la primera
+vez que de verdad corrió (al separar las audiencias por página). Meta no deja
+mezclar página e Instagram en una audiencia («Too Many Event Source Types»,
+subcode 1870028) y con subtype=ENGAGEMENT espera la regla del formato viejo
+(«Invalid Event Name», 2654). Se arregla copiando el ejemplo exacto de la
+documentación (sin subtype, prefill=1, una fuente por audiencia, eventos
+documentados) y probando contra un Meta falso que rechaza lo mismo que el
+real. (2) «Que me escriban» es otro objetivo, no un botón: campaña
+OUTCOME_ENGAGEMENT, conjunto con destination_type WHATSAPP / MESSENGER /
+INSTAGRAM_DIRECT optimizado a CONVERSATIONS con promoted_object {page_id},
+y el botón con app_destination. Un enlace wa.me en Tráfico optimiza a clics.
+(3) Las descripciones de los objetivos también son promesas: «Tráfico: tu web
+o WhatsApp» y «Interacción: mensajes» hacían creer que eso existía.
+**Evidencia:** Judito-Ads 6d25611. Logs de Vercel del 2026-10-09 19:07 UTC
+(los dos rechazos), conjunto 120252161517430389 sin excluded_custom_audiences
+por ese fallo y con locales [7, 23] (el idioma sí llegó). Pruebas:
+mensajes.test.mts, publico-por-pagina.test.mts (falla con el error exacto de
+producción si se vuelve a mandar subtype), banco 108/108, navegador 18/18.
+
+---
+
+### 2026-10-10 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** (1) «Lo marqué en todas partes y salió en Facebook» no
+siempre es un error. Antes de tocar código, mirar el desglose por plataforma
+y el creativo. Aquí el anuncio estaba bien armado (con el reel de
+Instagram), y Meta puso el dinero donde el clic salía más barato: el feed de
+Facebook, con CPM de unos $9.5 frente a $12–14 en Instagram. Instagram se
+quedó en un 1%. El Administrador de anuncios hace lo mismo. Lo que faltaba
+en el portal era dejar elegir como allí: Advantage+ (sin
+publisher_platforms) o manual, con atajos «Solo Instagram» y «Solo
+Facebook». También faltaba avisar antes de publicar que marcar las dos no
+reparte mitad y mitad. Un aviso que solo salta con cero no cubre el caso
+real: hay que avisar también por debajo de un umbral (5%).
+(2) «Igual que Facebook» en Mensajes quiere decir dos cosas.
+  - Varias apps a la vez: el conjunto lleva destination_type
+    MESSAGING_INSTAGRAM_DIRECT_MESSENGER_WHATSAPP o una de sus parejas. El
+    creativo lleva asset_feed_spec {optimization_type:
+    DOF_MESSAGING_DESTINATION, call_to_actions: un botón por app, con su
+    enlace}.
+  - Una plantilla de bienvenida: page_welcome_message VISUAL_EDITOR v2, con
+    ice_breakers {title, response}. La respuesta automática solo existe en
+    Messenger e Instagram. Con WhatsApp solo, va el título o un
+    autofill_message.
+
+  Cada guía de Meta tiene su propio ejemplo y hay que copiar el de cada caso
+  campo por campo. Sus límites: 300/80/300.
+(3) Cuando un adorno puede tumbar la publicación entera, hay que reintentar
+sin él y avisar con lo que dijo Meta. Así está hecho con las mejoras de
+Advantage+, y ahora también con el saludo.
+(4) El buscador de documentación del MCP de Meta (devtools_discovery
+search_docs) trae el JSON literal de los ejemplos. WebFetch lo resume y no
+copia bloques largos.
+**Evidencia:** Judito-Ads 8593010. Datos reales (conector de Facebook, solo
+lectura): campañas 120252143402700389 y 120252161516980389, Facebook feed con
+1.291 y 1.002 impresiones, Instagram con 14 y 12. Creativos 1850674305940601
+y 1111573417931980 con effective_instagram_media_id 17902469568598261.
+Pruebas con Meta simulado: mensajes.test.mts 121 comprobaciones, con las
+cuatro combinaciones de apps, el saludo de cada app y su rechazo. También
+ubicaciones.test.mts, entrega.test.mts (el caso del 1%), el banco 116/116 y
+un recorrido en el navegador de 41/41.
+
+---
+
+### 2026-10-12 · Judito-Ads · SaaS de anuncios
+**Qué aprendimos:** (1) Meta busca exactamente lo que se le pide. «Ventas» y
+«Clientes potenciales» se publicaban con optimization_goal LINK_CLICKS, así
+que Meta traía a quien toca barato: 12–17 clics por cada 100 vistas a $0.10,
+el 60% del dinero en mayores de 55 y ninguna compra. El nombre del objetivo
+no cambia nada: manda la optimización del conjunto. Ventas en la web es
+OFFSITE_CONVERSIONS con promoted_object {pixel_id, custom_event_type:
+PURCHASE} («If you use pixel_id, you must provide custom_event_type»).
+(2) Antes de pedir compras hay que saber si algo las mide. Se consulta
+/{pixel}/stats con aggregation=event_total_counts (qué eventos llegan, 7 días
+como mucho) y aggregation=host (en qué webs está el píxel). Un píxel activo
+en OTRA web no mide nada de la que se anuncia. Sin medición no se publica
+«Ventas»: se dice por qué y se ofrece Mensajes (la venta en el chat, sin web)
+o Tráfico. Pagar clics bajo el nombre «Ventas» es peor que no publicar.
+(3) Tráfico con píxel en la web va a LANDING_PAGE_VIEWS, no a clics. Si Meta
+la rechaza, se baja a clics; Ventas nunca baja a clics.
+(4) Contar resultados sin duplicar: purchase, omni_purchase y
+offsite_conversion.fb_pixel_purchase son la misma compra a distintas escalas
+(se toma la mayor, no la suma). Igual con lead y lead_grouped. En Mensajes el
+resultado es onsite_conversion.messaging_conversation_started_7d.
+(5) Un CTR altísimo sin compras no es una buena noticia, son curiosos. El
+coach felicitaba un 14%. Ahora lo dice como alerta y solo felicita clientes.
+(6) Meta pone el dinero donde el resultado sale más barato: mezclar EE. UU. y
+Colombia es gastar en Colombia (100% en el caso real). Hay que avisarlo antes
+de publicar y enseñar después el reparto por edad y país con lo que trajo
+cada grupo.
+(7) Leer localStorage en el primer render rompe la hidratación (React
+#418/#422). Hay que retomarlo después de montar, en un layout effect, y no
+guardar antes de haberlo retomado.
+**Evidencia:** Judito-Ads 89fdfb1. Datos reales de RBT (conector de Facebook,
+solo lectura): desglose por edad, país y plataforma, CTR 12–17% a $0.10.
+Pruebas con Meta simulado: optimizacion.test.mts 76 comprobaciones (Ventas con
+y sin píxel, otra web, sin eventos, Meta sin responder, el rechazo de LPV),
+resultados.test.mts 32, publico-real.test.mts 20, costo-paises.test.mts 9.
+npm test 751, banco 116 y un recorrido en el navegador de 34, sin errores de
+hidratación.
+
+---
+
+### 2026-10-12 · Judito-Ads · SaaS de anuncios (formularios instantáneos)
+**Qué aprendimos:** (1) A un negocio sin web con píxel, «Clientes potenciales»
+solo le sirve con un formulario instantáneo de Meta: la persona deja sus
+datos sin salir de Facebook o Instagram. Para Meta es otro camino:
+  - el formulario se crea con POST /{page}/leadgen_forms y el token de la
+    PÁGINA;
+  - el conjunto va con LEAD_GENERATION + ON_AD + promoted_object {page_id};
+  - el anuncio lleva el enlace https://fb.me/ y un botón con
+    lead_gen_form_id, y solo admite APPLY_NOW, DOWNLOAD, GET_QUOTE,
+    LEARN_MORE, SIGN_UP o SUBSCRIBE.
+Hay que crearlo ANTES que la campaña, porque no se puede borrar ni editar
+(solo archivar). Sale en el feed y las historias; en Instagram, solo en el
+móvil.
+(2) Antes de pedir nada, mirar la página: leadgen_tos_accepted dice si un
+admin aceptó las condiciones de Lead Ads. Avisarlo en el asistente ahorra el
+fallo al activar. La URL de aceptación no está en la documentación de Meta.
+(3) Meta exige una política de privacidad en cada formulario, y quien no tiene
+web casi nunca tiene una. Se resolvió con una página básica y pública con el
+nombre del negocio y el contacto que él mismo escribe para que borren los
+datos. No se rellena con el correo de la cuenta: publicarlo es decisión suya.
+(4) Leer los contactos por API exige leads_retrieval, App Review y la
+verificación del negocio. Sin eso, la única salida honesta es enlazar al
+Centro de clientes potenciales y a la descarga CSV del formulario
+(/ads/lead_gen/export_csv/?id={form}&type=form).
+(5) Hay que revisar la app con devtools_app_review privileges antes de
+diseñar: así se supo qué permisos tiene de verdad, y no cuáles se suponían.
+(6) Los ejemplos de la guía de Meta tienen erratas (http y https en fb.me,
+promoted_object como texto suelto, archivar con GET). Hay que seguir el texto
+de la referencia, no copiar el ejemplo a ciegas.
+**Evidencia:** Judito-Ads 90abebb. Permisos de la app 3110235295833588
+(pages_manage_ads con acceso avanzado; sin leads_retrieval). Pruebas con un
+Meta simulado en formulario.test.mts (63): el token de la página, el orden de
+creación, ON_AD/LEAD_GENERATION, fb.me y el botón, video y carrusel, las
+condiciones sin aceptar y la falta del token de la página. Banco 123 y un
+recorrido en el navegador de 27.
+
+---
+
+### 2026-10-12 · Judito-Ads · SaaS de anuncios (editar sin relanzar y presupuesto para aprender)
+**Qué aprendimos:** (1) Casi todo se edita en la MISMA campaña con POST /{id}:
+nombre y presupuesto en la campaña (CBO), público y fechas en el conjunto, y
+el anuncio cambiando su creativo (los creativos no se editan: se crea uno
+nuevo y se le pone al anuncio). Relanzarla como nueva tira su historial y lo
+aprendido. Solo hace falta una nueva para lo que Meta no deja cambiar en un
+conjunto que ya entregó: objetivo, tipo de presupuesto, página, cuenta,
+origen del anuncio, destino (apps del chat) y lo que busca (optimización y
+promoted_object).
+(2) Lo que dice el centro de ayuda de Meta:
+  - cambiar el público, el anuncio o el evento, añadir un anuncio o pausar
+    7 días o más reinicia el aprendizaje;
+  - un cambio de presupuesto lo reinicia según su tamaño, y Meta no da un
+    número (el 20 % es la regla de la industria);
+  - el público y el anuncio vuelven a revisión; el presupuesto, el nombre y
+    las fechas no;
+  - el presupuesto solo se puede cambiar 4 veces por hora (613/1487632).
+(3) Si un paso falla a mitad, hay que deshacer lo que ya se cambió, del
+último al primero. Así la campaña guardada sigue siendo la que corre en Meta.
+(4) Con imágenes sueltas, cada imagen es un anuncio. Cambiar o añadir una
+imagen toca solo su anuncio; quitarla solo pausa el suyo (eso no es un cambio
+importante). Los demás siguen entregando sin volver a revisión.
+(5) end_time=0 deja un conjunto diario sin fin. El inicio de uno que ya
+empezó no se toca.
+(6) El aprendizaje termina con unos 50 resultados en 7 días, así que el
+presupuesto diario para salir es 50 × costo del resultado ÷ 7. Meta aconseja
+10 veces el costo al día. El costo hay que sacarlo del propio cliente:
+results y cost_per_result de sus campañas, y solo de las que buscaban lo que
+su objetivo pide (en una de Ventas que buscaba clics, el «resultado» es un
+clic).
+(7) daily_outcomes_curve (la curva de resultados estimados) desaparece el
+27/10/2026 sin reemplazo. learning_stage_info del conjunto sí sirve: LEARNING,
+SUCCESS o FAIL, con los resultados desde el último cambio importante. Solo se
+da en conjuntos activos y no en todas las cuentas.
+**Evidencia:** Judito-Ads 146f9ca y 3285908.
+  - edicion.test.mts (71), con Meta simulado: qué se manda en cada cambio,
+    deshacer si falla, campaña borrada en el Administrador de anuncios.
+  - editar-campana.test.mts (24) y aprendizaje-banco.test.mts (5), contra la
+    base.
+  - aprendizaje.test.mts (48).
+  - Recorrido en el navegador: 31 comprobaciones.
