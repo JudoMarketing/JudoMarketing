@@ -27,6 +27,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-11-05 | **Todo se optimiza y se prueba en el teléfono, cada vez** (regla 16 de la sección 2). Y el error más repetido en teléfono ya tiene arreglo de base: la página nueva que arranca abajo y el zoom que el iPhone hace solo vienen de campos con letra de menos de 16 px y del foco que se queda en el pie. El código está en la sección 3, «En el teléfono…»; la prueba, en `node scripts/auditoria/movil.mjs`, que la auditoría semanal corre en todos los sitios. Arreglado en JuditoADS, judomarketing.net y la Biblioteca. |
 | 2026-11-02 | **zod con falla alta (GHSA-mrhx-c7xc-m3w5) en 12 repos: parchado y publicado.** zod ^4.6.7 en cada rama de producción, con override para las copias que trae `@vercel/cli-config`; cada preview comparado con producción. El flujo de seguridad pasó a las acciones v5. Para la próxima falla de un paquete que no es Next: `scripts/seguridad/subir-paquete.sh`. Detalle en `SEGURIDAD.md`. |
 | 2026-10-30 | **Repos de internet: copia privada, nunca fork.** Los videos explicativos con anything2explainer se hacen en `JudoMarketing/VideoCreator-explanatory-` (privado, sin la firma «built by…», con `CLAUDE.md` de reglas). Las reglas de GitHub para importar están en `scripts/seguridad/rulesets/`. La licencia es no comercial: venderlo necesita permiso del autor. Detalle en la sección 10, «Repos ajenos». |
 | 2026-10-29 | **Biblioteca Judo**: un artifact con todo el contenido de marketing (videos, carruseles y las dos skills), cada pieza con nombre propio, para verla, descargarla y pedir cambios. Lo nuevo se sube ahí el mismo día; los pedidos de Junior se leen de ahí. Cómo: `BIBLIOTECA.md`. |
@@ -211,6 +212,17 @@ protagonista que dice la acción del negocio: "Ordenar", "Quick Estimate",
     `sameAs`.** `sameAs` es para otras páginas del MISMO negocio (su
     Instagram, su Google); meter ahí al hermano o a Judo es una afirmación
     falsa.
+16. **Todo se hace también para el teléfono, y más liviano que antes.** Casi
+    todos los clientes de nuestros clientes llegan desde el teléfono. Cada
+    cosa que se toca (una página, un formulario, un artifact, un video) se
+    prueba en 390 y 360 px de ancho antes de entregarla:
+    - cada página empieza arriba, también la que se abre desde el pie;
+    - ningún campo hace zoom al tocarlo (16 px de letra o más);
+    - nada se sale por el lado ni queda tapado por una barra fija;
+    - los botones se tocan con el dedo (44 px de alto o más).
+    Y se deja más rápida de lo que estaba: lo que no se usa se quita, las
+    imágenes se pesan, lo que no se ve al entrar carga después. Se mide con
+    `node scripts/auditoria/movil.mjs <sitio>` y con Lighthouse móvil.
 
 ---
 
@@ -283,6 +295,69 @@ gasto no se puede cortar, la baja se **niega** y dice por qué: una baja a
 medias deja anuncios corriendo sin dueño y cobros a un cliente que ya no
 existe, y nadie se entera hasta ver la factura. Y baja lógica antes que
 borrado físico, que el historial de facturación no se recupera.
+
+### En el teléfono, cada página empieza arriba y nada hace zoom solo
+
+Es el error de teléfono que más se repite, y Junior lo ve antes que nadie.
+Se ve así: tocas un enlace o «Siguiente» y la página nueva arranca abajo, o
+la pantalla aparece agrandada sin que hayas hecho zoom. Tiene tres causas, y
+casi siempre van juntas:
+
+1. **Un campo con letra de menos de 16 px.** Al tocarlo, el iPhone hace zoom.
+   El zoom se queda al cambiar de página, y la página nueva arranca corrida
+   hacia donde estaba el campo: parece que empieza abajo. Pasaba con 14 px en
+   el contacto de judomarketing.net y en JuditoADS, y con 15 px en la
+   Biblioteca. Un campo sin estilo hereda 13,3 px del navegador: también hace
+   zoom.
+2. **El foco se queda en el enlace del pie o en el botón de abajo.** En un
+   sitio de Next el pie no cambia entre páginas, y el iPhone vuelve a traer a
+   la vista lo que tiene el foco.
+3. **`scroll-behavior: smooth`.** La subida animada se corta a medio camino
+   mientras se pinta la página nueva.
+
+**El arreglo de base** (va en todo sitio nuevo; `PROMPT-WEBSITE-NUEVO.md`
+ya lo pide):
+
+```css
+html {
+  -webkit-text-size-adjust: 100%; /* el iPhone no agranda la letra al girar */
+  text-size-adjust: 100%;
+}
+@media (max-width: 639px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+```
+
+- **La vuelta arriba:** un componente en el layout raíz que, al cambiar la
+  ruta, suelta el foco y sube la ventana sin animación, dos veces (ahora y en
+  el siguiente cuadro). No actúa en la primera carga, con atrás y adelante
+  (el navegador te devuelve a donde ibas) ni con un `#ancla`. Copia lista:
+  `src/components/VueltaArriba.tsx` de judomarketing.net. Si el que hace
+  scroll es un `<main>` y no la ventana (paneles con barra lateral), se sube
+  también ese: así lo hace `scroll-top.tsx` de JuditoADS.
+- **Un asistente de pasos** («Siguiente», «Continuar») sube al empezar cada
+  paso: el contenido cambia, pero la página es la misma, y nadie la sube.
+- **`<html data-scroll-behavior="smooth">`** si el CSS usa
+  `scroll-behavior: smooth`: con eso Next apaga la animación al cambiar de
+  página (en Next 16 es obligatorio).
+- **Nunca `maximum-scale=1` ni `user-scalable=no`** en el viewport para tapar
+  el zoom: en Android le quita el zoom con los dedos a quien lo necesita para
+  leer.
+- **Nada de `autoFocus` en un campo al entrar** a una página en el teléfono:
+  abre el teclado y baja la página. Y un `scrollIntoView` automático (el final
+  de un chat, un aviso) se limita a su propia caja, no a la ventana.
+- **Una ventana o ficha que se reutiliza** (un modal, un panel) se sube a 0 al
+  abrir otra.
+
+**Cómo se prueba:** `node scripts/auditoria/movil.mjs <sitio>`. Un iPhone
+simulado baja hasta el pie, toca un enlace y avisa si la página nueva no
+empieza arriba, si un campo tomó el foco o hace zoom, si algo se sale por el
+lado y si el viewport quita el zoom. Es Chromium, no Safari: lo que encuentra
+es real, y lo que no encuentra se confirma en un iPhone de verdad.
 
 ### Asistentes de IA (de Juditos)
 
@@ -381,6 +456,10 @@ código y sus trampas), `VERIFICACION.md` (los scripts de comprobación),
 - [ ] Cada escritura de administración comprobada contra la base: que la fila
       cambió, no que el botón dijo ✓.
 - [ ] Revisado en teléfono de verdad, no solo achicando la ventana.
+- [ ] `node scripts/auditoria/movil.mjs <dominio>` sin avisos: cada página
+      empieza arriba, ningún campo hace zoom (16 px), nada se sale por el
+      lado, el viewport deja hacer zoom con los dedos.
+- [ ] Lighthouse móvil de 85 o más en las páginas principales.
 - [ ] Seguridad (sección 9):
   - `npm audit --omit=dev` sin críticas ni altas;
   - `.github/workflows/seguridad.yml` en el repo y en verde;
@@ -670,6 +749,26 @@ Los errores de diseño de los sitios están en la sección 2 y en
     último despliegue de producción. Se baja con
     `git fetch origin +refs/heads/<rama>:refs/remotes/origin/<rama>`.
     `scripts/seguridad/subir-paquete.sh` ya lo hace.
+
+### El teléfono
+
+- **La página nueva arrancaba abajo y el iPhone hacía zoom solo**
+  (2026-11-05).
+  - Qué pasó: Junior lo vio en JuditoADS. Al tocar «Siguiente» o un enlace,
+    la pantalla nueva empezaba abajo, y a veces salía agrandada. Los campos
+    tenían 14 px de letra: el iPhone hacía zoom al tocarlos, el zoom se
+    quedaba en la pantalla siguiente y esta arrancaba corrida. Al medir los
+    sitios en vivo el mismo día salió lo mismo en el contacto de
+    judomarketing.net (14 px), en la Biblioteca (15 px) y en campos de seis
+    sitios de clientes. En otros tres, la página nueva empezaba unos 80 px
+    bajada. Nadie lo había visto porque se probaba en computadora, o
+    achicando la ventana.
+  - Costó: que Junior lo encontrara usando la app, que es lo que no debe
+    pasar con algo que vendemos.
+  - Regla: todo se prueba en el teléfono antes de entregarlo (regla 16 de la
+    sección 2). El arreglo de base está en la sección 3, «En el teléfono…», y
+    `node scripts/auditoria/movil.mjs` lo comprueba. La auditoría de los
+    lunes lo corre en todos los sitios.
 
 ### Dependencias (npm)
 

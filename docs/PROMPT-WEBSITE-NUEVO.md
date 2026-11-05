@@ -60,6 +60,7 @@ REGLAS QUE NO SE NEGOCIAN (cada una ya costó algo):
 - Sin raya larga (— o –) en ningún texto visible. Sin palabras de agencia. Sin promesas de resultados.
 - Header: teléfono visible, EN/ES y UN solo botón protagonista. En teléfono, barra fija inferior con las 2 o 3 acciones del negocio (Llamar / WhatsApp o Texto / Cotizar, Reservar u Ordenar) y un header que no se sature.
 - El contenido se ve sin JavaScript: las animaciones de entrada realzan, nunca esconden. Nada animado pasa por encima del texto.
+- Teléfono primero (CEREBRO, sección 3, «En el teléfono…»): campos a 16 px en el teléfono para que el iPhone no haga zoom solo, cada página empieza arriba (también la que se abre desde el pie y cada paso de un asistente), sin maximum-scale ni user-scalable=no, sin autoFocus al entrar. Y cada cosa que tocas la dejas más liviana de lo que estaba.
 - Fotos reales del cliente. Si todavía no hay, ilustración con carácter en el lenguaje del sitio, nunca banco de imágenes fingiendo ser el cliente. Video en MP4 H.264 (HEVC no se ve en Chrome), con póster.
 - Todo dato del negocio en un archivo de configuración y todo texto en diccionarios tipados; ninguno escrito dentro de un componente. Si falta una traducción, que falle el build.
 - Formularios: trampa anti-bots aceptada en el esquema y descartada después, captcha verificado en el servidor, fallan con error ruidoso si faltan las claves de correo. Se prueban en el sitio publicado, en los dos idiomas.
@@ -80,6 +81,7 @@ ANTES DE ENTREGAR CADA FASE:
 - next build + next start de verdad (no solo dev), typecheck y lint limpios.
 - npm audit --omit=dev sin críticas ni altas, y el flujo "Seguridad" de GitHub en verde.
 - Capturas con Playwright a 360, 390, 768 y 1440, bajando con scroll, y MÍRALAS: desbordes, textos cortados, cosas que tapan otras, secciones vacías.
+- node scripts/auditoria/movil.mjs <tu dominio o localhost> (de JudoMarketing) sin avisos: páginas que empiezan arriba, campos sin zoom, nada que se salga por el lado.
 - Contraste medido con número (4,5:1 mínimo) en cada par de texto.
 - Revisión autocrítica: busca lo que está MAL, no confirmación de que está bien.
 - Pásame la lista de todas las afirmaciones verificables que hace el sitio para que el dueño las confirme. Lo que no confirme, fuera.

@@ -41,6 +41,23 @@
 
 html {
   scroll-behavior: smooth;
+  /* Que el iPhone no agrande la letra por su cuenta al girar el teléfono */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* El iPhone hace zoom solo al tocar un campo con letra de menos de 16 px, y
+   ese zoom se queda al pasar a la página siguiente, que además arranca
+   desplazada hacia donde estaba el campo. En el teléfono todos los campos van
+   a 16 px; en pantallas grandes siguen como estaban. No se usa
+   maximum-scale=1 en el viewport: en Android eso le quita el zoom con los
+   dedos a quien lo necesita. */
+@media (max-width: 639px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 body {

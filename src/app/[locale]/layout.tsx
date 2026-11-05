@@ -15,6 +15,7 @@ import Mascot from "@/components/Mascot";
 import JsonLd from "@/components/JsonLd";
 import ChunkGuard from "@/components/ChunkGuard";
 import ServiceWorkerPurge from "@/components/ServiceWorkerPurge";
+import VueltaArriba from "@/components/VueltaArriba";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
@@ -131,7 +132,9 @@ export default async function LocaleLayout({
   const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   return (
-    <html lang={locale} className={`${poppins.variable} ${inter.variable}`}>
+    // data-scroll-behavior: Next apaga el desplazamiento suave mientras cambia
+    // de página (si no, la subida se corta a medio camino en el teléfono).
+    <html lang={locale} className={`${poppins.variable} ${inter.variable}`} data-scroll-behavior="smooth">
       <head>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         {supabase ? <link rel="preconnect" href={new URL(supabase).origin} crossOrigin="" /> : null}
@@ -144,6 +147,7 @@ export default async function LocaleLayout({
         <JsonLd locale={locale} />
         <ChunkGuard />
         <ServiceWorkerPurge />
+        <VueltaArriba />
         <NextIntlClientProvider>
           <LightLines />
           <div className="relative z-10">

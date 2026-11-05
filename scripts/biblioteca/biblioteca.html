@@ -48,6 +48,10 @@ body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--f-body); -
 .envoltura { max-width: 1180px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 26px; }
 h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; }
 button, input, textarea, select { font: inherit; color: inherit; }
+/* En el iPhone, un campo con letra de menos de 16 px hace zoom al tocarlo y el
+   zoom se queda al abrir la ficha siguiente. En el teléfono van a 16 px. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (max-width: 639px) { input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea, select { font-size: 16px; } }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
 .mono { font-family: var(--f-mono); font-size: 12.5px; letter-spacing: .01em; }
 .oculto { display: none !important; }
@@ -317,9 +321,11 @@ button, input, textarea, select { font: inherit; color: inherit; }
     abierta = id; editando = false; confirmandoBorrar = false;
     renderFicha();
     $("#velo").classList.remove("oculto");
+    $("#velo").scrollTop = 0; // cada ficha empieza arriba, también si se abre desde otra
     document.body.style.overflow = "hidden";
     if (empujar && location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
-    setTimeout(() => $("#ficha .cerrar")?.focus(), 30);
+    // preventScroll: el foco no mueve la ficha (en el iPhone la bajaba)
+    setTimeout(() => $("#ficha .cerrar")?.focus({ preventScroll: true }), 30);
   }
   function cerrarFicha() {
     const v = $("#ficha video"); if (v) v.pause();

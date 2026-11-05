@@ -24,6 +24,13 @@ sube al repositorio y le manda a Junior un aviso con lo que depende de él.
    móvil de las 8 páginas principales y escritorio de la portada. Se anota
    rendimiento, LCP, TBT, CLS, accesibilidad, SEO. Meta: 85 o más en móvil
    en todas; ninguna baja de la semana anterior en más de 5 puntos.
+   **Teléfono:** `node scripts/auditoria/movil.mjs` (todos los sitios de
+   `scripts/seguridad/sitios.txt`). Un iPhone simulado toca enlaces desde el
+   pie de cada sitio y avisa si la página nueva no empieza arriba, si un
+   campo hace zoom (menos de 16 px) o toma el foco solo, si algo se sale por
+   el lado y si el viewport quita el zoom con los dedos. Cada aviso va al
+   informe con el sitio y la página; en judomarketing.net se corrige (arreglo
+   de base en CEREBRO, sección 3, «En el teléfono…»).
 2. **SEO técnico:** `node scripts/auditoria/rastrear.mjs --salida <carpeta>/rastreo.json`.
    Títulos y descripciones (largo y que no se repitan), canónica, hreflang,
    un solo h1, imágenes sin alt, datos estructurados, enlaces externos
