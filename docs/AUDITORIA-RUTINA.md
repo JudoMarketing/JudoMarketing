@@ -31,6 +31,18 @@ sube al repositorio y le manda a Junior un aviso con lo que depende de él.
    el lado y si el viewport quita el zoom con los dedos. Cada aviso va al
    informe con el sitio y la página; en judomarketing.net se corrige (arreglo
    de base en CEREBRO, sección 3, «En el teléfono…»).
+   **Buscadores e IA:** `node scripts/auditoria/buscadores.mjs` (todos los
+   sitios). Mide como un buscador, sin JavaScript:
+   - las palabras que ve la IA en cada portada;
+   - el JSON-LD, la canónica y la imagen para compartir;
+   - el robots.txt (que no bloquee a Google, Bing, ChatGPT, Claude ni
+     Perplexity);
+   - el sitemap, `noindex` por error, www contra sin www;
+   - si un cortafuegos le cierra la puerta a un robot de IA.
+   
+   Lo nuevo de la semana va al informe, y lo de judomarketing.net se corrige.
+   El estado de cada sitio está en `BUSCADORES.md`: se actualiza la tabla
+   cuando algo cambia.
 2. **SEO técnico:** `node scripts/auditoria/rastrear.mjs --salida <carpeta>/rastreo.json`.
    Títulos y descripciones (largo y que no se repitan), canónica, hreflang,
    un solo h1, imágenes sin alt, datos estructurados, enlaces externos

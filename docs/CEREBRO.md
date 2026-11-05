@@ -27,6 +27,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-11-05 | **Todo website nace encontrable por Google, Bing y la IA** (sección 11). La plantilla JudiWEB ya trae de fábrica: robots.txt que deja entrar a ChatGPT, Claude y Perplexity, sitemap con hreflang, JSON-LD del negocio y WebSite, verificación de Google y Bing, IndexNow propio de cada sitio y `llms.txt`. La prueba es `node scripts/auditoria/buscadores.mjs`, y la auditoría de los lunes la corre en todos los sitios. El inventario de lo hecho y de cada sitio está en `BUSCADORES.md`. Lo más grave que salió: Johan Moreno Tailor, JudiMental y la portada de God's Home llegan vacíos a los robots de IA, que no ejecutan JavaScript. |
 | 2026-11-05 | **Todo se optimiza y se prueba en el teléfono, cada vez** (regla 16 de la sección 2). Y el error más repetido en teléfono ya tiene arreglo de base: la página nueva que arranca abajo y el zoom que el iPhone hace solo vienen de campos con letra de menos de 16 px y del foco que se queda en el pie. El código está en la sección 3, «En el teléfono…»; la prueba, en `node scripts/auditoria/movil.mjs`, que la auditoría semanal corre en todos los sitios. Arreglado en JuditoADS, judomarketing.net y la Biblioteca. |
 | 2026-11-02 | **zod con falla alta (GHSA-mrhx-c7xc-m3w5) en 12 repos: parchado y publicado.** zod ^4.6.7 en cada rama de producción, con override para las copias que trae `@vercel/cli-config`; cada preview comparado con producción. El flujo de seguridad pasó a las acciones v5. Para la próxima falla de un paquete que no es Next: `scripts/seguridad/subir-paquete.sh`. Detalle en `SEGURIDAD.md`. |
 | 2026-10-30 | **Repos de internet: copia privada, nunca fork.** Los videos explicativos con anything2explainer se hacen en `JudoMarketing/VideoCreator-explanatory-` (privado, sin la firma «built by…», con `CLAUDE.md` de reglas). Las reglas de GitHub para importar están en `scripts/seguridad/rulesets/`. La licencia es no comercial: venderlo necesita permiso del autor. Detalle en la sección 10, «Repos ajenos». |
@@ -450,8 +451,11 @@ código y sus trampas), `VERIFICACION.md` (los scripts de comprobación),
       servidor, no solo del navegador.
 - [ ] Sitio registrado en el portal de admin: dominio, precio, día de cobro,
       visible en showcase + categoría + descripción ES/EN.
-- [ ] Botón "📡 Avisar ahora" del portal después de publicar (IndexNow para
-      Bing/Yandex; Google va por Search Console).
+- [ ] Buscadores e IA (sección 11): `node scripts/auditoria/buscadores.mjs
+      <dominio>` sin avisos; Search Console por DNS con el sitemap; Bing
+      Webmaster importado de Search Console; `npm run buscadores:avisar` del
+      sitio después de publicar. (El botón «📡 Avisar ahora» del portal solo
+      avisa por las páginas de judomarketing.net, no por las del cliente.)
 - [ ] `next build` + `next start` corrido de verdad, no solo `next dev`.
 - [ ] Cada escritura de administración comprobada contra la base: que la fila
       cambió, no que el botón dijo ✓.
@@ -770,6 +774,23 @@ Los errores de diseño de los sitios están en la sección 2 y en
     `node scripts/auditoria/movil.mjs` lo comprueba. La auditoría de los
     lunes lo corre en todos los sitios.
 
+### Buscadores e IA
+
+- **Sitios publicados que no existían para la IA, y un botón que no avisaba
+  por quien decíamos** (2026-11-05).
+  - Qué pasó: al medir los sitios desde afuera, Johan Moreno Tailor le
+    entregaba a ChatGPT y a Claude una página vacía (`<div id="root">`, React
+    sin servidor), y JudiMental y la portada de God's Home casi no tenían
+    texto sin JavaScript. Los robots de IA no ejecutan JavaScript. Google los
+    veía bien, así que nadie lo notó. Además, el checklist decía que el botón
+    «📡 Avisar ahora» del portal avisaba a Bing por cada sitio, y solo avisa
+    por judomarketing.net.
+  - Costó: meses en que esos negocios no salieron en las respuestas de la IA.
+  - Regla: el texto del negocio va en el HTML del servidor, y todo sitio pasa
+    `node scripts/auditoria/buscadores.mjs` antes de entregarse (sección 11).
+    Lo que una herramienta dice que hace se comprueba en lo que de verdad
+    manda.
+
 ### Dependencias (npm)
 
 - **`npm install` corrió `prisma generate` y falló.**
@@ -986,3 +1007,60 @@ las trampas técnicas.
   - Qué pasó: la hoja lo mostraba, pero `revisar.mjs` decía "sin problemas".
   - Regla: una herramienta de revisión también se revisa contra la imagen.
     Se agregó el control de lo que no cabe.
+
+---
+
+## 11. Buscadores e IA: lo que todo sitio trae de fábrica
+
+Un negocio tiene que salir cuando alguien lo busca en Google o en Bing, y
+también cuando le pregunta a ChatGPT, Claude, Perplexity o Copilot. Cada uno
+lee el sitio con su propio robot. El detalle, el inventario de lo hecho y el
+estado de cada sitio están en `BUSCADORES.md`.
+
+**Las tres verdades que deciden todo:**
+
+1. **Los robots de IA no ejecutan JavaScript.** OAI-SearchBot (ChatGPT),
+   Claude-SearchBot y PerplexityBot leen el HTML tal como sale del servidor.
+   Un sitio que se arma en el navegador (React sin servidor, Expo web, una
+   portada en `<canvas>`) les llega vacío. Google sí ejecuta JavaScript, por
+   eso el error no se ve en Search Console.
+2. **Google no pide nada especial para AI Overviews ni AI Mode:** basta con que
+   la página esté indexada y pueda salir con su fragmento. `Google-Extended`
+   solo decide si Gemini entrena con el sitio.
+3. **Los robots de entrenamiento y los de búsqueda son distintos.** GPTBot,
+   ClaudeBot y Google-Extended entrenan modelos; OAI-SearchBot,
+   Claude-SearchBot y PerplexityBot traen visitas. Bloquear los primeros es
+   decisión del dueño; los segundos nunca se bloquean.
+
+**De fábrica en todo website** (la plantilla JudiWEB ya lo trae; su README,
+«Search engines and AI», dice dónde está cada pieza):
+
+- el texto del negocio en el HTML del servidor;
+- robots.txt que deja entrar a todos los buscadores y cierra los previews y
+  los sitios sin dominio;
+- sitemap con todas las páginas en todos los idiomas, con hreflang;
+- título con oficio y lugar, descripción, canónica, hreflang e imagen para
+  compartir en cada página e idioma;
+- JSON-LD del rubro con el mismo nombre, teléfono y dirección del Perfil de
+  Google, más WebSite y FAQPage;
+- verificación de Search Console (por DNS) y de Bing (importado de Search
+  Console);
+- IndexNow propio del sitio: `npm run buscadores:clave` una vez y
+  `npm run buscadores:avisar` después de cada cambio publicado;
+- `/llms.txt` generado de los mismos datos (es un extra barato: Google no lo
+  usa);
+- www o sin www decidido, y el otro redirigiendo con 308;
+- nada de `noindex` en producción.
+
+**Cómo se comprueba:** `node scripts/auditoria/buscadores.mjs <dominio>`. Mide
+desde afuera, como un buscador, sin ejecutar JavaScript:
+- las palabras que ve la IA en la portada;
+- los datos estructurados;
+- el robots.txt para cada robot;
+- el sitemap;
+- si el cortafuegos le cierra la puerta a algún robot de IA;
+- www contra sin www;
+- `llms.txt`.
+
+Va en el checklist de entrega (sección 7) y en la auditoría de los lunes.
+

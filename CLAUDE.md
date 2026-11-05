@@ -11,6 +11,10 @@ y la regla.
   360 px): cada página empieza arriba, ningún campo hace zoom (16 px), nada se
   sale por el lado. `node scripts/auditoria/movil.mjs <sitio>` y CEREBRO,
   regla 16 de la sección 2.
+- Todo website nace encontrable por Google, Bing y la IA (ChatGPT, Claude,
+  Perplexity): el texto en el HTML del servidor, robots.txt abierto a los
+  buscadores, sitemap, JSON-LD e IndexNow. CEREBRO, sección 11, y
+  `node scripts/auditoria/buscadores.mjs <sitio>`.
 - `master` es la rama de producción. Las otras ramas del repo están en el
   README, sección «Ramas del repositorio».
 - Un valor secreto no se imprime nunca, ni enmascarado. Las variables de

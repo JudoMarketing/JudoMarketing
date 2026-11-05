@@ -59,7 +59,8 @@ REGLAS QUE NO SE NEGOCIAN (cada una ya costó algo):
 - Nada de borrador en producción: sin insignias, "YOUR NAME HERE", teléfonos 555 o 000, "Photo coming", testimonios de relleno ni instrucciones visibles. Si falta un dato, el bloque se diseña para verse bien vacío o no se pone.
 - Sin raya larga (— o –) en ningún texto visible. Sin palabras de agencia. Sin promesas de resultados.
 - Header: teléfono visible, EN/ES y UN solo botón protagonista. En teléfono, barra fija inferior con las 2 o 3 acciones del negocio (Llamar / WhatsApp o Texto / Cotizar, Reservar u Ordenar) y un header que no se sature.
-- El contenido se ve sin JavaScript: las animaciones de entrada realzan, nunca esconden. Nada animado pasa por encima del texto.
+- El contenido se ve sin JavaScript: las animaciones de entrada realzan, nunca esconden. Nada animado pasa por encima del texto. Los robots de ChatGPT, Claude y Perplexity no ejecutan JavaScript: el texto del negocio va en el HTML del servidor, nunca armado en el navegador (nada de React sin servidor ni portadas solo en canvas).
+- Buscadores e IA de fábrica (CEREBRO, sección 11; en JudiWEB ya viene): robots.txt que deja entrar a Google, Bing, ChatGPT, Claude y Perplexity; sitemap con hreflang; canónica, hreflang e imagen para compartir en cada página; JSON-LD del rubro + WebSite + FAQPage con el mismo nombre, teléfono y dirección del Perfil de Google; IndexNow propio del sitio; llms.txt; nada de noindex en producción.
 - Teléfono primero (CEREBRO, sección 3, «En el teléfono…»): campos a 16 px en el teléfono para que el iPhone no haga zoom solo, cada página empieza arriba (también la que se abre desde el pie y cada paso de un asistente), sin maximum-scale ni user-scalable=no, sin autoFocus al entrar. Y cada cosa que tocas la dejas más liviana de lo que estaba.
 - Fotos reales del cliente. Si todavía no hay, ilustración con carácter en el lenguaje del sitio, nunca banco de imágenes fingiendo ser el cliente. Video en MP4 H.264 (HEVC no se ve en Chrome), con póster.
 - Todo dato del negocio en un archivo de configuración y todo texto en diccionarios tipados; ninguno escrito dentro de un componente. Si falta una traducción, que falle el build.
@@ -89,6 +90,7 @@ ANTES DE ENTREGAR CADA FASE:
 AL LANZAR:
 - Dominio decidido (www o sin www) y el otro redirigiendo con 308.
 - JSON-LD del rubro, sitemap con hreflang, robots, imagen para compartir, title con oficio + ciudad, GA4 (y Pixel si habrá anuncios).
+- Buscadores: Search Console con propiedad de dominio (DNS) y el sitemap enviado; Bing Webmaster Tools con "Importar desde Search Console"; npm run buscadores:clave (una vez) y, ya publicado, npm run buscadores:avisar. Después node scripts/auditoria/buscadores.mjs <dominio> (de JudoMarketing) tiene que salir sin avisos. Si no es JudiWEB, la clave de IndexNow va en public/<clave>.txt y el aviso lo manda scripts/buscadores.mjs de JudiWEB copiado al repo.
 - Agrega el dominio a scripts/seguridad/sitios.txt de JudoMarketing (lo revisa la auditoría semanal) y su fila al inventario de docs/SEGURIDAD.md, con la rama de producción.
 - Dame los pasos para registrarlo en el portal de admin de judomarketing.net (dominio, precio, día de cobro, showcase, categoría, descripción ES/EN) y para mandarlo a Search Console.
 - Si aprendiste algo que el siguiente proyecto necesita saber, agrégalo a docs/CEREBRO-APORTES.md de JudoMarketing con su evidencia.
