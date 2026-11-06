@@ -718,6 +718,17 @@ Los errores de diseño de los sitios están en la sección 2 y en
   - Regla: lo grabado o generado se mira antes de publicar, cuadro por
     cuadro o portada por portada. Y lo que se enseña a clientes de afuera
     se graba en `en-US`.
+- **Un informe para un prospecto decía «0 de 5 búsquedas» y su propia tabla
+  tenía 4** (2026-11-06).
+  - Qué pasó: la cifra del resumen se escribió a mano y la tabla salía de
+    los datos. En el mismo PDF, la línea de meta del gráfico estaba en 2 s
+    y su etiqueta decía 2,5 s. Lo pillamos en la última relectura, antes de
+    entregarlo; un cliente lo habría visto en la página 2.
+  - Regla: en un informe, cada cifra que se repite sale de una sola
+    variable. Antes de entregar se lee el texto entero (`pdftotext`) y se
+    coteja cada número con su fuente. Lo que no se pudo medir (Google
+    bloquea las búsquedas automáticas) no se afirma: se dice cómo se va a
+    confirmar.
 
 ### Publicar (git y Vercel)
 
