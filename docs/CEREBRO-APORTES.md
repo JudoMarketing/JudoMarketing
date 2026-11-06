@@ -1108,3 +1108,58 @@ solo cuando hay otro equivalente: la firma del OAuth cae a
 producción por `SESSION_SECRET` vacía, y conectar una página habría fallado
 al cifrar el token por `ENCRYPTION_KEY` vacía. Las dos se rellenaron desde
 la API el mismo día; la salud ahora enseña `secretos` y `sessionSecret`.
+
+---
+
+### 2026-11-06 · NV-Labs · suplementos B2B
+**Qué aprendimos:** cuando el cliente no tiene fotos que sirvan (las de
+nvlabs.net eran de banco e iconos de 50 px), las imágenes de producto se
+pueden hacer nosotros mismos con renders 3D en el navegador: three.js con
+materiales físicos (cápsulas con brillo, softgel translúcido, frasco con
+etiqueta dibujada en canvas), un mismo estudio de luz y fondo transparente.
+18 imágenes salen en minutos, pesan 30 KB cada una y se ven como una sola
+sesión de fotos. La etiqueta del frasco se cambia en el código y se vuelve a
+renderizar. El generador queda en el repo del cliente (`render.html`).
+**Evidencia:** las 6 formas de dosis, los 5 empaques, los 6 productos de la
+tienda y el hero de NV Labs salieron así, con 541 KB en total.
+
+---
+
+### 2026-11-06 · NV-Labs · cómo se ve un suplemento
+**Qué aprendimos:** en un sitio de suplementos, la forma de dosis tiene que
+parecer suplemento, no dulce ni comida. Las gomitas van como gomita de
+vitamina (domo con azúcar), no como ositos; el polvo va dentro de su pote,
+claro y con su medidor, no como un montón suelto, que de color oscuro se lee
+como tierra. Si un render puede confundirse con otra cosa, se rehace.
+**Evidencia:** Junior rechazó los ositos («no me gusta cómo se ven los
+gummies») y el montón de proteína de chocolate («el powder tampoco, parece
+barro»). Pasaron las gomitas en domo y el pote abierto con medidor azul.
+
+---
+
+### 2026-11-06 · NV-Labs · capturas con efecto vidrio
+**Qué aprendimos:** la captura de página completa de Playwright
+(`fullPage: true`) no pinta el contenido de los elementos con
+`backdrop-filter` que quedan fuera de la primera pantalla: las tarjetas de
+vidrio salen vacías y parece que las imágenes no cargan. La captura fiel se
+hace bajando pantalla por pantalla y uniendo los tramos, con el header fijo
+pasado a `position:relative` para que no se repita.
+**Evidencia:** las tarjetas de dosis salieron en blanco en la captura
+completa mientras el DOM decía que las imágenes cargaron (560 px, opacidad
+1). En la captura por tramos se veían bien. La herramienta quedó en
+`diseno/fuente/stitch.js` del repo de NV Labs.
+
+---
+
+### 2026-11-06 · NV-Labs · el auditor de botones
+**Qué aprendimos:** antes de entregar un borrador interactivo vale correr un
+auditor que entre como usuario: toca cada botón y marca los que no hacen
+nada, recorre los flujos completos (tienda → carrito → pago, cotización,
+contacto), y mide desborde lateral, objetivos de toque de menos de 44 px,
+campos de menos de 16 px, contraste, imágenes rotas y texto igual en EN y
+ES, en 4 anchos y 2 idiomas. Más un crítico independiente (un agente que no
+vio cómo se construyó) que juzga las capturas contra el brief.
+**Evidencia:** `diseno/fuente/auditor.js` en el repo de NV Labs. Las
+primeras corridas encontraron fallos que la vista no veía: el header del
+teléfono se salía 33 px a 360 de ancho, y una clase compartida convertía
+las etiquetas «(opcional)» en botones con borde.
