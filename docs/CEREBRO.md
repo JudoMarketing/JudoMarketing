@@ -729,6 +729,18 @@ Los errores de diseño de los sitios están en la sección 2 y en
     coteja cada número con su fuente. Lo que no se pudo medir (Google
     bloquea las búsquedas automáticas) no se afirma: se dice cómo se va a
     confirmar.
+- **Los PDF de las auditorías daban error en Adobe Acrobat** (2026-11-10).
+  - Qué pasó: Chrome imprimía con la fuente Inter instalada en el sistema,
+    que es OTF (contornos CFF), y la incrustaba como «Type 3». Acrobat
+    marcaba error en la portada y no dibujaba bien números y textos. En
+    nuestro visor (poppler) se veía perfecto, así que no lo vimos hasta
+    que Junior lo abrió en Acrobat.
+  - Regla: un PDF que sale de Chrome usa fuentes TrueType declaradas con
+    `@font-face` (archivo .ttf o .woff2 con contornos glyf; nunca la OTF
+    del sistema). Los símbolos (→ ★ ✓ ✕) llevan su propia fuente TrueType
+    con `unicode-range` y el mismo peso exacto que la principal. Antes de
+    entregar: `pdffonts` sin ninguna «Type 3» ni fuentes de respaldo
+    (Liberation), y abrirlo con un segundo motor (MuPDF) sin avisos.
 
 ### Publicar (git y Vercel)
 
