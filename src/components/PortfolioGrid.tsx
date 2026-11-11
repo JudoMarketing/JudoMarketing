@@ -12,8 +12,8 @@ import {
 } from "@/content/portfolio";
 
 /**
- * Los trabajos, en fichas chicas de tres por fila tanto en teléfono como en
- * computadora. La captura del home manda; el texto acompaña sin competir.
+ * Los trabajos, dos por fila tanto en teléfono como en computadora. Cada sitio
+ * va dentro de una laptop y debajo dice qué hace y cómo.
  */
 
 export default function PortfolioGrid({
@@ -79,55 +79,63 @@ export default function PortfolioGrid({
         </div>
       )}
 
-      {/* Tres por fila en cualquier pantalla */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Dos por fila en cualquier pantalla (Junior, 11 de noviembre de 2026),
+          cada sitio dentro de una laptop y su descripción debajo. */}
+      <div className="mx-auto grid w-full max-w-4xl grid-cols-2 gap-3 sm:gap-6">
         {visibles.map((trabajo, i) => (
-          // El escalonado es dentro de la fila (3 por fila), no de la lista:
-          // con paso={i} la ficha 16 esperaba 2.25 s en pantalla antes de
+          // El escalonado es dentro de la fila (2 por fila), no de la lista:
+          // con paso={i} la ficha 16 esperaba segundos en pantalla antes de
           // empezar a aparecer, y el showcase se sentía lento al bajar.
-          <Reveal key={trabajo.dominio} paso={i % 3}>
+          <Reveal key={trabajo.dominio} paso={i % 2}>
             <a
               href={trabajo.url}
               target="_blank"
               rel="noopener noreferrer"
               className="work-card group flex h-full flex-col overflow-hidden rounded-xl hover:-translate-y-1"
             >
-              {/* La proporción sale de la captura misma: si el hueco fuera más
-                  alto que la imagen, el navegador la agrandaría para taparlo y
-                  el sitio saldría recortado por los lados. */}
-              <div
-                className="relative overflow-hidden bg-judo-black"
-                style={{ aspectRatio: RELACION_CAPTURA }}
-              >
-                {trabajo.video ? (
-                  <PortadaEnVideo video={trabajo.video} nombre={trabajo.nombre} primera={i === 0} />
-                ) : (
-                  <Image
-                    src={trabajo.imagen}
-                    alt={trabajo.nombre}
-                    fill
-                    sizes="(max-width: 640px) 33vw, 300px"
-                    className="object-cover object-top transition duration-500 group-hover:scale-[1.04]"
-                  />
-                )}
-                {/* Un borrador se puede enseñar, pero se dice que lo es */}
-                {trabajo.enDesarrollo && (
-                  <span className="absolute top-2.5 left-2.5 rounded-full bg-amber-400 px-2 py-0.5 text-[11px] font-bold tracking-wide text-judo-black uppercase">
-                    {t("wip")}
-                  </span>
-                )}
+              <div className="vitrina">
+                <div className="laptop">
+                  <div className="laptop-tapa">
+                    <span className="laptop-camara" aria-hidden="true" />
+                    {/* La proporción sale de la captura misma: si el hueco fuera
+                        más alto que la imagen, el navegador la agrandaría para
+                        taparlo y el sitio saldría recortado por los lados. */}
+                    <div className="laptop-pantalla" style={{ aspectRatio: RELACION_CAPTURA }}>
+                      {trabajo.video ? (
+                        <PortadaEnVideo video={trabajo.video} nombre={trabajo.nombre} primera={i === 0} />
+                      ) : (
+                        <Image
+                          src={trabajo.imagen}
+                          alt={trabajo.nombre}
+                          fill
+                          sizes="(max-width: 640px) 42vw, 380px"
+                          className="object-cover object-top transition duration-500 group-hover:scale-[1.04]"
+                        />
+                      )}
+                      {/* Un borrador se puede enseñar, pero se dice que lo es */}
+                      {trabajo.enDesarrollo && (
+                        <span className="absolute top-1.5 left-1.5 rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-bold tracking-wide text-judo-black uppercase sm:top-2.5 sm:left-2.5 sm:text-[11px]">
+                          {t("wip")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="laptop-base" aria-hidden="true">
+                    <span className="laptop-muesca" />
+                  </div>
+                </div>
               </div>
 
-              <div className="flex flex-1 flex-col gap-1 p-2.5 sm:gap-1.5 sm:p-4">
-                <h2 className="line-clamp-2 text-base leading-tight font-semibold">
+              <div className="flex flex-1 flex-col gap-1 px-3 pt-2 pb-3 sm:gap-1.5 sm:px-5 sm:pt-3 sm:pb-5">
+                <h2 className="line-clamp-2 text-sm leading-tight font-semibold sm:text-lg">
                   {trabajo.nombre}
                 </h2>
                 {trabajo.descripcion[locale] && (
-                  <p className="line-clamp-2 text-sm leading-snug text-judo-fog/65 sm:text-xs">
+                  <p className="line-clamp-5 text-xs leading-snug text-judo-fog/70 sm:line-clamp-4 sm:text-sm">
                     {trabajo.descripcion[locale]}
                   </p>
                 )}
-                <span className="mt-auto pt-1.5 text-sm font-semibold text-judo-lilac sm:text-xs">
+                <span className="mt-auto pt-1.5 text-xs font-semibold text-judo-lilac sm:text-sm">
                   {t("visit")} ↗
                 </span>
               </div>
@@ -192,7 +200,7 @@ function PortadaEnVideo({
         alt=""
         fill
         priority={primera}
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+        sizes="(max-width: 640px) 42vw, 380px"
         className="object-cover object-top transition duration-500 group-hover:scale-[1.04]"
       />
       <video

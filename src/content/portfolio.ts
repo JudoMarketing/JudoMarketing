@@ -53,6 +53,8 @@ export const VIDEOS_PORTADA: string[] = [
   "deliveryrushflorida.com",
   "judimental.com",
   "godshome.app",
+  "hr-gutters.vercel.app",
+  "nvlabs.vercel.app",
 ];
 
 export function videoDePortada(dominio: string): Trabajo["video"] {
@@ -101,7 +103,59 @@ export const PROYECTOS_FIJOS: {
       en: "Phone app: choose how you feel and receive a message from God based on the Bible.",
     },
   },
+  // Junior, 11 de noviembre de 2026
+  {
+    nombre: "HR Gutters",
+    dominio: "hr-gutters.vercel.app",
+    url: "https://hr-gutters.vercel.app",
+    categoria: "construccion",
+    descripcion: {
+      es: "Canaletas sin costuras, protectores, fascia y sofito en Orlando y el centro de Florida. Equipo bilingüe: el cliente llama, escribe por WhatsApp o agenda su estimado gratis en línea en dos minutos.",
+      en: "Seamless gutters, gutter guards, fascia and soffit in Orlando and Central Florida. A bilingual crew: homeowners call, text on WhatsApp or book a free estimate online in two minutes.",
+    },
+  },
+  {
+    nombre: "NV Labs",
+    dominio: "nvlabs.vercel.app",
+    url: "https://nvlabs.vercel.app",
+    categoria: "equipos",
+    descripcion: {
+      es: "Fabricante de vitaminas y suplementos de marca propia en Miami-Dade, con seis formas de dosis bajo cGMP. La marca manda su fórmula y recibe cotización en 48 horas, muestras gratis y su etiqueta lista.",
+      en: "Private label vitamin and supplement manufacturer in Miami-Dade, with six dosage forms under cGMP. A brand sends its formula and gets a quote in 48 hours, free samples and a ready label.",
+    },
+  },
 ];
+
+/**
+ * Descripciones escritas por Judo (Junior, 11 de noviembre de 2026: "ve qué
+ * hacen y cómo lo hacen"). Llenan la ficha cuando el portal no trae texto; si
+ * Administración escribe una en el portal, manda la del portal. Va el dominio
+ * sin www, tal como está en el portal.
+ */
+export const DESCRIPCIONES_SHOWCASE: Record<string, { es: string; en: string }> = {
+  "pachy-pinchos.vercel.app": {
+    es: "Pinchos boricuas hechos al momento en St. Cloud, Florida. Se ordena en la misma web, sin apps de terceros: escoges del menú, eliges pickup o delivery (gratis desde $30) y la orden llega directo a la cocina.",
+    en: "Puerto Rican pinchos made to order in St. Cloud, Florida. Customers order right on the site, with no third-party apps: pick from the menu, choose pickup or delivery (free over $30), and the order goes straight to the kitchen.",
+  },
+  "the-equipment-source.vercel.app": {
+    es: "Renta y venta de equipo de construcción en el suroeste de Florida y la costa del Golfo. El contratista busca por categoría y patio, ve qué máquina está lista esta semana con tarifas por día, semana y mes, y arma su cotización.",
+    en: "Construction equipment rentals and sales across Southwest Florida and the Gulf Coast. Contractors search by category and yard, see which machines are ready this week with day, week and month rates, and build a quote.",
+  },
+  "art-foundation.vercel.app": {
+    es: "Clases de arte, teatro y guitarra en Miami, cada sábado, para alumnos con y sin discapacidad. Las familias escogen sus clases y se inscriben en línea; el apoyo uno a uno es gratis y la segunda clase va a mitad de precio.",
+    en: "Art, theatre and guitar classes in Miami every Saturday, for students with and without disabilities. Families pick their classes and register online; one-on-one support is free and a second class is half price.",
+  },
+};
+
+/**
+ * Dirección pública de un sitio que en el portal sigue con su dirección de
+ * Vercel. La ficha abre la dirección real (Junior, 11 de noviembre de 2026:
+ * "conecta Pachy Pinchos"); el video y la foto se siguen buscando con la del
+ * portal. Va el dominio sin www.
+ */
+export const DOMINIO_PUBLICO: Record<string, string> = {
+  "pachy-pinchos.vercel.app": "pachypinchos.com",
+};
 
 /**
  * Orden del showcase (Junior, 22 de octubre de 2026): estos van primero, en

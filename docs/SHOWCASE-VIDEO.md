@@ -4,7 +4,7 @@ Desde el 4 de octubre de 2026 (pedido de Junior) las fichas del showcase de
 los sitios con movimiento enseñan un video corto en vez de la foto: la
 entrada animada del hero y un recorrido suave hacia abajo que dispara las
 animaciones de las secciones. Unos 5 a 6 segundos, en bucle, sin audio.
-Hoy son 14 sitios. God's Home (godshome.app, 12 de octubre de 2026) es la
+Hoy son 16 sitios (HR Gutters y NV Labs entraron el 11 de noviembre de 2026). God's Home (godshome.app, 12 de octubre de 2026) es la
 excepción: enseña sus primeros 7 segundos tal cual, la intro de la creación
 que termina en el hero.
 
@@ -83,3 +83,16 @@ Se vuelve a grabar cuando un sitio cambia de diseño. Cada video pesa entre
 | --- | --- |
 | vanventuremia.com | Una sola pantalla, sin movimiento. Lleva portada fija (`PORTADAS_FIJAS` en `src/content/portfolio.ts`): el arte de "Private van tours in Miami" que eligió Junior |
 | milcoloresapp.vercel.app/hoy | Igual: app de una pantalla |
+
+## Fichas de dos por fila, en laptop (11 de noviembre de 2026)
+
+Junior pidió el showcase más compacto: dos sitios por fila en teléfono y en
+computadora, cada uno dentro de una laptop dibujada con CSS (`.vitrina`,
+`.laptop` en `src/app/globals.css`) y debajo qué hace el negocio y cómo.
+
+- La descripción sale del portal. Si el portal no trae texto, va la de
+  `DESCRIPCIONES_SHOWCASE` en `src/content/portfolio.ts`, escrita mirando el
+  sitio (qué hacen y cómo se compra o se contrata).
+- `DOMINIO_PUBLICO` manda la ficha a la dirección real cuando el portal sigue
+  con la de Vercel: Pachy Pinchos abre pachypinchos.com.
+- HR Gutters y NV Labs no están en el portal: van en `PROYECTOS_FIJOS`.
