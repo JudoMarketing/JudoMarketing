@@ -27,6 +27,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-11-12 | **Todo sitio hecho por Judo lleva al fondo «Site built by Judo Marketing»** (regla 17 de la sección 2): discreta, del color del pie, enlazada a judomarketing.net. Ya está en todos los sitios que tenemos en GitHub (Paradise Ranch espera su publicación en Cloudflare); JudiWEB y el prompt de website nuevo la traen de fábrica. Se revisa con `node scripts/auditoria/firma.mjs`. |
 | 2026-11-05 | **Todo website nace encontrable por Google, Bing y la IA** (sección 11). La plantilla JudiWEB ya trae de fábrica: robots.txt que deja entrar a ChatGPT, Claude y Perplexity, sitemap con hreflang, JSON-LD del negocio y WebSite, verificación de Google y Bing, IndexNow propio de cada sitio y `llms.txt`. La prueba es `node scripts/auditoria/buscadores.mjs`, y la auditoría de los lunes la corre en todos los sitios. El inventario de lo hecho y de cada sitio está en `BUSCADORES.md`. Lo más grave que salió: Johan Moreno Tailor, JudiMental y la portada de God's Home llegan vacíos a los robots de IA, que no ejecutan JavaScript. |
 | 2026-11-05 | **Todo se optimiza y se prueba en el teléfono, cada vez** (regla 16 de la sección 2). Y el error más repetido en teléfono ya tiene arreglo de base: la página nueva que arranca abajo y el zoom que el iPhone hace solo vienen de campos con letra de menos de 16 px y del foco que se queda en el pie. El código está en la sección 3, «En el teléfono…»; la prueba, en `node scripts/auditoria/movil.mjs`, que la auditoría semanal corre en todos los sitios. Arreglado en JuditoADS, judomarketing.net y la Biblioteca. |
 | 2026-11-02 | **zod con falla alta (GHSA-mrhx-c7xc-m3w5) en 12 repos: parchado y publicado.** zod ^4.6.7 en cada rama de producción, con override para las copias que trae `@vercel/cli-config`; cada preview comparado con producción. El flujo de seguridad pasó a las acciones v5. Para la próxima falla de un paquete que no es Next: `scripts/seguridad/subir-paquete.sh`. Detalle en `SEGURIDAD.md`. |
@@ -224,6 +225,18 @@ protagonista que dice la acción del negocio: "Ordenar", "Quick Estimate",
     Y se deja más rápida de lo que estaba: lo que no se usa se quita, las
     imágenes se pesan, lo que no se ve al entrar carga después. Se mide con
     `node scripts/auditoria/movil.mjs <sitio>` y con Lighthouse móvil.
+17. **Todo sitio hecho por Judo lleva la firma al fondo** (Junior, 12 de
+    noviembre de 2026). En la última fila del pie, junto al copyright:
+    «Site built by Judo Marketing», o «Sitio creado por Judo Marketing» si el
+    sitio es solo en español (en uno bilingüe, cada idioma con la suya).
+    - Enlaza a `https://www.judomarketing.net`, en otra pestaña
+      (`target="_blank" rel="noopener"`).
+    - Discreta: el mismo color, tamaño y letra que el copyright, sin logo ni
+      negrita; al pasar el ratón hace lo mismo que los otros enlaces del pie.
+    - Una app sin pie (milcolores, JudiMental, God's Home) la lleva al final
+      de la pantalla de perfil o de la portada, igual de pequeña.
+    - Se revisa en vivo con
+      `node scripts/auditoria/firma.mjs <sitio> [<sitio>...]`.
 
 ---
 
@@ -742,6 +755,16 @@ Los errores de diseño de los sitios están en la sección 2 y en
     entregar: `pdffonts` sin ninguna «Type 3» ni fuentes de respaldo
     (Liberation), y abrirlo con un segundo motor (MuPDF) sin avisos.
 
+- **La lista de sitios revisaba un sitio ajeno** (2026-11-12).
+  - Qué pasó: `scripts/seguridad/sitios.txt` tenía `math-games.vercel.app`,
+    pero ese nombre es de otra persona (una página con anuncios). El nuestro
+    es `math-games-dusky.vercel.app`, con su dominio juniorosorio.com. Las
+    auditorías semanales medían el sitio de un desconocido. Salió al buscar
+    la firma de Judo en el pie y no encontrarla.
+  - Costó: semanas de auditorías de MathGames que no medían nada nuestro.
+  - Regla: un `<proyecto>.vercel.app` no es nuestro por llamarse igual. El
+    dominio sale de `list_project_domains` del proyecto en Vercel, nunca del
+    nombre.
 - **El showcase salió roto en producción con el build en verde**
   (2026-11-11).
   - Qué pasó: las reglas nuevas de la laptop iban en `globals.css`. Vercel

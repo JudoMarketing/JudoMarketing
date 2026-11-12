@@ -6,7 +6,7 @@
  * Texto en español: el admin es el dueño.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
 import Turnstile, { bloqueaEnvio, resetTurnstile } from "./Turnstile";
 import SiteDossier from "./SiteDossier";
@@ -452,6 +452,11 @@ export default function AdminPortal() {
   const [sitePrice, setSitePrice] = useState(String(precio("essential")));
   const [siteClient, setSiteClient] = useState("");
   const [siteDue, setSiteDue] = useState("");
+  // Huella de lo que se ve en el showcase. Si cambia después de la primera
+  // lectura, se avisa a la página para que se renueve al momento
+  // (/api/admin/showcase) en vez de esperar a la siguiente visita.
+  const huellaShowcase = useRef<string | null>(null);
+
   // Un website que ya está publicado entra directo como activo
   const [siteStatus, setSiteStatus] = useState<"en_desarrollo" | "activo">(
     "en_desarrollo"
@@ -508,6 +513,23 @@ export default function AdminPortal() {
     ]);
     setProofs((proofRes.data as ProofRow[]) ?? []);
     setSites((siteRes.data as unknown as SiteRow[]) ?? []);
+    {
+      const huella = JSON.stringify(
+        ((siteRes.data ?? []) as unknown as SiteRow[]).map((s) => [
+          s.name, s.domain, s.status, s.portfolio_visible, s.portfolio_category,
+          s.portfolio_desc_es, s.portfolio_desc_en, s.portfolio_image, s.portfolio_shot_at,
+        ])
+      );
+      if (siteRes.data && huellaShowcase.current !== null && huellaShowcase.current !== huella) {
+        void supabase.auth.getSession().then(({ data }) => {
+          const token = data.session?.access_token;
+          if (token) {
+            void fetch("/api/admin/showcase", { method: "POST", headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
+          }
+        });
+      }
+      if (siteRes.data) huellaShowcase.current = huella;
+    }
     setReviews((revRes.data as ReviewModRow[]) ?? []);
     setContractRows((contractRes.data as ContractRow[]) ?? []);
     setPayRows((payRes.data as unknown as PayRow[]) ?? []);
