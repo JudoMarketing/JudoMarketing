@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import Reveal from "./Reveal";
+import "./vitrina.css";
 import {
   CATEGORIAS,
   RELACION_CAPTURA,

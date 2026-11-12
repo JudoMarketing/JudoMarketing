@@ -1,0 +1,66 @@
+/* Showcase: cada sitio dentro de una laptop, sobre un fondo de escritorio.
+   Va en su propio archivo y no en globals.css: el 11 de noviembre de 2026
+   Vercel restauró la caché del build y publicó el globals.css de antes, sin
+   estas reglas (docs/CEREBRO.md, sección 10). Un archivo nuevo se compila
+   siempre. */
+.vitrina {
+  padding: 8% 9% 5%;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(123, 45, 255, 0.22), transparent 70%);
+}
+.laptop {
+  position: relative;
+  isolation: isolate;
+}
+.laptop::after {
+  content: "";
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: -9%;
+  height: 12%;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.55), transparent 75%);
+  z-index: -1;
+}
+.laptop-tapa {
+  position: relative;
+  padding: 3.5% 3.5% 4%;
+  border-radius: 10px 10px 3px 3px;
+  background: linear-gradient(180deg, #2a2738, #12111a);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 0 0 2px #0b0a10;
+}
+.laptop-camara {
+  position: absolute;
+  top: 1.3%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: #4a4560;
+}
+.laptop-pantalla {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: #0f0d18;
+}
+.laptop-base {
+  position: relative;
+  height: clamp(6px, 1.6vw, 13px);
+  margin: 0 -8%;
+  border-radius: 1px 1px 14px 14px / 1px 1px 10px 10px;
+  background: linear-gradient(180deg, #d9d5e4 0%, #a9a4bb 55%, #7d7894 100%);
+}
+.laptop-muesca {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 15%;
+  height: 45%;
+  transform: translateX(-50%);
+  border-radius: 0 0 6px 6px;
+  background: #8c87a2;
+}
+
