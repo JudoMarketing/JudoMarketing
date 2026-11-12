@@ -70,6 +70,9 @@ const SITIOS = [
     almacen: { "juniapp.setting.lang": "en" } },
   // Junior, 12 de octubre de 2026: los primeros 7 segundos, la intro entera
   { dominio: "godshome.app", url: "https://www.godshome.app/en", primeros: 7 },
+  // Junior, 11 de noviembre de 2026
+  { dominio: "hr-gutters.vercel.app", url: "https://hr-gutters.vercel.app/" },
+  { dominio: "nvlabs.vercel.app", url: "https://nvlabs.vercel.app/", saltar: 0.3 },
 ];
 
 // Fuera a propósito (se quedan con su foto): vanventuremia.com y
@@ -333,6 +336,8 @@ const ff = ffmpeg();
 const navegador = await chromium.launch({
   executablePath: existsSync(CHROME) ? CHROME : undefined,
   args: ["--autoplay-policy=no-user-gesture-required", "--hide-scrollbars", "--ignore-certificate-errors"],
+  // En una sesión en la nube la salida pasa por un proxy; en una computadora normal no hay.
+  proxy: process.env.HTTPS_PROXY ? { server: process.env.HTTPS_PROXY } : undefined,
 });
 for (const sitio of SITIOS) {
   if (solo.length && !solo.includes(sitio.dominio)) continue;

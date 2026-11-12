@@ -30,7 +30,7 @@ export default async function PortfolioPage({
 
   return (
     <div className="judo-glow">
-      <section className="mx-auto max-w-5xl px-6 pt-20 pb-24">
+      <section className="mx-auto max-w-5xl px-4 pt-20 pb-24 sm:px-6">
         <div className="text-center">
           <h1 className="hero-in text-4xl font-bold sm:text-6xl">{t("title")}</h1>
           <p

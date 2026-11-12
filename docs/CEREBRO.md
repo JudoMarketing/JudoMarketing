@@ -742,6 +742,20 @@ Los errores de diseño de los sitios están en la sección 2 y en
     entregar: `pdffonts` sin ninguna «Type 3» ni fuentes de respaldo
     (Liberation), y abrirlo con un segundo motor (MuPDF) sin avisos.
 
+- **El showcase salió roto en producción con el build en verde**
+  (2026-11-11).
+  - Qué pasó: las reglas nuevas de la laptop iban en `globals.css`. Vercel
+    restauró la caché del build («Restored build cache», compiló en 4.7 s)
+    y publicó el CSS de antes: el HTML nuevo sin sus estilos, con las
+    portadas tapando las fichas. En local el CSS salía bien.
+  - Regla: después de publicar, se mira la página en producción, no solo el
+    estado READY. Si un cambio de CSS no aparece en el `.css` publicado
+    (`curl` del archivo y `grep` de una clase nueva), se pone ese CSS en un
+    archivo nuevo importado desde su componente; un archivo nuevo no sale
+    de la caché. Lo mismo con clases de Tailwind nuevas escritas en un
+    componente: tampoco se generaron. Para un cambio de diseño, CSS normal
+    en el archivo del componente.
+
 ### Publicar (git y Vercel)
 
 - **La rama principal no siempre es la de producción.**

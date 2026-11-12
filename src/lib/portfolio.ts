@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import {
   capturaDelHome,
+  DESCRIPCIONES_SHOWCASE,
+  DOMINIO_PUBLICO,
   OCULTOS_SHOWCASE,
   ORDEN_SHOWCASE,
   portadaFija,
@@ -148,19 +150,23 @@ async function trabajosDelPortal(): Promise<Trabajo[]> {
       const categoria = CATEGORIAS_VALIDAS.includes(fila.portfolio_category ?? "")
         ? (fila.portfolio_category as Categoria)
         : null;
+      const propia = DESCRIPCIONES_SHOWCASE[sinWww(dominio)];
+      const publico = DOMINIO_PUBLICO[sinWww(dominio)];
       return {
         nombre: fila.name,
         dominio,
-        url: `https://${dominio}`,
+        url: `https://${publico ?? dominio}`,
         imagen: portadaFija(dominio) ?? capturaDelHome(paraLaFoto[i], fila.portfolio_image, fila.portfolio_shot_at),
         // El video manda incluso sobre una imagen puesta en el portal (Delivery
         // Rush tenía una portada fija): estar en VIDEOS_PORTADA ya es decisión.
         video: videoDePortada(dominio),
         categoria,
         enDesarrollo: fila.status === "en_desarrollo",
+        // Lo que escribe Administración manda; si viene vacío, va el texto de
+        // DESCRIPCIONES_SHOWCASE.
         descripcion: {
-          es: fila.portfolio_desc_es ?? "",
-          en: fila.portfolio_desc_en ?? fila.portfolio_desc_es ?? "",
+          es: fila.portfolio_desc_es?.trim() || propia?.es || "",
+          en: fila.portfolio_desc_en?.trim() || fila.portfolio_desc_es?.trim() || propia?.en || "",
         },
       };
     });
