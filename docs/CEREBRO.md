@@ -903,6 +903,26 @@ Los errores de diseño de los sitios están en la sección 2 y en
     `--guion` tiene que coincidir con la escena. Lo exacto sigue siendo que
     Junior suba los MP3 a la Biblioteca y se calcen con `calzar-voz.py`.
 
+- **El guion en inglés de «Five cents» cabía en los tiempos y no decía nada
+  completo** (2026-11-12).
+  - Qué pasó: la versión 3 se armó midiendo sílabas contra cada escena, y para
+    que cupiera se partieron las ideas: «no guru...», «It gets crazier...»,
+    «Yourself, in four steps». En los consejos, la voz decía «Tips that
+    really work» mientras la tarjeta decía «Three ads, not one». El precio
+    callaba que la pauta de Meta va aparte, aunque la pantalla lo dice.
+    Junior lo pidió desde la Biblioteca: «no completan el mensaje, parece que
+    se cortan a medias».
+  - Costó: rehacer el guion (versión 4) y un pedido de Junior que dice que
+    siente que necesitamos ayuda con los guiones.
+  - Regla: cada frase es una idea completa y dice lo que muestra su escena
+    (se escribe con la captura de cada escena delante, no con el
+    storyboard). Si no cabe, se cambia la frase por otra más corta que diga
+    lo mismo; nunca se corta a medias. Antes de entregar se corre
+    `python3 ../borrador-voz.py voz.json` desde la carpeta del video: una voz
+    de prueba lo lee, se calza en el video y Whisper transcribe lo que se oye
+    al lado de cada escena. Ese borrador se sube a la Biblioteca con el
+    guion.
+
 ### Carruseles
 
 - **La revisión dijo «Sin problemas» con una portada cortada** (2026-10-30).
