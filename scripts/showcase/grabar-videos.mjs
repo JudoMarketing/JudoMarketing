@@ -72,7 +72,7 @@ const SITIOS = [
   { dominio: "godshome.app", url: "https://www.godshome.app/en", primeros: 7 },
   // Junior, 11 de noviembre de 2026
   { dominio: "hr-gutters.vercel.app", url: "https://hr-gutters.vercel.app/" },
-  { dominio: "nvlabs.vercel.app", url: "https://nvlabs.vercel.app/" },
+  { dominio: "nvlabs.vercel.app", url: "https://nvlabs.vercel.app/", saltar: 0.3 },
 ];
 
 // Fuera a propósito (se quedan con su foto): vanventuremia.com y
