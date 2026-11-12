@@ -64,3 +64,68 @@
   background: #8c87a2;
 }
 
+
+/* La ficha completa va aquí en CSS normal y no con clases de Tailwind: con
+   la caché del build de Vercel, las clases nuevas escritas en un componente
+   no se generaban (docs/CEREBRO.md, sección 10). */
+.vitrina-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 56rem;
+  margin: 0 auto;
+}
+.vitrina-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem 0.75rem;
+}
+.vitrina-titulo {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 0.875rem;
+  line-height: 1.25;
+  font-weight: 600;
+}
+.vitrina-desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: rgb(245 245 247 / 0.7);
+}
+.vitrina-visitar {
+  margin-top: auto;
+  padding-top: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #a855f7;
+}
+.vitrina-wip {
+  position: absolute;
+  top: 0.375rem;
+  left: 0.375rem;
+  border-radius: 999px;
+  background: #fbbf24;
+  padding: 0.125rem 0.5rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  color: #12111d;
+}
+@media (min-width: 640px) {
+  .vitrina-grid { gap: 1.5rem; }
+  .vitrina-texto { gap: 0.375rem; padding: 0.75rem 1.25rem 1.25rem; }
+  .vitrina-titulo { font-size: 1.125rem; }
+  .vitrina-desc { font-size: 0.875rem; -webkit-line-clamp: 4; }
+  .vitrina-visitar { font-size: 0.875rem; }
+  .vitrina-wip { top: 0.625rem; left: 0.625rem; font-size: 11px; }
+}

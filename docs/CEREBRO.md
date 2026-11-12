@@ -752,7 +752,9 @@ Los errores de diseño de los sitios están en la sección 2 y en
     estado READY. Si un cambio de CSS no aparece en el `.css` publicado
     (`curl` del archivo y `grep` de una clase nueva), se pone ese CSS en un
     archivo nuevo importado desde su componente; un archivo nuevo no sale
-    de la caché.
+    de la caché. Lo mismo con clases de Tailwind nuevas escritas en un
+    componente: tampoco se generaron. Para un cambio de diseño, CSS normal
+    en el archivo del componente.
 
 ### Publicar (git y Vercel)
 

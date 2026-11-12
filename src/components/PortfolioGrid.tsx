@@ -82,7 +82,7 @@ export default function PortfolioGrid({
 
       {/* Dos por fila en cualquier pantalla (Junior, 11 de noviembre de 2026),
           cada sitio dentro de una laptop y su descripción debajo. */}
-      <div className="mx-auto grid w-full max-w-4xl grid-cols-2 gap-3 sm:gap-6">
+      <div className="vitrina-grid">
         {visibles.map((trabajo, i) => (
           // El escalonado es dentro de la fila (2 por fila), no de la lista:
           // con paso={i} la ficha 16 esperaba segundos en pantalla antes de
@@ -115,7 +115,7 @@ export default function PortfolioGrid({
                       )}
                       {/* Un borrador se puede enseñar, pero se dice que lo es */}
                       {trabajo.enDesarrollo && (
-                        <span className="absolute top-1.5 left-1.5 rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-bold tracking-wide text-judo-black uppercase sm:top-2.5 sm:left-2.5 sm:text-[11px]">
+                        <span className="vitrina-wip">
                           {t("wip")}
                         </span>
                       )}
@@ -127,16 +127,16 @@ export default function PortfolioGrid({
                 </div>
               </div>
 
-              <div className="flex flex-1 flex-col gap-1 px-3 pt-2 pb-3 sm:gap-1.5 sm:px-5 sm:pt-3 sm:pb-5">
-                <h2 className="line-clamp-2 text-sm leading-tight font-semibold sm:text-lg">
+              <div className="vitrina-texto">
+                <h2 className="vitrina-titulo">
                   {trabajo.nombre}
                 </h2>
                 {trabajo.descripcion[locale] && (
-                  <p className="line-clamp-5 text-xs leading-snug text-judo-fog/70 sm:line-clamp-4 sm:text-sm">
+                  <p className="vitrina-desc">
                     {trabajo.descripcion[locale]}
                   </p>
                 )}
-                <span className="mt-auto pt-1.5 text-xs font-semibold text-judo-lilac sm:text-sm">
+                <span className="vitrina-visitar">
                   {t("visit")} ↗
                 </span>
               </div>
