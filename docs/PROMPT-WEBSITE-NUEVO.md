@@ -62,6 +62,7 @@ REGLAS QUE NO SE NEGOCIAN (cada una ya costó algo):
 - El contenido se ve sin JavaScript: las animaciones de entrada realzan, nunca esconden. Nada animado pasa por encima del texto. Los robots de ChatGPT, Claude y Perplexity no ejecutan JavaScript: el texto del negocio va en el HTML del servidor, nunca armado en el navegador (nada de React sin servidor ni portadas solo en canvas).
 - Buscadores e IA de fábrica (CEREBRO, sección 11; en JudiWEB ya viene): robots.txt que deja entrar a Google, Bing, ChatGPT, Claude y Perplexity; sitemap con hreflang; canónica, hreflang e imagen para compartir en cada página; JSON-LD del rubro + WebSite + FAQPage con el mismo nombre, teléfono y dirección del Perfil de Google; IndexNow propio del sitio; llms.txt; nada de noindex en producción.
 - Teléfono primero (CEREBRO, sección 3, «En el teléfono…»): campos a 16 px en el teléfono para que el iPhone no haga zoom solo, cada página empieza arriba (también la que se abre desde el pie y cada paso de un asistente), sin maximum-scale ni user-scalable=no, sin autoFocus al entrar. Y cada cosa que tocas la dejas más liviana de lo que estaba.
+- La firma de la casa al fondo (CEREBRO, sección 2, regla 17): en la última fila del pie, junto al copyright, «Site built by Judo Marketing» (o «Sitio creado por Judo Marketing» en un sitio solo en español), enlazada a https://www.judomarketing.net en otra pestaña, del mismo color y tamaño que el copyright. Si es una app sin pie, al final de la pantalla de perfil o de la portada.
 - Fotos reales del cliente. Si todavía no hay, ilustración con carácter en el lenguaje del sitio, nunca banco de imágenes fingiendo ser el cliente. Video en MP4 H.264 (HEVC no se ve en Chrome), con póster.
 - Todo dato del negocio en un archivo de configuración y todo texto en diccionarios tipados; ninguno escrito dentro de un componente. Si falta una traducción, que falle el build.
 - Formularios: trampa anti-bots aceptada en el esquema y descartada después, captcha verificado en el servidor, fallan con error ruidoso si faltan las claves de correo. Se prueban en el sitio publicado, en los dos idiomas.
@@ -83,6 +84,7 @@ ANTES DE ENTREGAR CADA FASE:
 - npm audit --omit=dev sin críticas ni altas, y el flujo "Seguridad" de GitHub en verde.
 - Capturas con Playwright a 360, 390, 768 y 1440, bajando con scroll, y MÍRALAS: desbordes, textos cortados, cosas que tapan otras, secciones vacías.
 - node scripts/auditoria/movil.mjs <tu dominio o localhost> (de JudoMarketing) sin avisos: páginas que empiezan arriba, campos sin zoom, nada que se salga por el lado.
+- node scripts/auditoria/firma.mjs <tu dominio> (de JudoMarketing): la firma de Judo Marketing se ve al fondo y enlaza a judomarketing.net.
 - Contraste medido con número (4,5:1 mínimo) en cada par de texto.
 - Revisión autocrítica: busca lo que está MAL, no confirmación de que está bien.
 - Pásame la lista de todas las afirmaciones verificables que hace el sitio para que el dueño las confirme. Lo que no confirme, fuera.
