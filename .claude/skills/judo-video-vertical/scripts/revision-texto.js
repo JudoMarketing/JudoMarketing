@@ -135,6 +135,18 @@ window.revisarTextos = function (raiz, op) {
       if (filas.size > 1) problemas.push(`${corto(el)}: el resaltado ${corto(hl)} se parte en dos líneas`);
     }
     if (c.l < -1 || c.t < -1 || c.r > W + 1 || c.b > H + 1) problemas.push(`${corto(el)}: se sale de la pieza`);
+    // Ni de su tarjeta: el primer antepasado con fondo propio (una ficha, una
+    // pastilla, un aviso). En inglés «Your Facebook» con &nbsp; quedó más ancho
+    // que su casilla y esto solo miraba el borde del cuadro (2026-11-13).
+    for (let n = el.parentElement; n && n !== raiz; n = n.parentElement) {
+      const cs = getComputedStyle(n);
+      if (rgba(cs.backgroundColor)[3] < 128 && cs.backgroundImage === "none") continue;
+      const b = n.getBoundingClientRect();
+      if (b.width >= W - 2) break;
+      const k = { l: b.left - R.left, r: b.right - R.left };
+      if (c.r > k.r + 2 || c.l < k.l - 2) problemas.push(`${corto(el)}: se sale de su tarjeta (deja que parta la línea o achica la letra)`);
+      break;
+    }
     for (const z of op.zonas || []) if (choca(ls, z) > 0.12) problemas.push(`${corto(el)}: ${z.motivo}`);
     if (pxMin < (op.minPx || 24)) problemas.push(`${corto(el)}: letra de ${Math.round(pxMin)} px, chica para un teléfono (mínimo ${op.minPx || 24})`);
 
