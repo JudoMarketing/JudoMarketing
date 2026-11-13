@@ -1,0 +1,119 @@
+{
+ "video": "salida/JuditoADS-video3-en.mp4",
+ "fin": 62.4,
+ "idioma": "en",
+ "silabas_por_segundo": 4.2,
+ "nota": "Versión en inglés del video 3 («We're not only marketing. Judito Ads.»). Tiempos sacados de las escenas reales; bloques de hasta unos 11 s que empiezan en un cambio de escena.",
+ "bloques": [
+  [
+   {
+    "t": 0,
+    "texto": "Judo Marketing isn't just a marketing company.",
+    "ve": "We're not only marketing.",
+    "como": "Proud, a little playful. Stress «just»."
+   },
+   {
+    "t": 3.6,
+    "texto": "For complex problems… we build complex solutions.",
+    "ve": "Complex problems… complex solutions.",
+    "como": "Slower on «complex problems», then confident."
+   }
+  ],
+  [
+   {
+    "t": 8.4,
+    "texto": "That's why we built Judito Ads. Here's how it works.",
+    "ve": "That's why we built JuditoADS. Here's how it works ↓",
+    "como": "Clear, like pointing at a whiteboard."
+   },
+   {
+    "t": 12.0,
+    "texto": "Meta lets Judito Ads run your ads… with your permission.",
+    "ve": "JuditoADS runs your ads, with your permission.",
+    "como": "Calm and reassuring on «with your permission»."
+   }
+  ],
+  [
+   {
+    "t": 16.2,
+    "texto": "Connect Facebook. Judito tells Meta what to do.",
+    "ve": "Judito tells Meta what to do.",
+    "como": "Simple and confident."
+   },
+   {
+    "t": 19.8,
+    "texto": "And your money?",
+    "ve": "And your money?",
+    "como": "Lower, like a secret."
+   },
+   {
+    "t": 21.6,
+    "texto": "You only pay Judo twenty bucks a month.",
+    "ve": "You only pay Judo $20 a month.",
+    "como": "Back to energy. Stress «twenty dollars»."
+   }
+  ],
+  [
+   {
+    "t": 24.6,
+    "texto": "You choose your budget…",
+    "ve": "You choose your budget.",
+    "como": "Easy, almost relaxed."
+   },
+   {
+    "t": 27.0,
+    "texto": "…and you pay it straight to Meta.",
+    "ve": "And you pay it straight to Meta.",
+    "como": "Clear: «straight to Meta»."
+   },
+   {
+    "t": 30.0,
+    "texto": "We never touch your money or your budget.",
+    "ve": "We never touch your budget.",
+    "como": "Firm and calm. Stress «never»."
+   }
+  ],
+  [
+   {
+    "t": 33.6,
+    "texto": "How do you know it works?",
+    "ve": "So how do you know it works?",
+    "como": "Lower, like a secret."
+   },
+   {
+    "t": 35.4,
+    "texto": "Meta tells Judito how your ad is doing…",
+    "ve": "Meta tells Judito how your ad is doing…",
+    "como": "Curious, building up."
+   },
+   {
+    "t": 39.0,
+    "texto": "…and Judito gives you tips to sharpen your strategy.",
+    "ve": "…and Judito gives you tips to sharpen your strategy.",
+    "como": "Warm, like a friend giving advice."
+   }
+  ],
+  [
+   {
+    "t": 44.4,
+    "texto": "All you need: your Facebook, to log in… a Page… Instagram, if you have it… and an ad account with a card.",
+    "ve": "All you need: your Facebook (you log in and give permission), a Facebook Page, your Instagram if you have one, and your ad account with a card.",
+    "como": "Steady, one item at a time, a short pause between them."
+   }
+  ],
+  [
+   {
+    "t": 53.4,
+    "texto": "That's it. You're advertising like a pro.",
+    "ve": "That's it. You're advertising like a pro.",
+    "como": "Happy, relieved."
+   },
+   {
+    "t": 56.4,
+    "texto": "Try it free for fourteen days. And if you need help getting started, message me.",
+    "ve": "Try it free. 14 days · no card needed → Need help? Message me.",
+    "como": "Warm, the most human line of the video. Smiling."
+   }
+  ]
+ ]
+}
