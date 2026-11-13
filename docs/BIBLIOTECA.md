@@ -28,6 +28,7 @@ sale de lo que hace distinta a la pieza, no del número:
 | Su versión en inglés (30 oct 2026) | Turn off your phone |
 | Kit de ventas para vendedores en Latinoamérica (12 nov 2026) | Desde Miami |
 | Folleto de planes y precios para el cliente (12 nov 2026) | Desde $50 al mes |
+| Propuesta del servicio para talleres mecánicos (13 nov 2026) | Judito Taller |
 | Skill `judo-video-vertical` | Fábrica de videos |
 | Skill `judo-carrusel` | Fábrica de carruseles |
 
