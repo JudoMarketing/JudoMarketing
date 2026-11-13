@@ -1087,6 +1087,24 @@ las trampas técnicas.
   - Qué pasó: la hoja lo mostraba, pero `revisar.mjs` decía "sin problemas".
   - Regla: una herramienta de revisión también se revisa contra la imagen.
     Se agregó el control de lo que no cabe.
+- **El revisor no veía un texto que se salía de su tarjeta** (2026-11-13).
+  - Qué pasó: en la versión en inglés del video 3, «Your Facebook» y
+    «Facebook Page» (unidas con `&nbsp;`) no partían la línea y se salían de
+    su ficha blanca. `revisar.mjs` decía «Sin problemas» porque solo medía el
+    borde de la pieza, no el de la tarjeta. Se vio en los cuadros y costó
+    rehacer la escena.
+  - Regla: `revision-texto.js` (en `scripts/skills/compartido/`) ya avisa
+    «se sale de su tarjeta» con el primer antepasado que tiene fondo propio.
+    Al traducir, se quitan los `&nbsp;` del idioma anterior: unen palabras
+    que en el otro idioma ya no caben juntas.
+- **Una clase del video chocó con una de la plantilla** (2026-11-13).
+  - Qué pasó: en «Count your yeses» un adorno se llamó `.puntos` y la
+    plantilla de la skill ya tiene `.puntos` (los puntitos que saltan): salió
+    un círculo naranja que nadie pidió. Se vio en la muestra, antes del
+    render completo.
+  - Regla: antes de nombrar una clase nueva se busca en `base.html` y
+    `pro.css`; las del video llevan un nombre que no se repite
+    (`.rejilla-d`).
 
 ---
 

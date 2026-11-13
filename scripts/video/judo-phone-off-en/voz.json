@@ -1,0 +1,101 @@
+{
+ "video": "salida/Judo-turn-off-your-phone.mp4",
+ "fin": 54.0,
+ "idioma": "en",
+ "silabas_por_segundo": 4.2,
+ "nota": "«Turn off your phone»: un video nuevo desde el carrusel del mismo nombre. Cada frase empieza en su escena; bloques de hasta 11 s que empiezan en un cambio de escena.",
+ "bloques": [
+  [
+   {
+    "t": 0,
+    "texto": "Turn off your phone.",
+    "ve": "Turn off your phone.",
+    "como": "Calm, almost a whisper, like a dare. Stop right on «phone»: the screen goes black."
+   },
+   {
+    "t": 2.4,
+    "texto": "Is your business still selling?",
+    "ve": "Is your business still selling?",
+    "como": "A real question. Lift on «still selling». The sign flips to CLOSED (0:03,9)."
+   },
+   {
+    "t": 5.4,
+    "texto": "Six questions. Count your yeses.",
+    "ve": "6 questions. Count your yeses.",
+    "como": "Energy up, friendly, like starting a game."
+   }
+  ],
+  [
+   {
+    "t": 8.4,
+    "texto": "One: is your contact form full of bots?",
+    "ve": "Is your contact form full of bots?",
+    "como": "Light, a little amused. «One» on the beat."
+   },
+   {
+    "t": 12.0,
+    "texto": "Two: to change a price, do you wait on someone?",
+    "ve": "To change a price, do you wait on someone?",
+    "como": "A bit tired on «wait on someone», like you've been there."
+   }
+  ],
+  [
+   {
+    "t": 15.6,
+    "texto": "Number three made the news…",
+    "ve": "#3 made the news…",
+    "como": "Lower and slower. Leave it hanging: the music drops out."
+   },
+   {
+    "t": 17.4,
+    "texto": "PHP2Shell. Seven in ten sites run PHP. Is yours patched?",
+    "ve": "PHP2Shell. Is yours patched? 7 in 10 websites run PHP.",
+    "como": "Serious, clear. Say «P-H-P-two-shell» slowly. Stress «patched»."
+   }
+  ],
+  [
+   {
+    "t": 22.2,
+    "texto": "Four: when you don't answer, do sales stop?",
+    "ve": "When you don't answer, do sales stop?",
+    "como": "Close, a bit concerned. The two messages pop out of the phone."
+   },
+   {
+    "t": 25.8,
+    "texto": "Five costs less than you think…",
+    "ve": "#5 costs less than you think…",
+    "como": "Playful secret, smiling. The music drops out again."
+   }
+  ],
+  [
+   {
+    "t": 27.6,
+    "texto": "Want ads, but don't know where to start? Test with five dollars a day.",
+    "ve": "Want to run ads, but don't know where to start? $5 a day.",
+    "como": "Energy back on the beat. «Five dollars a day» when the cursor taps «Publish ad» (0:30,4)."
+   },
+   {
+    "t": 32.4,
+    "texto": "Six: how many people visited your site this week?",
+    "ve": "How many people visited your site this week?",
+    "como": "A real question, curious. Pause after «six»."
+   }
+  ],
+  [
+   {
+    "t": 36.0,
+    "texto": "Every yes has a fix. Bot-proof forms. Prices you change. No PHP, daily backups. Juditos that answer. Guided ads. Your visits, in your portal.",
+    "ve": "Every yes has a fix. Six fixes, one by one.",
+    "como": "Confident and warm. Say each fix when its card comes in: forms 0:37,7; prices 0:38,6; PHP 0:39,7; Juditos 0:41,6; ads 0:43,2; visits 0:44,0."
+   }
+  ],
+  [
+   {
+    "t": 46.8,
+    "texto": "All of this is fixed one chat away. Said yes to any? Message us on WhatsApp.",
+    "ve": "All of this is fixed one chat away. Said yes to any? Message us.",
+    "como": "Warm, the most human line. Pause before «Said yes to any?» (0:49,8)."
+   }
+  ]
+ ]
+}

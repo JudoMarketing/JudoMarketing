@@ -20,12 +20,14 @@ sale de lo que hace distinta a la pieza, no del número:
 | --- | --- |
 | Video 1 de JuditoADS (22 oct 2026) | Desde el espacio |
 | Video 2 de JuditoADS (28 oct 2026) | Cinco centavos |
-| Video 3 de JuditoADS (29 oct 2026) | Por dentro |
+| Video 3 de JuditoADS (29 oct 2026; nombre nuevo el 13 nov) | No solo somos marketing. Judito ADS. (antes «Por dentro») |
 | Video 2 en inglés (2 nov 2026) | Five cents |
+| Video 3 en inglés (13 nov 2026) | We're not only marketing. Judito Ads. |
 | Carrusel de ejemplo de la skill | El anuncio que no vende |
 | Carrusel de preguntas de Judo Marketing (30 oct 2026) | Apaga el teléfono |
 | Su versión para anuncio pagado (30 oct 2026) | Cada sí tiene arreglo |
 | Su versión en inglés (30 oct 2026) | Turn off your phone |
+| Video de las 6 preguntas, en inglés (13 nov 2026) | Count your yeses |
 | Kit de ventas para vendedores en Latinoamérica (12 nov 2026) | Desde Miami |
 | Folleto de planes y precios para el cliente (12 nov 2026) | Desde $50 al mes |
 | Propuesta del servicio para talleres mecánicos (13 nov 2026) | Judito Taller |
