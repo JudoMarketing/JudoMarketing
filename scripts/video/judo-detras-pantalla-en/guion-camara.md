@@ -10,7 +10,7 @@ con tu nombre y subtítulos.
 | Toma | Va en | Dura | Lo que dices (en inglés) |
 | --- | --- | --- | --- |
 | 1 | 0:07,2 | 7,2 s | I'm one of them. I'm Junior. I left Venezuela in 2015, escaping Maduro's dictatorship. |
-| 2 | 0:42,6 | 6,6 s | Whatever problem your business has, I found you for a reason. Tell me about it. Together, we'll solve it. |
+| 2 | 0:42,6 | 6,6 s | This video found you for a reason. Tell me what's broken. Together, we'll fix it. |
 | 3 | 0:58,8 | 6,0 s | Tell me your problem. For ninety-nine dollars, I'll give you a diagnosis and an action plan. |
 
 - **La toma 1** abre tu historia: di «Venezuela» y «2015» despacio. Es la

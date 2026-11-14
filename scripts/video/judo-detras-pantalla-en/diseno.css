@@ -592,6 +592,10 @@
 @keyframes p-bs-tecla { to { transform: translateY(.7cqw); box-shadow: 0 .1cqw 0 #8f8aa8, 0 .4cqw .6cqw rgba(0,0,0,.3); background: linear-gradient(#e2dcff, #b9a8ff) } }
 .bs-tecla.ancha { grid-column: span 6; }
 .bs-tecla.media { grid-column: span 2; }
+.bs-herr { position: absolute; left: 8cqw; right: 14cqw; z-index: 6; display: flex; gap: 1.6cqw; }
+.bs-herr .bs-oficio { width: 9.4cqw; border-radius: 2.8cqw; }
+.bs-herr .bs-oficio svg { width: 5.6cqw; height: 5.6cqw; }
+.bs-herr .bs-oficio.yo { box-shadow: 0 0 0 .6cqw #ffd166, 0 2cqw 3cqw -1cqw rgba(0,0,0,.5); }
 .bs-cafe { position: absolute; z-index: 7; display: inline-flex; align-items: center; gap: 2cqw; padding: 2cqw 3.4cqw; border-radius: 99cqw; background: #fff; color: var(--tinta); font: 700 3.6cqw/1 var(--f-titular);
   box-shadow: var(--sombra-1); opacity: 0; animation: p-escalar .5s var(--sale) var(--d, 0s) forwards; }
 .bs-cafe svg { width: 5cqw; height: 5cqw; color: #a0522d; }

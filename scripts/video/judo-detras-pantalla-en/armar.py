@@ -218,7 +218,7 @@ def cam(id_, dur, pieza, linea, ve, extra="", sale=("corte",)):
            '<div class="bs-cam"></div>'
            f'<div class="bs-rec"><i></i>Junior on camera<em>{dur:.1f} s</em></div>'
            f'<div class="bs-silueta">{ic("user")}</div>'
-           f'<div class="bs-guion" style="top:64cqw;--d:.2s"><small>Say</small><p>“{"&nbsp;".join(linea.rsplit(" ", 1))}”</p></div>' + extra,
+           f'<div class="bs-guion" style="top:64cqw;--d:.2s"><small>Say</small><p>“{"&nbsp;".join(linea.rsplit(" ", 1)).replace(" a ", " a&nbsp;").replace(" an ", " an&nbsp;")}”</p></div>' + extra,
            "", sale, voz="")
     CAMARA.append({"t": round(sum(e["dur"] for e in ESC[:-1]), 1), "dur": dur, "linea": linea, "ve": ve})
 
@@ -275,20 +275,20 @@ escena("ruta", 6.0, "3 · Cuerpo 1", "Since 2015, giving this country my best.",
 
 TECLAS = ["QWERTYUIOP", "ASDFGHJKL;", "ZXCVBNM,./"]
 PULSA = {"H": 0.7, "A": 0.85, "R": 1.0, "D": 1.15, "W": 1.6, "O": 1.75, "K": 1.9, "E": 2.3, "N": 2.45, "M": 2.6, "T": 2.75, "S": 3.0}
-escena("teclado", 4.2, "3 · Cuerpo 1", "We work just as hard. Just on a keyboard.",
-       "Azul noche. Un teclado de verdad, tecla por tecla: las teclas se hunden mientras alguien escribe. Abajo, la hora (2:00 AM) y el tercer café.",
+escena("teclado", 4.2, "3 · Cuerpo 1", "Same hard work. Different tools.",
+       "Azul noche. Un teclado de verdad: las teclas se hunden mientras alguien escribe. Abajo, las herramientas de los seis oficios del principio y, al final de la fila, la laptop: el mismo equipo, otra herramienta.",
        "navy",
        deco("esfera", 92, 46, 7, 0.4, c1="#c7d4ff", c2="#4b6bff", c3="#1d2f8f") + deco("destello", 8, 138, 4, 0.7, c1="#ffd166")
-       + cap(["We work", "just as hard."], d=0.0, clase="t-l", estilo="font-size:11cqw")
-       + cap(['<span class="ligera">Just on a keyboard.</span>'], d=0.25, clase="t-m", top=49)
-       + '<div class="bs-teclado" style="top:63cqw;--d:.25s">'
+       + cap(["Same hard work.", '<span class="ligera">Different tools.</span>'], d=0.0, clase="t-l", estilo="font-size:10cqw")
+       + '<div class="bs-teclado" style="top:52cqw;--d:.25s">'
        + "".join(f'<span class="bs-tecla"{f" style={chr(34)}--dk:{PULSA[k]}s{chr(34)}" if k in PULSA else ""}>{k}</span>' for fila in TECLAS for k in fila)
        + '<span class="bs-tecla media" style="font-size:2.6cqw">cmd</span><span class="bs-tecla ancha" style="--dk:2.15s"></span><span class="bs-tecla media" style="font-size:2.6cqw;--dk:3.25s">enter</span>'
        + "</div>"
-       + f'<div class="chip-hora" style="left:8cqw;top:104cqw;--d:1.4s">{ic("clock")}2:00 AM</div>'
-       + f'<div class="bs-cafe" style="left:40cqw;top:104cqw;--d:1.7s">{ic("coffee")}Coffee #3</div>',
+       + '<div class="bs-herr" style="top:96cqw">'
+       + "".join(f'<div class="bs-oficio" style="--tc:{c};--d:{1.3 + k * 0.12:.2f}s;--r0:0deg">{ic(i)}</div>' for k, (i, c, _) in enumerate(OFICIOS))
+       + f'<div class="bs-oficio yo" style="--tc:linear-gradient(140deg,#2b2350,#14112a);--d:2.2s;--r0:0deg">{ic("laptop")}</div></div>',
        "teclado@0.6:2.9 clic-suave@3.25/-24", ("circulo", "alarma", 50, 48),
-       voz="We work just as hard. Just on a keyboard.")
+       voz="Same hard work. Just different tools.")
 
 # ═══ 4 · Bucle abierto ═══
 escena("bucle-solo", 1.8, "4 · Bucle abierto", "But hard work alone…",
@@ -351,18 +351,18 @@ escena("bucle-roto", 1.8, "6 · Bucle abierto", "What's broken in your business?
        voz="What's broken?")
 
 # ═══ 7 · Cuerpo 3: la solución ═══
-escena("engranajes", 6.0, "7 · Cuerpo 3", "Complex problems, complex solutions. Broken → Rebuilt.",
+escena("engranajes", 6.0, "7 · Cuerpo 3", "Complex problems, smart solutions. Broken → Rebuilt.",
        "Lavanda. Una máquina de engranajes en marcha. El engranaje viejo del medio tiembla, se agrieta y se parte en dos; la máquina se detiene y la luz se pone roja. Baja un engranaje nuevo, violeta, con «AI», y la máquina arranca más rápido, con la luz verde.",
        "lavanda",
        deco("rejilla-d", 90, 140, 12, 0.5, c1="rgba(91,43,255,.35)") + deco("destello", 92, 44, 5, 3.3, c1="#5b2bff")
-       + cap(["Complex problems,", '<span class="ligera">complex solutions.</span>'], d=0.0, clase="t-l", estilo="font-size:8.8cqw")
+       + cap(["Complex problems,", '<span class="ligera">smart solutions.</span>'], d=0.0, clase="t-l", estilo="font-size:8.8cqw")
        + f'<div class="bs-maquina" style="top:47cqw;--d:.1s">{MAQUINA}</div>'
        + f'<div class="bs-estado roto" style="top:111cqw;--d:1.5s">{ic("warning-circle")} Broken</div>'
        + f'<div class="bs-estado nuevo" style="top:111cqw;--d:3.3s">{ic("check-circle")} Rebuilt · running better</div>',
        "engranaje@0.1:1.3 rotura@1.4 caja@2.95/-17 arranque@3.0:0.8 engranaje@3.1:2.8/-27 campanita@3.4/-26", ("circulo", "camara", 50, 55),
-       voz="Complex problems need complex solutions. We rebuild the machine.")
+       voz="Complex problems need smart solutions. We rebuild the machine.")
 
-cam("camara-2", 6.6, "7 · Cuerpo 3", "Whatever problem your business has, I found you for a reason. Tell me about it. Together, we’ll solve it.",
+cam("camara-2", 6.6, "7 · Cuerpo 3", "This video found you for a reason. Tell me what’s broken. Together, we’ll fix it.",
     "Junior a cámara, más cerca, hablándole a una sola persona.")
 
 EDITOR = ((70, 0, "#b9a2ff"), (48, 4, "#5ef0c9"), (62, 4, "#ffd166"), (40, 8, "#ff7aa8"), (56, 4, "#5ad1ff"))
@@ -397,18 +397,18 @@ escena("peso", 4.8, "7 · Cuerpo 3", "Or help you carry the weight of running a 
 cam("camara-3", 6.0, "8 · Llamado a la acción", "Tell me your problem. For ninety-nine dollars, I’ll give you a diagnosis and an action plan.",
     "Junior a cámara, con una sonrisa: el cierre.")
 
-escena("cierre", 7.2, "8 · Llamado a la acción", "Tell me your problem. Message me on WhatsApp. $99: diagnosis + action plan, with the judo strategy. judomarketing.net/diagnostic",
+escena("cierre", 7.2, "8 · Llamado a la acción", "Tell me your problem. Message me on WhatsApp. $99: diagnosis + action plan, a PDF in 3 business days. judomarketing.net/diagnostic",
        "Mezcla de violeta, azul y rosa. «Tell me your problem.», el botón verde de WhatsApp con el número, la oferta de $99 (diagnóstico y plan de acción, con la estrategia judo) y la dirección. Queda quieto más de 4 segundos.",
        "cierre",
        deco("esfera", 88, 44, 8, 0.3, c1="#ffe0f0", c2="#ff4fa0", c3="#8a1250") + deco("anillo-d", 92, 126, 10, 0.5, c1="rgba(255,255,255,.3)")
        + deco("destello", 10, 140, 4, 0.8, c1="#ffd166")
        + cap(["Tell me", '<span class="color-oro">your problem.</span>'], d=0.05, clase="t-xl", top=22, estilo="font-size:11.4cqw")
        + f'<div class="cta-wa" style="top:51cqw;--d:.5s">{ic("whatsapp-logo")}<span><small>Message me on WhatsApp</small>+1 305 934 9981</span></div>'
-       + '<div class="bs-oferta" style="top:71cqw;--d:.9s"><b>$99</b><span>Diagnosis + action&nbsp;plan<small>With the judo strategy</small></span></div>'
+       + '<div class="bs-oferta" style="top:71cqw;--d:.9s"><b>$99</b><span>Diagnosis + action&nbsp;plan<small>A PDF in 3 business days</small></span></div>'
        + f'<div class="bs-link" style="top:95cqw;--d:1.2s">{ic("globe")}judomarketing.net/diagnostic</div>'
        + '<div class="logo-pro aparece" style="top:106cqw;left:8cqw;margin-left:0;--ancho:24cqw;--d:1.4s"><img src="img/judo-logo.webp" alt="Judo Marketing"></div>',
        "golpe-suave@0.3:2/-24 notificacion@0.5/-24 brillo@0.9/-26 campanita@1.4/-26",
-       voz="Message me on WhatsApp. Let's take your business to the next level.")
+       voz="Message me on WhatsApp. I'll answer you myself.")
 
 html = cabeza + "<!-- ═══════════════ ESCENAS (las arma armar.py) ═══════════════ -->\n" + "\n\n".join(T) + \
     '\n\n<script type="application/json" id="escenas">\n' + json.dumps(ESC, ensure_ascii=False, indent=1) + "\n</script>\n\n" + pie
