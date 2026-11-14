@@ -24,7 +24,10 @@ const CAJAS = [".tarjeta-pro", ".conver", ".opcion", ".arreglo-g", ".posteado", 
   ".reloj-arena", ".rastreo", ".pro-cap .m", ".bs-oficio", ".bs-pie", ".bs-laptop", ".bs-guion", ".bs-tercio", ".bs-mapa", ".bs-pin", ".bs-ano",
   ".bs-linea", ".bs-teclado", ".bs-cafe", ".bs-icono", ".bs-palanca", ".bs-servicios span", ".bs-maquina", ".bs-estado", ".bs-editor", ".bs-medidor",
   ".bs-carga", ".bs-apoyo", ".bs-oferta", ".bs-link", ".bs-silueta", ".bs-rec"].join(", ");
-const MARGEN = 4; // px: tocarse a menos de 4 px también es chocar
+// px: dos cajas a menos de 20 px (casi 2 cqw) se ven pegadas, aunque no se toquen
+// (Junior, 14 nov 2026: «todo muy pegado»). Las cajas hermanas de una misma fila o
+// grilla (chips, fichas, teclas) no cuentan: ese espacio se diseña con gap.
+const MARGEN = 20;
 
 const web = await servir([P, D]);
 const b = await abrirNavegador();
@@ -47,6 +50,7 @@ for (const e of escenas) {
     for (let i = 0; i < els.length; i++) for (let j = i + 1; j < els.length; j++) {
       const a = els[i], c = els[j];
       if (a.contains(c) || c.contains(a)) continue;
+      if (a.parentElement === c.parentElement && !a.matches(".pro-cap .m")) continue;
       if (a.closest(".encima") || c.closest(".encima")) continue;
       if (a.matches(".pro-cap .m") && c.matches(".pro-cap .m")) continue; // líneas del mismo titular
       const ra = a.getBoundingClientRect(), rc = c.getBoundingClientRect();
@@ -62,5 +66,5 @@ for (const e of escenas) {
   total += choques.length;
 }
 await b.close(); web.cerrar?.();
-console.log(total ? `\n${total} choques en los cuadros finales.` : "\nNingún choque en los cuadros finales.");
+console.log(total ? `\n${total} cajas que chocan o están pegadas en los cuadros finales.` : "\nNinguna caja choca ni está pegada en los cuadros finales.");
 process.exit(0);

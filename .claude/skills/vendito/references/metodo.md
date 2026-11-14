@@ -49,6 +49,12 @@ que su pedido: si el ángulo elegido cambia algo de lo que pidió, se dice en
 ## 3. Producir
 
 - Video: skill `judo-video-vertical` (8 piezas, capa pro, revisor).
+  **Primero el guion, después las imágenes** (Junior, 14 nov 2026): se
+  escribe el guion entero, una idea nueva por escena (nada se dice dos
+  veces) y concreta (algo que el dueño reconoce: un chat a las 2 AM, su
+  sitio, su teléfono; no metáforas sueltas). Se mide, se prueba con el
+  `cliente-esceptico` y se le muestra a Junior. Las imágenes se diseñan
+  después, para explicar cada frase.
 - Carrusel: skill `judo-carrusel`.
 - Sitio: el repo, con las reglas de CEREBRO.
 - Voz: un clip por escena para ElevenLabs (sección 6).

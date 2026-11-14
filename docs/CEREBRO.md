@@ -1144,6 +1144,26 @@ las trampas técnicas.
     - Antes de renderizar, `node choques.mjs`: mide caja contra caja en el
       último cuadro de cada escena. Se miran los finales, no solo las
       entradas.
+- **El mismo reloj y el mismo teléfono, otra vez mal** (2026-11-14, v3.1).
+  - Qué pasó:
+    - La arena del reloj se achicaba aplastando su dibujo (`scaleY`), y en
+      el cuello quedaba un platillo plano.
+    - La pantalla del teléfono era más grande que el cuerpo. La causa no era
+      el tamaño: `.pant` de `base.html` pone `width` y `height` al 100 %, y
+      con `inset: 2.3cqw` la pantalla se salía 2,3 cqw por la derecha y por
+      abajo. Con las pantallas oscuras no se notaba; con el feed blanco, sí.
+    - Todo estaba pegado. `choques.mjs` solo avisaba cajas a menos de 4 px.
+  - Costó: dos pedidos de Junior por lo mismo.
+  - Regla:
+    - Un líquido o la arena se hacen con un relleno recortado por su
+      recipiente (`clipPath`), y lo que se mueve es el nivel. Nunca se
+      aplasta el dibujo.
+    - Un elemento que lleva clases de la plantilla se revisa contra
+      `base.html` (`.pant`, `.marco`, `.puntos`), y se mira de cerca sobre un
+      fondo claro.
+    - `choques.mjs` pide 20 px entre cajas que no son de una misma fila.
+    - Después de cambiar `diseno.css` se corre `armar.py` (no solo
+      `build.py`): el CSS entra al storyboard en `armar.py`.
 
 ---
 
