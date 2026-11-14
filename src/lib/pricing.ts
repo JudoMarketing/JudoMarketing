@@ -25,6 +25,13 @@ export const PRECIO_JUDITOADS = tabla.extras.juditoads;
 export const PRECIO_ASISTENTE = tabla.extras.asistente;
 export const PRECIO_ASISTENTE_PRO = tabla.extras.asistentePro;
 /**
+ * Full Diagnostic (desde el 14 de noviembre de 2026): el diagnóstico completo
+ * del website y de la presencia en internet de un negocio, en PDF, por un
+ * solo pago. Se compra en /diagnostic y se entrega en días hábiles.
+ */
+export const PRECIO_DIAGNOSTICO: number = tabla.diagnostico.precio;
+export const DIAS_DIAGNOSTICO: number = tabla.diagnostico.diasHabiles;
+/**
  * Lo que paga un cliente que terminó sus 12 meses y se queda alojado con
  * nosotros sin contratar más diseño ni cambios. Es la base: si su website
  * consume mucho más de lo normal, el contrato permite ajustarlo con aviso.
@@ -47,10 +54,10 @@ export function precioDesde(): string {
 const CUOTAS = (tabla as { cuotaInicio?: Partial<Record<Plan, number>> }).cuotaInicio ?? {};
 
 /**
- * Cuota de inicio: un pago único que se cobra junto con el primer mes. El
- * Website Esencial la tuvo ($130) del 2 al 12 de octubre de 2026; desde el 13
- * ningún plan la lleva. Devuelve 0 cuando el plan no tiene cuota. Si vuelve,
- * basta con ponerla en pricing.json: el checkout y las páginas la recogen.
+ * Cuota de inicio: un pago único que se cobra junto con el primer mes. Desde
+ * el 14 de noviembre de 2026, $500 en el Website Esencial y en las Apps; no
+ * se cobra con el pago del año completo. Devuelve 0 cuando el plan no la
+ * lleva. Se cambia en pricing.json: el checkout y las páginas la recogen.
  */
 export function cuotaInicio(plan: Plan): number {
   return CUOTAS[plan] ?? 0;
@@ -77,9 +84,9 @@ export function usd(n: number): string {
 const ANTES = (tabla as { precioAntes?: Partial<Record<Plan, number>> }).precioAntes ?? {};
 
 /**
- * Precio de referencia que se muestra tachado junto al vigente (desde el 13
- * de octubre de 2026, el Esencial: $300 tachado, $150 al mes). Null si el
- * plan no lo lleva.
+ * Precio de referencia que se muestra tachado junto al vigente. Null si el
+ * plan no lo lleva (desde el 14 de noviembre de 2026, ninguno: el Esencial
+ * tuvo $300 tachado y $150 al mes del 13 de octubre al 13 de noviembre).
  */
 export function precioAntes(plan: Plan): number | null {
   return ANTES[plan] ?? null;
@@ -94,11 +101,10 @@ export function descuento(plan: Plan): number | null {
 const UNICO = (tabla as { pagoUnico?: Partial<Record<Plan, { meses: number; total: number }>> }).pagoUnico ?? {};
 
 /**
- * Pago único: el contrato completo de una vez, por un total fijo que sale
- * más barato que las cuotas (desde el 13 de octubre de 2026, el Esencial:
- * $1,500 por los 12 meses, contra $1,800 pagando mes a mes). Lo contrario es
- * pagarlo en cuotas mensuales, que es el contrato de siempre. Devuelve null
- * si el plan no se ofrece así.
+ * Pago único: el año del contrato de una vez, por el precio de 10 meses y sin
+ * cuota de inicio (desde el 14 de noviembre de 2026: Esencial $2,500 y Apps
+ * $4,500). Lo contrario es pagarlo en cuotas mensuales más la cuota de
+ * inicio. Devuelve null si el plan no se ofrece así.
  */
 export function pagoUnico(plan: Plan): { meses: number; total: number } | null {
   const p = UNICO[plan];
@@ -114,4 +120,10 @@ export function ahorroPagoUnico(plan: Plan): number {
 export function pagoUnicoTexto(plan: Plan): string | null {
   const p = pagoUnico(plan);
   return p ? usd(p.total) : null;
+}
+
+/** Los meses que se regalan pagando el año de una vez (12 por el precio de 10: 2). */
+export function mesesGratisPagoUnico(plan: Plan): number {
+  const p = pagoUnico(plan);
+  return p ? Math.max(0, Math.round(p.meses - p.total / precio(plan))) : 0;
 }

@@ -1,4 +1,4 @@
-import { precioDesde } from "./pricing";
+import { DIAS_DIAGNOSTICO, precioDesde, PRECIO_DIAGNOSTICO } from "./pricing";
 import type { Metadata } from "next";
 
 /**
@@ -10,11 +10,12 @@ import type { Metadata } from "next";
 
 export const SITE_URL = "https://www.judomarketing.net";
 
-type PageKey = "services" | "showcase" | "about" | "contact" | "legal" | "mentalHealth";
+type PageKey = "services" | "diagnostic" | "showcase" | "about" | "contact" | "legal" | "mentalHealth";
 
 const PATHS: Record<PageKey | "home", { en: string; es: string }> = {
   home: { en: "/", es: "/es" },
   services: { en: "/services", es: "/es/servicios" },
+  diagnostic: { en: "/diagnostic", es: "/es/diagnostico" },
   showcase: { en: "/showcase", es: "/es/showcase" },
   about: { en: "/about", es: "/es/nosotros" },
   contact: { en: "/contact", es: "/es/contacto" },
@@ -43,6 +44,16 @@ const COPY: Record<PageKey, Record<"en" | "es", { title: string; description: st
       title: `Websites from ${precioDesde()}/month & Facebook and Instagram Ads | Judo Marketing`,
       description:
         `Business websites from ${precioDesde()} a month, Facebook and Instagram advertising with JuditoADS ($20/mo, try it free), and AI assistants that answer your customers. Miami and beyond.`,
+    },
+  },
+  diagnostic: {
+    es: {
+      title: `Diagnóstico de tu Website y tu Presencia en Internet por $${PRECIO_DIAGNOSTICO} | Judo Marketing`,
+      description: `Full Diagnostic de Judo Marketing: revisamos tu website, Google, Google Maps, la IA (ChatGPT, Gemini, Claude, Perplexity), tus redes y tu competencia. Informe en PDF en ${DIAS_DIAGNOSTICO} días hábiles por $${PRECIO_DIAGNOSTICO}.`,
+    },
+    en: {
+      title: `Website & Online Presence Diagnostic for $${PRECIO_DIAGNOSTICO} | Judo Marketing`,
+      description: `Judo Marketing's Full Diagnostic reviews your website, Google, Google Maps, AI search (ChatGPT, Gemini, Claude, Perplexity), your social media and your competitors. A PDF report in ${DIAS_DIAGNOSTICO} business days for $${PRECIO_DIAGNOSTICO}.`,
     },
   },
   showcase: {

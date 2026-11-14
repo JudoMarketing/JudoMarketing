@@ -126,7 +126,7 @@
   "services": {
     "title": "Services",
     "subtitle": "We do three things. Pick the one you need.",
-    "note": "No plan has a setup fee. Essential Website: 12 monthly payments or a single payment of {oneTime}. 12-month agreement.",
+    "note": "Essential Website and Apps: a one-time {setup} setup fee, waived when you pay the full year at once (12 months for the price of 10). 12-month agreement.",
     "cta": "Let's talk about your project",
     "perMonth": "/mo",
     "from": "from",
@@ -242,7 +242,7 @@
       "items": [
         {
           "q": "How much does a website cost with Judo Marketing?",
-          "a": "Our websites work as a subscription: Essential Websites from {essential} a month with no setup fee, or a single payment of {oneTime} for all 12 months (online stores, bookings, services). Mobile Apps from {apps} a month with no setup fee. Complex Websites (delivery, logistics, integrations) have {complex}: they are quoted on a call, with no setup fee. Everything includes design, support, maintenance, and your own admin panel."
+          "a": "Our websites work as a subscription with a 12-month agreement: Essential Websites from {essential} a month (online stores, bookings, services) and Mobile Apps from {apps} a month, plus a one-time {setup} setup fee. Pay the full year at once and you pay 10 months instead of 12, with no setup fee: {oneTime} for the Essential Website. Complex Websites (delivery, logistics, integrations) have {complex}: they are quoted on a call. Not sure what you need? The Full Diagnostic reviews your website and your online presence for {diagnostic}. Everything includes design, support, maintenance, and your own admin panel."
         },
         {
           "q": "How long does it take to deliver my website?",
@@ -275,8 +275,15 @@
     "setupFee": "+ {fee} one-time setup",
     "noSetupFee": "No setup fee",
     "was": "Was",
-    "oneTime": "or one payment of {total} for all {months} months: you save {save}",
-    "off": "{pct}% off"
+    "oneTime": "or the full year at once: {total}, with {free} months free and no setup fee",
+    "off": "{pct}% off",
+    "diagnostic": {
+      "kicker": "Not sure where to start?",
+      "title": "Full Diagnostic",
+      "body": "We review your website and your online presence (Google, Maps, AI, your social media and your competitors) and send you a PDF with what we found and what to fix first.",
+      "note": "One payment · PDF in {days} business days · No commitment",
+      "cta": "See the diagnostic"
+    }
   },
   "login": {
     "title": "Portals",
@@ -446,11 +453,12 @@
     "monthlyDesc": "Today you pay {total}: the first month plus the {fee} setup fee. Then {month} a month.",
     "monthlyDescNoFee": "Today you pay the first month. Then {month} a month.",
     "oneTimeTitle": "One-time payment",
-    "oneTimeDesc": "All {months} months of the agreement, paid at once.",
+    "oneTimeDesc": "All {months} months for the price of {paid}, with no setup fee.",
     "oneTimeSave": "You save {save}",
     "oneTimeChip": "one-time payment of {total}",
-    "feesNoteOneTime": "The one-time payment covers the 12 months of the agreement. Processing or network fees are paid by the client.",
-    "selected": "Selected"
+    "feesNoteOneTime": "The one-time payment covers the 12 months of the agreement, with no setup fee. Processing or network fees are paid by the client.",
+    "selected": "Selected",
+    "feesNoteSetup": "Today's amount is the first month plus the setup fee. Processing or network fees are covered by the client."
   },
   "crypto": {
     "title": "Crypto (USDT)",
@@ -619,7 +627,7 @@
       {
         "name": "Your clinic's website",
         "price": "from {essential} a month",
-        "note": "no setup fee, or {oneTime} in a single payment for all 12 months"
+        "note": "plus a {setup} setup fee, or {oneTime} for the full year at once"
       },
       {
         "name": "Portal or platform",
@@ -654,5 +662,71 @@
     "closeTitle": "Let's talk about your clinic for 20 minutes.",
     "closeText": "I'll show you how Google sees your practice today and what we'd change first.",
     "whatsapp": "Message me on WhatsApp"
+  },
+  "diagnostic": {
+    "kicker": "Full Diagnostic",
+    "title": "Your website and your online presence, reviewed end to end.",
+    "subtitle": "Before we sell you anything, we measure. You get a PDF report with what we found and what to fix first.",
+    "priceNote": "One payment · PDF in {days} business days · No commitment to hire us",
+    "buy": "Get my diagnostic · {price}",
+    "opening": "Opening secure payment…",
+    "error": "We couldn't open the payment. Message us on WhatsApp and we'll help you.",
+    "whatsapp": "Message us on WhatsApp",
+    "secure": "Card payment on Stripe's secure page.",
+    "reviewTitle": "What we review",
+    "items": [
+      {
+        "title": "Google",
+        "text": "Whether you show up when people search for your name and for what you sell, and in what position."
+      },
+      {
+        "title": "Google Maps",
+        "text": "Your Google Business Profile: details, hours, photos and reviews."
+      },
+      {
+        "title": "AI",
+        "text": "Whether ChatGPT, Gemini, Claude and Perplexity find you, and what they say about you."
+      },
+      {
+        "title": "Your website",
+        "text": "Speed on a phone, errors, and whether search engines can read it."
+      },
+      {
+        "title": "Social media and WhatsApp",
+        "text": "How a customer gets from there to buying from you."
+      },
+      {
+        "title": "Your competitors",
+        "text": "Who shows up before you, and why."
+      },
+      {
+        "title": "Security",
+        "text": "Your domain, your certificate and what's exposed."
+      },
+      {
+        "title": "Reputation",
+        "text": "What a customer finds when they look for reviews of your business."
+      }
+    ],
+    "getTitle": "What you get",
+    "getText": "A PDF report with screenshots, numbers and a score for today against the one you could have. Written for the owner, with no jargon: every problem with its fix, and a plan for what to fix first and what it costs.",
+    "stepsTitle": "How it works",
+    "steps": [
+      {
+        "title": "You pay {price}",
+        "text": "By card. In the same step you tell us your website or business name, and your social media."
+      },
+      {
+        "title": "We review",
+        "text": "Google, Maps, AI, your website, your social media and your competitors."
+      },
+      {
+        "title": "You get your PDF",
+        "text": "In your email, within {days} business days."
+      }
+    ],
+    "doneTitle": "Payment received. Thank you!",
+    "doneText": "Your Full Diagnostic arrives in your email within {days} business days. If you want to add something (a competitor, another web address), message us on WhatsApp.",
+    "back": "See all services"
   }
 }

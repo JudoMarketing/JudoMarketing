@@ -43,7 +43,7 @@ import { fileURLToPath } from "node:url";
 const TARIFA = JSON.parse(
   readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "../../src/content/pricing.json"), "utf8")
 );
-const CIFRAS = new Set([TARIFA.extras.asistente, TARIFA.extras.juditoads]);
+const CIFRAS = new Set([TARIFA.extras.asistente, TARIFA.extras.juditoads, TARIFA.diagnostico.precio]);
 for (const [plan, valor] of Object.entries(TARIFA.precios)) {
   if (plan === "complex") continue; // los Complejos se cotizan, sin cifra
   CIFRAS.add(valor);

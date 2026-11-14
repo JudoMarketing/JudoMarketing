@@ -252,7 +252,7 @@ Alquiler de maquinaria, distribuidores, servicios entre empresas.
   sabe si sus anuncios funcionan.
 - **Le duele:** agencias caras que no muestran resultados, no tener tiempo.
 - **Prueba:** los sitios y las apps del showcase (judomarketing.net/showcase);
-  el precio publicado (Website Esencial a $150 al mes); la oficina real en
+  el precio publicado (Website Esencial a $250 al mes); la oficina real en
   66 W Flagler St, Miami.
 - **Ganchos:**
   - "Tu website pierde clientes por esto";

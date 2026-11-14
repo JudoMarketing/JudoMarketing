@@ -20,12 +20,12 @@ Con los precios de hoy (`src/content/pricing.json`), una mezcla que llega:
 
 | Fuente | Cuántos | Al mes |
 | --- | --- | --- |
-| Websites de suscripción, promedio $150 (desde el 13 de octubre de 2026 el Esencial es $150, antes $300, o $1,500 en pago único) | 30 | $4,500 |
+| Websites de suscripción a $250 (el Esencial desde el 14 de noviembre de 2026; antes $150) | 30 | $7,500 |
 | Asistente o JuditoADS como extra | 15 | $900 |
-| 3 a 4 websites más, en lugar de la cuota de inicio de $130 que se quitó el 13 de octubre de 2026 | 3 a 4 | $450 a $600 |
+| Cuotas de inicio de $500 (Esencial y Apps) de los clientes nuevos que pagan mes a mes | 3 a 4 | $1,500 a $2,000 |
 | Anuncios manejados por nosotros, si se aprueba (parte 6) | 6 a $400 | $2,400 |
 | Websites Complejos y apps, cotizados | 3 a 4 | $1,500 a $2,000 |
-| **Total** | | **cerca de $10,000** |
+| **Total** | | **cerca de $14,000** (con los precios del 14 de noviembre de 2026, la meta de $10,000 llega con menos clientes) |
 
 La prospección por correo sola trae 1 o 2 clientes al mes: hacen falta las
 llamadas, los referidos y el nicho para cerrar más rápido.
@@ -53,16 +53,20 @@ clientes activos, fecha ____`.
 
 ### 1. Precios claros ✅
 
-Website Esencial: $150 al mes, mostrado rebajado de $300 (50% de
-descuento), sin cuota de inicio; o $1,500 de una vez por los 12 meses, que
-ahorra $300 contra las cuotas (Junior, 13 de octubre de 2026). La cuota de
-inicio de $130 rigió del 2 al 12 de octubre y se quitó: el precio de
-entrada más bajo busca volumen. Websites Complejos y Apps: sin cuota; los
-Complejos se cotizan y todo va dentro de la mensualidad. Todo sale de
+Desde el 14 de noviembre de 2026 (Junior): Website Esencial $250 al mes y
+Apps para Teléfonos $450 al mes, cada uno con una cuota de inicio de $500,
+una sola vez. Pagando el año completo de una vez se pagan 10 meses en vez de
+12 y no hay cuota de inicio: $2,500 el Esencial y $4,500 las Apps. Ya no hay
+precio tachado. Los Websites Complejos se cotizan, sin cuota. Y un servicio
+nuevo como primer paso: el **Full Diagnostic**, $99 de un solo pago, el
+informe en PDF del website y la presencia en internet en 3 días hábiles
+(página `/diagnostic`). Antes: $150 al mes, rebajado de $300 y sin cuota (13
+de octubre al 13 de noviembre); $130 de inicio del 2 al 12 de octubre. Todo sale de
 `src/content/pricing.json`: el sitio, el pago (Stripe), los contratos, la
 política, el chatbot, los correos de prospección y el guion de ventas.
-**Se mide:** cuántos Esenciales nuevos entran al mes y cuántos eligen el
-pago único (Stripe).
+**Se mide:** cuántos Esenciales y Apps nuevos entran al mes, cuántos eligen
+el pago del año completo y cuántos diagnósticos de $99 se venden y se
+vuelven clientes (Stripe).
 
 ### 2. Prospección que encuentra a quien no rankea ✅
 

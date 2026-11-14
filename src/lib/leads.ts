@@ -25,7 +25,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { sendBrandedEmail } from "@/lib/email";
-import { cuotaInicio, descuento, pagoUnico, precio, precioAntes, PRECIO_ASISTENTE, PRECIO_JUDITOADS, usd } from "@/lib/pricing";
+import { cuotaInicio, descuento, DIAS_DIAGNOSTICO, mesesGratisPagoUnico, pagoUnico, precio, precioAntes, PRECIO_ASISTENTE, PRECIO_DIAGNOSTICO, PRECIO_JUDITOADS, usd } from "@/lib/pricing";
 import {
   enlacesProspecto,
   htmlProspecto,
@@ -783,29 +783,35 @@ export function preciosCorreo(idioma: "es" | "en" | "de"): string[] {
   const esencial = precio("essential");
   const cuota = cuotaInicio("essential");
   const app = precio("apps");
-  // Desde el 13 de octubre de 2026: $150 al mes (antes $300, 50% off), sin
-  // cuota de inicio, o $1,500 de una vez por los 12 meses.
+  const cuotaApp = cuotaInicio("apps");
+  // Desde el 14 de noviembre de 2026: Esencial $250 y Apps $450 al mes, más
+  // $500 de inicio; el año completo de una vez cuesta 10 meses y no lleva
+  // cuota ($2,500 y $4,500). Y el Full Diagnostic de $99 como primer paso.
   const antes = precioAntes("essential");
   const rebaja = descuento("essential");
   const unico = pagoUnico("essential");
+  const gratis = mesesGratisPagoUnico("essential");
   const antesEs = antes ? ` (antes $${antes}${rebaja ? `, ${rebaja}% de descuento` : ""})` : "";
   const antesEn = antes ? ` (was $${antes}${rebaja ? `, ${rebaja}% off` : ""})` : "";
   const antesDe = antes ? ` (statt $${antes}${rebaja ? `, ${rebaja}% Rabatt` : ""})` : "";
   if (idioma === "es")
     return [
-      `Website con tu panel de control: desde $${esencial} al mes${antesEs}${cuota ? `, más $${cuota} de inicio, una sola vez` : ", sin cuota de inicio"}${unico ? `; o un solo pago de ${usd(unico.total)} por los ${unico.meses} meses` : ""}.`,
-      `Proyectos a la medida: se cotizan y no llevan cuota de inicio. Apps de teléfono desde $${app} al mes.`,
+      `Website con tu panel de control: desde $${esencial} al mes${antesEs}${cuota ? `, más $${cuota} de inicio, una sola vez` : ", sin cuota de inicio"}${unico ? `; o el año completo de una vez por ${usd(unico.total)}${gratis ? ` (${gratis} meses gratis${cuota ? " y sin cuota de inicio" : ""})` : ""}` : ""}.`,
+      `Apps de teléfono desde $${app} al mes${cuotaApp ? `, más $${cuotaApp} de inicio` : ""}. Proyectos a la medida: se cotizan.`,
+      `¿No sabes por dónde empezar? Diagnóstico completo de tu website y tu presencia en internet: $${PRECIO_DIAGNOSTICO}, en PDF en ${DIAS_DIAGNOSTICO} días hábiles.`,
       `Asistente de IA que contesta por WhatsApp e Instagram: desde $${PRECIO_ASISTENTE} al mes. Anuncios con JuditoADS: $${PRECIO_JUDITOADS} al mes.`,
     ];
   if (idioma === "de")
     return [
-      `Website mit eigenem Verwaltungsbereich: ab $${esencial} pro Monat${antesDe}${cuota ? `, plus einmalig $${cuota} Einrichtung` : ", ohne Einrichtungsgebühr"}${unico ? `; oder einmalig ${usd(unico.total)} für ${unico.meses} Monate` : ""}.`,
-      `Individuelle Projekte: nach Angebot, ohne Einrichtungsgebühr. Apps ab $${app} pro Monat.`,
+      `Website mit eigenem Verwaltungsbereich: ab $${esencial} pro Monat${antesDe}${cuota ? `, plus einmalig $${cuota} Einrichtung` : ", ohne Einrichtungsgebühr"}${unico ? `; oder das ganze Jahr auf einmal für ${usd(unico.total)}${gratis ? ` (${gratis} Monate gratis${cuota ? ", ohne Einrichtungsgebühr" : ""})` : ""}` : ""}.`,
+      `Apps ab $${app} pro Monat${cuotaApp ? `, plus einmalig $${cuotaApp} Einrichtung` : ""}. Individuelle Projekte: nach Angebot.`,
+      `Kompletter Check Ihrer Website und Online-Präsenz: $${PRECIO_DIAGNOSTICO}, als PDF in ${DIAS_DIAGNOSTICO} Werktagen.`,
       `KI-Assistent für WhatsApp und Instagram: ab $${PRECIO_ASISTENTE} pro Monat.`,
     ];
   return [
-    `Website with your own admin panel: from $${esencial} a month${antesEn}${cuota ? `, plus a one-time $${cuota} setup` : ", no setup fee"}${unico ? `; or a single payment of ${usd(unico.total)} for all ${unico.meses} months` : ""}.`,
-    `Custom projects are quoted, with no setup fee. Mobile apps from $${app} a month.`,
+    `Website with your own admin panel: from $${esencial} a month${antesEn}${cuota ? `, plus a one-time $${cuota} setup` : ", no setup fee"}${unico ? `; or the full year at once for ${usd(unico.total)}${gratis ? ` (${gratis} months free${cuota ? ", no setup fee" : ""})` : ""}` : ""}.`,
+    `Mobile apps from $${app} a month${cuotaApp ? `, plus a one-time $${cuotaApp} setup` : ""}. Custom projects are quoted.`,
+    `Not sure where to start? A full diagnostic of your website and online presence: $${PRECIO_DIAGNOSTICO}, as a PDF in ${DIAS_DIAGNOSTICO} business days.`,
     `AI assistant that answers on WhatsApp and Instagram: from $${PRECIO_ASISTENTE} a month. Ads with JuditoADS: $${PRECIO_JUDITOADS} a month.`,
   ];
 }
@@ -825,7 +831,7 @@ export function nichoDe(rubroLead: unknown, rubroBorrador?: string | null): Nich
 
 /** Las cifras en dólares que un borrador puede citar: las de la tabla de precios. */
 function cifrasPermitidas(): Set<number> {
-  const s = new Set<number>([PRECIO_ASISTENTE, PRECIO_JUDITOADS]);
+  const s = new Set<number>([PRECIO_ASISTENTE, PRECIO_JUDITOADS, PRECIO_DIAGNOSTICO]);
   // Los Complejos no llevan cifra: se cotizan (decisión de Junior).
   for (const plan of ["essential", "apps"] as const) {
     s.add(precio(plan));
@@ -1089,19 +1095,18 @@ export async function enviarPendientes(): Promise<{
 
   const borradores: Borrador[] = [];
   const nombres = new Map<string, { nombre: string; pais: Pais }>();
-  // El Website Esencial cambió de precio dos veces: $99 hasta el 11 de
-  // octubre de 2026, $199 (de $400, con $130 de inicio: $329 el primer día y
-  // $2,388 de una vez) el 12, y $150 (de $300, sin cuota, $1,500 de una vez)
-  // desde el 13. Los borradores escritos antes salen con las cifras vigentes
-  // en vez de descartarse. Una cifra que ya no tiene equivalente (los $130 de
-  // inicio) se deja: el candado de cifras descarta ese borrador. Como un
-  // borrador vive 3 días, desde el 17 de octubre esto ya no encuentra nada.
+  // Los precios cambiaron el 14 de noviembre de 2026: el Esencial pasó de
+  // $150 a $250 y su año de una vez de $1,500 a $2,500. Los borradores
+  // escritos antes salen con las cifras vigentes en vez de descartarse. Los
+  // $300 no se tocan: eran el precio tachado del Esencial y también el de las
+  // Apps, y cambiarlos a ciegas diría otra cosa; el candado de cifras descarta
+  // ese borrador. Los $99 tampoco: ahora son el Full Diagnostic. (Antes este
+  // mapa llevaba las cifras de octubre: $99, $199, $329, $400 y $2,388.) Como
+  // un borrador vive 3 días, desde el 18 de noviembre esto ya no encuentra
+  // nada.
   const viejas = new Map<number, number>([
-    [99, precio("essential")],
-    [199, precio("essential")],
-    [329, precio("essential") + cuotaInicio("essential")],
-    [400, precioAntes("essential") ?? 400],
-    [2388, pagoUnico("essential")?.total ?? 2388],
+    [150, precio("essential")],
+    [1500, pagoUnico("essential")?.total ?? 1500],
   ]);
   const alDia = (t: string) =>
     t.replace(/\$\s?(\d[\d,]*\d|\d)(?![.,]?\d)/g, (cifra, n: string) => {

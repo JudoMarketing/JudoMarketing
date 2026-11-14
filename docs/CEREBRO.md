@@ -27,6 +27,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-11-14 | **Precios nuevos en judomarketing.net y el Full Diagnostic de $99.** Website Esencial $250 al mes y Apps para Teléfonos $450 al mes, cada uno con $500 de inicio una sola vez; el año completo de una vez cuesta 10 meses y no lleva cuota ($2,500 y $4,500). Se quitó el precio tachado. Los Websites Complejos se siguen cotizando, sin cuota. Servicio nuevo: el **Full Diagnostic**, $99 de un solo pago, el informe en PDF del website y la presencia en internet en 3 días hábiles, con su página (`/diagnostic`, `/es/diagnostico`) y su cobro en Stripe (pide el website y las redes en el mismo pago). Todo sale de `src/content/pricing.json`: el sitio, el pago, los contratos, la política (fecha efectiva 11/14/2026), el chatbot, los correos de prospección y el guion de ventas. Los clientes que ya firmaron conservan su precio. Los PDF de Latinoamérica («Desde Miami» y «Desde $50 al mes») no cambian. |
 | 2026-11-12 | **Todo sitio hecho por Judo lleva al fondo «Site built by Judo Marketing»** (regla 17 de la sección 2): discreta, del color del pie, enlazada a judomarketing.net. Ya está en todos los sitios que tenemos en GitHub (Paradise Ranch espera su publicación en Cloudflare); JudiWEB y el prompt de website nuevo la traen de fábrica. Se revisa con `node scripts/auditoria/firma.mjs`. |
 | 2026-11-05 | **Todo website nace encontrable por Google, Bing y la IA** (sección 11). La plantilla JudiWEB ya trae de fábrica: robots.txt que deja entrar a ChatGPT, Claude y Perplexity, sitemap con hreflang, JSON-LD del negocio y WebSite, verificación de Google y Bing, IndexNow propio de cada sitio y `llms.txt`. La prueba es `node scripts/auditoria/buscadores.mjs`, y la auditoría de los lunes la corre en todos los sitios. El inventario de lo hecho y de cada sitio está en `BUSCADORES.md`. Lo más grave que salió: Johan Moreno Tailor, JudiMental y la portada de God's Home llegan vacíos a los robots de IA, que no ejecutan JavaScript. |
 | 2026-11-05 | **Todo se optimiza y se prueba en el teléfono, cada vez** (regla 16 de la sección 2). Y el error más repetido en teléfono ya tiene arreglo de base: la página nueva que arranca abajo y el zoom que el iPhone hace solo vienen de campos con letra de menos de 16 px y del foco que se queda en el pie. El código está en la sección 3, «En el teléfono…»; la prueba, en `node scripts/auditoria/movil.mjs`, que la auditoría semanal corre en todos los sitios. Arreglado en JuditoADS, judomarketing.net y la Biblioteca. |
@@ -793,6 +794,18 @@ Los errores de diseño de los sitios están en la sección 2 y en
     `create_deployment` a producción y después `assign_alias`.
   - "Promover" un preview no sirve: no reconstruye y se lleva las variables
     del preview.
+- **El build local salió con el CSS viejo y la prueba miró un servidor viejo**
+  (2026-11-14).
+  - Qué pasó: con los precios nuevos, `npm run build` reusó `.next` de un build
+    anterior y no generó las clases nuevas de Tailwind (`text-6xl` de la página
+    del diagnóstico salió a 16 px). Después, `next start` no pudo usar el puerto
+    porque el `next-server` anterior seguía vivo (`pkill -f "next start"` no lo
+    mata), y las capturas mostraban el sitio viejo con un desborde que no era
+    del cambio. Se notó midiendo el tamaño de letra en el navegador.
+  - Regla: antes de probar un cambio con clases nuevas, `rm -rf .next` y build
+    limpio. Para soltar el puerto se mata el `next-server` por su número
+    (`ps aux | grep next-server`), y se mira el log de arranque: «Ready», no
+    «EADDRINUSE». En producción se comprueba el estilo calculado de algo nuevo.
 - **Un build falló por una descarga de Google Fonts.**
   - Regla: un fallo de red en el build se reintenta una vez antes de tocar
     código. Si falla dos veces, el problema es nuestro.

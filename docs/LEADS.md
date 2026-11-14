@@ -427,17 +427,19 @@ cuatro partes, en este orden:
    es dirigirlo; no somos costosos: nuestro plan es crecer contigo,
    empezando por lo que necesitas hoy. Se dice "nos ha ido así", nunca "te
    va a ir así". **Aquí va el precio, con la cifra real** (lo pidió Junior
-   el 2 de octubre de 2026): "el website empieza en $150 al mes", o para el
+   el 2 de octubre de 2026): "el website empieza en $250 al mes", o para el
    que necesita un asistente, "desde $25 al mes". Una sola cifra, la que
    corresponde a lo que le ofrecemos. Debajo del texto la plantilla pone
    sola el bloque "Precios claros, sin sorpresas" con los precios del sitio
-   (website desde $150 al mes, antes $300, 50% de descuento, sin cuota de
-   inicio, o un solo pago de $1,500 por los 12 meses; proyectos a la
-   medida, apps desde $300, asistente desde $25, JuditoADS $20), así que el
-   párrafo no los repite todos. El precio del website cambió el 12 y el 13
-   de octubre de 2026; una cifra vieja ya no pasa el filtro (los borradores
-   pendientes que dicen $99, $199, $329, $400 o $2,388 salen con la cifra
-   nueva; uno que cita los $130 de inicio se descarta).
+   (website desde $250 al mes más $500 de inicio, o el año completo de
+   una vez por $2,500, con 2 meses gratis y sin cuota de inicio; apps desde
+   $450 más $500 de inicio; proyectos a la medida; el diagnóstico completo
+   de $99 en 3 días hábiles; asistente desde $25, JuditoADS $20), así que
+   el párrafo no los repite todos. Los precios cambiaron el 12 y el 13 de
+   octubre y el 14 de noviembre de 2026; una cifra vieja ya no pasa el
+   filtro (un borrador pendiente que dice $150, $300, $1,500, $199, $329,
+   $400 o $2,388 sale con la cifra nueva; uno que cita los $130 de inicio
+   se descarta).
 4. *El cierre.* Pedir 20 minutos esta semana. Decir que abajo puede ver
    nuestro trabajo y agendar (los botones llevan los enlaces al sitio y a
    la agenda; no se escribe la dirección). Que al contratar le configuramos
@@ -448,9 +450,9 @@ cuatro partes, en este orden:
 `guardar.mjs` rechaza el borrador si tiene menos de tres párrafos, si no
 dice "Judo Marketing", si trae un enlace dentro de un párrafo, si se sale
 del largo, si no menciona un precio, o si cita una cifra en dólares que no
-es nuestra (las válidas salen de `src/content/pricing.json`: $150, $300,
-$1,500, $25, $20; los Websites Complejos nunca llevan
-cifra, se cotizan). El sitio vuelve a comprobar las cifras antes de mandar.
+es nuestra (las válidas salen de `src/content/pricing.json`: $250, $450,
+$500, $750, $950, $2,500, $4,500, $99, $25, $20; los Websites Complejos
+nunca llevan cifra, se cotizan). El sitio vuelve a comprobar las cifras antes de mandar.
 
 **Cuando lleva informe adjunto:** el dolor del párrafo 1 sale de
 `informes.json` con uno o dos números, los que más duelen y sean ciertos

@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { cuotaInicio, pagoUnico, precio, type Plan } from "@/lib/pricing";
+import { cuotaInicio, DIAS_DIAGNOSTICO, pagoUnico, precio, PRECIO_DIAGNOSTICO, type Plan } from "@/lib/pricing";
 
 const PLAN_ENV: Record<string, string | undefined> = {
   essential: process.env.STRIPE_PRICE_ESSENTIAL,
   complex: process.env.STRIPE_PRICE_COMPLEX,
   apps: process.env.STRIPE_PRICE_APPS,
+};
+
+const NOMBRE_PLAN: Record<Plan, Record<"es" | "en", string>> = {
+  essential: { es: "Website Esencial", en: "Essential Website" },
+  complex: { es: "Website Complejo", en: "Complex Website" },
+  apps: { es: "App de teléfono", en: "Mobile App" },
 };
 
 // Cache de prod_... → price_... para no consultar Stripe en cada checkout
@@ -17,11 +23,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "not_configured" }, { status: 503 });
   }
 
-  const { plan, locale, modalidad } = (await req.json()) as {
+  const { plan, locale, modalidad, producto } = (await req.json()) as {
     plan?: string;
     locale?: string;
     modalidad?: string;
+    producto?: string;
   };
+
+  // El Full Diagnostic no es un plan ni una suscripción: va por su lado
+  if (producto === "diagnostico") {
+    return diagnostico(new Stripe(secret), req.nextUrl.origin, locale === "en" ? "en" : "es");
+  }
+
   let price = plan ? PLAN_ENV[plan] : undefined;
   if (!price) {
     return NextResponse.json({ error: "unknown_plan" }, { status: 400 });
@@ -96,15 +109,16 @@ export async function POST(req: NextRequest) {
   ];
 
   /**
-   * Pago único (Junior, 12 de octubre de 2026): los 12 meses del contrato de
-   * una vez, sin cuota de inicio. No es suscripción: un solo cobro en modo
-   * "payment", con el monto sacado de pricing.json y factura para el cliente.
-   * Al terminar los 12 meses rige la cláusula 4 del contrato, igual que con
-   * el pago mensual.
+   * Pago único: el año del contrato de una vez, por el precio de 10 meses y
+   * sin cuota de inicio (Esencial y Apps desde el 14 de noviembre de 2026).
+   * No es suscripción: un solo cobro en modo "payment", con el monto sacado
+   * de pricing.json y factura para el cliente. Al terminar los 12 meses rige
+   * la cláusula 4 del contrato, igual que con el pago mensual.
    */
   const unico = pagoUnico(plan as Plan);
   if (modalidad === "unico" && unico) {
-    const nombre = loc === "es" ? "Website Esencial · 12 meses (pago único)" : "Essential Website · 12 months (one-time payment)";
+    const nombrePlan = NOMBRE_PLAN[plan as Plan]?.[loc] ?? String(plan);
+    const nombre = loc === "es" ? `${nombrePlan} · 12 meses (pago único)` : `${nombrePlan} · 12 months (one-time payment)`;
     try {
       const pagoUnicoSesion = await stripe.checkout.sessions.create({
         mode: "payment",
@@ -170,8 +184,9 @@ export async function POST(req: NextRequest) {
   }
 
   /**
-   * Cuota de inicio (hoy solo el Website Esencial): un cobro único que Stripe
-   * suma a la primera factura de la suscripción y no repite. Va con
+   * Cuota de inicio (Esencial y Apps, $500 desde el 14 de noviembre de 2026):
+   * un cobro único que Stripe suma a la primera factura de la suscripción y
+   * no repite. Va con
    * price_data para que el monto salga de pricing.json y no haya que crear ni
    * mantener otro precio en el panel de Stripe.
    */
@@ -187,8 +202,8 @@ export async function POST(req: NextRequest) {
           name: loc === "es" ? "Cuota de inicio (pago único)" : "Setup fee (one-time)",
           description:
             loc === "es"
-              ? "Configuración inicial del website. Se cobra una sola vez, con el primer mes."
-              : "Initial website setup. Charged once, with the first month.",
+              ? "Configuración inicial del proyecto. Se cobra una sola vez, con el primer mes."
+              : "Initial project setup. Charged once, with the first month.",
         },
       },
     });
@@ -215,4 +230,67 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ url: session.url });
+}
+
+/**
+ * Full Diagnostic (Junior, 14 de noviembre de 2026): un solo cobro de $99,
+ * en modo "payment" y con el monto de pricing.json, así que no hace falta
+ * crear nada en el panel de Stripe. Stripe pide en el mismo pago el website
+ * o el nombre del negocio y sus redes, para empezar sin otro formulario.
+ */
+async function diagnostico(stripe: Stripe, origin: string, loc: "es" | "en") {
+  const pagina = loc === "es" ? `${origin}/es/diagnostico` : `${origin}/diagnostic`;
+  try {
+    const sesion = await stripe.checkout.sessions.create({
+      mode: "payment",
+      managed_payments: { enabled: false },
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: "usd",
+            unit_amount: PRECIO_DIAGNOSTICO * 100,
+            product_data: {
+              name: "Full Diagnostic",
+              description:
+                loc === "es"
+                  ? `Diagnóstico completo de tu website y tu presencia en internet, en PDF, en ${DIAS_DIAGNOSTICO} días hábiles.`
+                  : `A full diagnostic of your website and online presence, as a PDF, in ${DIAS_DIAGNOSTICO} business days.`,
+            },
+          },
+        },
+      ],
+      customer_creation: "always",
+      invoice_creation: { enabled: true },
+      metadata: { producto: "diagnostico" },
+      payment_intent_data: { metadata: { producto: "diagnostico" } },
+      locale: loc,
+      custom_fields: [
+        {
+          key: "negocio",
+          label: { type: "custom", custom: loc === "es" ? "Tu website o el nombre del negocio" : "Your website or business name" },
+          type: "text",
+        },
+        {
+          key: "redes",
+          label: { type: "custom", custom: loc === "es" ? "Tu Instagram o Facebook" : "Your Instagram or Facebook" },
+          type: "text",
+          optional: true,
+        },
+        {
+          key: "ciudad",
+          label: { type: "custom", custom: loc === "es" ? "Ciudad donde vendes" : "City where you sell" },
+          type: "text",
+          optional: true,
+        },
+      ],
+      success_url: `${pagina}?pagado=1`,
+      cancel_url: pagina,
+    });
+    return NextResponse.json({ url: sesion.url });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "unknown";
+    console.error("stripe checkout error (diagnóstico):", msg);
+    return NextResponse.json({ error: "stripe_error", message: msg }, { status: 502 });
+  }
 }

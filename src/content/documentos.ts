@@ -147,17 +147,19 @@ function marcoLegal(): Seccion {
 
 function websites(d: DatosDocumento): Documento {
   const plan = d.plan ?? "Website";
-  // La cuota de inicio solo va en el Website Esencial (pricing.json). Se
-  // reconoce por el nombre del plan que pone el portal ("Website Esencial").
-  const esencial = /esencial|essential/i.test(plan);
-  const cuota = esencial ? cuotaInicio("essential") : 0;
-  // Pago único (solo el Esencial): los meses del plazo de una vez, por el
-  // total de pricing.json ($1,500 desde el 13 de octubre de 2026). Si este
-  // contrato lleva otro precio mensual, el total se ajusta en la misma
-  // proporción. El contrato sirve para las dos formas de pago; el cliente
-  // elige al pagar.
-  const unico = esencial ? pagoUnico("essential") : null;
-  const totalUnico = unico ? Math.round((unico.total * d.precioMensual) / precio("essential")) : 0;
+  // La cuota de inicio y el pago único van en el Website Esencial y en las
+  // Apps (pricing.json; $500 y el año por el precio de 10 meses desde el 14
+  // de noviembre de 2026). El plan se reconoce por el nombre que pone el
+  // portal ("Website Esencial", "App de teléfono"); el Complejo se cotiza y
+  // no los lleva.
+  const clave = /esencial|essential/i.test(plan) ? "essential" : /\bapps?\b/i.test(plan) ? "apps" : null;
+  const cuota = clave ? cuotaInicio(clave) : 0;
+  // Pago único: los meses del plazo de una vez, por el total de pricing.json.
+  // Si este contrato lleva otro precio mensual, el total se ajusta en la
+  // misma proporción. El contrato sirve para las dos formas de pago; el
+  // cliente elige al pagar.
+  const unico = clave ? pagoUnico(clave) : null;
+  const totalUnico = unico && clave ? Math.round((unico.total * d.precioMensual) / precio(clave)) : 0;
   const filas = partes(d, `${plan}${d.proyecto ? ` · ${d.proyecto}` : ""}`);
   const i = filas.findIndex(([etiqueta]) => etiqueta === "Precio mensual");
   const extra: [string, string][] = [];
