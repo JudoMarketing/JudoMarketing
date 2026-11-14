@@ -1123,6 +1123,27 @@ las trampas técnicas.
   - Regla: antes de nombrar una clase nueva se busca en `base.html` y
     `pro.css`; las del video llevan un nombre que no se repite
     (`.rejilla-d`).
+- **Tres errores que Junior encontró en «Count your yeses» v3**
+  (2026-11-14).
+  - Qué pasó:
+    - El reloj de arena se volteaba con la arena todavía arriba. Se acortó
+      la animación de giro a 1,7 s y la de la arena se quedó en su tiempo
+      viejo.
+    - El teléfono de redes se veía roto. Se dibujó angosto (32 de ancho) y la
+      isla, las esquinas y el marco tienen medidas fijas.
+    - Las cajas chocaban en el cuadro final de varias escenas: tarjetas
+      pegadas, un contador sobre la bandeja, un visto sobre la hora. La
+      revisión miró las escenas a la mitad y `revisar.mjs` solo compara
+      texto contra objetos.
+  - Costó: un pedido de Junior y renderizar 12 de 16 escenas otra vez.
+  - Regla:
+    - Si se cambia el tiempo de una animación, se cambian también las que
+      dependen de ella. Se mira el cuadro del medio y el final.
+    - Un teléfono más chico se dibuja a tamaño normal y se achica entero
+      (`.tel-escala`).
+    - Antes de renderizar, `node choques.mjs`: mide caja contra caja en el
+      último cuadro de cada escena. Se miran los finales, no solo las
+      entradas.
 
 ---
 

@@ -270,10 +270,10 @@ def post(top, d, color, icono):
 
 
 PANT_FEED = ('<div style="position:absolute;inset:0;background:#f6f5fb"></div>'
-             '<div style="position:absolute;left:0;right:0;top:9%;text-align:center;font:700 3cqw/1 var(--f-titular);color:#14112a">Your feed</div>'
-             + post(15, 0.6, "linear-gradient(140deg,#ff9a5c,#e8173a)", "fork-knife")
-             + post(48, 1.2, "linear-gradient(140deg,#8a63ff,#3b1aa8)", "scissors")
-             + post(81, 1.8, "linear-gradient(140deg,#5ef0c9,#0a9e7f)", "hammer"))
+             '<div style="position:absolute;left:0;right:0;top:7.5%;text-align:center;font:700 4.4cqw/1 var(--f-titular);color:#14112a">Your feed</div>'
+             + post(14, 0.6, "linear-gradient(140deg,#ff9a5c,#e8173a)", "fork-knife")
+             + post(45, 1.2, "linear-gradient(140deg,#8a63ff,#3b1aa8)", "scissors")
+             + post(76, 1.8, "linear-gradient(140deg,#5ef0c9,#0a9e7f)", "hammer"))
 
 # ═══ 1 · Gancho ═══
 PANT_APAGAR = ('<div class="fondo-apagado"></div>'
@@ -288,13 +288,13 @@ escena("apaga", 3.0, "1 · Gancho", "Business owners: turn off your phone.",
        + deco("destello", 14, 66, 5, 0.3, c1="#d9ccff", fl=2.4) + deco("destello", 86, 92, 4, 0.5, c1="#ffd166", fl=2.8)
        + deco("esfera", 85, 64, 9, 0.2, c1="#c9b6ff", c2="#7b4dff", c3="#3a1f9a") + deco("anillo-d", 12, 120, 12, 0.4, c1="rgba(185,162,255,.45)")
        + f'<div class="kicker-v" style="--d:0s">{ic("storefront")} Business owners</div>'
-       + cap(["Turn off", '<span class="raya" style="--dr:1.1s;--raya:#ff3b4f">your phone.</span>'], d=0.15, paso=0.12, clase="t-xl", estilo="font-size:12.6cqw")
+       + cap(["Turn off", '<span class="raya" style="--dr:1.1s;--raya:#ff3b4f">your phone.</span>'], d=0.15, paso=0.12, clase="t-xl", top=24.5, estilo="font-size:12.6cqw")
        + telefono(58, 54, PANT_APAGAR),
        "sub@0/-21 clic-suave@0.75/-26 apagar@1.6", ("circulo", "papel", 50, 63),
        voz="Business owner? Turn off your phone.")
 
 escena("sigue-vendiendo", 3.0, "1 · Gancho", "Is your business still selling?",
-       "Papel. La tienda de barrio dibujada con sombras, rodeada de fichas de rubros (restaurante, contratista, salón, clínica). Son las 11:47 PM. El letrero se columpia en «OPEN», se voltea a «CLOSED» y la tienda se apaga.",
+       "Papel. La tienda de barrio dibujada con sombras; arriba, junto a la hora, cuatro fichas de rubros (restaurante, contratista, salón, clínica). Son las 11:47 PM. El letrero se columpia en «OPEN», se voltea a «CLOSED» y la tienda se apaga.",
        "papel",
        deco("cruz", 10, 140, 4, 0.5, c1="#6e3bff")
        + cap(["Is your business", '<span class="raya" style="--dr:.85s">still selling?</span>'], d=0.0, clase="t-l", estilo="font-size:9.2cqw")
@@ -302,7 +302,7 @@ escena("sigue-vendiendo", 3.0, "1 · Gancho", "Is your business still selling?",
        + f'<div class="tienda" style="top:58cqw;--d:.05s">{tienda()}</div>'
        + '<div class="letrero encima" style="left:71.6cqw;top:93cqw"><div class="gira-l"><span class="cara abierto">OPEN</span><span class="cara cerrado">CLOSED</span></div></div>'
        + "".join(f'<div class="rubro" style="left:{x}cqw;top:{y}cqw;--d:{d}s"><i style="animation-delay:{d}s">{ic(i)}</i></div>'
-                 for x, y, d, i in ((88, 50, 0.35, "fork-knife"), (93, 72, 0.45, "hammer"), (6, 112, 0.55, "scissors"), (7, 134, 0.65, "tooth"))),
+                 for x, y, d, i in ((49.5, 50.5, 0.35, "fork-knife"), (62, 50.5, 0.45, "hammer"), (74.5, 50.5, 0.55, "scissors"), (87, 50.5, 0.65, "tooth"))),
        "golpe-suave@0.15:0/-25 reloj@0.3:1.2 voltear@1.5", ("lado", "electrico"),
        voz="Is your business still selling?")
 
@@ -333,7 +333,7 @@ escena("noche", 3.6, "3 · Cuerpo 1", "A customer texts at 9:04 PM. Anyone answe
        '<span><span class="de">WhatsApp · now</span><b>Can I get a quote?</b></span></div>'
        + f'<div class="noti-g encima" style="top:109cqw;--d:1.1s"><span class="app" style="background:linear-gradient(140deg,#feda75,#d62976 50%,#4f5bd5)">{ic("instagram-logo")}</span>'
        '<span><span class="de">Instagram · 2m</span><b>Any openings tomorrow?</b></span></div>'
-       + f'<div class="sin-responder encima" style="left:8cqw;top:126.5cqw;--d:1.9s">{ic("warning-circle")} 2 unanswered</div>',
+       + f'<div class="sin-responder encima" style="left:33cqw;top:126.5cqw;--d:1.9s">{ic("warning-circle")} 2 unanswered</div>',
        "notificacion@0.6/-22 notificacion@1.1/-24 grave@1.9/-24", ("lado", "lavanda"),
        voz="One: texts at night. Is anyone answering?")
 
@@ -344,31 +344,30 @@ def fila_d(d, icono, color, titulo, sub):
 
 
 escena("demanda", 4.2, "3 · Cuerpo 1", "More calls and orders than you can handle?",
-       "Lavanda. Pregunta 2 de 3. La bandeja se llena sola: pedidos, citas, presupuestos y llamadas perdidas; el globo rojo cuenta hasta 38 y la campana no para.",
+       "Lavanda. Pregunta 2 de 3. La bandeja se llena sola: pedidos, citas, presupuestos y llamadas perdidas; el contador rojo de la bandeja sube hasta 38.",
        "lavanda",
        rastreo(2, oscuro=True)
        + deco("esfera", 92, 44, 7, 0.4, c1="#e6ddff", c2="#9b86c9", c3="#5d4f86") + deco("rejilla-d", 12, 138, 14, 0.5, c1="rgba(91,43,255,.35)")
        + cap(["More calls", "and orders than", '<span class="color-violeta">you can handle?</span>'], estilo="font-size:10cqw")
        + '<div class="tarjeta-pro bandeja" style="top:58cqw;--d:.15s">'
-       '<div class="cab-b"><b>Inbox</b><small style="margin-right:13cqw">Today</small></div>'
+       '<div class="cab-b"><b>Inbox</b><span class="insignia-roja en-linea" style="--d:.3s"><span class="cuenta" style="--hasta:38;--d:.35s;--dc:2.2s"></span></span></div>'
        + fila_d(0.45, "shopping-cart", "linear-gradient(140deg,#ff9a5c,#e8173a)", "New order #1042", "Pickup at 7:30 PM")
        + fila_d(0.75, "calendar-check", "linear-gradient(140deg,#8a63ff,#5b2bff)", "Booking request", "Saturday, 2:00 PM")
        + fila_d(1.05, "hammer", "linear-gradient(140deg,#ffcf5c,#f59200)", "Quote request", "Kitchen remodel")
        + fila_d(1.35, "phone", "linear-gradient(140deg,#5ad1ff,#2563eb)", "Missed call", "3 times, same number")
        + "</div>"
-       + '<div class="insignia-roja" style="left:85cqw;top:61cqw;--d:.3s"><span class="cuenta" style="--hasta:38;--d:.35s;--dc:2.2s"></span></div>'
-       + f'<div class="burbuja-bot" style="left:91cqw;top:84cqw;--tam:11cqw;--d:.6s"><div style="background:radial-gradient(circle at 35% 30%,#ffd166,#f59200 70%)">{ic("bell-ringing")}</div></div>',
+       ,
        "bandeja@0.3:2.2 notificacion@1.4/-26", ("circulo", "alarma", 91, 47),
        voz="Two: more calls and orders than you can handle?")
 
 # ═══ 4 · Bucle abierto ═══
 escena("bucle-pasa", 1.8, "4 · Bucle abierto", "Then what happens…",
-       "Rojo oscuro. Un reloj de arena grande que se voltea. Corte seco.",
+       "Rojo oscuro. Un reloj de arena grande que se mece mientras la arena cae. Corte seco.",
        "alarma",
        '<div class="halo-color" style="top:60cqw;--ancho:110cqw;--hc:rgba(232,23,58,.45)"></div>'
        + deco("destello", 14, 60, 4, 0.5, c1="#ff9aa8", fl=2) + deco("destello", 88, 130, 5, 0.6, c1="#ffd166", fl=2.2)
        + cap(["Then what", "happens…"], d=-0.1, paso=0.12, clase="t-xl centrado", top=25, estilo="font-size:12.6cqw")
-       + f'<div class="reloj-arena" style="left:50cqw;top:66cqw;width:30cqw;margin-left:-15cqw;--d:0s"><div style="animation-duration:1.7s">{RELOJ_ARENA}</div></div>',
+       + f'<div class="reloj-arena cae" style="left:50cqw;top:66cqw;width:30cqw;margin-left:-15cqw;--d:0s"><div>{RELOJ_ARENA}</div></div>',
        "subida@0:1.6/-30 reloj@0.2:1.4/-30", ("corte",),
        voz="Then what happens…")
 
@@ -381,7 +380,7 @@ escena("competencia", 4.8, "5 · Cuerpo 2", "By morning, they hired your competi
        + '<div class="conver" style="top:57cqw;--d:.25s;--rz:-1deg"><div class="quien"><i class="pto" style="background:#10b981"></i>Your competitor<b>9:06 PM</b></div>'
        '<div class="bur cliente" style="--d:.45s">Can I get a quote?</div><div class="bur de-ellos" style="--d:.85s">Sure! Here’s your quote.</div>'
        f'<span class="marca-r" style="background:#10b981;--dm:1.15s">{ic("check-circle")}</span></div>'
-       + '<div class="conver" style="top:96cqw;--d:1.6s;--rz:1deg"><div class="quien"><i class="pto" style="background:#e8173a"></i>You<b>7:12 AM</b></div>'
+       + '<div class="conver" style="top:100cqw;--d:1.6s;--rz:1deg"><div class="quien"><i class="pto" style="background:#e8173a"></i>You<b>7:12 AM</b></div>'
        '<div class="bur tarde" style="--d:1.85s">Sorry, just saw this!</div><div class="bur cliente" style="--d:2.45s">Already hired someone.</div>'
        f'<span class="marca-r" style="background:#e8173a;--dm:2.8s">{ic("x-circle")}</span></div>',
        "sub@0/-21 notificacion@0.85/-25 pop@1.85/-28 grave@2.8/-22", ("abajo", "ambar"),
@@ -439,32 +438,33 @@ escena("redes", 7.2, "7 · Cuerpo 3", "We run your social media and your ads. Yo
        "hielo",
        deco("esfera", 92, 48, 7, 0.4, c1="#e3eeff", c2="#7aa7ff", c3="#2353c4")
        + cap(["We run your", "social media", '<span class="ligera">and your ads.</span>'], estilo="font-size:10.6cqw")
-       + telefono(58, 32, PANT_FEED, "left:24cqw;--ry0:14deg;--ry1:6deg;--rz0:-2deg;--rz1:-1deg;--brillo-tel:rgba(37,99,235,.45)")
-       + f'<div class="posteado encima" style="left:45cqw;top:59cqw;--d:1.0s">{ic("instagram-logo")} Posted</div>'
-       + f'<div class="posteado encima" style="left:45cqw;top:66.5cqw;--d:1.6s">{ic("facebook-logo")} Posted</div>'
-       + '<div class="presupuesto" style="left:45cqw;top:75cqw;--d:2.8s"><small>Daily ad budget</small>'
+       + '<div class="tel-escala" style="left:8cqw;top:59.5cqw;width:48cqw">'
+       + telefono(0, 48, PANT_FEED, "--ry0:14deg;--ry1:6deg;--rz0:-2deg;--rz1:-1deg;--brillo-tel:rgba(37,99,235,.45)") + '</div>'
+       + f'<div class="posteado encima" style="left:45cqw;top:60cqw;--d:1.0s">{ic("instagram-logo")} Posted</div>'
+       + f'<div class="posteado encima" style="left:45cqw;top:67.5cqw;--d:1.6s">{ic("facebook-logo")} Posted</div>'
+       + '<div class="presupuesto" style="left:45cqw;top:77cqw;--d:2.8s"><small>Daily ad budget</small>'
        '<div class="monto-p">$<span class="cuenta" style="--desde:1;--hasta:5;--d:3.2s;--dc:.9s"></span><span class="chico">/ day</span></div>'
        '<div class="riel" style="--desde-p:0%;--hasta-p:16.7%;--d:3.2s;--dc:.9s"><i class="lleno"></i><b class="perilla"></b></div>'
        '<div class="nota-p">You pick it. Paid straight to Meta.</div></div>'
-       + f'<div class="meta-chips" style="top:128cqw"><em style="--d:4.3s">Goal</em><span style="--d:4.4s">{ic("phone")} Calls</span>'
+       + f'<div class="meta-chips" style="top:132cqw"><em style="--d:4.3s">Goal</em><span style="--d:4.4s">{ic("phone")} Calls</span>'
        f'<span style="--d:4.55s">{ic("calendar-check")} Bookings</span><span style="--d:4.7s">{ic("shopping-cart")} Orders</span></div>',
        "pop@0.6/-28 notificacion@1.0/-26 notificacion@1.6/-27 golpe-suave@2.8:2/-25 burbuja@3.2/-28 burbuja@3.5/-29 burbuja@3.8/-30 brillo@4.4/-26", ("abajo", "grafito"),
        voz="We run your social media and ads. Your budget starts at five dollars a day.")
 
-escena("auditoria", 6.0, "7 · Cuerpo 3", "Before you spend a dollar: our $99 audit. Google, Maps & AI · Your website · You vs. competitors · Your plan, with deadlines.",
-       "Grafito. «Before you spend a dollar: our $99 audit.» El informe en PDF se abre (dos hojas se abren en abanico detrás) y muestra lo que trae; cae un sello dorado de $99.",
+escena("auditoria", 6.0, "7 · Cuerpo 3", "Before you spend a dollar: our $99 audit. Google, Maps & AI · Your website · You vs. competitors · Plan with deadlines.",
+       "Grafito. «Before you spend a dollar: our $99 audit.» El informe en PDF se abre (dos hojas se abren en abanico detrás) y muestra lo que trae; al lado cae un sello dorado de $99.",
        "grafito",
        '<div class="halo-color" style="top:70cqw;--ancho:110cqw;--hc:rgba(123,77,255,.45)"></div>'
        + deco("destello", 10, 62, 4, 0.6, c1="#ffd166") + deco("destello", 90, 140, 5, 0.9, c1="#fff")
        + cap(["Before you spend", "a dollar:"], d=0.0, clase="t-l", estilo="font-size:10.6cqw")
        + cap(['<span class="ligera">our</span> <span class="color-oro">$99 audit.</span>'], d=0.35, clase="t-l", top=47, estilo="font-size:10.6cqw")
-       + '<div class="informe" style="top:64cqw;left:7cqw;margin-left:0;--d:.55s"><i class="hoja h2"></i><i class="hoja h3"></i><div class="portada-i">'
+       + '<div class="informe" style="top:64cqw;left:7cqw;margin-left:0;width:58cqw;--d:.55s"><i class="hoja h2"></i><i class="hoja h3"></i><div class="portada-i">'
        '<div class="franja"><small>Full Diagnostic · PDF</small><b>Your business, end to end</b></div><div class="cuerpo-i">'
        + "".join(f'<div class="linea-i" style="--d:{d}s">{ic(i)}{t}</div>' for d, i, t in (
            (1.4, "magnifying-glass", "Google, Maps &amp; AI"), (1.8, "globe", "Your website"),
-           (2.2, "users-three", "You vs. competitors"), (2.6, "calendar-check", "Your plan, with deadlines")))
+           (2.2, "users-three", "You vs. competitors"), (2.6, "calendar-check", "Plan with deadlines")))
        + "</div></div></div>"
-       + '<div class="sello-99 encima" style="left:82cqw;top:75cqw;--d:1.15s"><b>$99</b><small>One payment</small></div>',
+       + '<div class="sello-99" style="left:86cqw;top:80cqw;--d:1.15s"><b>$99</b><small>One payment</small></div>',
        "golpe-suave@0.55:2/-24 sello@1.15/-18 burbuja@1.4/-29 burbuja@1.8/-30 burbuja@2.2/-30 burbuja@2.6/-31", ("lado", "crema"),
        voz="Before you spend a dollar, get our ninety-nine dollar audit.")
 
@@ -480,11 +480,11 @@ escena("comparacion", 6.6, "7 · Cuerpo 3", "You vs. your competitors. A plan wi
        deco("esfera", 92, 46, 7, 0.4, c1="#fff3d6", c2="#ffc53d", c3="#c47a00")
        + cap(["You vs. your", "competitors."], d=0.0, clase="t-l", estilo="font-size:10.6cqw")
        + cap(['<span class="ligera">A plan with</span> deadlines.'], d=0.25, clase="t-m", top=47)
-       + '<div class="tarjeta-pro comparar" style="top:58cqw;--d:.3s"><div class="cab-c2"><span>You vs. competitors</span><span class="etiqueta-ejemplo">Example</span></div>'
+       + '<div class="tarjeta-pro comparar" style="top:57cqw;--d:.3s"><div class="cab-c2"><span>You vs. competitors</span><span class="etiqueta-ejemplo">Example</span></div>'
        '<div class="leyenda"><span><i style="background:#6e3bff"></i>You</span><span><i style="background:#c9c5da"></i>Best competitor</span></div>'
        + fila_c(0.8, "Google", 34, 88) + fila_c(1.1, "Reviews", 46, 92) + fila_c(1.4, "Social media", 22, 74)
        + "</div>"
-       + '<div class="tarjeta-pro plan-f" style="top:100cqw;--d:2.6s"><div class="cab-c2"><span>Your plan</span><span class="etiqueta-ejemplo">Example</span></div>'
+       + '<div class="tarjeta-pro plan-f" style="top:99cqw;--d:2.6s"><div class="cab-c2"><span>Your plan</span><span class="etiqueta-ejemplo">Example</span></div>'
        + "".join(f'<div class="paso-f" style="--d:{d}s"><span class="sem">{s}</span><b>{t}</b><span class="chk">{ic("check-circle")}</span></div>'
                  for d, s, t in ((3.0, "WEEK 1", "Google profile fixed"), (3.5, "WEEK 2", "Fast replies set up"), (4.0, "WEEK 4", "Ads running")))
        + "</div>",
@@ -492,13 +492,13 @@ escena("comparacion", 6.6, "7 · Cuerpo 3", "You vs. your competitors. A plan wi
        voz="We compare you with your competitors, and give you a plan with deadlines.")
 
 escena("trabajo", 3.6, "7 · Cuerpo 3", "Real websites we built. Pachy Pinchos · Restaurant. Denali CRT · Clinic. Delivery Rush · Delivery.",
-       "Rosa claro. Tres teléfonos en abanico con capturas reales de sitios hechos por Judo: Pachy Pinchos (restaurante), Denali CRT (clínica) y Delivery Rush (reparto).",
+       "Rosa claro. Tres teléfonos lado a lado (el del medio un poco más arriba) con capturas reales de sitios hechos por Judo: Pachy Pinchos (restaurante), Denali CRT (clínica) y Delivery Rush (reparto).",
        "rosa",
        deco("destello", 90, 46, 5, 0.5, c1="#ff4fa0")
        + cap(["Real websites", '<span class="ligera">we built.</span>'], d=0.0, clase="t-xl", estilo="font-size:11cqw")
        + '<div class="trabajo" style="top:51cqw">'
-       + "".join(f'<div class="tel-t" style="left:{x}cqw;width:30cqw;margin-left:-15cqw;z-index:{z};--d:{d}s;--r:{r}deg;--r0:{r * 2}deg"><div class="marco-t"><img src="img/trabajo/{img}.jpg" alt="{n}"></div><p>{n}<small>{k}</small></p></div>'
-                 for x, z, d, r, img, n, k in ((23, 1, 0.3, -4, "pachy", "Pachy Pinchos", "Restaurant"), (71, 1, 0.5, 4, "deliveryrush", "Delivery Rush", "Delivery"), (47, 2, 0.4, 0, "denali", "Denali CRT", "Clinic")))
+       + "".join(f'<div class="tel-t" style="left:{x}cqw;top:{t}cqw;width:25cqw;margin-left:-12.5cqw;z-index:{z};--d:{d}s;--r:{r}deg;--r0:{r * 2}deg"><div class="marco-t"><img src="img/trabajo/{img}.jpg" alt="{n}"></div><p>{n}<small>{k}</small></p></div>'
+                 for x, t, z, d, r, img, n, k in ((20.5, 4, 1, 0.3, 0, "pachy", "Pachy Pinchos", "Restaurant"), (73.5, 4, 1, 0.5, 0, "deliveryrush", "Delivery Rush", "Delivery"), (47, 0, 2, 0.4, 0, "denali", "Denali CRT", "Clinic")))
        + "</div>",
        "pop@0.3/-27 pop@0.4/-28 pop@0.5/-29 brillo@0.9/-27", ("lado", "durazno"),
        voz="Sites we built for real businesses.")
@@ -508,11 +508,11 @@ escena("promesa", 6.0, "7 · Cuerpo 3", "Our promise: better service than you ha
        "durazno",
        deco("esfera", 92, 46, 7, 0.4, c1="#fff1e6", c2="#ff9a5c", c3="#c2410c")
        + cap(["Our promise:", '<span class="ligera">better service</span>', '<span class="ligera">than you have now.</span>'], estilo="font-size:9cqw")
-       + '<div class="tarjeta-pro chat-judo" style="top:55cqw;--d:.3s">'
+       + '<div class="tarjeta-pro chat-judo" style="top:54cqw;--d:.3s">'
        f'<div class="cab-j"><span class="av">{ic("whatsapp-logo")}</span><span><b>Judo Marketing</b><small>Miami · a real person</small></span></div>'
        '<div class="bur cli" style="--d:.7s">Hi! Can you check my&nbsp;business?</div>'
        '<div class="bur judo" style="--d:1.4s">Of course! I’m on it.</div></div>'
-       + '<div class="garantias" style="top:105cqw">'
+       + '<div class="garantias" style="top:109cqw">'
        + "".join(f'<span style="--d:{d}s">{ic(i)} {t}</span>' for d, i, t in ((2.4, "user-circle", "A real person on WhatsApp"), (3.0, "calendar-check", "A plan with dates"), (3.6, "check-circle", "Cancel anytime")))
        + "</div>",
        "notificacion@0.7/-26 pop@1.4/-27 cristal@2.4:0/-27 cristal@3.0:2/-27 cristal@3.6:4/-27", ("abajo", "cierre"),
