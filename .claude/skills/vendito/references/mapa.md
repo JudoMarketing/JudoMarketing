@@ -51,6 +51,7 @@ hace falta. Si algo se mueve o nace, se actualiza aquí el mismo día.
 | Firma «Site built by Judo Marketing» | `node scripts/auditoria/firma.mjs` |
 | Textos de un video o carrusel | `node revisar.mjs` en su carpeta |
 | La voz de un video contra sus escenas | `python3 calzar-voz.py voz.json --guion` y `python3 ../borrador-voz.py voz.json` |
+| Un video con escenas de Junior a cámara (guía para grabar y cómo se montan) | `scripts/video/judo-detras-pantalla-en/guion-camara.md` y `docs/BIBLIOTECA.md`, «Las tomas de Junior a cámara» |
 | El guion de ElevenLabs por clips (tabla con segundo, largo y archivo) | `python3 guion-clips.py voz.json` (en `scripts/video/judo-phone-off-en/`; se copia a la carpeta del video nuevo) |
 
 ## Herramientas que no están en el repo

@@ -109,6 +109,24 @@ Cuando Junior diga **«calza la voz de <pieza>»**:
 4. Subir el `salida/…-con-voz.mp4` como versión nueva de la pieza, con su
    línea en el historial, y pasar el estado a «listo».
 
+## Las tomas de Junior a cámara
+
+Algunos videos tienen escenas donde Junior habla a cámara («Behind the
+screen»). En el video de la Biblioteca se ven como un marco con «Junior on
+camera», el tiempo y la frase: es la guía para grabar (`guion-camara.md` de
+cada video, `camara.json` con los segundos).
+
+Cuando Junior suba sus tomas (MP4 vertical, de menos de 20 MB cada uno) y
+diga **«monta las tomas de <pieza>»**:
+1. Bajar cada toma de la ficha y elegir la mejor de las tres repeticiones.
+2. Si una toma dura más que su escena, alargar esa escena (múltiplos de
+   0,6 s) en `armar.py`, volver a armar y correr `musica.py` y `sfx.py`; las
+   escenas animadas no se renderizan de nuevo.
+3. Poner la toma en lugar del clip guía, con su nombre (escena 1) y
+   subtítulos, y montar.
+4. Si cambió algún segundo, `python3 guion-clips.py voz.json` y avisarle a
+   Junior con el guion de ElevenLabs nuevo.
+
 ## Los pedidos de Junior
 
 Desde cada ficha Junior escribe "Pedir un cambio". Se guarda en la colección

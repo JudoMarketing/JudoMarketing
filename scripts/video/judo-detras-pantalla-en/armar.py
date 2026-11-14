@@ -233,11 +233,11 @@ escena("oficios", 3.6, "1 · Gancho", "Everyone knows Latinos work hard.",
        "Crema. Seis fichas de colores con los oficios donde se ve a los latinos trabajar: construcción, cocinas, campo, limpieza, reparto y reparaciones. Entran rebotando una tras otra.",
        "crema",
        deco("esfera", 92, 46, 7, 0.3, c1="#fff3d6", c2="#ffc53d", c3="#c47a00") + deco("destello", 8, 132, 4, 0.6, c1="#f59200")
-       + cap(["Everyone knows", "Latinos", '<span class="ligera">work hard.</span>'], d=-0.05, clase="t-l", estilo="font-size:10.6cqw")
+       + cap(["Everyone knows", "Latinos", '<span class="ligera">work hard.</span>'], d=-0.3, clase="t-l", estilo="font-size:10.6cqw")
        + '<div class="bs-oficios" style="top:60cqw">'
-       + "".join(f'<div class="bs-oficio" style="--tc:{c};--d:{0.25 + k * 0.13:.2f}s;--r0:{(-1) ** k * 7}deg">{ic(i)}</div>' for k, (i, c, _) in enumerate(OFICIOS))
+       + "".join(f'<div class="bs-oficio" style="--tc:{c};--d:{0.02 + k * 0.13:.2f}s;--r0:{(-1) ** k * 7}deg">{ic(i)}</div>' for k, (i, c, _) in enumerate(OFICIOS))
        + "</div>",
-       "sub@0/-21 " + " ".join(f"pop@{0.25 + k * 0.13:.2f}/{-25 - k}" for k in range(6)), ("lado", "noche"),
+       "sub@0/-21 " + " ".join(f"pop@{0.05 + k * 0.13:.2f}/{-25 - k}" for k in range(6)), ("lado", "noche"),
        voz="Everyone knows Latinos work hard.")
 
 CODIGO = ((52, 0, "#b9a2ff"), (36, 4, "#5ef0c9"), (60, 4, "#ffd166"), (28, 8, "#ff7aa8"), (46, 8, "#5ad1ff"), (22, 4, "#b9a2ff"), (40, 0, "#5ef0c9"), (30, 4, "#ffd166"))
