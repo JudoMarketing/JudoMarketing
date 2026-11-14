@@ -1,6 +1,6 @@
-# Brief · «Behind the screen» · v1
+# Brief · «Behind the screen» · v2 (guion)
 
-Estado: **entregado v1, falta que Junior grabe sus tres tomas** (14 nov 2026). Video en
+Estado: **guion v2 escrito, esperando que Junior lo apruebe**; después se hacen las imágenes (14 nov 2026). La v1 (video) quedó atrás. Video en
 `scripts/video/judo-detras-pantalla-en/`.
 
 ## El pedido de Junior (14 nov 2026, resumido)
@@ -140,10 +140,78 @@ en Fort Lauderdale (2/10).
 - **Para quién es, de verdad:** dueños latinos e inmigrantes. Para el
   público general, «Count your yeses» funciona mejor.
 
+## Feedback v1 de Junior (14 nov 2026, sus palabras)
+
+> I'm from Tachira not Caracas. The call to action at the end should be: I
+> know, maybe you don't like AI but your competitors are using it, and like
+> social media, if you don't implemented soon in your business, you'll be
+> left behind. I'll do the manual work for you, let me audit your company for
+> $99. Message me through this AD or through my phone number 305-934-9981,
+> remove the +1. And on that video I see there some repetitive information,
+> first create the guion, then the images to explain that. Some texts are too
+> repetitive, the idea seems to be too abstract.
+
+**La causa:**
+- Cada escena repetía una idea («hard work» tres veces, «tell me your
+  problem» dos, «what's broken» dos).
+- Las imágenes eran metáforas sueltas (la palanca, el medidor «Or higher»,
+  la caja del peso).
+- El llamado no era el suyo.
+
+**Lo que cambia:**
+- Una idea nueva por escena.
+- Imágenes de cosas que el dueño reconoce: sus sitios reales, el chat de las
+  2 AM, las redes.
+- El llamado, en palabras de Junior.
+
+## El guion v2 (inglés)
+
+Medido: la voz en off a 3,3 sílabas por segundo ocupa como mucho el 84 % de
+cada escena; las tomas a cámara, dichas a 4,5 sílabas por segundo, caben.
+
+| # | Pieza | Seg. | Quién | Lo que se ve (la imagen explica la frase) | Lo que se oye |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Gancho | 3,6 | Voz | Seis fichas de oficios: construcción, cocina, campo, limpieza, reparto, reparaciones | Everyone knows Latinos work hard. |
+| 2 | Gancho | 3,6 | Voz | Una laptop se abre a las 2:14 AM y se escribe código | Few talk about the ones behind a screen. |
+| 3 | Introducción | 7,8 | **Junior a cámara** | Abajo: «Junior · From Táchira, Venezuela · Founder, Judo Marketing» | I'm one of them. I'm Junior, from Táchira, Venezuela. I came here in 2015, escaping Maduro's dictatorship. |
+| 4 | Cuerpo 1 | 6,0 | Voz | Las seis fichas vuelven en fila, chicas, y se les suma una laptop que brilla: «Mine: code.» | Like so many immigrants, I give this country my best: code. |
+| 5 | Cuerpo 1 | 6,0 | Voz | Tres teléfonos con sitios reales que hizo (restaurante, clínica, delivery) y fichas: Websites · Apps · Ads · AI | I build websites, apps, ads and AI for local businesses. |
+| 6 | Bucle | 1,8 | Voz | Pantalla negra; un teléfono se enciende con una notificación: «2:03 AM» | Two AM… |
+| 7 | Cuerpo 2 | 6,0 | Voz | Dos teléfonos. Una clienta escribe por Instagram: «Do you have a spot tomorrow?». En el de tu competencia, el asistente contesta en 3 segundos, con calidez: «Hi Ana! Yes, 10 AM works. Want me to book it?». En el tuyo: «Seen». | A customer writes. Who answers first? |
+| 8 | Cuerpo 2 | 5,4 | **Junior a cámara** | (su cara) | I know. Maybe you don't like AI. But your competitors are already using it. |
+| 9 | Cuerpo 2 | 6,0 | Voz | Dos filas: 2010, «Social media? Not for me.» → la tienda se queda gris, atrás. 2026, «AI? Not for me.» → un signo de pregunta | It's like social media: wait too long, and you're left behind. |
+| 10 | Bucle | 1,8 | Voz | Un visto grande | The easy part? |
+| 11 | Cuerpo 3 | 6,6 | Voz | La máquina de tu negocio: la pieza vieja «Manual replies» se rompe y entra la nueva, «AI». Al lado, el chat confirma: «Booked: tomorrow, 10 AM ✓» | I do the manual work. Your AI answers and books for you. |
+| 12 | Cuerpo 3 | 6,0 | Voz | Tu auditoría (ejemplo): Google profile ✓, Night messages ✗, AI assistant ✗. «PDF in 3 business days» | In three days, you'll know exactly what to fix first. |
+| 13 | Llamado | 5,4 | **Junior a cámara** | (su cara) | Let me audit your company for ninety-nine dollars. Message me through this ad. |
+| 14 | Llamado | 6,0 | Voz | «Let me audit your company · $99» · «Message me through this ad» · «or 305-934-9981» · logo | Or message me at 305-934-9981. |
+
+Total: 72,0 s.
+
+**Lo que salió de la v1 y por qué:**
+- La palanca y «So I built Judo Marketing»: abstracto.
+- El medidor «Or higher» y la caja del peso: abstracto.
+- «We work just as hard / But hard work alone»: repetía el gancho.
+- El mapa: repetía lo que tú dices a cámara.
+
+**Lo que cambió por la revisora del guion v2** (una dueña colombiana de un
+salón en Kendall, 3/10):
+- Lo que hace Junior se decía tres veces: ahora se dice una («I build…») y
+  las otras dos escenas dicen el beneficio.
+- «Here's what I see» y «Here's my offer» solo anunciaban. Ahora son «Two
+  AM…» y «The easy part?», que abren la escena siguiente.
+- Le daba miedo que la IA contestara en frío a sus clientas: la respuesta del
+  asistente es cálida y usa el nombre de la clienta.
+
+**Lo que se queda porque lo pidió Junior:** Maduro, «immigrants», «your
+competitors are already using it», la comparación con las redes y la
+palabra «audit».
+
 ## Por confirmar (lo decide Junior)
 
-- **«Yoito Ads»:** lo tomé como **Judo Marketing** (la agencia de la
-  estrategia judo). Si querías decir otra cosa, se cambia la escena 8.
+- **«Yoito Ads»:** lo tomé como **Judo Marketing**.
+- **El precio de lo que sigue** después de los $99 (el asistente de IA): los
+  revisores lo preguntan siempre.
 - **Las tres escenas a cámara:** las graba Junior con el teléfono, vertical,
   y las sube a la Biblioteca; Vendito las monta con su nombre y subtítulos.
 - **Anuncio pagado:** la frase de Maduro y la de inmigrantes hacen que Meta

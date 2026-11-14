@@ -10,6 +10,16 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 - **14 nov · Junior a cámara:** en el video «Behind the screen» Junior entra
   a cámara y habla en algunas escenas; en el resto va su voz en off (inglés).
+- **14 nov · Junior es de Táchira, Venezuela** (no de Caracas: se corrigió en
+  «Behind the screen»).
+- **14 nov · El llamado de «Behind the screen» v2, en palabras de Junior:**
+  «I know, maybe you don't like AI, but your competitors are using it, and
+  like social media, if you don't implement it soon in your business, you'll
+  be left behind. I'll do the manual work for you, let me audit your company
+  for $99. Message me through this ad or through my phone number
+  305-934-9981.» El número va **sin el +1**.
+- **14 nov · Cómo se hace un video:** primero el guion (sin información
+  repetida y sin ideas abstractas), después las imágenes que lo explican.
 - **14 nov · La historia de Junior se puede contar:** es de Venezuela, emigró
   en 2015 por la dictadura de Nicolás Maduro y desde entonces sirve a este
   país con lo mejor de sus habilidades, como tantos inmigrantes. Programa y

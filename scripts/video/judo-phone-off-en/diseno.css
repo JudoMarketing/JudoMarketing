@@ -102,7 +102,9 @@
   transform: rotateY(var(--ry0, -18deg)) rotateX(var(--rx0, 10deg)) rotateZ(var(--rz0, -4deg)); animation: p-tel-gira var(--t) cubic-bezier(.3, 0, .2, 1) both; }
 @keyframes p-tel-gira { to { transform: rotateY(var(--ry1, -7deg)) rotateX(var(--rx1, 5deg)) rotateZ(var(--rz1, -1.5deg)) } }
 .tel3d .boton-lado { position: absolute; width: .9cqw; border-radius: .5cqw; background: linear-gradient(90deg, #3a3650, #15131f); }
-.tel3d .pantalla { position: absolute; inset: 2.3cqw; border-radius: 7cqw; overflow: hidden; background: var(--pantalla, #000); }
+/* width/height auto: .pant de base.html pone 100 % y la pantalla se salía del cuerpo 2,3 cqw
+   por la derecha y por abajo (Junior, 14 nov 2026: «la caja blanca es más grande que el teléfono») */
+.tel3d .pantalla { position: absolute; inset: 2.3cqw; width: auto; height: auto; border-radius: 7cqw; overflow: hidden; background: var(--pantalla, #000); }
 .tel3d .isla { position: absolute; z-index: 6; top: 2.6cqw; left: 50%; width: 15cqw; height: 4.4cqw; margin-left: -7.5cqw; border-radius: 3cqw; background: #000; }
 .tel3d .reflejo { position: absolute; inset: 2.3cqw; z-index: 9; border-radius: 7cqw; pointer-events: none;
   background: linear-gradient(118deg, rgba(255,255,255,.2) 0%, rgba(255,255,255,.04) 30%, transparent 46%, transparent 70%, rgba(255,255,255,.06) 84%, transparent 100%); }
@@ -201,15 +203,19 @@
 .reloj-arena > div { animation: p-arena-gira 3.6s cubic-bezier(.6, 0, .2, 1) both; }
 @keyframes p-arena-gira { 0%, 45% { transform: rotate(-8deg) } 62%, 100% { transform: rotate(172deg) } }
 .reloj-arena svg { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 2.4cqw 3cqw rgba(0,0,0,.45)); }
-.arena-arriba { transform-box: fill-box; transform-origin: 50% 100%; animation: p-arena-baja 1.6s linear .2s both; }
-.arena-abajo { transform-box: fill-box; transform-origin: 50% 100%; animation: p-arena-sube 1.6s linear .2s both; }
-@keyframes p-arena-baja { from { transform: scaleY(1) } to { transform: scaleY(.15) } }
-@keyframes p-arena-sube { from { transform: scaleY(.15) } to { transform: scaleY(1) } }
+/* La arena: un relleno recortado por cada bulbo; se mueve el nivel, no se aplasta el dibujo */
+.arena-sup { animation: p-ra-sup 1.6s linear .2s both; }
+.arena-inf { animation: p-ra-inf 1.6s linear .2s both; }
+.reloj-arena .chorro { animation: p-ra-chorro 1.65s linear .2s both; }
+@keyframes p-ra-sup { from { transform: translateY(0) } to { transform: translateY(32px) } }
+@keyframes p-ra-inf { from { transform: translateY(24px) } to { transform: translateY(-8px) } }
+@keyframes p-ra-chorro { 0% { opacity: 0 } 6%, 92% { opacity: .9 } 100% { opacity: 0 } }
 /* Variante «cae»: no se voltea (en 1,8 s quedaba volteado con la arena arriba); se mece y la arena cae */
 .reloj-arena.cae > div { animation: p-arena-mece 1.8s ease-in-out both; }
 @keyframes p-arena-mece { 0% { transform: rotate(-7deg) } 55% { transform: rotate(5deg) } 100% { transform: rotate(-2deg) } }
-.reloj-arena.cae .arena-arriba { animation: p-arena-baja 1.5s linear .1s both; }
-.reloj-arena.cae .arena-abajo { animation: p-arena-sube 1.5s linear .1s both; }
+.reloj-arena.cae .arena-sup { animation-duration: 1.5s; animation-delay: .1s; }
+.reloj-arena.cae .arena-inf { animation-duration: 1.5s; animation-delay: .1s; }
+.reloj-arena.cae .chorro { animation-duration: 1.55s; animation-delay: .1s; }
 .escribiendo { display: inline-flex; gap: 1.2cqw; margin-top: 1.6cqw; padding: 2.8cqw 3.6cqw; border-radius: 4.4cqw; border-bottom-left-radius: 1.2cqw; background: rgba(255,255,255,.14); opacity: 0;
   animation: p-globo .4s var(--sale) var(--d, 0s) forwards, p-apagar .3s ease var(--fuera, 9999s) forwards; }
 .escribiendo i { width: 1.6cqw; height: 1.6cqw; border-radius: 50%; background: rgba(255,255,255,.8); animation: p-punto-salta .9s ease-in-out infinite; }
@@ -420,8 +426,8 @@
 /* Redes: un teléfono con publicaciones que salen solas */
 .post { position: absolute; left: 6%; right: 6%; z-index: 3; border-radius: 3.2cqw; background: #fff; overflow: hidden; box-shadow: 0 1.4cqw 3cqw -1cqw rgba(0,0,0,.35); opacity: 0; animation: p-post .6s var(--sale) var(--d, 0s) forwards; }
 @keyframes p-post { from { opacity: 0; transform: translateY(8cqw) scale(.94) } to { opacity: 1; transform: none } }
-.post .foto-p { height: 18cqw; display: grid; place-items: center; color: #fff; }
-.post .foto-p svg { width: 12cqw; height: 12cqw; opacity: .9; }
+.post .foto-p { height: 14cqw; display: grid; place-items: center; color: #fff; }
+.post .foto-p svg { width: 10cqw; height: 10cqw; opacity: .9; }
 .post .pie-p { display: flex; align-items: center; gap: 2cqw; padding: 2.4cqw 3.2cqw; font: 600 3.6cqw/1 var(--f-mono); color: #6b6880; }
 .post .pie-p svg { width: 5cqw; height: 5cqw; color: #e8173a; }
 /* Un teléfono que se dibuja a tamaño normal y se achica entero: así no se deforman la isla, las esquinas ni el marco */
@@ -429,6 +435,7 @@
 .posteado { position: absolute; z-index: 8; display: inline-flex; align-items: center; gap: 1.6cqw; padding: 1.8cqw 3cqw; border-radius: 99cqw; background: var(--tinta); color: #fff; font: 700 3.4cqw/1 var(--f-titular); box-shadow: var(--sombra-osc);
   opacity: 0; animation: p-escalar .45s var(--sale) var(--d, 0s) forwards; }
 .posteado svg { width: 4.6cqw; height: 4.6cqw; color: #5ef0c9; }
+.posteado svg + svg { margin-left: -.6cqw; }
 .presupuesto { position: absolute; left: 47cqw; right: 14cqw; z-index: 8; padding: 4cqw 4.4cqw; border-radius: 5cqw; background: #fff; color: var(--tinta); box-shadow: var(--sombra-1); opacity: 0; animation: p-tarjeta-entra .8s var(--sale) var(--d, 0s) forwards; }
 .presupuesto small { display: block; font: 600 2.9cqw/1.2 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--gris); }
 .presupuesto .monto-p { display: flex; align-items: baseline; gap: 1cqw; margin: 2cqw 0 3cqw; font: 800 12cqw/1 var(--f-titular); letter-spacing: -.05em; }

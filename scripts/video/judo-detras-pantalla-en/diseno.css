@@ -102,7 +102,9 @@
   transform: rotateY(var(--ry0, -18deg)) rotateX(var(--rx0, 10deg)) rotateZ(var(--rz0, -4deg)); animation: p-tel-gira var(--t) cubic-bezier(.3, 0, .2, 1) both; }
 @keyframes p-tel-gira { to { transform: rotateY(var(--ry1, -7deg)) rotateX(var(--rx1, 5deg)) rotateZ(var(--rz1, -1.5deg)) } }
 .tel3d .boton-lado { position: absolute; width: .9cqw; border-radius: .5cqw; background: linear-gradient(90deg, #3a3650, #15131f); }
-.tel3d .pantalla { position: absolute; inset: 2.3cqw; border-radius: 7cqw; overflow: hidden; background: var(--pantalla, #000); }
+/* width/height auto: .pant de base.html pone 100 % y la pantalla se salía del cuerpo 2,3 cqw
+   por la derecha y por abajo (Junior, 14 nov 2026: «la caja blanca es más grande que el teléfono») */
+.tel3d .pantalla { position: absolute; inset: 2.3cqw; width: auto; height: auto; border-radius: 7cqw; overflow: hidden; background: var(--pantalla, #000); }
 .tel3d .isla { position: absolute; z-index: 6; top: 2.6cqw; left: 50%; width: 15cqw; height: 4.4cqw; margin-left: -7.5cqw; border-radius: 3cqw; background: #000; }
 .tel3d .reflejo { position: absolute; inset: 2.3cqw; z-index: 9; border-radius: 7cqw; pointer-events: none;
   background: linear-gradient(118deg, rgba(255,255,255,.2) 0%, rgba(255,255,255,.04) 30%, transparent 46%, transparent 70%, rgba(255,255,255,.06) 84%, transparent 100%); }
