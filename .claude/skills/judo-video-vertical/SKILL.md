@@ -108,6 +108,9 @@ necesita una página de Facebook y no solo Instagram.
      un script que la arme una sola vez.
 4. **Revisa:**
    - `python3 build.py && node revisar.mjs` y corrige **todo** lo que avise;
+   - `node choques.mjs`: mide caja contra caja en el cuadro final de cada
+     escena (revisar.mjs mira texto contra objetos, no tarjetas que se
+     tocan). Lo que se encima a propósito lleva la clase `encima`;
    - `node render.mjs --muestra` y mira los cuadros.
 5. **Enséñalo:**
    - `storyboard.html` es una mesa de revisión que se abre en el navegador:

@@ -175,6 +175,7 @@
 .fila-b.real::after { content: ""; position: absolute; inset: -.6cqw; border-radius: 4.2cqw; border: .7cqw solid var(--electrico); opacity: 0; transform: scale(1.05); animation: p-escalar-borde .5s var(--sale) var(--dac, 9999s) forwards; }
 .insignia-roja { position: absolute; z-index: 8; width: 15cqw; height: 15cqw; margin: -7.5cqw 0 0 -7.5cqw; border-radius: 50%; display: grid; place-items: center; color: #fff; font: 800 6cqw/1 var(--f-titular); letter-spacing: -.03em;
   background: radial-gradient(circle at 35% 30%, #ff7b8a, #ff3b4f 55%, #c4122f); box-shadow: inset 0 0 0 .6cqw rgba(255,255,255,.9), 0 2cqw 4cqw -1cqw rgba(160,0,30,.55); opacity: 0; animation: p-escalar .55s var(--sale) var(--d, 0s) forwards; }
+.insignia-roja.en-linea { position: relative; width: 11cqw; height: 11cqw; margin: 0; font-size: 4.6cqw; box-shadow: 0 1.4cqw 3cqw -1cqw rgba(160,0,30,.5); }
 .burbuja-bot { position: absolute; z-index: 7; width: var(--tam, 13cqw); height: var(--tam, 13cqw); margin: calc(var(--tam, 13cqw) / -2) 0 0 calc(var(--tam, 13cqw) / -2); opacity: 0; animation: p-escalar .6s var(--sale) var(--d, 0s) forwards; }
 .burbuja-bot > div { width: 100%; height: 100%; border-radius: 50%; display: grid; place-items: center; color: #fff; background: radial-gradient(circle at 35% 30%, #a996d6, #5d4f86 70%);
   box-shadow: inset 0 .4cqw 0 rgba(255,255,255,.3), 0 2cqw 4cqw -1cqw rgba(40,20,90,.5); animation: p-deco-flota 2.2s ease-in-out infinite alternate; }
@@ -204,6 +205,11 @@
 .arena-abajo { transform-box: fill-box; transform-origin: 50% 100%; animation: p-arena-sube 1.6s linear .2s both; }
 @keyframes p-arena-baja { from { transform: scaleY(1) } to { transform: scaleY(.15) } }
 @keyframes p-arena-sube { from { transform: scaleY(.15) } to { transform: scaleY(1) } }
+/* Variante «cae»: no se voltea (en 1,8 s quedaba volteado con la arena arriba); se mece y la arena cae */
+.reloj-arena.cae > div { animation: p-arena-mece 1.8s ease-in-out both; }
+@keyframes p-arena-mece { 0% { transform: rotate(-7deg) } 55% { transform: rotate(5deg) } 100% { transform: rotate(-2deg) } }
+.reloj-arena.cae .arena-arriba { animation: p-arena-baja 1.5s linear .1s both; }
+.reloj-arena.cae .arena-abajo { animation: p-arena-sube 1.5s linear .1s both; }
 .escribiendo { display: inline-flex; gap: 1.2cqw; margin-top: 1.6cqw; padding: 2.8cqw 3.6cqw; border-radius: 4.4cqw; border-bottom-left-radius: 1.2cqw; background: rgba(255,255,255,.14); opacity: 0;
   animation: p-globo .4s var(--sale) var(--d, 0s) forwards, p-apagar .3s ease var(--fuera, 9999s) forwards; }
 .escribiendo i { width: 1.6cqw; height: 1.6cqw; border-radius: 50%; background: rgba(255,255,255,.8); animation: p-punto-salta .9s ease-in-out infinite; }
@@ -374,7 +380,7 @@
   opacity: 0; animation: p-tarjeta-entra .8s var(--sale) var(--d, 0s) forwards; }
 .conver .quien { display: flex; align-items: center; gap: 2.4cqw; font: 600 3.2cqw/1 var(--f-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--gris); }
 .conver .quien .pto { width: 2.6cqw; height: 2.6cqw; border-radius: 50%; }
-.conver .quien b { margin-left: auto; font: 700 3.2cqw/1 var(--f-mono); color: var(--tinta); }
+.conver .quien b { margin-left: auto; margin-right: 5cqw; font: 700 3.2cqw/1 var(--f-mono); color: var(--tinta); }
 .conver .bur { margin-top: 2.4cqw; width: fit-content; max-width: 88%; padding: 2.4cqw 3.4cqw; border-radius: 4cqw; font: 600 4.2cqw/1.25 var(--f-titular); letter-spacing: -.01em; opacity: 0; animation: p-globo .5s var(--sale) var(--d, 0s) forwards; }
 .conver .bur.de-ellos { background: #e7f8f0; border-bottom-left-radius: 1cqw; }
 .conver .bur.cliente { margin-left: auto; background: #f1eefc; border-bottom-right-radius: 1cqw; }
@@ -399,7 +405,7 @@
 .lineas-dinero path { fill: none; stroke: rgba(20,17,42,.35); stroke-width: .45; stroke-dasharray: 1.2 1.4; stroke-linecap: round; opacity: 0; animation: p-fundir .4s ease var(--d, 0s) forwards; }
 
 /* Cada sí, su arreglo (tres, grandes) */
-.arreglos-3 { position: absolute; left: 7cqw; right: 14cqw; z-index: 6; display: grid; gap: 3cqw; }
+.arreglos-3 { position: absolute; left: 7cqw; right: 14cqw; z-index: 6; display: grid; gap: 4.4cqw; }
 .arreglo-g { position: relative; display: flex; align-items: center; gap: 3.6cqw; padding: 3.2cqw 3.6cqw; border-radius: 4.8cqw; background: #fff; color: var(--tinta); box-shadow: var(--sombra-1);
   opacity: 0; animation: p-arreglo .65s var(--sale) var(--d, 0s) forwards; }
 .arreglo-g .tile { flex: none; width: 12cqw; height: 12cqw; border-radius: 3.6cqw; display: grid; place-items: center; color: #fff; background: var(--tc);
@@ -414,10 +420,12 @@
 /* Redes: un teléfono con publicaciones que salen solas */
 .post { position: absolute; left: 6%; right: 6%; z-index: 3; border-radius: 3.2cqw; background: #fff; overflow: hidden; box-shadow: 0 1.4cqw 3cqw -1cqw rgba(0,0,0,.35); opacity: 0; animation: p-post .6s var(--sale) var(--d, 0s) forwards; }
 @keyframes p-post { from { opacity: 0; transform: translateY(8cqw) scale(.94) } to { opacity: 1; transform: none } }
-.post .foto-p { height: 12cqw; display: grid; place-items: center; color: #fff; }
-.post .foto-p svg { width: 9cqw; height: 9cqw; opacity: .9; }
-.post .pie-p { display: flex; align-items: center; gap: 1.6cqw; padding: 1.8cqw 2.4cqw; font: 600 2.6cqw/1 var(--f-mono); color: #6b6880; }
-.post .pie-p svg { width: 3.6cqw; height: 3.6cqw; color: #e8173a; }
+.post .foto-p { height: 18cqw; display: grid; place-items: center; color: #fff; }
+.post .foto-p svg { width: 12cqw; height: 12cqw; opacity: .9; }
+.post .pie-p { display: flex; align-items: center; gap: 2cqw; padding: 2.4cqw 3.2cqw; font: 600 3.6cqw/1 var(--f-mono); color: #6b6880; }
+.post .pie-p svg { width: 5cqw; height: 5cqw; color: #e8173a; }
+/* Un teléfono que se dibuja a tamaño normal y se achica entero: así no se deforman la isla, las esquinas ni el marco */
+.tel-escala { position: absolute; z-index: 6; transform: scale(.7); transform-origin: 0 0; }
 .posteado { position: absolute; z-index: 8; display: inline-flex; align-items: center; gap: 1.6cqw; padding: 1.8cqw 3cqw; border-radius: 99cqw; background: var(--tinta); color: #fff; font: 700 3.4cqw/1 var(--f-titular); box-shadow: var(--sombra-osc);
   opacity: 0; animation: p-escalar .45s var(--sale) var(--d, 0s) forwards; }
 .posteado svg { width: 4.6cqw; height: 4.6cqw; color: #5ef0c9; }
@@ -440,7 +448,7 @@
 .informe .hoja.h2 { animation: p-hoja-2 .9s var(--sale) calc(var(--d, 0s) + .5s) both; }
 .informe .hoja.h3 { animation: p-hoja-3 .9s var(--sale) calc(var(--d, 0s) + .6s) both; }
 @keyframes p-hoja-2 { from { transform: none } to { transform: rotate(-9deg) translate(-7cqw, 1cqw) } }
-@keyframes p-hoja-3 { from { transform: none } to { transform: rotate(8deg) translate(7cqw, 1.5cqw) } }
+@keyframes p-hoja-3 { from { transform: none } to { transform: rotate(5deg) translate(3cqw, 1.5cqw) } }
 .informe .portada-i { position: relative; z-index: 3; border-radius: 3cqw; overflow: hidden; background: #fff; box-shadow: var(--sombra-osc); }
 .informe .portada-i .franja { padding: 5cqw 5cqw 4cqw; background: linear-gradient(140deg, #7b4dff, #3b1aa8); color: #fff; }
 .informe .portada-i .franja small { display: block; font: 600 2.8cqw/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
@@ -450,31 +458,31 @@
 .informe .linea-i:last-child { border-bottom: 0; }
 .informe .linea-i svg { width: 5cqw; height: 5cqw; color: #6e3bff; }
 .informe .linea-i em { margin-left: auto; font: 600 2.8cqw/1 var(--f-mono); font-style: normal; color: var(--gris); }
-.sello-99 { position: absolute; z-index: 9; width: 30cqw; height: 30cqw; margin: -15cqw 0 0 -15cqw; border-radius: 50%; display: grid; place-items: center; align-content: center; color: #14112a;
+.sello-99 { position: absolute; z-index: 9; width: 25cqw; height: 25cqw; margin: -12.5cqw 0 0 -12.5cqw; border-radius: 50%; display: grid; place-items: center; align-content: center; color: #14112a;
   background: radial-gradient(circle at 35% 30%, #ffe6a3, #ffc53d 55%, #e39c00); box-shadow: inset 0 0 0 1cqw rgba(255,255,255,.55), 0 3cqw 6cqw -1.4cqw rgba(120,70,0,.6); opacity: 0; transform: rotate(-12deg);
   animation: p-sello-99 .7s cubic-bezier(.2,1.4,.4,1) var(--d, 0s) forwards; }
 @keyframes p-sello-99 { from { opacity: 0; transform: scale(1.8) rotate(-12deg) } to { opacity: 1; transform: rotate(-12deg) } }
-.sello-99 b { font: 800 11cqw/1 var(--f-titular); letter-spacing: -.05em; }
-.sello-99 small { font: 700 3cqw/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; }
+.sello-99 b { font: 800 9.4cqw/1 var(--f-titular); letter-spacing: -.05em; }
+.sello-99 small { font: 700 2.5cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
 
 /* Tú contra tu competencia, y el plan con fechas */
 .comparar { padding: 4cqw 4.6cqw 4.4cqw; }
 .comparar .cab-c2 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.4cqw; font: 600 3cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--gris); }
 .comparar .leyenda { display: flex; gap: 3cqw; margin-bottom: 2cqw; font: 600 3cqw/1 var(--f-mono); color: #3c3954; }
 .comparar .leyenda i { display: inline-block; width: 3cqw; height: 3cqw; border-radius: .8cqw; margin-right: 1cqw; vertical-align: -.4cqw; }
-.fila-c { display: grid; grid-template-columns: 22cqw 1fr; align-items: center; gap: 2.4cqw; margin-top: 1.8cqw; }
+.fila-c { display: grid; grid-template-columns: 22cqw 1fr; align-items: center; gap: 2.4cqw; margin-top: 1.3cqw; }
 .fila-c span { font: 700 3.4cqw/1.1 var(--f-titular); }
 .fila-c .barras-c { display: grid; gap: .9cqw; }
-.fila-c .barras-c i { display: block; height: 2.4cqw; border-radius: 1.2cqw; width: var(--w); transform-origin: left; transform: scaleX(0); animation: p-rayar .8s var(--sale) var(--d, 0s) forwards; }
+.fila-c .barras-c i { display: block; height: 2.1cqw; border-radius: 1.2cqw; width: var(--w); transform-origin: left; transform: scaleX(0); animation: p-rayar .8s var(--sale) var(--d, 0s) forwards; }
 .fila-c .tu { background: linear-gradient(90deg, #a98bff, #6e3bff); }
 .fila-c .ellos { background: #c9c5da; }
 .plan-f { padding: 4cqw 4.6cqw; }
 .plan-f .cab-c2 { margin-bottom: 1.6cqw; font: 600 3cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--gris); display: flex; justify-content: space-between; }
-.paso-f { display: grid; grid-template-columns: 17cqw 1fr 6cqw; align-items: center; gap: 2cqw; padding: 1.8cqw 0; border-bottom: .25cqw dashed #e6e3ef; opacity: 0; animation: p-aparecer .5s var(--sale) var(--d, 0s) forwards; }
+.paso-f { display: grid; grid-template-columns: 17cqw 1fr 5.4cqw; align-items: center; gap: 2cqw; padding: 1.4cqw 0; border-bottom: .25cqw dashed #e6e3ef; opacity: 0; animation: p-aparecer .5s var(--sale) var(--d, 0s) forwards; }
 .paso-f:last-child { border-bottom: 0; }
 .paso-f .sem { font: 700 3.1cqw/1 var(--f-mono); color: #6e3bff; }
 .paso-f b { font: 700 3.8cqw/1.15 var(--f-titular); letter-spacing: -.01em; }
-.paso-f .chk { width: 6cqw; height: 6cqw; color: var(--verde); }
+.paso-f .chk { width: 5.4cqw; height: 5.4cqw; color: var(--verde); }
 
 /* La prueba: tres sitios reales en sus teléfonos */
 .trabajo { position: absolute; left: 0; right: 0; z-index: 6; height: 92cqw; }

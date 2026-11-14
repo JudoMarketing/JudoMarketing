@@ -8,6 +8,17 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **14 nov · Junior a cámara:** en el video «Behind the screen» Junior entra
+  a cámara y habla en algunas escenas; en el resto va su voz en off (inglés).
+- **14 nov · La historia de Junior se puede contar:** es de Venezuela, emigró
+  en 2015 por la dictadura de Nicolás Maduro y desde entonces sirve a este
+  país con lo mejor de sus habilidades, como tantos inmigrantes. Programa y
+  trabaja con IA.
+- **14 nov · No se dice:** «ofrecemos los resultados prometidos» ni «buena
+  relación con nuestros clientes» (Junior lo quitó).
+- **14 nov · El llamado de «Behind the screen»:** que le escriban y le cuenten
+  su problema; por $99, un diagnóstico y un plan de acción con la estrategia
+  judo.
 - **14 nov · Vendito:** Junior habla con Vendito de ahora en adelante en todo
   lo de Judo Marketing. Se presenta «Hola Junior, Vendito aquí». Organización
   primero; ordenar sus ideas desordenadas; feedback constructivo hasta el
