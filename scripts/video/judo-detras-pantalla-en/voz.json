@@ -1,0 +1,123 @@
+{
+ "titulo": "Behind the screen",
+ "intro": "Es el guion de la voz en off del video en inglés «Behind the screen» (72\nsegundos, 15 escenas), para tu voz clonada en ElevenLabs. Las tres escenas\ndonde hablas a cámara no van aquí: están en `guion-camara.md`. Lo hizo\nVendito el 14 de noviembre de 2026.",
+ "video": "salida/Judo-behind-the-screen.mp4",
+ "fin": 72.0,
+ "idioma": "en",
+ "silabas_por_segundo": 3.3,
+ "uso_max": 0.85,
+ "nota": "«Behind the screen» v1. Un clip de ElevenLabs por escena con voz en off; las escenas a cámara las graba Junior (camara.json).",
+ "bloques": [
+  [
+   {
+    "t": 0.0,
+    "texto": "Everyone knows Latinos work hard.",
+    "ve": "Everyone knows Latinos work hard.",
+    "como": "Con orgullo, tranquilo, como quien dice algo que todos saben.",
+    "clip": "everyone-knows"
+   }
+  ],
+  [
+   {
+    "t": 3.6,
+    "texto": "Few talk about the ones behind a screen.",
+    "ve": "Few talk about the ones behind a screen.",
+    "como": "Más bajo y cercano, como un secreto. Marca «behind a screen».",
+    "clip": "behind-screen",
+    "hasta": 7.2
+   }
+  ],
+  [
+   {
+    "t": 14.4,
+    "texto": "Like so many immigrants, I've given this country my best.",
+    "ve": "Since 2015, giving this country my best.",
+    "como": "Sincero, con calma, sin drama. Sube un poco en «my best».",
+    "clip": "so-many"
+   }
+  ],
+  [
+   {
+    "t": 20.4,
+    "texto": "We work just as hard. Just on a keyboard.",
+    "ve": "We work just as hard. Just on a keyboard.",
+    "como": "Firme en «just as hard», con una sonrisa en «keyboard».",
+    "clip": "just-as"
+   }
+  ],
+  [
+   {
+    "t": 24.6,
+    "texto": "But hard work alone…",
+    "ve": "But hard work alone…",
+    "como": "Más lento. Déjalo en el aire.",
+    "clip": "hard-work"
+   }
+  ],
+  [
+   {
+    "t": 26.4,
+    "texto": "…doesn't beat bigger companies. Leverage does.",
+    "ve": "…doesn’t beat bigger companies. Leverage does.",
+    "como": "Continúa la frase anterior. Golpe seguro en «Leverage does».",
+    "clip": "leverage-does"
+   }
+  ],
+  [
+   {
+    "t": 31.2,
+    "texto": "So I built Judo Marketing.",
+    "ve": "So I built Judo Marketing.",
+    "como": "Orgulloso, claro. «Judo» como en español.",
+    "clip": "built-judo"
+   }
+  ],
+  [
+   {
+    "t": 34.8,
+    "texto": "What's broken?",
+    "ve": "What’s broken in your business?",
+    "como": "Pregunta directa, corta.",
+    "clip": "whats-broken"
+   }
+  ],
+  [
+   {
+    "t": 36.6,
+    "texto": "Complex problems need complex solutions. We rebuild the machine.",
+    "ve": "Complex problems, complex solutions. Rebuilt · running better.",
+    "como": "Como un ingeniero que sabe lo que hace. Pausa corta después de «solutions».",
+    "clip": "complex-problems",
+    "hasta": 42.6
+   }
+  ],
+  [
+   {
+    "t": 49.2,
+    "texto": "With code and AI, we take your business further.",
+    "ve": "With code and AI, we take your business further.",
+    "como": "Con energía, mirando hacia adelante.",
+    "clip": "code-ai"
+   }
+  ],
+  [
+   {
+    "t": 54.0,
+    "texto": "Or help carry the weight of running a company.",
+    "ve": "Or help you carry the weight of running a company.",
+    "como": "Más suave, con empatía: sabes lo que pesa.",
+    "clip": "carry-weight",
+    "hasta": 58.8
+   }
+  ],
+  [
+   {
+    "t": 64.8,
+    "texto": "Message me on WhatsApp. Let's take your business to the next level.",
+    "ve": "Tell me your problem · WhatsApp · $99 diagnosis + action plan",
+    "como": "Cálido y directo, como una invitación. Sonríe en «next level».",
+    "clip": "message-me"
+   }
+  ]
+ ]
+}

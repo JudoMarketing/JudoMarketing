@@ -567,7 +567,7 @@
 /* 4 · De Caracas a Miami */
 .bs-mapa { position: absolute; left: 8cqw; width: 78cqw; aspect-ratio: 100 / 60; z-index: 6; border-radius: 5cqw; overflow: hidden; box-shadow: var(--sombra-1);
   opacity: 0; animation: p-tarjeta-entra .8s var(--sale) var(--d, 0s) forwards; }
-.bs-mapa svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bs-mapa > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .bs-mapa .ruta-m { fill: none; stroke: #fff; stroke-width: 1.4; stroke-dasharray: 130; stroke-dashoffset: 130; animation: p-bs-ruta 1.7s cubic-bezier(.45, 0, .3, 1) var(--dr, .7s) forwards; }
 @keyframes p-bs-ruta { to { stroke-dashoffset: 0 } }
 .bs-avion { position: absolute; z-index: 3; width: 9cqw; height: 9cqw; margin: -4.5cqw 0 0 -4.5cqw; color: #5b2bff; filter: drop-shadow(0 1cqw 1.2cqw rgba(30,10,90,.35)); }
@@ -620,14 +620,14 @@
 /* 10 · La máquina: un engranaje se rompe y entra uno nuevo */
 .bs-maquina { position: absolute; left: 8cqw; width: 78cqw; z-index: 6; border-radius: 5.4cqw; padding: 2cqw; background: linear-gradient(160deg, #24203a, #121020);
   box-shadow: inset 0 .4cqw 0 rgba(255,255,255,.1), var(--sombra-osc); opacity: 0; animation: p-tarjeta-entra .7s var(--sale) var(--d, 0s) forwards; }
-.bs-maquina svg { display: block; width: 100%; height: auto; overflow: visible; }
+.bs-maquina svg { display: block; width: 100%; height: auto; overflow: hidden; border-radius: 3.6cqw; }
 .bs-maquina .gira, .bs-maquina .cae, .bs-maquina .baja { transform-box: fill-box; transform-origin: center; }
 .bs-maquina .baja { transform-box: view-box; }
 .bs-estado { position: absolute; left: 8cqw; z-index: 7; display: inline-flex; align-items: center; gap: 2cqw; padding: 2.2cqw 3.6cqw; border-radius: 99cqw; color: #fff; font: 700 4cqw/1 var(--f-titular); box-shadow: var(--sombra-1); }
 .bs-estado svg { width: 5cqw; height: 5cqw; }
 .bs-estado.roto { background: #d0142f; opacity: 0; animation: p-bs-va-y-viene 1.3s ease var(--d, 0s) forwards; }
 @keyframes p-bs-va-y-viene { 0% { opacity: 0; transform: scale(.86) } 20%, 80% { opacity: 1; transform: none } 100% { opacity: 0; transform: none } }
-.bs-estado.nuevo { background: #0f9d6e; opacity: 0; animation: p-escalar .5s var(--sale) var(--d, 0s) forwards; }
+.bs-estado.nuevo { background: #08734f; opacity: 0; animation: p-escalar .5s var(--sale) var(--d, 0s) forwards; }
 
 /* 12 · Código + IA y el medidor que sube */
 .bs-editor { position: absolute; left: 8cqw; width: 48cqw; z-index: 6; border-radius: 4cqw; overflow: hidden; background: #0e1022; box-shadow: var(--sombra-osc); opacity: 0; animation: p-tarjeta-entra .7s var(--sale) var(--d, 0s) forwards; }
@@ -639,16 +639,16 @@
   font: 700 2.9cqw/1 var(--f-mono); color: #e7dcff; opacity: 0; animation: p-escalar .45s var(--sale) var(--d, 0s) forwards; }
 .bs-ia svg { width: 4cqw; height: 4cqw; color: #ffd166; flex: none; }
 .bs-medidor { position: absolute; left: 61cqw; width: 25cqw; z-index: 6; }
-.bs-medidor .tubo { position: absolute; left: 0; top: 0; bottom: 0; width: 8cqw; border-radius: 4cqw; background: rgba(20,17,42,.14); box-shadow: inset 0 .6cqw 1cqw rgba(0,0,0,.12); overflow: hidden; }
-.bs-medidor .tubo i { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; border-radius: 4cqw; background: linear-gradient(0deg, #0a9e7f, #5ef0c9); transform-origin: bottom;
+.bs-medidor .tubo { position: absolute; left: 0; top: 0; bottom: 0; width: 8cqw; border-radius: 4cqw; background: rgba(255,255,255,.45); box-shadow: inset 0 .6cqw 1cqw rgba(0,0,0,.12); overflow: hidden; }
+.bs-medidor .tubo i { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; border-radius: 4cqw; background: linear-gradient(0deg, #2b1a8a, #7b4dff); transform-origin: bottom;
   transform: scaleY(.18); animation: p-bs-sube 1.4s cubic-bezier(.45, 0, .25, 1) var(--d, 0s) forwards; }
 @keyframes p-bs-sube { to { transform: scaleY(.94) } }
 .bs-marca { position: absolute; left: 0; right: 0; height: 0; border-top: .4cqw dashed rgba(20,17,42,.45); opacity: 0; animation: p-aparecer .4s ease var(--d, 0s) forwards; }
-.bs-marca span { position: absolute; left: 10cqw; top: -2.2cqw; font: 700 2.8cqw/1.15 var(--f-mono); letter-spacing: .03em; text-transform: uppercase; color: var(--tinta); white-space: nowrap; }
+.bs-marca span { position: absolute; left: 10cqw; top: .9cqw; font: 700 2.8cqw/1.15 var(--f-mono); letter-spacing: .03em; text-transform: uppercase; color: var(--tinta); white-space: nowrap; }
 
 /* 13 · El peso de llevar una empresa, entre dos */
 .bs-carga { position: absolute; left: 12cqw; right: 18cqw; z-index: 6; padding: 3.6cqw 4cqw 4cqw; border-radius: 4.4cqw; background: linear-gradient(160deg, #2b2350, #14112a); color: #fff;
-  box-shadow: inset 0 .4cqw 0 rgba(255,255,255,.12), var(--sombra-osc); transform: translateY(9cqw) rotate(-4deg); animation: p-bs-alza .9s cubic-bezier(.3, 0, .2, 1.3) var(--dl, 1.8s) forwards; }
+  box-shadow: inset 0 .4cqw 0 rgba(255,255,255,.12), var(--sombra-osc); transform: translateY(6cqw) rotate(-4deg); animation: p-bs-alza .9s cubic-bezier(.3, 0, .2, 1.3) var(--dl, 1.8s) forwards; }
 @keyframes p-bs-alza { to { transform: none } }
 .bs-carga small { display: block; font: 600 3cqw/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: #ffd166; }
 .bs-carga .tags { display: grid; grid-template-columns: 1fr 1fr; gap: 1.8cqw; margin-top: 2.6cqw; }
@@ -658,6 +658,7 @@
   font: 700 3.6cqw/1 var(--f-titular); box-shadow: var(--sombra-1); opacity: 0; animation: p-escalar .5s var(--sale) var(--d, 0s) forwards; }
 .bs-apoyo svg { width: 5cqw; height: 5cqw; color: #5b2bff; }
 .bs-apoyo img { width: 6.6cqw; height: auto; }
+.bs-apoyo.oscuro { background: var(--tinta); color: #fff; white-space: nowrap; }
 .bs-flecha { position: absolute; z-index: 6; width: 7cqw; height: 7cqw; margin-left: -3.5cqw; color: #0a9e7f; opacity: 0; animation: p-aparecer .5s var(--sale) var(--d, 0s) forwards; }
 .bs-flecha svg { width: 100%; height: 100%; transform: rotate(180deg); }
 

@@ -91,7 +91,9 @@ def frases(cfg):
     planas = [f for b in cfg["bloques"] for f in b]
     siguientes = [f["t"] for f in planas[1:]] + [cfg["fin"]]
     for f, sig in zip(planas, siguientes):
-        f["hueco"] = round(sig - f["t"], 2)
+        # «hasta»: la frase termina antes, cuando lo que sigue no es voz en off
+        # (por ejemplo, una escena donde el dueño habla a cámara).
+        f["hueco"] = round(min(sig, f.get("hasta", sig)) - f["t"], 2)
     return planas
 
 

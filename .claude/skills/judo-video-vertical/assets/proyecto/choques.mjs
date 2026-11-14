@@ -21,7 +21,9 @@ const escenas = JSON.parse(readFileSync(join(P, "escenas.json"), "utf8")).filter
 const CAJAS = [".tarjeta-pro", ".conver", ".opcion", ".arreglo-g", ".posteado", ".presupuesto", ".meta-chips span", ".informe .portada-i",
   ".sello-99", ".tel-t", ".garantias span", ".cta-boton", ".cta-wa", ".cta-nota", ".kicker-v", ".rubro", ".chip-hora", ".tienda",
   ".tel3d", ".noti-g", ".sin-responder", ".insignia-roja", ".burbuja-bot", ".ficha-n", ".si-no span", ".logo-pro", ".monedas",
-  ".reloj-arena", ".rastreo", ".pro-cap .m"].join(", ");
+  ".reloj-arena", ".rastreo", ".pro-cap .m", ".bs-oficio", ".bs-pie", ".bs-laptop", ".bs-guion", ".bs-tercio", ".bs-mapa", ".bs-pin", ".bs-ano",
+  ".bs-linea", ".bs-teclado", ".bs-cafe", ".bs-icono", ".bs-palanca", ".bs-servicios span", ".bs-maquina", ".bs-estado", ".bs-editor", ".bs-medidor",
+  ".bs-carga", ".bs-apoyo", ".bs-oferta", ".bs-link", ".bs-silueta", ".bs-rec"].join(", ");
 const MARGEN = 4; // px: tocarse a menos de 4 px también es chocar
 
 const web = await servir([P, D]);
