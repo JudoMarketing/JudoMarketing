@@ -74,10 +74,11 @@ contexto se confundiría con el texto, el agente también.
 Un agente nuevo se crea solo cuando una función se repite y no la cubre
 ninguno de estos dos.
 
-**Un agente nuevo se carga en la sesión siguiente,** no en la que lo creó.
-Mientras tanto se usa el agente general con el archivo del agente como
-instrucciones («lee `.claude/agents/cliente-esceptico.md` y síguelo»), y el
-modelo de la tabla de arriba.
+**Un agente nuevo puede tardar en aparecer** en la sesión que lo creó (el 14
+nov 2026 apareció recién después del commit). Si el tipo todavía no existe, se
+usa el agente general con el archivo del agente como instrucciones («lee
+`.claude/agents/cliente-esceptico.md` y síguelo») y el modelo de la tabla de
+arriba.
 
 ## Lo que Vendito NO hace con Claude
 
