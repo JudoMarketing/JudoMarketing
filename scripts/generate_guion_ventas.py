@@ -30,14 +30,19 @@ with open("src/content/pricing.json", encoding="utf-8") as f:
 PRECIOS = TARIFA["precios"]
 CUOTA = TARIFA.get("cuotaInicio", {})
 ANTES = TARIFA.get("precioAntes", {})
-# Pago único: los 12 meses del contrato de una vez, por un total fijo más
-# barato que las cuotas ($1,500 desde el 13 de octubre de 2026).
+# Pago único: el año del contrato de una vez, por el precio de 10 meses y sin
+# cuota de inicio ($2,500 el Esencial y $4,500 las Apps desde el 14 de
+# noviembre de 2026).
 UNICO = TARIFA.get("pagoUnico", {}).get("essential") or {"meses": 12, "total": 0}
 UNICO_ESENCIAL = UNICO["total"]
 AHORRO_UNICO = UNICO["meses"] * PRECIOS["essential"] + CUOTA.get("essential", 0) - UNICO_ESENCIAL
-# Cuota de inicio: hoy ninguna (se quitó el 13 de octubre de 2026). Si vuelve
-# en pricing.json, el guion la dice sola.
+# Cuota de inicio: $500 en el Esencial y en las Apps desde el 14 de noviembre
+# de 2026 (no se cobra con el pago del año completo). Sale de pricing.json.
 CUOTA_ESENCIAL = CUOTA.get("essential", 0)
+CUOTA_APPS = CUOTA.get("apps", 0)
+UNICO_APPS = (TARIFA.get("pagoUnico", {}).get("apps") or {}).get("total", 0)
+# Full Diagnostic: el primer paso para quien no sabe qué necesita
+DIAG = TARIFA.get("diagnostico", {})
 # Cuánto sale al día, redondeado hacia arriba: "menos de 7 dólares al día"
 POR_DIA = -(-PRECIOS["essential"] // 30) + (1 if PRECIOS["essential"] % 30 == 0 else 0)
 
@@ -97,12 +102,19 @@ p(f"<b>PRECIOS VIGENTES:</b> son los que cobra el website hoy. "
 sub("Los 3 planes")
 b(f"<b>Websites Esenciales, {dos_precios('essential')}"
   + (f" más una cuota de inicio única de ${CUOTA_ESENCIAL}" if CUOTA_ESENCIAL else ", sin cuota de inicio")
-  + f", o un pago único de ${miles(UNICO_ESENCIAL)} por los 12 meses (ahorra ${miles(AHORRO_UNICO)}):</b> tiendas online, páginas de citas, "
+  + f", o el año completo de una vez por ${miles(UNICO_ESENCIAL)}, sin cuota de inicio (ahorra ${miles(AHORRO_UNICO)}):</b> tiendas online, páginas de citas, "
   "venta de servicios. Diseño moderno, panel fácil, soporte y mantenimiento.")
 b(f"<b>Websites Complejos, precio a la medida y sin cuota de inicio:</b> se cotizan en la entrevista y todo va dentro de la mensualidad. Delivery, logística, clases virtuales, "
   "sistemas avanzados, integraciones a la medida.")
-b(f"<b>Apps para Teléfonos, {dos_precios('apps')}, sin cuota de inicio:</b> aplicaciones nativas iPhone y Android "
-  "con notificaciones push.")
+b(f"<b>Apps para Teléfonos, {dos_precios('apps')}"
+  + (f" más una cuota de inicio única de ${CUOTA_APPS}" if CUOTA_APPS else ", sin cuota de inicio")
+  + (f", o el año completo de una vez por ${miles(UNICO_APPS)}, sin cuota de inicio" if UNICO_APPS else "")
+  + ":</b> aplicaciones nativas iPhone y Android con notificaciones push.")
+if DIAG:
+    b(f"<b>Full Diagnostic, ${DIAG['precio']} de un solo pago:</b> revisamos su website y su presencia en internet "
+      "(Google, Google Maps, la inteligencia artificial, sus redes y su competencia) y le mandamos un informe en PDF "
+      f"con qué arreglar primero, en {DIAG['diasHabiles']} días hábiles. Es el primer paso para quien no sabe qué necesita. "
+      "Se compra en www.judomarketing.net/es/diagnostico.")
 b("<b>Media Marketing (publicidad pagada):</b> anuncios en Instagram, Facebook, TikTok y Google. "
   "Nosotros armamos el anuncio y elegimos a quién se le muestra; el cliente decide cuánto invertir "
   "cada mes. No tiene precio fijo. El rango que recomendamos para crecer sostenido es de $500 a $700 "
@@ -150,8 +162,8 @@ say(f"Son {PRECIOS['essential']} dólares al mes, el plan de arranque"
     + (f", y una cuota de inicio de {CUOTA_ESENCIAL} dólares que se paga una sola vez, con el primer mes" if CUOTA_ESENCIAL else ", sin cuota de inicio")
     + f". Menos de {POR_DIA} dólares al día. Y ahí va todo incluido: el diseño, el mantenimiento, "
     "la seguridad, los respaldos y su panel de control. Sin cobros escondidos: lo que le digo hoy es todo. "
-    f"Y si prefiere quitárselo de encima, lo paga de una vez: {miles(UNICO_ESENCIAL)} dólares por los 12 meses, "
-    f"y se ahorra {miles(AHORRO_UNICO)}.")
+    f"Y si prefiere quitárselo de encima, paga el año de una vez: {miles(UNICO_ESENCIAL)} dólares por los 12 meses, "
+    f"que es el precio de 10, y sin cuota de inicio. Se ahorra {miles(AHORRO_UNICO)}.")
 sub("Paso 5. Quítale el riesgo")
 say("Y mire lo mejor: si no le entregamos su proyecto en menos de un mes, le devolvemos su primer pago. Y usted puede "
     "cancelar cuando quiera, sin penalidad. O sea que el riesgo lo corremos nosotros, no usted.")
@@ -203,8 +215,11 @@ qa("“No tengo tiempo para eso ahorita”",
 sec("5. PREGUNTAS FRECUENTES DEL CLIENTE (tu chuleta)")
 qa("¿Cuánto cuesta?", f"Websites Esenciales {dos_precios('essential')}"
    + (f" más una cuota de inicio única de ${CUOTA_ESENCIAL}" if CUOTA_ESENCIAL else ", sin cuota de inicio")
-   + f", o un pago único de ${miles(UNICO_ESENCIAL)} por los 12 meses; Websites Complejos a la medida, sin cuota de inicio, se cotizan en la entrevista; "
-   f"Apps {dos_precios('apps')}, sin cuota de inicio. Son precios “desde”.")
+   + f", o el año completo de una vez por ${miles(UNICO_ESENCIAL)} (10 meses en vez de 12, sin cuota de inicio); Websites Complejos a la medida, sin cuota de inicio, se cotizan en la entrevista; "
+   f"Apps {dos_precios('apps')}"
+   + (f" más una cuota de inicio única de ${CUOTA_APPS}" if CUOTA_APPS else ", sin cuota de inicio")
+   + ". Son precios “desde”."
+   + (f" Y si no sabe qué necesita, el Full Diagnostic: ${DIAG['precio']}, en PDF en {DIAG['diasHabiles']} días hábiles." if DIAG else ""))
 qa("¿Qué incluye la mensualidad?", "Diseño, hosting, mantenimiento, seguridad y respaldos diarios, soporte, y su "
    "panel de administrador para controlar contenido, usuarios y ventas.")
 qa("¿En cuánto tiempo está lista?", "Menos de un mes. Con garantía: si no se entrega en menos de un mes, se devuelve "

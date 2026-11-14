@@ -1,6 +1,6 @@
 import { SITE_URL } from "@/lib/seo";
 import { PERFIL_GOOGLE } from "./SocialLinks";
-import { precio, precioDesde, precioTexto, PRECIO_JUDITOADS, PRECIO_ASISTENTE } from "@/lib/pricing";
+import { DIAS_DIAGNOSTICO, precio, precioDesde, precioTexto, PRECIO_DIAGNOSTICO, PRECIO_JUDITOADS, PRECIO_ASISTENTE } from "@/lib/pricing";
 
 /**
  * Datos estructurados (schema.org) para Google.
@@ -73,6 +73,16 @@ export default function JsonLd({ locale }: { locale: string }) {
             : "Native iOS and Android apps with push notifications.",
           price: String(precio("apps")),
           priceCurrency: "USD",
+        },
+        {
+          "@type": "Offer",
+          name: "Full Diagnostic",
+          description: es
+            ? `Diagnóstico completo del website y la presencia en internet (Google, Maps, IA, redes y competencia), en PDF en ${DIAS_DIAGNOSTICO} días hábiles. Un solo pago.`
+            : `A full diagnostic of your website and online presence (Google, Maps, AI, social media and competitors), as a PDF in ${DIAS_DIAGNOSTICO} business days. One payment.`,
+          price: String(PRECIO_DIAGNOSTICO),
+          priceCurrency: "USD",
+          url: es ? "https://www.judomarketing.net/es/diagnostico" : "https://www.judomarketing.net/diagnostic",
         },
         {
           "@type": "Offer",

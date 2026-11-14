@@ -1,7 +1,7 @@
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import PaymentOptions from "@/components/PaymentOptions";
-import { ahorroPagoUnico, cuotaInicio, cuotaInicioTexto, pagoUnico, pagoUnicoTexto, precioTexto, primerPagoTexto, usd } from "@/lib/pricing";
+import { ahorroPagoUnico, cuotaInicio, cuotaInicioTexto, mesesGratisPagoUnico, pagoUnico, pagoUnicoTexto, precioTexto, primerPagoTexto, usd } from "@/lib/pricing";
 import { privateMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -40,8 +40,8 @@ export default async function PayPage({
   const plan: PlanKey = PLAN_KEYS.includes(rawPlan as PlanKey)
     ? (rawPlan as PlanKey)
     : "essential";
-  // Pago único (hoy solo el Esencial): el contrato completo de una vez, por
-  // menos que las cuotas. Si el plan no lo ofrece, se ignora el parámetro.
+  // Pago único (Esencial y Apps): el año completo de una vez, por el precio
+  // de 10 meses y sin cuota de inicio. Si el plan no lo ofrece, se ignora.
   const unico = pagoUnico(plan);
   const modalidad: "mensual" | "unico" = pago === "unico" && unico ? "unico" : "mensual";
   const monto = modalidad === "unico" ? pagoUnicoTexto(plan)! : primerPagoTexto(plan);
@@ -143,7 +143,7 @@ export default async function PayPage({
                   </span>
                   <span className="display-num mt-1 block text-2xl font-bold">{pagoUnicoTexto(plan)}</span>
                   <span className="mt-1 block text-xs leading-relaxed text-judo-fog/65">
-                    {t("oneTimeDesc", { months: unico.meses })}
+                    {t("oneTimeDesc", { months: unico.meses, paid: unico.meses - mesesGratisPagoUnico(plan) })}
                   </span>
                 </Link>
               </div>

@@ -12,6 +12,7 @@ import Image from "next/image";
 import { getSupabase } from "@/lib/supabase";
 import { inputClass } from "./ui";
 import { safeUuid } from "@/lib/safe";
+import { cuotaInicio } from "@/lib/pricing";
 
 
 const ZELLE_EMAIL = "admin@judomarketing.net";
@@ -347,7 +348,7 @@ export default function PaymentOptions({
       )}
 
       <p className="mt-1 text-center text-xs text-judo-fog/45">
-        {modalidad === "unico" ? t("feesNoteOneTime") : t("feesNote")}
+        {modalidad === "unico" ? t("feesNoteOneTime") : cuotaInicio(plan) > 0 ? t("feesNoteSetup") : t("feesNote")}
       </p>
 
       {error && !zelleOpen && !cryptoOpen && (

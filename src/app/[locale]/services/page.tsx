@@ -6,7 +6,7 @@ import Reveal from "@/components/Reveal";
 import EleccionContacto from "@/components/EleccionContacto";
 import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
 import { pageMetadata } from "@/lib/seo";
-import { ahorroPagoUnico, cuotaInicio, cuotaInicioTexto, descuento, pagoUnico, pagoUnicoTexto, precioAntes, precioTexto, usd, PRECIO_JUDITOADS, PRECIO_ASISTENTE, PRECIO_ASISTENTE_PRO } from "@/lib/pricing";
+import { cuotaInicio, cuotaInicioTexto, descuento, DIAS_DIAGNOSTICO, mesesGratisPagoUnico, pagoUnico, pagoUnicoTexto, precioAntes, precioTexto, usd, PRECIO_DIAGNOSTICO, PRECIO_JUDITOADS, PRECIO_ASISTENTE, PRECIO_ASISTENTE_PRO } from "@/lib/pricing";
 
 /**
  * Tres servicios, tres colores, poco texto.
@@ -56,7 +56,8 @@ export default function ServicesPage({
       .replace("{setup}", cuotaInicioTexto("essential"))
       .replace("{oneTime}", pagoUnicoTexto("essential") ?? "")
       .replace("{complex}", t("complex.customShort"))
-      .replace("{apps}", precioTexto("apps")),
+      .replace("{apps}", precioTexto("apps"))
+      .replace("{diagnostic}", usd(PRECIO_DIAGNOSTICO)),
   }));
 
   return (
@@ -167,10 +168,11 @@ export default function ServicesPage({
                           ? t("setupFee", { fee: cuotaInicioTexto(plan) })
                           : t("noSetupFee")}
                       </span>
-                      {/* La otra forma de pagarlo: todo de una vez, más barato */}
+                      {/* La otra forma de pagarlo: el año de una vez, 2 meses
+                          gratis y sin cuota de inicio */}
                       {pagoUnico(plan) && (
                         <span className="mt-2 block text-sm font-medium" style={{ color: "var(--svc-luz)" }}>
-                          {t("oneTime", { total: pagoUnicoTexto(plan)!, months: pagoUnico(plan)!.meses, save: usd(ahorroPagoUnico(plan)) })}
+                          {t("oneTime", { total: pagoUnicoTexto(plan)!, free: mesesGratisPagoUnico(plan) })}
                         </span>
                       )}
                     </p>
@@ -198,8 +200,29 @@ export default function ServicesPage({
           })}
         </div>
         <p className="mt-6 text-center text-xs text-judo-fog/45">
-          {t("note", { oneTime: pagoUnicoTexto("essential") ?? "" })}
+          {t("note", { setup: cuotaInicioTexto("essential") })}
         </p>
+
+        {/* El primer paso para quien no sabe qué plan necesita: el Full
+            Diagnostic. Tiene su propia página con lo que incluye y el pago. */}
+        <Reveal>
+          <div id="diagnostic" className="svc-card mt-10 scroll-mt-24 p-7 sm:p-9">
+            <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
+              <div>
+                <span className="svc-tag">🔎 {t("diagnostic.kicker")}</span>
+                <h3 className="mt-4 text-2xl font-bold sm:text-3xl">{t("diagnostic.title")}</h3>
+                <p className="mt-3 text-judo-fog/70">{t("diagnostic.body")}</p>
+              </div>
+              <div className="text-center md:text-left">
+                <p className="display-num text-5xl font-bold">{usd(PRECIO_DIAGNOSTICO)}</p>
+                <p className="mt-2 text-sm text-judo-fog/60">{t("diagnostic.note", { days: DIAS_DIAGNOSTICO })}</p>
+                <Link href="/diagnostic" className="svc-btn mt-5">
+                  {t("diagnostic.cta")} →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </Reveal>
       </section>
 
       {/* ── JUDITOADS ────────────────────────────────────────────────────

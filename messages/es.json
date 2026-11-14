@@ -126,7 +126,7 @@
   "services": {
     "title": "Servicios",
     "subtitle": "Tres cosas hacemos. Elige la que necesitas.",
-    "note": "Ningún plan lleva cuota de inicio. Website Esencial: en 12 pagos mensuales o en un pago único de {oneTime}. Contrato de 12 meses.",
+    "note": "Website Esencial y Apps: cuota de inicio de {setup}, una sola vez, que no se cobra si pagas el año completo de una vez (12 meses por el precio de 10). Contrato de 12 meses.",
     "cta": "Hablemos de tu proyecto",
     "perMonth": "/mes",
     "from": "desde",
@@ -242,7 +242,7 @@
       "items": [
         {
           "q": "¿Cuánto cuesta una página web con Judo Marketing?",
-          "a": "Nuestros websites funcionan por suscripción: Websites Esenciales desde {essential} al mes, sin cuota de inicio, o en un solo pago de {oneTime} por los 12 meses (tiendas online, citas, servicios). Apps para Teléfonos desde {apps} al mes, sin cuota de inicio. Los Websites Complejos (delivery, logística, integraciones) tienen {complex}: se cotizan en una cita, sin cuota de inicio. Todo incluye diseño, soporte, mantenimiento y tu propio panel de control."
+          "a": "Nuestros websites funcionan por suscripción, con contrato de 12 meses: Websites Esenciales desde {essential} al mes (tiendas online, citas, servicios) y Apps para Teléfonos desde {apps} al mes, más una cuota de inicio de {setup}, una sola vez. Si pagas el año completo de una vez, pagas 10 meses en vez de 12 y no hay cuota de inicio: {oneTime} el Website Esencial. Los Websites Complejos (delivery, logística, integraciones) tienen {complex}: se cotizan en una cita. ¿No sabes qué necesitas? El Full Diagnostic revisa tu website y tu presencia en internet por {diagnostic}. Todo incluye diseño, soporte, mantenimiento y tu propio panel de control."
         },
         {
           "q": "¿Cuánto tardan en entregar mi website?",
@@ -275,8 +275,15 @@
     "setupFee": "+ {fee} de inicio, una sola vez",
     "noSetupFee": "Sin cuota de inicio",
     "was": "Antes",
-    "oneTime": "o un pago único de {total} por los {months} meses: ahorras {save}",
-    "off": "{pct}% de descuento"
+    "oneTime": "o el año completo de una vez: {total}, con {free} meses gratis y sin cuota de inicio",
+    "off": "{pct}% de descuento",
+    "diagnostic": {
+      "kicker": "¿No sabes por dónde empezar?",
+      "title": "Full Diagnostic",
+      "body": "Revisamos tu website y tu presencia en internet (Google, Maps, la IA, tus redes y tu competencia) y te mandamos un PDF con lo que encontramos y qué arreglar primero.",
+      "note": "Un solo pago · PDF en {days} días hábiles · Sin compromiso",
+      "cta": "Ver el diagnóstico"
+    }
   },
   "login": {
     "title": "Portales",
@@ -446,11 +453,12 @@
     "monthlyDesc": "Hoy pagas {total}: el primer mes más la cuota de inicio de {fee}. Después, {month} al mes.",
     "monthlyDescNoFee": "Hoy pagas el primer mes. Después, {month} al mes.",
     "oneTimeTitle": "Pago único",
-    "oneTimeDesc": "Los {months} meses del contrato, pagados de una vez.",
+    "oneTimeDesc": "Los {months} meses por el precio de {paid}, sin cuota de inicio.",
     "oneTimeSave": "Ahorras {save}",
     "oneTimeChip": "pago único de {total}",
-    "feesNoteOneTime": "El pago único cubre los 12 meses del contrato. Los fees de procesamiento o de red los cubre el cliente.",
-    "selected": "Elegido"
+    "feesNoteOneTime": "El pago único cubre los 12 meses del contrato, sin cuota de inicio. Los fees de procesamiento o de red los cubre el cliente.",
+    "selected": "Elegido",
+    "feesNoteSetup": "El monto a pagar hoy es el primer mes más la cuota de inicio. Los fees de procesamiento o de red los cubre el cliente."
   },
   "crypto": {
     "title": "Cripto (USDT)",
@@ -619,7 +627,7 @@
       {
         "name": "Website de tu clínica",
         "price": "desde {essential} al mes",
-        "note": "sin cuota de inicio, o {oneTime} en un solo pago por los 12 meses"
+        "note": "más {setup} de inicio, o {oneTime} por el año completo de una vez"
       },
       {
         "name": "Portal o plataforma",
@@ -654,5 +662,71 @@
     "closeTitle": "Hablemos 20 minutos de tu clínica.",
     "closeText": "Te enseño cómo ve Google hoy tu centro y qué cambiaríamos primero.",
     "whatsapp": "Escríbeme por WhatsApp"
+  },
+  "diagnostic": {
+    "kicker": "Full Diagnostic",
+    "title": "Tu website y tu presencia en internet, revisados de punta a punta.",
+    "subtitle": "Antes de venderte nada, medimos. Te mandamos un informe en PDF con lo que encontramos y qué arreglar primero.",
+    "priceNote": "Un solo pago · PDF en {days} días hábiles · Sin compromiso de contratarnos",
+    "buy": "Quiero mi diagnóstico · {price}",
+    "opening": "Abriendo pago seguro…",
+    "error": "No pudimos abrir el pago. Escríbenos por WhatsApp y te ayudamos.",
+    "whatsapp": "Escribir por WhatsApp",
+    "secure": "Pago con tarjeta en la página segura de Stripe.",
+    "reviewTitle": "Lo que revisamos",
+    "items": [
+      {
+        "title": "Google",
+        "text": "Si apareces cuando te buscan por tu nombre y por lo que vendes, y en qué lugar."
+      },
+      {
+        "title": "Google Maps",
+        "text": "Tu ficha de Google: datos, horarios, fotos y reseñas."
+      },
+      {
+        "title": "Inteligencia artificial",
+        "text": "Si ChatGPT, Gemini, Claude y Perplexity te encuentran, y qué dicen de ti."
+      },
+      {
+        "title": "Tu website",
+        "text": "La velocidad en el teléfono, los errores y si los buscadores lo pueden leer."
+      },
+      {
+        "title": "Redes y WhatsApp",
+        "text": "Cómo llega un cliente desde ahí hasta comprarte."
+      },
+      {
+        "title": "Tu competencia",
+        "text": "Quiénes salen antes que tú, y por qué."
+      },
+      {
+        "title": "Seguridad",
+        "text": "Tu dominio, tu certificado y lo que se ve expuesto."
+      },
+      {
+        "title": "Reputación",
+        "text": "Lo que encuentra un cliente que busca opiniones de tu negocio."
+      }
+    ],
+    "getTitle": "Lo que recibes",
+    "getText": "Un informe en PDF con capturas, números y una puntuación de hoy contra la que podrías tener. Escrito para el dueño, sin palabras técnicas: cada problema con su solución y un plan de qué arreglar primero y cuánto cuesta.",
+    "stepsTitle": "Cómo funciona",
+    "steps": [
+      {
+        "title": "Pagas {price}",
+        "text": "Con tarjeta. En el mismo pago nos dices tu website o el nombre de tu negocio, y tus redes."
+      },
+      {
+        "title": "Revisamos",
+        "text": "Google, Maps, la IA, tu website, tus redes y tu competencia."
+      },
+      {
+        "title": "Recibes tu PDF",
+        "text": "En tu correo, en {days} días hábiles."
+      }
+    ],
+    "doneTitle": "¡Recibimos tu pago, gracias!",
+    "doneText": "Tu Full Diagnostic llega a tu correo en {days} días hábiles. Si quieres sumar algo (un competidor, otra dirección web), escríbenos por WhatsApp.",
+    "back": "Ver todos los servicios"
   }
 }

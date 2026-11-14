@@ -1,21 +1,24 @@
 {
   "_comentario": "Fuente única de los precios. La leen src/lib/pricing.ts (el website) y los scripts de Python que arman los PDF. Si cambia un precio, se cambia aquí y en ningún otro lado.",
   "precios": {
-    "essential": 150,
+    "essential": 250,
     "complex": 200,
-    "apps": 300
+    "apps": 450
   },
-  "precioAntes": {
-    "essential": 300
-  },
-  "_precioAntes": "Precio de referencia que se muestra tachado junto al precio vigente, con el descuento en porcentaje. Junior, 13 de octubre de 2026: el Website Esencial queda en $150 al mes, rebajado de $300 (50% off). Antes: $99 hasta el 12 de octubre y $199 (de $400) el 12.",
+  "_precios": "Junior, 14 de noviembre de 2026: Website Esencial $250 al mes (antes $150) y Apps para Teléfonos $450 al mes (antes $300). Los Websites Complejos se cotizan: su número no se muestra en ningún lado. Los clientes que ya firmaron conservan su precio (sites.monthly_price).",
+  "precioAntes": {},
+  "_precioAntes": "Precio de referencia que se muestra tachado junto al vigente, con el descuento en porcentaje. Vacío desde el 14 de noviembre de 2026: al subir el Esencial a $250 se quitó el $300 tachado (rebajado ya no era cierto). Del 13 de octubre al 13 de noviembre fue $150, rebajado de $300 (50% off).",
   "pagoUnico": {
     "essential": {
       "meses": 12,
-      "total": 1500
+      "total": 2500
+    },
+    "apps": {
+      "meses": 12,
+      "total": 4500
     }
   },
-  "_pagoUnico": "Planes que se pueden pagar de una sola vez: los meses del contrato y el total fijo que se cobra (Esencial: $1,500 por los 12 meses, contra $1,800 en cuotas; Junior, 13 de octubre de 2026). La alternativa es pagarlo en 12 cuotas mensuales, que es el contrato de siempre.",
+  "_pagoUnico": "El año completo de una vez: los 12 meses del contrato por el precio de 10 (ahorra 2 meses) y sin cuota de inicio. Esencial $2,500 y Apps $4,500 (Junior, 14 de noviembre de 2026). La alternativa es pagarlo en 12 cuotas mensuales más la cuota de inicio.",
   "extras": {
     "juditoads": 20,
     "asistente": 25,
@@ -23,9 +26,14 @@
     "hosting": 30
   },
   "cuotaInicio": {
-    "essential": 0,
+    "essential": 500,
     "complex": 0,
-    "apps": 0
+    "apps": 500
   },
-  "_cuotaInicio": "Cuota única que se cobra con el primer mes. Desde el 13 de octubre de 2026 ningún plan la lleva (Junior la quitó del Website Esencial, que tuvo $130 del 2 al 12 de octubre). Si vuelve, se pone aquí y el checkout la cobra sola."
+  "_cuotaInicio": "Cuota única de configuración que se cobra con el primer mes: $500 en el Website Esencial y en las Apps (Junior, 14 de noviembre de 2026). No se cobra si el cliente paga el año completo de una vez. Los Websites Complejos se cotizan y no la llevan. Historia: el Esencial tuvo $130 del 2 al 12 de octubre de 2026 y ninguna del 13 de octubre al 13 de noviembre.",
+  "diagnostico": {
+    "precio": 99,
+    "diasHabiles": 3
+  },
+  "_diagnostico": "Full Diagnostic: el diagnóstico completo del website y de la presencia en internet de un negocio, en PDF, por $99 de un solo pago y entregado en 3 días hábiles (Junior, 14 de noviembre de 2026). Es el mismo tipo de informe que las auditorías de NV Labs y Sr. de los Tacos. Se paga con tarjeta en Stripe desde /diagnostic."
 }

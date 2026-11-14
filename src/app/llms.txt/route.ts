@@ -33,6 +33,7 @@ Current prices: ${SITE_URL}/services (Spanish: ${SITE_URL}/es/servicios)
 ## Pages
 - [Home](${SITE_URL}/) · [Inicio en español](${SITE_URL}/es)
 - [Services and prices](${SITE_URL}/services)
+- [Full Diagnostic of your website and online presence](${SITE_URL}/diagnostic)
 - [Portfolio of client websites](${SITE_URL}/showcase)
 - [About](${SITE_URL}/about)
 - [Contact](${SITE_URL}/contact)
