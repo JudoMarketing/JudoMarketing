@@ -1,100 +1,155 @@
 {
- "video": "salida/Judo-turn-off-your-phone.mp4",
- "fin": 54.0,
+ "titulo": "Count your yeses",
+ "intro": "Es el guion de la voz del video en inglés «Count your yeses» v3 (72 segundos,\n16 escenas), para tu voz clonada en ElevenLabs. Lo hizo Vendito el 14 de\nnoviembre de 2026.",
+ "video": "salida/Judo-count-your-yeses-v3.mp4",
+ "fin": 72.0,
  "idioma": "en",
- "silabas_por_segundo": 4.2,
- "nota": "«Turn off your phone»: un video nuevo desde el carrusel del mismo nombre. Cada frase empieza en su escena; bloques de hasta 11 s que empiezan en un cambio de escena.",
+ "silabas_por_segundo": 3.3,
+ "uso_max": 0.85,
+ "nota": "«Count your yeses» v3 (Vendito, 14 nov 2026). Un clip de ElevenLabs por escena, sin <break>: cada frase empieza en su escena y ocupa como mucho el 85 % de ella, medida a 3,3 sílabas por segundo (el ritmo lento de ElevenLabs Multilingual v2).",
  "bloques": [
   [
    {
-    "t": 0,
+    "t": 0.0,
     "texto": "Turn off your phone.",
-    "ve": "Turn off your phone.",
-    "como": "Calm, almost a whisper, like a dare. Stop right on «phone»: the screen goes black."
-   },
+    "ve": "Business owners · Turn off your phone.",
+    "como": "Tranquilo y bajo, como un reto. Termina en «phone»: la pantalla se apaga en 0:01,6.",
+    "clip": "turn-off"
+   }
+  ],
+  [
    {
-    "t": 2.4,
+    "t": 3.0,
     "texto": "Is your business still selling?",
     "ve": "Is your business still selling?",
-    "como": "A real question. Lift on «still selling». The sign flips to CLOSED (0:03,9)."
-   },
-   {
-    "t": 5.4,
-    "texto": "Six questions. Count your yeses.",
-    "ve": "6 questions. Count your yeses.",
-    "como": "Energy up, friendly, like starting a game."
+    "como": "Una pregunta de verdad, un poco preocupado. Sube en «still selling». El letrero pasa a CLOSED en 0:04,5.",
+    "clip": "still-selling"
    }
   ],
   [
    {
-    "t": 8.4,
-    "texto": "One: is your contact form full of bots?",
-    "ve": "Is your contact form full of bots?",
-    "como": "Light, a little amused. «One» on the beat."
-   },
-   {
-    "t": 12.0,
-    "texto": "Two: to change a price, do you wait on someone?",
-    "ve": "To change a price, do you wait on someone?",
-    "como": "A bit tired on «wait on someone», like you've been there."
+    "t": 6.0,
+    "texto": "Three questions. Count your yeses.",
+    "ve": "3 questions. Count your yeses.",
+    "como": "Más energía, amable, como quien empieza un juego. Sonríe en «yeses».",
+    "clip": "three-questions"
    }
   ],
   [
    {
-    "t": 15.6,
-    "texto": "Number three made the news…",
-    "ve": "#3 made the news…",
-    "como": "Lower and slower. Leave it hanging: the music drops out."
-   },
-   {
-    "t": 17.4,
-    "texto": "PHP2Shell. Seven in ten sites run PHP. Is yours patched?",
-    "ve": "PHP2Shell. Is yours patched? 7 in 10 websites run PHP.",
-    "como": "Serious, clear. Say «P-H-P-two-shell» slowly. Stress «patched»."
+    "t": 9.0,
+    "texto": "Texts at night. Anyone answering?",
+    "ve": "A customer texts at 9:04 PM. Anyone answering?",
+    "como": "Bajito, de noche. Una pausa corta después de «night».",
+    "clip": "texts-night"
    }
   ],
   [
    {
-    "t": 22.2,
-    "texto": "Four: when you don't answer, do sales stop?",
-    "ve": "When you don't answer, do sales stop?",
-    "como": "Close, a bit concerned. The two messages pop out of the phone."
-   },
-   {
-    "t": 25.8,
-    "texto": "Five costs less than you think…",
-    "ve": "#5 costs less than you think…",
-    "como": "Playful secret, smiling. The music drops out again."
+    "t": 12.6,
+    "texto": "More calls and orders than you can handle?",
+    "ve": "More calls and orders than you can handle?",
+    "como": "Más rápido, un poco agobiado, como si la bandeja se llenara mientras hablas.",
+    "clip": "more-calls"
    }
   ],
   [
    {
-    "t": 27.6,
-    "texto": "Want ads, but don't know where to start? Test with five dollars a day.",
-    "ve": "Want to run ads, but don't know where to start? $5 a day.",
-    "como": "Energy back on the beat. «Five dollars a day» when the cursor taps «Publish ad» (0:30,4)."
-   },
-   {
-    "t": 32.4,
-    "texto": "Six: how many people visited your site this week?",
-    "ve": "How many people visited your site this week?",
-    "como": "A real question, curious. Pause after «six»."
+    "t": 16.8,
+    "texto": "Then what happens…",
+    "ve": "Then what happens…",
+    "como": "Más lento. Baja la voz en «happens» y déjalo en el aire.",
+    "clip": "what-happens"
    }
   ],
   [
    {
-    "t": 36.0,
-    "texto": "Every yes has a fix. Bot-proof forms. Prices you change. No PHP, daily backups. Juditos that answer. Guided ads. Your visits, in your portal.",
-    "ve": "Every yes has a fix. Six fixes, one by one.",
-    "como": "Confident and warm. Say each fix when its card comes in: forms 0:37,7; prices 0:38,6; PHP 0:39,7; Juditos 0:41,6; ads 0:43,2; visits 0:44,0."
+    "t": 18.6,
+    "texto": "By morning, they hired your competitor.",
+    "ve": "By morning, they hired your competitor.",
+    "como": "Sin drama, como un hecho. Un golpe chico en «competitor».",
+    "clip": "by-morning"
    }
   ],
   [
    {
-    "t": 46.8,
-    "texto": "All of this is fixed one chat away. Said yes to any? Message us on WhatsApp.",
-    "ve": "All of this is fixed one chat away. Said yes to any? Message us.",
-    "como": "Warm, the most human line. Pause before «Said yes to any?» (0:49,8)."
+    "t": 23.4,
+    "texto": "Ready to invest… but not sure where it works best?",
+    "ve": "Ready to invest… but not sure where it works best?",
+    "como": "Con respeto, de dueño a dueño. Una pausa corta después de «invest».",
+    "clip": "ready-invest"
+   }
+  ],
+  [
+   {
+    "t": 28.8,
+    "texto": "Here's the good news.",
+    "ve": "Here’s the good news.",
+    "como": "Cálido, con una sonrisa que se oiga. Rápido.",
+    "clip": "good-news"
+   }
+  ],
+  [
+   {
+    "t": 30.6,
+    "texto": "Every yes has a fix. We handle all three.",
+    "ve": "Every yes has a fix.",
+    "como": "Seguro y tranquilo. «We handle all three» más lento, como una promesa.",
+    "clip": "every-yes"
+   }
+  ],
+  [
+   {
+    "t": 35.4,
+    "texto": "We run your social media and ads. Ad budgets from five dollars a day.",
+    "ve": "We run your social media and your ads · Daily ad budget $5 · You pick it. Paid straight to Meta.",
+    "como": "Claro, como explicándole a un amigo. «Five dollars a day» despacio: la tarjeta de $5 cuenta en 0:38,6.",
+    "clip": "social-media"
+   }
+  ],
+  [
+   {
+    "t": 42.6,
+    "texto": "Before you spend a dollar: our ninety-nine dollar audit.",
+    "ve": "Before you spend a dollar: our $99 audit.",
+    "como": "Inclínate hacia adelante, como un buen consejo. Una parada chica después de «dollar».",
+    "clip": "spend-dollar"
+   }
+  ],
+  [
+   {
+    "t": 48.6,
+    "texto": "We compare you to your competitors and give you a plan with deadlines.",
+    "ve": "You vs. your competitors. A plan with deadlines.",
+    "como": "Firme y concreto. Marca «deadlines».",
+    "clip": "compare-competitors"
+   }
+  ],
+  [
+   {
+    "t": 55.2,
+    "texto": "Sites we built for real businesses.",
+    "ve": "Real websites we built.",
+    "como": "Orgulloso pero simple. Sin voz de vendedor.",
+    "clip": "sites-built"
+   }
+  ],
+  [
+   {
+    "t": 58.8,
+    "texto": "Our promise: better service than you have now. A real person.",
+    "ve": "Our promise: better service than you have now.",
+    "como": "Sincero, más lento. Pausa después de «promise». «A real person» más suave, en serio.",
+    "clip": "our-promise"
+   }
+  ],
+  [
+   {
+    "t": 64.8,
+    "texto": "Said yes to any? Get your audit at judomarketing.net.",
+    "ve": "Said yes to any? · Get your $99 audit · judomarketing.net/diagnostic · Questions? Message me",
+    "como": "Cálido y directo, como cerrando el juego: «Said yes to any?» con una sonrisa, pausa corta, y la dirección natural: «judo marketing dot net».",
+    "clip": "said-yes"
    }
   ]
  ]

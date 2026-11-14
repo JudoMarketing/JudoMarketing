@@ -97,7 +97,9 @@ cual.
 
 Cuando Junior diga **«calza la voz de <pieza>»**:
 1. Leer la ficha con ArtifactData y tomar los archivos con `base64: true`,
-   en el orden de su nombre (`bloque-1.mp3`, `bloque-2.mp3`…).
+   en el orden de su nombre. Desde el 14 nov 2026 la voz va en un clip por
+   escena (`01_000.0_turn-off.mp3`, `02_003.0_still-selling.mp3`…); los
+   videos viejos, en bloques (`bloque-1.mp3`, `bloque-2.mp3`…).
 2. Bajar cada uno con Artifact (`action: "read"`, `path` = su id) y
    decodificarlo con `base64 -d` a la carpeta `voz/` del video (está en
    `.gitignore`: la voz no se sube al repositorio).

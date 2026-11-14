@@ -339,3 +339,174 @@
 .contacto-pro img { background: #0b0a10; }
 .contacto-pro svg { color: inherit; }
 .honesto { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; font: 500 4.2cqw/1.3 var(--f-titular); letter-spacing: -.01em; color: rgba(255,255,255,.9); }
+
+/* ════════════════════════════════════════════════════════════════════
+   v3 (14 nov 2026, Vendito): las piezas nuevas de «Count your yeses»
+   ════════════════════════════════════════════════════════════════════ */
+:root {
+  --g-rosa: radial-gradient(80% 50% at 50% 30%, #ffffff 0%, #ffe6f2 55%, #ffc9e2 100%);
+  --g-grafito: radial-gradient(70% 45% at 50% 60%, #3a2a7a 0%, transparent 70%), radial-gradient(60% 40% at 90% 10%, #1f2a5c 0%, transparent 70%), linear-gradient(#17151f, #111017);
+  --g-crema: radial-gradient(80% 50% at 50% 30%, #ffffff 0%, #fff6e6 60%, #ffe9c7 100%);
+  --g-durazno: radial-gradient(80% 50% at 50% 30%, #fffaf6 0%, #ffe8da 60%, #ffd2bb 100%);
+}
+.fondo.rosa, .panel.rosa { background-color: #ffe6f2; background-image: var(--g-rosa); color: var(--tinta); }
+.fondo.grafito, .panel.grafito { background-color: #111017; background-image: var(--g-grafito); color: #fff; }
+.fondo.crema, .panel.crema { background-color: #fff6e6; background-image: var(--g-crema); color: var(--tinta); }
+.fondo.durazno, .panel.durazno { background-color: #ffe8da; background-image: var(--g-durazno); color: var(--tinta); }
+
+/* El que habla: «Business owners» arriba del gancho */
+.kicker-v { position: absolute; left: 8cqw; top: 15.6cqw; z-index: 10; display: inline-flex; align-items: center; gap: 1.6cqw; padding: 1.4cqw 3cqw; border-radius: 99cqw; font: 700 3.4cqw/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase;
+  background: rgba(255,255,255,.12); color: #e7dcff; box-shadow: inset 0 0 0 .3cqw rgba(255,255,255,.22); opacity: 0; animation: p-escalar .5s var(--sale) var(--d, 0s) forwards; }
+.kicker-v svg { width: 4.4cqw; height: 4.4cqw; }
+
+/* Fichas de rubro alrededor de la tienda: es para cualquier negocio */
+.rubro { position: absolute; z-index: 8; width: 11cqw; height: 11cqw; margin: -5.5cqw 0 0 -5.5cqw; border-radius: 50%; display: grid; place-items: center; background: #fff; color: #6e3bff;
+  box-shadow: var(--sombra-1); opacity: 0; animation: p-escalar .5s var(--sale) var(--d, 0s) forwards; }
+.rubro > i { display: grid; place-items: center; width: 100%; height: 100%; animation: p-deco-flota 2.6s ease-in-out infinite alternate; }
+.rubro svg { width: 6.6cqw; height: 6.6cqw; }
+
+/* Tres fichas grandes (las tres preguntas) */
+.fichas-3 { position: absolute; left: 12cqw; right: 12cqw; z-index: 6; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5cqw; perspective: 120cqw; }
+.fichas-3 .ficha-n { font-size: 14cqw; border-radius: 6cqw; }
+
+/* La competencia contestó primero: dos conversaciones */
+.conver { position: absolute; left: 8cqw; right: 14cqw; z-index: 6; padding: 3.6cqw 4cqw; border-radius: 5cqw; background: #fff; color: var(--tinta); box-shadow: var(--sombra-1);
+  opacity: 0; animation: p-tarjeta-entra .8s var(--sale) var(--d, 0s) forwards; }
+.conver .quien { display: flex; align-items: center; gap: 2.4cqw; font: 600 3.2cqw/1 var(--f-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--gris); }
+.conver .quien .pto { width: 2.6cqw; height: 2.6cqw; border-radius: 50%; }
+.conver .quien b { margin-left: auto; font: 700 3.2cqw/1 var(--f-mono); color: var(--tinta); }
+.conver .bur { margin-top: 2.4cqw; width: fit-content; max-width: 88%; padding: 2.4cqw 3.4cqw; border-radius: 4cqw; font: 600 4.2cqw/1.25 var(--f-titular); letter-spacing: -.01em; opacity: 0; animation: p-globo .5s var(--sale) var(--d, 0s) forwards; }
+.conver .bur.de-ellos { background: #e7f8f0; border-bottom-left-radius: 1cqw; }
+.conver .bur.cliente { margin-left: auto; background: #f1eefc; border-bottom-right-radius: 1cqw; }
+.conver .bur.tarde { background: #fff1f2; border-bottom-left-radius: 1cqw; }
+.conver .marca-r { position: absolute; right: -3cqw; top: -3cqw; width: 9cqw; height: 9cqw; border-radius: 50%; display: grid; place-items: center; color: #fff; box-shadow: 0 1.4cqw 3cqw -1cqw rgba(0,0,0,.4);
+  opacity: 0; animation: p-escalar .45s var(--sale) var(--dm, 9999s) forwards; }
+.conver .marca-r svg { width: 6.4cqw; height: 6.4cqw; }
+
+/* El dinero y sus tres caminos */
+.monedas { position: absolute; z-index: 6; width: 34cqw; opacity: 0; animation: p-tienda-sube .8s var(--sale) var(--d, 0s) forwards; }
+.monedas svg { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 3cqw 4cqw rgba(120,70,0,.4)); }
+.moneda-salta { transform-box: fill-box; transform-origin: 50% 100%; animation: p-moneda-salta 1.2s cubic-bezier(.3,0,.3,1) .9s infinite; }
+@keyframes p-moneda-salta { 0%, 100% { transform: none } 40% { transform: translateY(-14px) } 60% { transform: translateY(-14px) rotate(8deg) } }
+.opcion { position: absolute; left: 37cqw; right: 14cqw; z-index: 7; display: flex; align-items: center; gap: 3cqw; padding: 2.8cqw 3.4cqw; border-radius: 4.4cqw; background: #fff; color: var(--tinta); box-shadow: var(--sombra-1);
+  opacity: 0; animation: p-arreglo .6s var(--sale) var(--d, 0s) forwards; }
+.opcion .tile { flex: none; width: 9cqw; height: 9cqw; border-radius: 2.8cqw; display: grid; place-items: center; color: #fff; }
+.opcion .tile svg { width: 5.8cqw; height: 5.8cqw; }
+.opcion b { font: 800 4.6cqw/1.1 var(--f-titular); letter-spacing: -.02em; }
+.opcion .q { flex: none; margin-left: auto; width: 7.4cqw; height: 7.4cqw; border-radius: 50%; display: grid; place-items: center; background: var(--tinta); color: #ffd166; font: 800 4.6cqw/1 var(--f-titular);
+  animation: p-pregunta-late 1.1s ease-in-out infinite; }
+.lineas-dinero { position: absolute; inset: 0; z-index: 5; width: 100%; height: 100%; overflow: visible; }
+.lineas-dinero path { fill: none; stroke: rgba(20,17,42,.35); stroke-width: .45; stroke-dasharray: 1.2 1.4; stroke-linecap: round; opacity: 0; animation: p-fundir .4s ease var(--d, 0s) forwards; }
+
+/* Cada sí, su arreglo (tres, grandes) */
+.arreglos-3 { position: absolute; left: 7cqw; right: 14cqw; z-index: 6; display: grid; gap: 3cqw; }
+.arreglo-g { position: relative; display: flex; align-items: center; gap: 3.6cqw; padding: 3.2cqw 3.6cqw; border-radius: 4.8cqw; background: #fff; color: var(--tinta); box-shadow: var(--sombra-1);
+  opacity: 0; animation: p-arreglo .65s var(--sale) var(--d, 0s) forwards; }
+.arreglo-g .tile { flex: none; width: 12cqw; height: 12cqw; border-radius: 3.6cqw; display: grid; place-items: center; color: #fff; background: var(--tc);
+  box-shadow: inset 0 .4cqw 0 rgba(255,255,255,.35), inset 0 -.6cqw 0 rgba(0,0,0,.15), 0 1.4cqw 2.4cqw -.8cqw rgba(20,10,60,.45); }
+.arreglo-g .tile svg { width: 7.4cqw; height: 7.4cqw; }
+.arreglo-g small { display: block; font: 600 3cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: #6b6880; }
+.arreglo-g b { display: block; margin-top: 1.2cqw; font: 800 4.6cqw/1.15 var(--f-titular); letter-spacing: -.02em; }
+.arreglo-g .ok-a { position: absolute; right: -2.6cqw; top: -2.6cqw; width: 8cqw; height: 8cqw; border-radius: 50%; display: grid; place-items: center; color: #fff; background: var(--verde); box-shadow: 0 1cqw 2cqw rgba(0,80,40,.4);
+  opacity: 0; animation: p-escalar .4s var(--sale) calc(var(--d, 0s) + .35s) forwards; }
+.arreglo-g .ok-a svg { width: 5.6cqw; height: 5.6cqw; }
+
+/* Redes: un teléfono con publicaciones que salen solas */
+.post { position: absolute; left: 6%; right: 6%; z-index: 3; border-radius: 3.2cqw; background: #fff; overflow: hidden; box-shadow: 0 1.4cqw 3cqw -1cqw rgba(0,0,0,.35); opacity: 0; animation: p-post .6s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-post { from { opacity: 0; transform: translateY(8cqw) scale(.94) } to { opacity: 1; transform: none } }
+.post .foto-p { height: 12cqw; display: grid; place-items: center; color: #fff; }
+.post .foto-p svg { width: 9cqw; height: 9cqw; opacity: .9; }
+.post .pie-p { display: flex; align-items: center; gap: 1.6cqw; padding: 1.8cqw 2.4cqw; font: 600 2.6cqw/1 var(--f-mono); color: #6b6880; }
+.post .pie-p svg { width: 3.6cqw; height: 3.6cqw; color: #e8173a; }
+.posteado { position: absolute; z-index: 8; display: inline-flex; align-items: center; gap: 1.6cqw; padding: 1.8cqw 3cqw; border-radius: 99cqw; background: var(--tinta); color: #fff; font: 700 3.4cqw/1 var(--f-titular); box-shadow: var(--sombra-osc);
+  opacity: 0; animation: p-escalar .45s var(--sale) var(--d, 0s) forwards; }
+.posteado svg { width: 4.6cqw; height: 4.6cqw; color: #5ef0c9; }
+.presupuesto { position: absolute; left: 47cqw; right: 14cqw; z-index: 8; padding: 4cqw 4.4cqw; border-radius: 5cqw; background: #fff; color: var(--tinta); box-shadow: var(--sombra-1); opacity: 0; animation: p-tarjeta-entra .8s var(--sale) var(--d, 0s) forwards; }
+.presupuesto small { display: block; font: 600 2.9cqw/1.2 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--gris); }
+.presupuesto .monto-p { display: flex; align-items: baseline; gap: 1cqw; margin: 2cqw 0 3cqw; font: 800 12cqw/1 var(--f-titular); letter-spacing: -.05em; }
+.presupuesto .monto-p span.chico { font: 600 4cqw/1 var(--f-titular); color: var(--gris); letter-spacing: -.01em; }
+.presupuesto .riel { height: 1.8cqw; }
+.presupuesto .riel .perilla { width: 7cqw; height: 7cqw; margin: -3.5cqw 0 0 -3.5cqw; }
+.presupuesto .nota-p { margin-top: 3cqw; font: 600 3.4cqw/1.25 var(--f-titular); color: #3c3954; }
+.meta-chips { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; display: flex; flex-wrap: nowrap; gap: 1.4cqw; }
+.meta-chips span { display: inline-flex; align-items: center; gap: 1.2cqw; padding: 1.8cqw 2.2cqw; border-radius: 99cqw; background: #fff; color: var(--tinta); font: 700 3.3cqw/1 var(--f-titular); white-space: nowrap; box-shadow: var(--sombra-1);
+  opacity: 0; animation: p-escalar .45s var(--sale) var(--d, 0s) forwards; }
+.meta-chips span svg { width: 4cqw; height: 4cqw; color: #0a9e7f; }
+.meta-chips em { font: 600 2.8cqw/1 var(--f-mono); font-style: normal; letter-spacing: .06em; text-transform: uppercase; color: var(--gris); align-self: center; opacity: 0; animation: p-aparecer .4s ease var(--d, 0s) forwards; }
+
+/* La auditoría: el informe en PDF */
+.informe { position: absolute; left: 50%; z-index: 6; width: 62cqw; margin-left: -31cqw; perspective: 160cqw; opacity: 0; animation: p-tienda-sube .9s var(--sale) var(--d, 0s) forwards; }
+.informe .hoja { position: absolute; inset: 0; border-radius: 3cqw; background: #fff; box-shadow: var(--sombra-osc); transform-origin: 50% 100%; }
+.informe .hoja.h2 { animation: p-hoja-2 .9s var(--sale) calc(var(--d, 0s) + .5s) both; }
+.informe .hoja.h3 { animation: p-hoja-3 .9s var(--sale) calc(var(--d, 0s) + .6s) both; }
+@keyframes p-hoja-2 { from { transform: none } to { transform: rotate(-9deg) translate(-7cqw, 1cqw) } }
+@keyframes p-hoja-3 { from { transform: none } to { transform: rotate(8deg) translate(7cqw, 1.5cqw) } }
+.informe .portada-i { position: relative; z-index: 3; border-radius: 3cqw; overflow: hidden; background: #fff; box-shadow: var(--sombra-osc); }
+.informe .portada-i .franja { padding: 5cqw 5cqw 4cqw; background: linear-gradient(140deg, #7b4dff, #3b1aa8); color: #fff; }
+.informe .portada-i .franja small { display: block; font: 600 2.8cqw/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
+.informe .portada-i .franja b { display: block; margin-top: 1.6cqw; font: 800 6.6cqw/1.05 var(--f-titular); letter-spacing: -.03em; }
+.informe .portada-i .cuerpo-i { padding: 4cqw 5cqw 5cqw; color: var(--tinta); }
+.informe .linea-i { display: flex; align-items: center; gap: 2.4cqw; padding: 2cqw 0; border-bottom: .25cqw solid #eeebf5; font: 700 3.6cqw/1 var(--f-titular); opacity: 0; animation: p-aparecer .5s var(--sale) var(--d, 0s) forwards; }
+.informe .linea-i:last-child { border-bottom: 0; }
+.informe .linea-i svg { width: 5cqw; height: 5cqw; color: #6e3bff; }
+.informe .linea-i em { margin-left: auto; font: 600 2.8cqw/1 var(--f-mono); font-style: normal; color: var(--gris); }
+.sello-99 { position: absolute; z-index: 9; width: 30cqw; height: 30cqw; margin: -15cqw 0 0 -15cqw; border-radius: 50%; display: grid; place-items: center; align-content: center; color: #14112a;
+  background: radial-gradient(circle at 35% 30%, #ffe6a3, #ffc53d 55%, #e39c00); box-shadow: inset 0 0 0 1cqw rgba(255,255,255,.55), 0 3cqw 6cqw -1.4cqw rgba(120,70,0,.6); opacity: 0; transform: rotate(-12deg);
+  animation: p-sello-99 .7s cubic-bezier(.2,1.4,.4,1) var(--d, 0s) forwards; }
+@keyframes p-sello-99 { from { opacity: 0; transform: scale(1.8) rotate(-12deg) } to { opacity: 1; transform: rotate(-12deg) } }
+.sello-99 b { font: 800 11cqw/1 var(--f-titular); letter-spacing: -.05em; }
+.sello-99 small { font: 700 3cqw/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; }
+
+/* Tú contra tu competencia, y el plan con fechas */
+.comparar { padding: 4cqw 4.6cqw 4.4cqw; }
+.comparar .cab-c2 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.4cqw; font: 600 3cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--gris); }
+.comparar .leyenda { display: flex; gap: 3cqw; margin-bottom: 2cqw; font: 600 3cqw/1 var(--f-mono); color: #3c3954; }
+.comparar .leyenda i { display: inline-block; width: 3cqw; height: 3cqw; border-radius: .8cqw; margin-right: 1cqw; vertical-align: -.4cqw; }
+.fila-c { display: grid; grid-template-columns: 22cqw 1fr; align-items: center; gap: 2.4cqw; margin-top: 1.8cqw; }
+.fila-c span { font: 700 3.4cqw/1.1 var(--f-titular); }
+.fila-c .barras-c { display: grid; gap: .9cqw; }
+.fila-c .barras-c i { display: block; height: 2.4cqw; border-radius: 1.2cqw; width: var(--w); transform-origin: left; transform: scaleX(0); animation: p-rayar .8s var(--sale) var(--d, 0s) forwards; }
+.fila-c .tu { background: linear-gradient(90deg, #a98bff, #6e3bff); }
+.fila-c .ellos { background: #c9c5da; }
+.plan-f { padding: 4cqw 4.6cqw; }
+.plan-f .cab-c2 { margin-bottom: 1.6cqw; font: 600 3cqw/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--gris); display: flex; justify-content: space-between; }
+.paso-f { display: grid; grid-template-columns: 17cqw 1fr 6cqw; align-items: center; gap: 2cqw; padding: 1.8cqw 0; border-bottom: .25cqw dashed #e6e3ef; opacity: 0; animation: p-aparecer .5s var(--sale) var(--d, 0s) forwards; }
+.paso-f:last-child { border-bottom: 0; }
+.paso-f .sem { font: 700 3.1cqw/1 var(--f-mono); color: #6e3bff; }
+.paso-f b { font: 700 3.8cqw/1.15 var(--f-titular); letter-spacing: -.01em; }
+.paso-f .chk { width: 6cqw; height: 6cqw; color: var(--verde); }
+
+/* La prueba: tres sitios reales en sus teléfonos */
+.trabajo { position: absolute; left: 0; right: 0; z-index: 6; height: 92cqw; }
+.tel-t { position: absolute; top: 0; width: 30cqw; margin-left: -15cqw; opacity: 0; animation: p-tel-t .8s var(--sale) var(--d, 0s) forwards; }
+@keyframes p-tel-t { from { opacity: 0; transform: translateY(12cqw) rotate(var(--r0, 0deg)) } to { opacity: 1; transform: rotate(var(--r, 0deg)) } }
+.tel-t .marco-t { border-radius: 5cqw; padding: 1.3cqw; background: linear-gradient(145deg, #4a4560, #12111a); box-shadow: inset 0 0 0 .3cqw rgba(255,255,255,.15), var(--sombra-osc); }
+.tel-t img { display: block; width: 100%; aspect-ratio: 390 / 760; object-fit: cover; object-position: top; border-radius: 3.8cqw; }
+.tel-t p { margin: 3cqw 0 0; text-align: center; font: 700 3.3cqw/1.2 var(--f-titular); letter-spacing: -.01em; color: var(--tinta); }
+.tel-t p small { display: block; margin-top: .8cqw; font: 600 2.8cqw/1 var(--f-mono); letter-spacing: .04em; text-transform: uppercase; color: #6b4a6a; }
+
+/* La promesa: la conversación con una persona y tres garantías */
+.chat-judo { padding: 4cqw 4.4cqw; }
+.chat-judo .cab-j { display: flex; align-items: center; gap: 2.8cqw; padding-bottom: 2.6cqw; margin-bottom: 2.4cqw; border-bottom: .25cqw solid #f0ece6; }
+.chat-judo .cab-j .av { width: 10cqw; height: 10cqw; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(140deg, #25d366, #12a54e); color: #fff; }
+.chat-judo .cab-j .av svg { width: 6cqw; height: 6cqw; }
+.chat-judo .cab-j b { display: block; font: 800 4.4cqw/1.1 var(--f-titular); }
+.chat-judo .cab-j small { display: block; margin-top: .6cqw; font: 600 3cqw/1 var(--f-mono); color: #067a62; }
+.chat-judo .bur { width: fit-content; max-width: 86%; margin-top: 1.8cqw; padding: 2.6cqw 3.4cqw; border-radius: 4cqw; font: 600 4cqw/1.28 var(--f-titular); opacity: 0; animation: p-globo .5s var(--sale) var(--d, 0s) forwards; }
+.chat-judo .bur.cli { margin-left: auto; background: #dcf8c6; border-bottom-right-radius: 1cqw; }
+.chat-judo .bur.judo { background: #f3f1f8; border-bottom-left-radius: 1cqw; }
+.garantias { position: absolute; left: 8cqw; right: 14cqw; z-index: 7; display: grid; gap: 2cqw; }
+.garantias span { display: flex; align-items: center; gap: 2.4cqw; padding: 2.4cqw 3.4cqw; border-radius: 99cqw; background: var(--tinta); color: #fff; font: 700 4cqw/1 var(--f-titular); letter-spacing: -.01em; box-shadow: var(--sombra-1);
+  opacity: 0; animation: p-arreglo .55s var(--sale) var(--d, 0s) forwards; }
+.garantias span svg { width: 5.4cqw; height: 5.4cqw; color: #5ef0c9; flex: none; }
+
+/* El llamado: una sola acción */
+.cta-boton { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; display: flex; align-items: center; justify-content: center; gap: 2.4cqw; padding: 4.4cqw 4cqw; border-radius: 99cqw; color: var(--tinta); font: 800 5cqw/1 var(--f-titular); letter-spacing: -.02em;
+  background: linear-gradient(140deg, #ffe6a3, #ffc53d 60%, #f59e0b); box-shadow: 0 3cqw 6cqw -1.6cqw rgba(0,0,0,.55), inset 0 .5cqw 0 rgba(255,255,255,.5); opacity: 0; animation: p-escalar .6s var(--sale) var(--d, 0s) forwards; }
+.cta-boton svg { width: 6cqw; height: 6cqw; }
+.cta-nota { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; font: 600 4cqw/1.35 var(--f-titular); color: rgba(255,255,255,.92); opacity: 0; animation: p-aparecer .5s var(--sale) var(--d, 0s) forwards; }
+.cta-nota b { color: #fff; }
+.cta-wa { position: absolute; left: 8cqw; right: 14cqw; z-index: 8; display: flex; align-items: center; gap: 2.6cqw; padding: 3cqw 4cqw; border-radius: 4.4cqw; background: linear-gradient(140deg, #25d366, #12a54e); color: #fff; font: 700 4.6cqw/1.1 var(--f-titular);
+  box-shadow: 0 2cqw 4cqw -1.4cqw rgba(0,0,0,.45); opacity: 0; animation: p-aparecer .6s var(--sale) var(--d, 0s) forwards; }
+.cta-wa svg { width: 7cqw; height: 7cqw; flex: none; }
+.cta-wa small { display: block; font: 600 3cqw/1 var(--f-mono); letter-spacing: .04em; opacity: .9; margin-bottom: .8cqw; }
