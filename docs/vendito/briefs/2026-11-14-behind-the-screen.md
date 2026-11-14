@@ -1,6 +1,6 @@
 # Brief · «Behind the screen» · v1
 
-Estado: **en producción v1** (14 nov 2026). Video en
+Estado: **entregado v1, falta que Junior grabe sus tres tomas** (14 nov 2026). Video en
 `scripts/video/judo-detras-pantalla-en/`.
 
 ## El pedido de Junior (14 nov 2026, resumido)
@@ -88,21 +88,57 @@ de C el engranaje que se rompe, en el cuerpo 3.
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Gancho | 0:00,0 | 3,6 | Voz | Íconos de trabajo físico: casco, herramientas, cocina, campo, camión. «Everyone knows Latinos work hard.» | Everyone knows Latinos work hard. |
 | 2 | Gancho | 0:03,6 | 3,6 | Voz | Los íconos se apartan y se abre una laptop con código a las 2:14 AM. «Few talk about the ones behind a screen.» | Few talk about the ones behind a screen. |
-| 3 | Introducción | 0:07,2 | 7,2 | **Junior a cámara** | Junior · Founder, Judo Marketing · Miami | I'm one of them. My name is Junior. I left Venezuela in 2015, escaping Maduro's dictatorship. |
+| 3 | Introducción | 0:07,2 | 7,2 | **Junior a cámara** | Junior · Founder, Judo Marketing · Miami | I'm one of them. I'm Junior. I left Venezuela in 2015, escaping Maduro's dictatorship. |
 | 4 | Cuerpo 1 | 0:14,4 | 6,0 | Voz | La ruta Caracas → Miami y la línea 2015 → hoy | Like so many immigrants, I've given this country my best. |
-| 5 | Cuerpo 1 | 0:20,4 | 4,2 | Voz | Un teclado, café, 2:00 AM. «We work just as hard. Just on a keyboard.» | We work just as hard. Just on a keyboard. |
+| 5 | Cuerpo 1 | 0:20,4 | 4,2 | Voz | Un teclado; la laptop se suma a las herramientas de los seis oficios. «Same hard work. Different tools.» | Same hard work. Just different tools. |
 | 6 | Bucle | 0:24,6 | 1,8 | Voz | «But hard work alone…» | But hard work alone… |
 | 7 | Cuerpo 2 | 0:26,4 | 4,8 | Voz | Una torre gigante contra una tienda chica; una palanca levanta a la grande. «Leverage beats size.» | …doesn't beat bigger companies. Leverage does. |
 | 8 | Cuerpo 2 | 0:31,2 | 3,6 | Voz | El logo de Judo Marketing y lo que hace | So I built Judo Marketing. |
 | 9 | Bucle | 0:34,8 | 1,8 | Voz | «What's broken in your business?» | What's broken? |
-| 10 | Cuerpo 3 | 0:36,6 | 6,0 | Voz | La máquina de engranajes: uno se rompe, entra uno nuevo y la máquina corre mejor | Complex problems need complex solutions. We rebuild the machine. |
-| 11 | Cuerpo 3 | 0:42,6 | 6,6 | **Junior a cámara** | (su cara) | Whatever problem your business is facing, I found you for a reason. Tell me about it, and together we'll find the solution. |
+| 10 | Cuerpo 3 | 0:36,6 | 6,0 | Voz | La máquina de engranajes: uno se rompe, entra uno nuevo con IA y la máquina corre mejor | Complex problems need smart solutions. We rebuild the machine. |
+| 11 | Cuerpo 3 | 0:42,6 | 6,6 | **Junior a cámara** | (su cara) | This video found you for a reason. Tell me what's broken. Together, we'll fix it. |
 | 12 | Cuerpo 3 | 0:49,2 | 4,8 | Voz | Código + IA y un medidor que sube: «To the level you want. Or higher.» | With code and AI, we take your business further. |
 | 13 | Cuerpo 3 | 0:54,0 | 4,8 | Voz | El peso de llevar una empresa (web, anuncios, mensajes, redes) y otra mano que ayuda a cargarlo | Or help you carry the weight of running a company. |
 | 14 | Llamado | 0:58,8 | 6,0 | **Junior a cámara** | (su cara) | Tell me your problem. For ninety-nine dollars, I'll give you a diagnosis and an action plan. |
-| 15 | Llamado | 1:04,8 | 7,2 | Voz | «Tell me your problem.» WhatsApp grande; «$99 · diagnosis + action plan»; judomarketing.net/diagnostic | Message me on WhatsApp. Let's take your business to the next level. |
+| 15 | Llamado | 1:04,8 | 7,2 | Voz | «Tell me your problem.» WhatsApp grande; «$99 · diagnosis + action plan · a PDF in 3 business days»; judomarketing.net/diagnostic | Message me on WhatsApp. I'll answer you myself. |
 
 Total: 72,0 s.
+
+## Prueba del humano (v1, cuadros del video y la voz)
+
+Dos revisores sin el brief: una dueña venezolana de una empresa de limpieza
+en Doral (3/10) y un dueño estadounidense, no latino, de aire acondicionado
+en Fort Lauderdale (2/10).
+
+- **Lo que funcionó:** los dos se vieron en la palanca contra los grandes
+  («esas son las franquicias que salen antes que yo en Google») y en la caja
+  pesada que carga «You» sola. Les dio confianza que Junior dé la cara, el
+  precio fijo y el WhatsApp de Miami.
+- **Lo que se arregló en el momento:**
+  - **La escoba y el teclado.** «We work just as hard. Just on a keyboard»,
+    después de la escoba, hizo sentir a la dueña de limpieza que se
+    comparaba: «como si yo fuera la de la escoba y él el de la computadora».
+    Ahora dice **«Same hard work. Different tools.»** y la laptop se suma a
+    las herramientas de los oficios. Sale el «Coffee #3».
+  - **«I found you for a reason»** sonaba raro («no me encontró, me salió un
+    anuncio»; «como si me espiaran»): ahora **«This video found you for a
+    reason.»**
+  - **«Complex solutions»** sonaba a complicado: **«smart solutions»**.
+  - **«Next level»** sonaba vacío: el cierre dice **«I'll answer you
+    myself»**, el contacto humano que pidió Junior.
+  - **«¿Qué recibo por $99?»:** el cierre dice **«A PDF in 3 business
+    days»**.
+- **Lo que se queda porque lo pidió Junior** (y su riesgo va en «Ojo»):
+  - **Maduro e inmigración.** Los dos se pusieron en guardia («suena al
+    debate de inmigración», «siento que usa lo que pasamos para vender»).
+  - **Su historia primero.** Los dos querían su problema primero. El
+    video es de historia por pedido de Junior; el gancho por el problema
+    queda entre los otros ganchos.
+- **Lo que piden y depende de Junior:** un caso real de un negocio chico
+  con números, la versión en español (o subtítulos), si los $99 se
+  descuentan y un teléfono para llamar o mandar texto además de WhatsApp.
+- **Para quién es, de verdad:** dueños latinos e inmigrantes. Para el
+  público general, «Count your yeses» funciona mejor.
 
 ## Por confirmar (lo decide Junior)
 

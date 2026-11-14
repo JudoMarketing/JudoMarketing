@@ -39,10 +39,10 @@
   [
    {
     "t": 20.4,
-    "texto": "We work just as hard. Just on a keyboard.",
-    "ve": "We work just as hard. Just on a keyboard.",
-    "como": "Firme en «just as hard», con una sonrisa en «keyboard».",
-    "clip": "just-as"
+    "texto": "Same hard work. Just different tools.",
+    "ve": "Same hard work. Different tools.",
+    "como": "Con respeto y orgullo, de igual a igual. Pausa corta después de «work».",
+    "clip": "same-work"
    }
   ],
   [
@@ -84,8 +84,8 @@
   [
    {
     "t": 36.6,
-    "texto": "Complex problems need complex solutions. We rebuild the machine.",
-    "ve": "Complex problems, complex solutions. Rebuilt · running better.",
+    "texto": "Complex problems need smart solutions. We rebuild the machine.",
+    "ve": "Complex problems, smart solutions. Rebuilt · running better.",
     "como": "Como un ingeniero que sabe lo que hace. Pausa corta después de «solutions».",
     "clip": "complex-problems",
     "hasta": 42.6
@@ -113,9 +113,9 @@
   [
    {
     "t": 64.8,
-    "texto": "Message me on WhatsApp. Let's take your business to the next level.",
-    "ve": "Tell me your problem · WhatsApp · $99 diagnosis + action plan",
-    "como": "Cálido y directo, como una invitación. Sonríe en «next level».",
+    "texto": "Message me on WhatsApp. I'll answer you myself.",
+    "ve": "Tell me your problem · WhatsApp · $99 diagnosis + action plan · a PDF in 3 business days",
+    "como": "Cálido y cercano, como una promesa entre personas. «I'll answer you myself» despacio.",
     "clip": "message-me"
    }
   ]

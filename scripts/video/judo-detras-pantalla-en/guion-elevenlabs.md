@@ -22,7 +22,7 @@ Vendito el 14 de noviembre de 2026.
 
 ## Todo el texto seguido (para leerlo de corrido)
 
-> Everyone knows Latinos work hard. Few talk about the ones behind a screen. Like so many immigrants, I've given this country my best. We work just as hard. Just on a keyboard. But hard work alone… …doesn't beat bigger companies. Leverage does. So I built Judo Marketing. What's broken? Complex problems need complex solutions. We rebuild the machine. With code and AI, we take your business further. Or help carry the weight of running a company. Message me on WhatsApp. Let's take your business to the next level.
+> Everyone knows Latinos work hard. Few talk about the ones behind a screen. Like so many immigrants, I've given this country my best. Same hard work. Just different tools. But hard work alone… …doesn't beat bigger companies. Leverage does. So I built Judo Marketing. What's broken? Complex problems need smart solutions. We rebuild the machine. With code and AI, we take your business further. Or help carry the weight of running a company. Message me on WhatsApp. I'll answer you myself.
 
 ## Antes de generar
 
@@ -40,7 +40,7 @@ Vendito el 14 de noviembre de 2026.
 
 ## Cómo generarlo
 
-1. **Primero genera solo el clip 9** (el más largo) y mira cuánto
+1. **Primero genera solo el clip 3** (el más largo) y mira cuánto
    dura en el reproductor de ElevenLabs. Debe durar **5,9 s o
    menos**.
    - Si dura **5,9 s o menos:** perfecto, sigue con velocidad
@@ -64,15 +64,15 @@ que puede durar sin pisar la escena siguiente.
 | 1 | 0:00,0 | 2,7 s | **3,5 s** | Everyone knows Latinos work hard. | `01_000.0_everyone-knows.mp3` |
 | 2 | 0:03,6 | 3,0 s | **3,5 s** | Few talk about the ones behind a screen. | `02_003.6_behind-screen.mp3` |
 | 3 | 0:14,4 | 4,8 s | **5,9 s** | Like so many immigrants, I've given this country my best. | `03_014.4_so-many.mp3` |
-| 4 | 0:20,4 | 3,3 s | **4,1 s** | We work just as hard. Just on a keyboard. | `04_020.4_just-as.mp3` |
+| 4 | 0:20,4 | 2,7 s | **4,1 s** | Same hard work. Just different tools. | `04_020.4_same-work.mp3` |
 | 5 | 0:24,6 | 1,5 s | **1,7 s** | But hard work alone… | `05_024.6_hard-work.mp3` |
 | 6 | 0:26,4 | 3,6 s | **4,7 s** | …doesn't beat bigger companies. Leverage does. | `06_026.4_leverage-does.mp3` |
 | 7 | 0:31,2 | 2,4 s | **3,5 s** | So I built Judo Marketing. | `07_031.2_built-judo.mp3` |
 | 8 | 0:34,8 | 0,9 s | **1,7 s** | What's broken? | `08_034.8_whats-broken.mp3` |
-| 9 | 0:36,6 | 5,1 s | **5,9 s** | Complex problems need complex solutions. We rebuild the machine. | `09_036.6_complex-problems.mp3` |
+| 9 | 0:36,6 | 4,8 s | **5,9 s** | Complex problems need smart solutions. We rebuild the machine. | `09_036.6_complex-problems.mp3` |
 | 10 | 0:49,2 | 3,6 s | **4,7 s** | With code and AI, we take your business further. | `10_049.2_code-ai.mp3` |
 | 11 | 0:54,0 | 3,9 s | **4,7 s** | Or help carry the weight of running a company. | `11_054.0_carry-weight.mp3` |
-| 12 | 1:04,8 | 5,1 s | **7,1 s** | Message me on WhatsApp. Let's take your business to the next level. | `12_064.8_message-me.mp3` |
+| 12 | 1:04,8 | 3,9 s | **7,1 s** | Message me on WhatsApp. I'll answer you myself. | `12_064.8_message-me.mp3` |
 
 ## Si un clip sale más largo que su máximo
 
@@ -134,12 +134,12 @@ Like so many immigrants, I've given this country my best.
 ### Clip 4 · empieza en 0:20,4 · máximo 4,1 s
 
 ```
-We work just as hard. Just on a keyboard.
+Same hard work. Just different tools.
 ```
 
-- **En pantalla:** We work just as hard. Just on a keyboard.
-- **Cómo decirlo:** Firme en «just as hard», con una sonrisa en «keyboard».
-- **Archivo:** `04_020.4_just-as.mp3`
+- **En pantalla:** Same hard work. Different tools.
+- **Cómo decirlo:** Con respeto y orgullo, de igual a igual. Pausa corta después de «work».
+- **Archivo:** `04_020.4_same-work.mp3`
 
 ### Clip 5 · empieza en 0:24,6 · máximo 1,7 s
 
@@ -184,10 +184,10 @@ What's broken?
 ### Clip 9 · empieza en 0:36,6 · máximo 5,9 s
 
 ```
-Complex problems need complex solutions. We rebuild the machine.
+Complex problems need smart solutions. We rebuild the machine.
 ```
 
-- **En pantalla:** Complex problems, complex solutions. Rebuilt · running better.
+- **En pantalla:** Complex problems, smart solutions. Rebuilt · running better.
 - **Cómo decirlo:** Como un ingeniero que sabe lo que hace. Pausa corta después de «solutions».
 - **Archivo:** `09_036.6_complex-problems.mp3`
 
@@ -214,9 +214,9 @@ Or help carry the weight of running a company.
 ### Clip 12 · empieza en 1:04,8 · máximo 7,1 s
 
 ```
-Message me on WhatsApp. Let's take your business to the next level.
+Message me on WhatsApp. I'll answer you myself.
 ```
 
-- **En pantalla:** Tell me your problem · WhatsApp · $99 diagnosis + action plan
-- **Cómo decirlo:** Cálido y directo, como una invitación. Sonríe en «next level».
+- **En pantalla:** Tell me your problem · WhatsApp · $99 diagnosis + action plan · a PDF in 3 business days
+- **Cómo decirlo:** Cálido y cercano, como una promesa entre personas. «I'll answer you myself» despacio.
 - **Archivo:** `12_064.8_message-me.mp3`

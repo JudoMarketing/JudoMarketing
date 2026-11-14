@@ -16,23 +16,23 @@ pedido: `docs/vendito/briefs/2026-11-14-behind-the-screen.md`.
 | --- | --- | --- | --- |
 | 1 · Gancho | 0:00 a 0:07,2 | «Everyone knows Latinos work hard.» (seis oficios) y «Few talk about the ones behind a screen.» (una laptop a las 2:14 AM) | Everyone knows Latinos work hard. Few talk about the ones behind a screen. |
 | 2 · Introducción | 0:07,2 a 0:14,4 | **Junior a cámara**, con su nombre | I'm one of them. I'm Junior. I left Venezuela in 2015, escaping Maduro's dictatorship. |
-| 3 · Cuerpo 1 | 0:14,4 a 0:24,6 | El vuelo Caracas → Miami y la línea 2015 → hoy. El teclado a las 2:00 AM | Like so many immigrants, I've given this country my best. We work just as hard. Just on a keyboard. |
+| 3 · Cuerpo 1 | 0:14,4 a 0:24,6 | El vuelo Caracas → Miami y la línea 2015 → hoy. El teclado, y la laptop que se suma a las herramientas de los seis oficios | Like so many immigrants, I've given this country my best. Same hard work. Just different tools. |
 | 4 · Bucle | 0:24,6 a 0:26,4 | «But hard work alone…» | But hard work alone… |
 | 5 · Cuerpo 2 | 0:26,4 a 0:34,8 | La palanca: la tienda chica levanta a la torre grande. «So I built Judo Marketing.» | …doesn't beat bigger companies. Leverage does. So I built Judo Marketing. |
 | 6 · Bucle | 0:34,8 a 0:36,6 | «What's broken in your business?» | What's broken? |
-| 7 · Cuerpo 3 | 0:36,6 a 0:58,8 | El engranaje que se rompe y el nuevo con IA. **Junior a cámara.** Código + IA y el medidor que pasa la meta. El peso de la empresa, compartido | Complex problems need complex solutions… Whatever problem your business has, I found you for a reason… With code and AI, we take your business further. Or help carry the weight of running a company. |
-| 8 · Llamado | 0:58,8 a 1:12 | **Junior a cámara**: el diagnóstico de $99. Después, «Tell me your problem.», el WhatsApp y la oferta | Tell me your problem. For ninety-nine dollars, I'll give you a diagnosis and an action plan. Message me on WhatsApp. Let's take your business to the next level. |
+| 7 · Cuerpo 3 | 0:36,6 a 0:58,8 | El engranaje que se rompe y el nuevo con IA. **Junior a cámara.** Código + IA y el medidor que pasa la meta. El peso de la empresa, compartido | Complex problems need smart solutions. We rebuild the machine. This video found you for a reason. Tell me what's broken. Together, we'll fix it. With code and AI, we take your business further. Or help carry the weight of running a company. |
+| 8 · Llamado | 0:58,8 a 1:12 | **Junior a cámara**: el diagnóstico de $99. Después, «Tell me your problem.», el WhatsApp y la oferta (un PDF en 3 días hábiles) | Tell me your problem. For ninety-nine dollars, I'll give you a diagnosis and an action plan. Message me on WhatsApp. I'll answer you myself. |
 
 ## El pie de video (Instagram, Facebook, TikTok)
 
 ```
 Everyone knows Latinos work hard. Few talk about the ones behind a screen. 👇
 
-I'm Junior. I left Venezuela in 2015, and since then I've given this country my best, like so many immigrants. Code, AI and a lot of 2 AM coffee.
+I'm Junior. I left Venezuela in 2015, and since then I've given this country my best, like so many immigrants. Same hard work, different tools: code and AI.
 
 I built Judo Marketing on one idea from judo: leverage beats size. Your competitor can be bigger. You can still win.
 
-Whatever is broken in your business (your website, your ads, the messages nobody answers, or just the weight of running it all), tell me about it. For $99 I'll send you a diagnosis and an action plan.
+Whatever is broken in your business (your website, your ads, the messages nobody answers, or just the weight of running it all), tell me about it. For $99 I'll send you a diagnosis and an action plan, as a PDF, in 3 business days. I answer you myself.
 
 👉 WhatsApp +1 305 934 9981
 judomarketing.net/diagnostic
