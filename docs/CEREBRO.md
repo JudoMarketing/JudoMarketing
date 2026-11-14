@@ -806,10 +806,11 @@ Los errores de diseño de los sitios están en la sección 2 y en
     limpio. Para soltar el puerto se mata el `next-server` por su número
     (`ps aux | grep next-server`), y se mira el log de arranque: «Ready», no
     «EADDRINUSE». En producción se comprueba el estilo calculado de algo nuevo.
-  - En Vercel pasó lo mismo: el primer deploy salió con el CSS viejo (el caché
-    de build se restaura). La herramienta de Vercel no deja publicar sin caché;
-    se arregla cambiando `src/app/globals.css` (su comentario «Versión del
-    CSS» está para eso), que obliga a recompilar el CSS completo.
+  - En Vercel pasó lo mismo: el deploy salió con el CSS viejo porque Vercel
+    restaura el caché de build. Cambiar `globals.css` no bastó: el build
+    compiló en 3 segundos y sacó el mismo archivo CSS. La herramienta de Vercel
+    no deja publicar sin caché. Lo que sirve es cambiar la línea «Versión del
+    caché de build» de `next.config.ts`, que invalida todo el caché de webpack.
 - **Un build falló por una descarga de Google Fonts.**
   - Regla: un fallo de red en el build se reintenta una vez antes de tocar
     código. Si falla dos veces, el problema es nuestro.

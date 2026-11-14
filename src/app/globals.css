@@ -4,9 +4,9 @@
    local guardan el CSS ya compilado de este archivo. Si un archivo NUEVO trae
    clases de Tailwind que nadie más usa, el build puede reusar el CSS viejo y
    esas clases no existen en producción (el $99 de /diagnostic salió a 16 px).
-   Se arregla cambiando algo en este archivo, que obliga a recompilarlo. Por
-   eso, después de publicar una página nueva, se mide en producción el estilo
-   de algo nuevo. Versión del CSS: 2026-11-14. */
+   Cambiar este archivo NO basta: se cambia la «Versión del caché de build»
+   de next.config.ts, que invalida todo el caché. Después de publicar una
+   página nueva, se mide en producción el estilo de algo nuevo. */
 
 @theme {
   /* Paleta oficial Judo Marketing (docs/BRAND.md)
