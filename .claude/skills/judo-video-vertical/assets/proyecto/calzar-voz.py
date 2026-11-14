@@ -8,7 +8,9 @@
 # por segundo; en español, a 5,5.
 # "t" es el segundo en que empieza la escena de esa frase (sale de
 # salida/escenas.json del video final, no del storyboard). Cada bloque es una
-# generación de ElevenLabs.
+# generación de ElevenLabs. Desde el 14 nov 2026 cada bloque lleva una sola
+# frase (un clip por escena, sin <break>) y "uso_max": 0.85: ninguna frase
+# ocupa más del 85 % de su escena, medida a 3,3 sílabas por segundo.
 #
 # Uso:
 #   python3 calzar-voz.py voz.json --guion
@@ -20,13 +22,13 @@
 #   python3 calzar-voz.py voz.json bloque-1.mp3 bloque-2.mp3 …
 #       Corta cada bloque en sus frases (por los silencios más largos), pone
 #       cada frase en el segundo de su escena (si no cabe, la acelera hasta un
-#       12 %) y mezcla la voz con el video con voz.py.
+#       10 %) y mezcla la voz con el video con voz.py.
 import json, os, re, subprocess, sys
 
 D = os.path.dirname(os.path.abspath(__file__))
 FF = subprocess.run(["python3", "-c", "import imageio_ffmpeg as f;print(f.get_ffmpeg_exe())"],
                     capture_output=True, text=True).stdout.strip() or "ffmpeg"
-ACELERA_MAX = 1.12
+ACELERA_MAX = 1.10  # hasta 10 %: más se nota (investigación de Vendito, 14 nov 2026)
 PAUSA_MIN, PAUSA_MAX = 0.3, 3.0  # ElevenLabs no lee pausas de más de 3 s
 
 
@@ -35,7 +37,8 @@ def silabas_en(texto):
     muda del final («made», «price»), con la «-ed» que no suena («reached») y
     con «-le» y «-es» que sí («people», «courses»)."""
     raras = {"facebook": 2, "judito": 3, "miami": 3, "guru": 2, "meta": 2, "whatsapp": 2,
-             "instagram": 3, "every": 2, "business": 2, "area": 3, "idea": 3, "create": 2}
+             "instagram": 3, "every": 2, "business": 2, "businesses": 3, "area": 3, "idea": 3, "create": 2,
+             "ninety": 2, "twenty": 2, "thirty": 2, "forty": 2, "fifty": 2}
     t = re.sub(r"(?i)juditoads", "judito ads", texto.lower()).replace("’", "'")
     n = 0
     for p in re.findall(r"[a-z']+", t):
@@ -120,7 +123,7 @@ def guion(cfg):
     planes = plan(cfg)
     for b, filas in planes:
         for f, d, sale, _ in filas:
-            ok = d <= f["hueco"] * 0.95
+            ok = d <= f["hueco"] * cfg.get("uso_max", 0.95)
             malas += not ok
             tarde = f"  (+{sale - f['t']:.1f} s)" if sale - f["t"] > 0.05 else ""
             print(f"{f['t']:5.1f}–{f['t'] + f['hueco']:5.1f}  {f['hueco']:4.1f}s  {d:4.1f}s  {sale:5.1f}{tarde}  "

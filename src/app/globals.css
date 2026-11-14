@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Ojo con el caché del build (14 de noviembre de 2026): Vercel y el .next
+   local guardan el CSS ya compilado de este archivo. Si un archivo NUEVO trae
+   clases de Tailwind que nadie más usa, el build puede reusar el CSS viejo y
+   esas clases no existen en producción (el $99 de /diagnostic salió a 16 px).
+   Cambiar este archivo NO basta: se cambia la «Versión del caché de build»
+   de next.config.ts, que invalida todo el caché. Después de publicar una
+   página nueva, se mide en producción el estilo de algo nuevo. */
+
 @theme {
   /* Paleta oficial Judo Marketing (docs/BRAND.md)
      El fondo y las superficies se aclararon (08/2026): el negro casi puro

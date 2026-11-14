@@ -1,78 +1,131 @@
-# «Count your yeses» (video en inglés de Judo Marketing)
+# «Count your yeses» v3 (video en inglés de Judo Marketing)
 
-Pedido de Junior en la Biblioteca el 13 de noviembre de 2026, sobre el
-carrusel «Turn off your phone»: un video con la misma estructura de todos (8
-piezas), diseño de primera con muchos vectores y sombras, en inglés, y con un
-guion para ElevenLabs que calce con los tiempos del video.
+La primera tarea de Vendito, el 14 de noviembre de 2026. Junior pidió que
+fuera **el video más poderoso que tenemos para atraer clientes**:
 
-Dura 54 segundos, 13 escenas. Las 6 preguntas, los datos y las respuestas
-son los del carrusel (`scripts/carrusel/judo-preguntas-en/texto.md`).
+- el dolor de los dueños que pierden clientes o no dan abasto;
+- que Judo maneja sus redes y hace anuncios, con el presupuesto diario que
+  ellos eligen, desde $5;
+- un mensaje fuerte para quien tiene dinero para invertir y no sabe dónde;
+- la auditoría de $99 que lo compara con la competencia y trae un plan con
+  fechas;
+- la promesa de un servicio mejor que el que ya tiene, con contacto humano.
+
+Dura 72 segundos, 16 escenas. El brief, los ángulos y la prueba del humano
+están en `docs/vendito/briefs/2026-11-14-count-your-yeses.md`. La voz va en
+16 clips: `guion-elevenlabs.md`.
 
 ## El guion en 8 piezas
 
 | Pieza | Segundos | En pantalla | Voz |
 | --- | --- | --- | --- |
-| 1 · Gancho | 0:00 – 0:05,4 | «Turn off your phone.» (el teléfono se apaga) y «Is your business still selling?» (el letrero pasa de OPEN a CLOSED) | Turn off your phone. Is your business still selling? |
-| 2 · Introducción | 0:05,4 – 0:08,4 | «6 questions. Count your yeses.» | Six questions. Count your yeses. |
-| 3 · Cuerpo 1 | 0:08,4 – 0:15,6 | Pregunta 1: el formulario lleno de bots. Pregunta 2: esperar a alguien para cambiar un precio | One: is your contact form full of bots? Two: to change a price, do you wait on someone? |
-| 4 · Bucle | 0:15,6 – 0:17,4 | «#3 made the news…» | Number three made the news… |
-| 5 · Cuerpo 2 | 0:17,4 – 0:25,8 | Pregunta 3: PHP2Shell, 9,2 de 10, 7 de cada 10 sitios usan PHP. Pregunta 4: los mensajes sin responder a las 11:47 | PHP2Shell. Seven in ten sites run PHP. Is yours patched? Four: when you don't answer, do sales stop? |
-| 6 · Bucle | 0:25,8 – 0:27,6 | «#5 costs less than you think…» | Five costs less than you think… |
-| 7 · Cuerpo 3 | 0:27,6 – 0:46,8 | Pregunta 5: anuncios desde $5 al día. Pregunta 6: las visitas que nadie mide. «Every yes has a fix.» y las 6 respuestas | Want ads, but don't know where to start? Test with five dollars a day. Six: how many people visited your site this week? Every yes has a fix… |
-| 8 · Llamado | 0:46,8 – 0:54,0 | «All of this is fixed one chat away.» y «Said yes to any? Message us.» con WhatsApp, web e Instagram | All of this is fixed one chat away. Said yes to any? Message us on WhatsApp. |
+| 1 · Gancho | 0:00 a 0:06 | «Business owners» y «Turn off your phone.» (el teléfono se apaga). «Is your business still selling?»: la tienda, rodeada de rubros, pasa de OPEN a CLOSED | Turn off your phone. Is your business still selling? |
+| 2 · Introducción | 0:06 a 0:09 | «3 questions. Count your yeses.» | Three questions. Count your yeses. |
+| 3 · Cuerpo 1 | 0:09 a 0:16,8 | Pregunta 1: un cliente escribe a las 9:04 PM y nadie contesta. Pregunta 2: la bandeja se llena de pedidos, citas, presupuestos y llamadas perdidas | Texts at night. Anyone answering? More calls and orders than you can handle? |
+| 4 · Bucle | 0:16,8 a 0:18,6 | «Then what happens…» y el reloj de arena | Then what happens… |
+| 5 · Cuerpo 2 | 0:18,6 a 0:28,8 | «By morning, they hired your competitor.»: tu competencia contestó a las 9:06 PM, tú a las 7:12 AM. Pregunta 3: «Ready to invest… but not sure where it works best?» con anuncios, web y redes | By morning, they hired your competitor. Ready to invest… but not sure where it works best? |
+| 6 · Bucle | 0:28,8 a 0:30,6 | «Here’s the good news.» | Here's the good news. |
+| 7 · Cuerpo 3 | 0:30,6 a 1:04,8 | Un arreglo por cada sí. Redes y anuncios con el presupuesto diario desde $5 («You pick it. Paid straight to Meta.») y la meta: llamadas, citas, pedidos. La auditoría de $99 por dentro. Tú contra tu competencia y el plan con fechas. Tres sitios reales hechos por Judo. La promesa, con una persona real por WhatsApp | Every yes has a fix… We run your social media and ads… Before you spend a dollar: our ninety-nine dollar audit… Our promise: better service than you have now. A real person. |
+| 8 · Llamado | 1:04,8 a 1:12 | «Said yes to any?» cierra el juego. «Get your $99 audit.» Qué pasa después de pagar (nos cuentas de tu negocio y en 3 días hábiles llega el plan en PDF), un solo botón (judomarketing.net/diagnostic) y el WhatsApp para preguntas | Said yes to any? Get your audit at judomarketing.net. |
 
-## Lo que cambió respecto del carrusel
+## Lo que cambió desde la v1 y por qué
 
-- **Los bucles nombran el número** («#3 made the news…», «#5 costs less than
-  you think…») porque el video lleva arriba el rastreador «Question 3 / 6»: así
-  el bucle y el rastreador cuentan lo mismo.
-- **La pregunta 1 dice «full of bots»** y no «flooded with bot messages»: es
-  más corta y cabe en tres líneas grandes.
-- **Los $5 al día** son los de la versión en inglés del carrusel (pedido de
-  Junior del 30 de octubre). Están por encima del mínimo de $1 de Meta.
+- **De 6 preguntas a 3, una por cada dolor que eligió Junior.** Salen los
+  bots, PHP2Shell y las visitas: no eran los dolores del pedido.
+- **Entra la consecuencia:** el cliente que escribió de noche contrató a tu
+  competencia. Es lo que hace sentir la pérdida, y conecta con la auditoría
+  que te compara con ella.
+- **Sin JuditoADS.** Judo maneja las redes y los anuncios. El $5 se muestra
+  como **presupuesto diario de anuncios que elige el dueño y se paga a Meta**,
+  para que nadie crea que es nuestro precio.
+- **Una sola acción al final:** la auditoría de $99. El WhatsApp queda para
+  preguntas.
+- **La voz va en 16 clips, uno por escena,** escrita para el ritmo lento de
+  ElevenLabs. La razón está en `guion-elevenlabs.md`.
 
-## Pie de video
+## Lo que cambió gracias a la prueba del humano
+
+Dos revisores sin contexto (dueña de restaurante y contratista) leyeron el
+guion v2 y le pusieron 4 y 3 de 10. Lo que dijeron y lo que se hizo:
+
+- **«Parece una plantilla, no hay nada real».** Entran tres sitios reales
+  hechos por Judo (Pachy Pinchos, Denali CRT, Delivery Rush) y el informe de
+  la auditoría por dentro.
+- **«¿$5 al día es lo que les pago a ustedes?».** Ahora dice «Daily ad
+  budget», «You pick it» y «Paid straight to Meta».
+- **«24/7 suena a bot».** Dice lo que es: «An AI assistant answers 24/7», y
+  la promesa pone aparte a la persona real.
+- **«No quiero tráfico, quiero llamadas».** La meta de los anuncios son
+  llamadas, citas y pedidos.
+- **«El restaurante no me representa».** El gancho dice «Business owners» y
+  la tienda tiene fichas de restaurante, construcción, salón y clínica.
+- **«El final pide demasiadas cosas».** Un solo botón.
+- **Lo que les gustó y se quedó:** la pregunta del mensaje de noche, la del
+  dinero, la competencia que se lleva al cliente, «Before you spend a
+  dollar» y el plan con fechas.
+
+Los mismos dos perfiles vieron después los cuadros de la v3 con la voz (4 y
+4 de 10). Los dos se vieron en el mensaje de noche y en la competencia, y les
+dio confianza ver sitios reales y que el dinero de los anuncios va a Meta. Lo
+que se arregló en el momento:
+
+- **«Nunca me dicen qué hago con mis sí».** El cierre empieza con «Said yes
+  to any?».
+- **«¿Qué pasa después de pagar?».** La nota del cierre lo dice: «Tell us
+  about your business. In 3 business days, your plan arrives as a PDF.»
+
+Lo que piden y depende de Junior está en el brief, «Por confirmar»: una cara
+o un nombre, un caso real con números, el precio mensual, si los $99 se
+descuentan y la versión en español.
+
+## El pie de video (Instagram, Facebook, TikTok)
 
 ```
-Turn off your phone for a day. Does your business keep selling? 👇
+Your competitor answered at 9:06 PM. You answered at 7:12 AM. 👇
 
-6 quick questions: bots in your contact form, waiting on someone to change a price, October’s PHP flaw, unanswered messages, ads and website visits.
-Count your yeses. Every yes has a fix.
+Count your yeses:
+1. Customers text at night and nobody answers.
+2. More calls and orders than you can handle.
+3. Ready to invest, but not sure where it works best.
 
-Message us on WhatsApp: +1 305 934 9981. We’ll tell you honestly if we can help.
+Businesses that reply within an hour are nearly 7x more likely to qualify a lead than those that reply an hour later (Harvard Business Review, 2011).
+
+We run your social media and your ads. You pick the daily ad budget, from $5, paid straight to Meta.
+
+Before you spend a dollar: our $99 audit. We compare you with your competitors and send you a plan with deadlines, as a PDF, in 3 business days.
+
+👉 judomarketing.net/diagnostic
+Questions? WhatsApp +1 305 934 9981
 
 How many yeses did you get?
 
-#MiamiBusiness #MiamiSmallBusiness #SmallBusinessTips #MiamiEntrepreneur
+#MiamiBusiness #SmallBusinessMiami #LocalBusinessMarketing #SocialMediaAds
 ```
 
-## Los otros cuatro ganchos
+## El texto del anuncio (125 caracteres o menos)
 
-1. «6 questions. Count your yeses.» (empieza por el juego).
-2. «38 messages in your inbox. One is a real customer.» (la bandeja de bots).
-3. «7 in 10 websites run PHP. Is yours patched?» (la noticia de octubre).
-4. «It’s 11:47 PM. Two customers are waiting.» (la pantalla bloqueada).
-
-## De dónde sale cada dato
-
-- **7 de cada 10 sitios usan PHP:** W3Techs (en pantalla dice «Source:
-  W3Techs»).
-- **PHP2Shell, crítica, 9,2 de 10, 21 de octubre de 2026:** los boletines que
-  usó el carrusel.
-- **Las 6 respuestas:** el código de Judo y de JuditoADS, igual que en el
-  carrusel.
-- **La bandeja, el chat, la pantalla bloqueada, el anuncio y el tablero** son
-  ejemplos dibujados; el anuncio lleva la etiqueta «Example».
-
-## Cómo se cambia
-
-```bash
-cd scripts/video/judo-phone-off-en
-python3 armar.py && python3 build.py && node revisar.mjs   # «Sin problemas de texto»
-node render.mjs --hilos 4                                  # o solo las escenas que cambian: node render.mjs e05
-python3 musica.py && python3 sfx.py && python3 montar.py Judo-turn-off-your-phone && python3 qa.py salida/Judo-turn-off-your-phone.mp4
-python3 calzar-voz.py voz.json --guion                     # la voz: ninguna frase «NO CABE»
+```
+Said yes to any? Before you spend a dollar, get our $99 audit vs. your competitors. judomarketing.net/diagnostic
 ```
 
-Los estilos propios están en `diseno.css`; los dibujos (teléfono, tienda,
-reloj de arena, periódico, etiqueta, mapa y globo) en `armar.py`.
+(112 caracteres.)
+
+## Los otros ganchos (por si quieres probar otro)
+
+1. **«Your competitor answered first.»** Empieza por la conversación de las
+   9:06 PM contra la de las 7:12 AM. Más fuerte, pero empieza por el enemigo
+   y no por el dueño.
+2. **«What happens to your business in 24 hours without you?»** Bueno para el
+   dolor de no contestar; flojo para el del dinero.
+3. **«Ready to invest? Don’t spend a dollar yet.»** Va directo a la
+   auditoría; sirve para el público que ya conoce a Judo.
+4. **«A customer texted at 9:04 PM. Did anyone answer?»** La misma escena
+   del cuerpo 1, puesta de gancho.
+
+## Portada y texto alternativo
+
+- **Portada:** el cuadro de «Turn off your phone.» con el teléfono (sale de
+  `qa.py` como `salida/portada.jpg`).
+- **Texto alternativo:** «Video de Judo Marketing: tres preguntas para dueños
+  de negocio (mensajes de noche, demasiada demanda y dónde invertir), redes y
+  anuncios desde $5 al día y una auditoría de $99 contra la competencia.»

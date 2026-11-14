@@ -1,163 +1,265 @@
-# «Count your yeses» · guion para ElevenLabs
+# «Count your yeses» · guion para ElevenLabs, un clip por escena
 
-Es el guion del video en inglés «Count your yeses» (las 6 preguntas de «Turn
-off your phone», 54 segundos), para tu voz clonada en ElevenLabs. Pedido tuyo
-del 13 de noviembre de 2026 en la Biblioteca: «las voces deben coincidir con
-el timing del video».
+Es el guion de la voz del video en inglés «Count your yeses» v3 (72 segundos,
+16 escenas), para tu voz clonada en ElevenLabs. Lo hizo Vendito el 14 de
+noviembre de 2026.
 
-**Cómo se hizo para que calce:**
+## Por qué la voz va en un clip por escena
 
-- **Cada frase empieza en su escena** y dice lo que muestra la pantalla en ese
-  segundo (la tabla del final lo pone lado a lado).
-- **Las escenas se midieron contra la voz antes de renderizar.** Una frase no
-  cabía (la de los anuncios): se acortó la frase y la escena pasó de 4,2 a
-  4,8 s.
-- **En la lista de arreglos, cada arreglo se dice cuando entra su tarjeta.**
-  Las pausas del bloque 6 están puestas para eso.
-- **Se probó antes de entregarlo:** un borrador con una voz de prueba puesta
-  en el video, transcrito para comprobar que se entiende y cae en su escena.
-  Está en la Biblioteca como «Borrador con voz de prueba».
+- **Antes iba en bloques largos con pausas `<break>`.** La voz de prueba
+  calzaba porque habla rápido y parejo. ElevenLabs habla más lento (de 3,3 a
+  4,3 sílabas por segundo), y cada frase un poco más larga empujaba a todas
+  las que venían detrás en el mismo bloque. Al final del bloque, el atraso ya
+  se notaba.
+- **Ahora va en 16 clips, uno por escena, sin pausas adentro.** Cada clip
+  empieza en el segundo exacto de su escena, así que un clip largo no puede
+  atrasar al siguiente.
+- **Las frases se escribieron para la voz lenta.** Se midieron a
+  3,3 sílabas por segundo y ninguna ocupa más del
+  85 % de su escena: si tu voz sale un
+  poco más lenta, todavía cabe.
 
 ## Todo el texto seguido (para leerlo de corrido)
 
-> Turn off your phone. Is your business still selling? Six questions. Count
-> your yeses. One: is your contact form full of bots? Two: to change a price,
-> do you wait on someone? Number three made the news… PHP2Shell. Seven in ten
-> sites run PHP. Is yours patched? Four: when you don't answer, do sales
-> stop? Five costs less than you think… Want ads, but don't know where to
-> start? Test with five dollars a day. Six: how many people visited your site
-> this week? Every yes has a fix. Bot-proof forms. Prices you change. No PHP,
-> daily backups. Juditos that answer. Guided ads. Your visits, in your portal.
-> All of this is fixed one chat away. Said yes to any? Message us on WhatsApp.
+> Turn off your phone. Is your business still selling? Three questions. Count your yeses. Texts at night. Anyone answering? More calls and orders than you can handle? Then what happens… By morning, they hired your competitor. Ready to invest… but not sure where it works best? Here's the good news. Every yes has a fix. We handle all three. We run your social media and ads. Ad budgets from five dollars a day. Before you spend a dollar: our ninety-nine dollar audit. We compare you to your competitors and give you a plan with deadlines. Sites we built for real businesses. Our promise: better service than you have now. A real person. Said yes to any? Get your audit at judomarketing.net.
 
 ## Antes de generar
 
-- **Tu voz clonada habla inglés** con Eleven Multilingual v2: pega el texto
-  tal cual y el modelo detecta el idioma solo.
-- **«PHP2Shell» y «PHP»** se dicen letra por letra: «P-H-P two shell». Si
-  ElevenLabs lo lee junto, escríbelo así en el bloque 3: `P H P two Shell`.
-  Eso solo cambia lo que lee ElevenLabs; la pantalla sigue diciendo PHP2Shell.
-- **«Juditos»** se dice como en español. Si lo lee raro, escríbelo como lo
-  pronuncias («Hooditos»).
-- **Los números van en letras** («six questions», «five dollars»).
-- **Son 7 bloques.** Cada uno empieza en un cambio de escena y ninguno pasa de
-  11 segundos, para que una diferencia de ritmo no se vaya sumando.
+- **Modelo:** Eleven Multilingual v2. No pongas `<break>`: cada clip es una
+  sola frase.
+- **Ajustes de la voz, iguales en los 16 clips:**
+  - Estabilidad: 45 %.
+  - Similitud: 80 %.
+  - Exageración de estilo: entre 10 y 20 %.
+  - Speaker boost: encendido.
+  - Velocidad: 1,0.
+- **Los números van en letras** («five dollars», «ninety-nine dollar»), y la
+  web se dice «judo marketing dot net». Si ElevenLabs lee raro
+  «judomarketing.net», escríbelo así: `Judo Marketing dot net`.
 
 ## Cómo generarlo
 
-1. **Modelo:** Eleven Multilingual v2, que respeta las pausas
-   `<break time="…" />`. Si usas Eleven v3, borra esas etiquetas.
-2. **Ajustes de la voz:**
-   - Estabilidad: 45 %.
-   - Similitud: 80 %.
-   - Exageración de estilo: entre 10 y 20 % (este video juega más que los de
-     JuditoADS).
-   - Speaker boost: encendido.
-   - Velocidad: 1,0 para empezar.
-3. **Genera solo el bloque 6 y mira cuánto dura** (ElevenLabs lo muestra en
-   el reproductor). Es el más largo y el que más tiene que calzar: debe durar
-   unos 10 s. Con esta tabla eliges la velocidad para todos los bloques; si
-   cambia, vuelve a generar el 6:
+1. **Primero genera solo el clip 11** (el más largo) y mira cuánto
+   dura en el reproductor de ElevenLabs. Debe durar **7,1 s o
+   menos**.
+   - Si dura **7,1 s o menos:** perfecto, sigue con velocidad
+     1,0.
+   - Si dura **de 7,1 a 7,8 s:** sube
+     la velocidad a 1,1 y genéralo otra vez.
+   - Si dura **más de 7,8 s:** avísame. Hay que acortar
+     frases (las escenas no se alargan).
+2. **Genera los otros clips** con los mismos ajustes y la misma velocidad. Si
+   un clip sale raro, repite solo ese.
+3. **Baja cada clip en MP3 con el nombre de la tabla.** El número de adelante
+   es la escena y el segundo del medio es donde va.
 
-| Si el bloque 6 dura | Velocidad para los 7 bloques |
-| --- | --- |
-| menos de 9 s | 0,95 |
-| de 9 a 10,4 s | 1,0 (así está bien) |
-| de 10,4 a 10,8 s | 1,05 |
-| de 10,8 a 11,4 s | 1,1 |
-| más de 11,4 s | 1,15, y avísame: hay que acortar frases |
+## La línea de tiempo
 
-4. **Genera los otros bloques** con la misma velocidad y baja cada uno en MP3:
-   `bloque-1.mp3` a `bloque-7.mp3`. Si una frase sale rara, repite solo ese
-   bloque.
+«Largo ideal» es lo que debería durar el clip con tu voz. «Máximo» es lo más
+que puede durar sin pisar la escena siguiente.
+
+| Clip | Empieza en | Largo ideal | Máximo | Texto | Archivo |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 0:00,0 | 1,2 s | **2,9 s** | Turn off your phone. | `01_000.0_turn-off.mp3` |
+| 2 | 0:03,0 | 2,1 s | **2,9 s** | Is your business still selling? | `02_003.0_still-selling.mp3` |
+| 3 | 0:06,0 | 2,4 s | **2,9 s** | Three questions. Count your yeses. | `03_006.0_three-questions.mp3` |
+| 4 | 0:09,0 | 2,7 s | **3,5 s** | Texts at night. Anyone answering? | `04_009.0_texts-night.mp3` |
+| 5 | 0:12,6 | 3,0 s | **4,1 s** | More calls and orders than you can handle? | `05_012.6_more-calls.mp3` |
+| 6 | 0:16,8 | 1,2 s | **1,7 s** | Then what happens… | `06_016.8_what-happens.mp3` |
+| 7 | 0:18,6 | 3,3 s | **4,7 s** | By morning, they hired your competitor. | `07_018.6_by-morning.mp3` |
+| 8 | 0:23,4 | 3,9 s | **5,3 s** | Ready to invest… but not sure where it works best? | `08_023.4_ready-invest.mp3` |
+| 9 | 0:28,8 | 1,2 s | **1,7 s** | Here's the good news. | `09_028.8_good-news.mp3` |
+| 10 | 0:30,6 | 3,6 s | **4,7 s** | Every yes has a fix. We handle all three. | `10_030.6_every-yes.mp3` |
+| 11 | 0:35,4 | 5,7 s | **7,1 s** | We run your social media and ads. Ad budgets from five dollars a day. | `11_035.4_social-media.mp3` |
+| 12 | 0:42,6 | 4,8 s | **5,9 s** | Before you spend a dollar: our ninety-nine dollar audit. | `12_042.6_spend-dollar.mp3` |
+| 13 | 0:48,6 | 5,5 s | **6,5 s** | We compare you to your competitors and give you a plan with deadlines. | `13_048.6_compare-competitors.mp3` |
+| 14 | 0:55,2 | 2,4 s | **3,5 s** | Sites we built for real businesses. | `14_055.2_sites-built.mp3` |
+| 15 | 0:58,8 | 5,0 s | **5,9 s** | Our promise: better service than you have now. A real person. | `15_058.8_our-promise.mp3` |
+| 16 | 1:04,8 | 4,8 s | **7,1 s** | Said yes to any? Get your audit at judomarketing.net. | `16_064.8_said-yes.mp3` |
+
+## Si un clip sale más largo que su máximo
+
+- **Hasta un 5 % más largo:** acelera ese clip a 1,05×. No se nota.
+- **Hasta un 10 % más largo:** acelera a 1,1×. Es lo máximo.
+- **Más que eso:** genéralo otra vez con velocidad 1,1, o avísame y acorto la
+  frase.
 
 ## Para que quede exacto: súbelos a la Biblioteca
 
 En la Biblioteca Judo, abre la ficha de **Count your yeses** y, en «Subir una
-versión nueva o tu voz», elige los 7 MP3 a la vez. Después dime **«calza la
-voz de Count your yeses»**. Corto cada bloque en sus frases, pongo cada una en
-el segundo exacto de su escena (si alguna se pasa, la acelero hasta un 12 %),
-bajo la música cuando hablas y te dejo el video terminado en la Biblioteca.
+versión nueva o tu voz», elige los 16 MP3 a la vez. Después dime **«calza la
+voz de Count your yeses»**. Pongo cada clip en el segundo de su escena (si
+alguno se pasa, lo acelero hasta un 10 %), bajo la música cuando hablas y te
+dejo el video terminado en la Biblioteca.
 
 ## Si lo armas tú en CapCut
 
-- **Cada bloque va en el segundo que dice su título,** no uno detrás del otro.
-- **Si una frase se ve corrida,** corta el audio en el silencio que tiene antes
-  y muévela al segundo de su escena (tabla del final).
+1. **Pon el video** y, encima, una pista de audio.
+2. **Cada clip va en el segundo de la columna «Empieza en»**, no uno detrás
+   del otro. Para encontrar el segundo, agranda la línea de tiempo con dos
+   dedos hasta ver las décimas.
+3. **Si un clip pisa el siguiente,** tócalo, entra en «Velocidad» y súbelo a
+   1,05× (no se nota) o, como mucho, a 1,1×.
+4. **Baja la música** a un 20 % debajo de la voz.
 
-## Bloque 1 · va en 0:00,0 · dura unos 7,3 s
+## Cada clip, con lo que se ve y cómo decirlo
 
-```
-Turn off your phone. <break time="1.4s" />
-Is your business still selling? <break time="1.3s" />
-Six questions. Count your yeses.
-```
-
-## Bloque 2 · va en 0:08,4 · dura unos 6,7 s
+### Clip 1 · empieza en 0:00,0 · máximo 2,9 s
 
 ```
-One: is your contact form full of bots? <break time="1.2s" />
-Two: to change a price, do you wait on someone?
+Turn off your phone.
 ```
 
-## Bloque 3 · va en 0:15,6 · dura unos 5,2 s
+- **En pantalla:** Business owners · Turn off your phone.
+- **Cómo decirlo:** Tranquilo y bajo, como un reto. Termina en «phone»: la pantalla se apaga en 0:01,6.
+- **Archivo:** `01_000.0_turn-off.mp3`
+
+### Clip 2 · empieza en 0:03,0 · máximo 2,9 s
 
 ```
-Number three made the news… <break time="0.4s" />
-PHP2Shell. Seven in ten sites run PHP. Is yours patched?
+Is your business still selling?
 ```
 
-## Bloque 4 · va en 0:22,2 · dura unos 5,1 s
+- **En pantalla:** Is your business still selling?
+- **Cómo decirlo:** Una pregunta de verdad, un poco preocupado. Sube en «still selling». El letrero pasa a CLOSED en 0:04,5.
+- **Archivo:** `02_003.0_still-selling.mp3`
+
+### Clip 3 · empieza en 0:06,0 · máximo 2,9 s
 
 ```
-Four: when you don't answer, do sales stop? <break time="1.0s" />
-Five costs less than you think…
+Three questions. Count your yeses.
 ```
 
-## Bloque 5 · va en 0:27,6 · dura unos 8,1 s
+- **En pantalla:** 3 questions. Count your yeses.
+- **Cómo decirlo:** Más energía, amable, como quien empieza un juego. Sonríe en «yeses».
+- **Archivo:** `03_006.0_three-questions.mp3`
+
+### Clip 4 · empieza en 0:09,0 · máximo 3,5 s
 
 ```
-Want ads, but don't know where to start? Test with five dollars a day. <break time="0.7s" />
-Six: how many people visited your site this week?
+Texts at night. Anyone answering?
 ```
 
-## Bloque 6 · va en 0:36,0 · dura unos 10 s
+- **En pantalla:** A customer texts at 9:04 PM. Anyone answering?
+- **Cómo decirlo:** Bajito, de noche. Una pausa corta después de «night».
+- **Archivo:** `04_009.0_texts-night.mp3`
+
+### Clip 5 · empieza en 0:12,6 · máximo 4,1 s
 
 ```
-Every yes has a fix. <break time="0.2s" />
-Bot-proof forms. <break time="0.2s" />
-Prices you change. <break time="0.2s" />
-No PHP, daily backups. <break time="0.1s" />
-Juditos that answer. <break time="0.1s" />
-Guided ads. <break time="0.1s" />
-Your visits, in your portal.
+More calls and orders than you can handle?
 ```
 
-## Bloque 7 · va en 0:46,8 · dura unos 5 s
+- **En pantalla:** More calls and orders than you can handle?
+- **Cómo decirlo:** Más rápido, un poco agobiado, como si la bandeja se llenara mientras hablas.
+- **Archivo:** `05_012.6_more-calls.mp3`
+
+### Clip 6 · empieza en 0:16,8 · máximo 1,7 s
 
 ```
-All of this is fixed one chat away. <break time="0.5s" />
-Said yes to any? Message us on WhatsApp.
+Then what happens…
 ```
 
-## Cada frase en su escena
+- **En pantalla:** Then what happens…
+- **Cómo decirlo:** Más lento. Baja la voz en «happens» y déjalo en el aire.
+- **Archivo:** `06_016.8_what-happens.mp3`
 
-«Voz de prueba» es lo que tardó cada frase en el borrador, ya puesta en el
-video. Todas caben; la de «#5» va justa (1,7 s de 1,8) y el calce la acelera
-un 1 %, que no se nota.
+### Clip 7 · empieza en 0:18,6 · máximo 4,7 s
 
-| Escena | Lo que se ve | Voz de prueba | Frase | Quiere decir | Cómo decirla |
-| --- | --- | --- | --- | --- | --- |
-| 0:00,0 – 0:02,4 | «Turn off your phone.»: el botón rojo se desliza y la pantalla se apaga (0:01,2) | 1,0 s | Turn off your phone. | Apaga tu teléfono. | Tranquilo, casi un reto en voz baja. Termina en «phone», cuando la pantalla se pone negra. |
-| 0:02,4 – 0:05,4 | «Is your business still selling?»: la tienda a las 11:47 PM; el letrero pasa de OPEN a CLOSED (0:03,9) | 1,6 s | Is your business still selling? | ¿Tu negocio sigue vendiendo? | Pregunta de verdad. Sube en «still selling». |
-| 0:05,4 – 0:08,4 | «6 questions. Count your yeses.»: seis fichas y «Yes / No» | 2,0 s | Six questions. Count your yeses. | Seis preguntas. Cuenta tus «sí». | Sube la energía, como quien empieza un juego. |
-| 0:08,4 – 0:12,0 | Pregunta 1: la bandeja llega a 38 mensajes de bots y la clienta real se enciende | 2,4 s | One: is your contact form full of bots? | Uno: ¿tu formulario de contacto está lleno de bots? | Ligero, con algo de gracia. «One» en el golpe. |
-| 0:12,0 – 0:15,6 | Pregunta 2: el chat del lunes al jueves y el reloj de arena | 2,8 s | Two: to change a price, do you wait on someone? | Dos: para cambiar un precio, ¿esperas a alguien? | Un poco cansado en «wait on someone», como quien ya lo vivió. |
-| 0:15,6 – 0:17,4 | «#3 made the news…» y el periódico que llega girando | 1,3 s | Number three made the news… | La número tres salió en las noticias… | Más bajo y lento. Déjala colgando: la música se queda sola. |
-| 0:17,4 – 0:22,2 | Pregunta 3: la alerta PHP2Shell, 9,2 de 10, y «7 in 10 websites run PHP» | 4,5 s | PHP2Shell. Seven in ten sites run PHP. Is yours patched? | PHP2Shell. Siete de cada diez sitios usan PHP. ¿El tuyo tiene el parche? | Serio y claro. «P-H-P two shell» despacio. Marca «patched». |
-| 0:22,2 – 0:25,8 | Pregunta 4: el teléfono bloqueado a las 11:47 y dos mensajes sin responder | 2,5 s | Four: when you don't answer, do sales stop? | Cuatro: cuando no contestas, ¿se paran las ventas? | Cercano, un poco preocupado. |
-| 0:25,8 – 0:27,6 | «#5 costs less than you think…» y la etiqueta de precio | 1,7 s | Five costs less than you think… | La cinco cuesta menos de lo que crees… | Secreto con sonrisa, y rápido: la escena dura 1,8 s. La música se vuelve a quedar sola. |
-| 0:27,6 – 0:32,4 | Pregunta 5: el presupuesto sube a $5 al día, Miami · 10 mi, el dedo toca «Publish ad» (0:30,4) | 3,8 s | Want ads, but don't know where to start? Test with five dollars a day. | ¿Quieres anuncios pero no sabes por dónde empezar? Prueba con cinco dólares al día. | Vuelve la energía. «Five dollars a day» cuando el dedo toca el botón. |
-| 0:32,4 – 0:36,0 | Pregunta 6: el tablero de visitas vacío, el «?» y «You're paying blind.» | 2,7 s | Six: how many people visited your site this week? | Seis: ¿cuánta gente visitó tu sitio esta semana? | Curioso, pregunta de verdad. Pausa corta después de «six». |
-| 0:36,0 – 0:46,8 | «Every yes has a fix.» y las 6 tarjetas: formularios 0:37,7; precios 0:38,6; PHP 0:39,7; Juditos 0:41,6; anuncios 0:43,2; visitas 0:44,0 | 9,0 s | Every yes has a fix. Bot-proof forms. Prices you change. No PHP, daily backups. Juditos that answer. Guided ads. Your visits, in your portal. | Cada sí tiene arreglo. Formularios sin bots. Precios que cambias tú. Sin PHP, con copias diarias. Juditos que contestan. Anuncios guiados. Tus visitas, en tu portal. | Seguro y cálido. Di cada arreglo cuando entra su tarjeta. |
-| 0:46,8 – 0:54,0 | «All of this is fixed one chat away.»; después «Said yes to any? Message us.» con WhatsApp, la web y el Instagram (0:49,8) | 4,0 s | All of this is fixed one chat away. Said yes to any? Message us on WhatsApp. | Todo esto se arregla a un chat de distancia. ¿Dijiste que sí a alguna? Escríbenos por WhatsApp. | El tono más humano del video. Pausa antes de «Said yes to any?», cuando cambia la pantalla. |
+```
+By morning, they hired your competitor.
+```
+
+- **En pantalla:** By morning, they hired your competitor.
+- **Cómo decirlo:** Sin drama, como un hecho. Un golpe chico en «competitor».
+- **Archivo:** `07_018.6_by-morning.mp3`
+
+### Clip 8 · empieza en 0:23,4 · máximo 5,3 s
+
+```
+Ready to invest… but not sure where it works best?
+```
+
+- **En pantalla:** Ready to invest… but not sure where it works best?
+- **Cómo decirlo:** Con respeto, de dueño a dueño. Una pausa corta después de «invest».
+- **Archivo:** `08_023.4_ready-invest.mp3`
+
+### Clip 9 · empieza en 0:28,8 · máximo 1,7 s
+
+```
+Here's the good news.
+```
+
+- **En pantalla:** Here’s the good news.
+- **Cómo decirlo:** Cálido, con una sonrisa que se oiga. Rápido.
+- **Archivo:** `09_028.8_good-news.mp3`
+
+### Clip 10 · empieza en 0:30,6 · máximo 4,7 s
+
+```
+Every yes has a fix. We handle all three.
+```
+
+- **En pantalla:** Every yes has a fix.
+- **Cómo decirlo:** Seguro y tranquilo. «We handle all three» más lento, como una promesa.
+- **Archivo:** `10_030.6_every-yes.mp3`
+
+### Clip 11 · empieza en 0:35,4 · máximo 7,1 s
+
+```
+We run your social media and ads. Ad budgets from five dollars a day.
+```
+
+- **En pantalla:** We run your social media and your ads · Daily ad budget $5 · You pick it. Paid straight to Meta.
+- **Cómo decirlo:** Claro, como explicándole a un amigo. «Five dollars a day» despacio: la tarjeta de $5 cuenta en 0:38,6.
+- **Archivo:** `11_035.4_social-media.mp3`
+
+### Clip 12 · empieza en 0:42,6 · máximo 5,9 s
+
+```
+Before you spend a dollar: our ninety-nine dollar audit.
+```
+
+- **En pantalla:** Before you spend a dollar: our $99 audit.
+- **Cómo decirlo:** Inclínate hacia adelante, como un buen consejo. Una parada chica después de «dollar».
+- **Archivo:** `12_042.6_spend-dollar.mp3`
+
+### Clip 13 · empieza en 0:48,6 · máximo 6,5 s
+
+```
+We compare you to your competitors and give you a plan with deadlines.
+```
+
+- **En pantalla:** You vs. your competitors. A plan with deadlines.
+- **Cómo decirlo:** Firme y concreto. Marca «deadlines».
+- **Archivo:** `13_048.6_compare-competitors.mp3`
+
+### Clip 14 · empieza en 0:55,2 · máximo 3,5 s
+
+```
+Sites we built for real businesses.
+```
+
+- **En pantalla:** Real websites we built.
+- **Cómo decirlo:** Orgulloso pero simple. Sin voz de vendedor.
+- **Archivo:** `14_055.2_sites-built.mp3`
+
+### Clip 15 · empieza en 0:58,8 · máximo 5,9 s
+
+```
+Our promise: better service than you have now. A real person.
+```
+
+- **En pantalla:** Our promise: better service than you have now.
+- **Cómo decirlo:** Sincero, más lento. Pausa después de «promise». «A real person» más suave, en serio.
+- **Archivo:** `15_058.8_our-promise.mp3`
+
+### Clip 16 · empieza en 1:04,8 · máximo 7,1 s
+
+```
+Said yes to any? Get your audit at judomarketing.net.
+```
+
+- **En pantalla:** Said yes to any? · Get your $99 audit · judomarketing.net/diagnostic · Questions? Message me
+- **Cómo decirlo:** Cálido y directo, como cerrando el juego: «Said yes to any?» con una sonrisa, pausa corta, y la dirección natural: «judo marketing dot net».
+- **Archivo:** `16_064.8_said-yes.mp3`

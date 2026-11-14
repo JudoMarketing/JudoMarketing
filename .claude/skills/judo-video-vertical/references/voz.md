@@ -49,12 +49,21 @@ segundo antes de su escena y el gancho no cabía en su moneda.
    anterior: si se midiera desde el inicio de su escena con un mínimo fijo,
    el atraso se sumaría frase tras frase (al video 2 le pasó: 1,2 s en un
    solo bloque). La columna «sale» tiene que coincidir con la escena.
-4. **Bloques cortos:** cada uno empieza en un cambio de escena y dura hasta
-   unos 11 s. El guion dice cuánto debe durar el bloque 1, con una tabla de
-   velocidad de ElevenLabs para cuando la voz habla más lento o más rápido.
-5. **En inglés** se pone `"idioma": "en"` en `voz.json`: cuenta sílabas en
-   inglés y mide a 4,2 por segundo. Las frases salen más cortas que en
-   español.
+4. **Para ElevenLabs, un clip por escena, no bloques** (lección del 14 de
+   noviembre de 2026: el guion en bloques con pausas calzó con la voz de
+   prueba y se desfasó con la voz clonada de Junior, porque cada diferencia
+   de ritmo se suma dentro del bloque). En `voz.json` cada bloque lleva una
+   sola frase, sin `<break>`. El guion dice de cada clip su segundo de inicio
+   y su largo máximo, con su nombre de archivo (`NN_SSS.s_dos-palabras.mp3`).
+5. **Se escribe para la voz real, no para la de prueba:** ElevenLabs
+   Multilingual v2 habla a unas 3,3 a 4,3 sílabas por segundo en inglés. Se
+   pone `"silabas_por_segundo": 3.3` y `"uso_max": 0.85` en `voz.json`, y
+   `--guion` avisa cualquier frase que ocupe más del 85 % de su escena (deja
+   0,3 s libres o más). Si se mide la voz
+   clonada del cliente (un párrafo de unas 100 sílabas a speed 1,0), se usa
+   el 90 % de su ritmo. Detalle y fuentes: `docs/vendito/investigacion/elevenlabs.md`.
+6. **En inglés** se pone `"idioma": "en"` en `voz.json` (cuenta sílabas en
+   inglés). Los números van escritos como se dicen («ninety-nine dollars»).
 
 ## El tono
 
@@ -91,9 +100,14 @@ python3 calzar-voz.py voz.json bloque-1.mp3 bloque-2.mp3 …
   frases del largo esperado: así una coma o unos «...» no se confunden con
   el final de una frase.
 - Pone cada frase en el segundo de su escena. Si no cabe, la acelera hasta un
-  12 %. Si aun así se pasa, la siguiente entra un poco después en vez de
+  10 % (más se nota). Si aun así se pasa, la siguiente entra un poco después en vez de
   pisarla, y lo avisa.
 - Al final llama a `voz.py`, que baja los efectos mientras habla.
+
+**Si el cliente arma la voz en CapCut:** cada clip va en el segundo que dice
+el guion, sin el silencio del principio. Si uno se pasa, se acelera hasta un
+5 % (no se nota) o un 10 % como máximo; si hace falta más, se regenera o se
+acorta la frase.
 
 **Si la voz es grabada de una sola toma:**
 
