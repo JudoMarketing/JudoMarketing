@@ -8,6 +8,12 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **16 nov · Propuestas a clientes, «Websites we've built»:** después del
+  precio y antes del contacto va una página con los websites que hemos hecho,
+  todos en una sola página: qué hace cada uno en pocas palabras, su link y la
+  foto de su landing. Los seis de Junior: God's Home, Delivery Rush Florida,
+  Denali CRT, The Equipment Source (se dice que es una propuesta de diseño),
+  Paradise Ranch 22 y Pachy Pinchos. Primera vez en la propuesta de NV Labs.
 - **16 nov · NV Labs, propuesta final:** cambia el precio del plan (contrato de
   12 meses, el precio no baja después del mes 12) y suma una sección opcional
   de anuncios en redes (precio mensual + el presupuesto que el cliente elige,
