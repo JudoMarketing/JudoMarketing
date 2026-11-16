@@ -8,6 +8,11 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **16 nov · NV Labs, propuesta final:** cambia el precio del plan (contrato de
+  12 meses, el precio no baja después del mes 12) y suma una sección opcional
+  de anuncios en redes (precio mensual + el presupuesto que el cliente elige,
+  con una recomendación para empezar un mes y evaluar). Los montos van solo
+  en el PDF del cliente, fuera del repositorio, que es público.
 - **14 nov · Junior a cámara:** en el video «Behind the screen» Junior entra
   a cámara y habla en algunas escenas; en el resto va su voz en off (inglés).
 - **14 nov · Junior es de Táchira, Venezuela** (no de Caracas: se corrigió en
