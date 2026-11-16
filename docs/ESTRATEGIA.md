@@ -41,7 +41,7 @@ clientes activos, fecha ____`.
 | # | Parte | Estado | Dueño |
 | --- | --- | --- | --- |
 | 1 | Cuota de inicio y precios claros | ✅ En producción (2 oct 2026) | Hecho |
-| 2 | Prospección que encuentra a quien no rankea, con precios en el correo | ✅ En producción con fuentes gratis (12 oct 2026): OpenStreetMap, Sunbiz, Lighthouse y búsqueda web; Google apagado por costo | Rutina diaria |
+| 2 | Prospección que encuentra a quien no rankea, con precios en el correo | ⏸ Pausada desde el 26 oct 2026 (Junior: «muchos errores»; `PAUSADA = true` en `/api/leads/cron`). Antes, en producción con fuentes gratis (12 oct 2026) | Rutina diaria |
 | 3 | Nicho de salud mental: página, keywords y prospección | ✅ En producción (2 oct 2026) | Rutina diaria |
 | 4 | Llamadas diarias a la lista de la rutina | ⏳ Empieza Junior | Junior |
 | 5 | Programa de referidos | ❓ Espera decisión | Junior decide, Claude construye |
@@ -145,6 +145,7 @@ clientes. Detalle en `LEADS.md`, "Entregabilidad".
 | Semana | Ingreso mensual | Clientes activos | Correos enviados | Clics | Respuestas | Llamadas | Citas | Clientes nuevos |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 2026-10-05 | | | | | | | | |
+| 2026-11-16 | | | 0 (pausada desde el 26 oct) | 1 | 0 | | | |
 
 La auditoría de los lunes llena lo que puede medir sola (correos, clics,
 bajas, visitas) y deja en blanco lo que solo Junior sabe (ingreso, llamadas,

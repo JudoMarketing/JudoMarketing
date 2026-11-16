@@ -123,7 +123,7 @@ ningún cortafuegos los bloquea.
 
 | Sitio | Palabras sin JS | Datos estructurados | Sitemap | Lo que falta |
 | --- | --- | --- | --- | --- |
-| judomarketing.net | 403 | Negocio, WebSite, App | 16, con hreflang | Bing Webmaster y la indexación en Search Console (Junior). `llms.txt` desde hoy. |
+| judomarketing.net | 399 | Negocio, WebSite, App | 18, con hreflang (/diagnostic desde el 16 de nov) | Bing Webmaster y la indexación en Search Console (Junior). `llms.txt` desde hoy. |
 | abaforhappiness.com | 1.048 | **ninguno** | 14, sin hreflang | El JSON-LD del negocio y el hreflang en el sitemap. |
 | accustomsmiami.com | — | — | — | El dominio da 404: no está conectado. |
 | dameunamano.org | 755 | Organización, WebSite | 20, con hreflang | Nada. |
