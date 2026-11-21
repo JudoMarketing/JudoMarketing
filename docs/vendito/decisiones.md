@@ -8,6 +8,11 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **20 nov · La revisión de seguridad («Seguridad» en GitHub) se queda:** es
+  para ver que los sitios estén vivos, andando y todo bien, y un chequeo
+  rápido de que no hayan sido atacados ni haya algo extraño. No se quita;
+  tiene que dejar de dar errores. **Todos los clientes de Judo Marketing
+  entran en ese programa.**
 - **16 nov · Propuestas a clientes, «Websites we've built»:** después del
   precio y antes del contacto va una página con los websites que hemos hecho,
   todos en una sola página: qué hace cada uno en pocas palabras, su link y la
