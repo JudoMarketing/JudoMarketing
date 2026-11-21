@@ -43,6 +43,48 @@ inventario, el procedimiento de emergencia y las excepciones conocidas.
   alta, PHP o un optimizador abierto, GitHub manda un correo. La plantilla
   JudiWEB ya lo trae, así que cada cliente nuevo nace vigilado.
 
+## 20 de noviembre de 2026: effect (GHSA-7589-6fvf-x4pw) y la revisión diaria
+
+Junior recibió seis correos «Run failed: Seguridad» de golpe. Su decisión
+(`docs/vendito/decisiones.md`): la revisión se queda, tiene que dejar de dar
+errores y **todos los clientes entran en el programa**.
+
+- **Qué falló:** effect 3.22.0 o anterior (expresión regular lenta, falla
+  alta), que llega con Prisma (`@prisma/config` lo fija; Prisma 7 también
+  trae uno viejo). El mismo código había pasado el miércoles: el aviso salió
+  entre medio. No se puede explotar en el sitio (solo corre al leer la
+  configuración de Prisma en el build), pero había parche sin salto mayor.
+- **Arreglo en 6 repos:** AI-Assistants, Judito-Ads, May Baykery, Pachy
+  Pinchos, RBT Corner y Zanoah. Un override `"effect": "^3.22.5"` con
+  `subir-paquete.sh`; en May, Pachy y Zanoah `npm audit fix` subió además
+  Next al último parche de su línea (16.4.6 y 15.5.29). Cada uno pasó por su
+  preview (rutas iguales a producción), se publicó por avance rápido y la
+  revisión volvió a verde.
+- **Por qué llegan juntos y de tarde:** el horario dice 12:23 UTC, pero
+  GitHub atrasa los flujos programados; estos corren cerca de las 20:30 UTC
+  (3:30 p. m. en Miami), todos a la vez.
+- **El horario corre en la rama principal del repo.** Donde la de
+  producción es otra (ABA, May Baykery, Zanoah), el flujo de la principal
+  revisa la de producción con `ref:` en el checkout. Se arregla la rama de
+  producción.
+- **JudiMental entra al programa:** sus 15 avisos altos son de las
+  herramientas de Expo que arman el sitio; lo publicado es estático
+  (`expo export`). Van en su `PERMITIDOS`, y cualquier aviso nuevo avisa.
+- **Revisión diaria de sitios** (`.github/workflows/sitios.yml`, en este
+  repo, «Seguridad · sitios»): `scripts/seguridad/vigilar-sitios.py` revisa
+  cada sitio de `sitios.txt` todos los días. Falla y manda correo solo si un
+  sitio no contesta (3 intentos), no tiene su seña (la firma «Judo
+  Marketing» o el nombre del negocio, en `vigilancia.txt`), redirige a otro
+  dominio, el certificado vence en menos de 10 días, algo contesta como PHP
+  o WordPress, quedó expuesto un archivo (`.env`, `.git`…), o aparece spam
+  inyectado o un iframe escondido. Las cabeceras que faltan y la lentitud
+  van en el resumen sin fallar. Los repos sin dependencias (sitios
+  estáticos) quedan cubiertos por esta revisión.
+- **Cambios en la lista:** MR Naples Hauling fue reemplazado por Sr de los
+  Tacos Doral (mismo proyecto de Vercel). accustomsmiami.com (el dominio no
+  está conectado) y Athena Beauty (proyecto en pausa) quedan en
+  `vigilancia.txt` con `pausa`: se ven en el resumen sin mandar correo.
+
 ## 2 de noviembre de 2026: zod (GHSA-mrhx-c7xc-m3w5)
 
 El flujo de seguridad falló en casi todos los repos: zod antes de 4.6.6 puede
@@ -103,15 +145,17 @@ lista de despliegues de producción, el campo `githubCommitRef`).
 | thenotes.net | DailyNotesAssistant | claude/clinical-notes-platform-as4unu | Railway (Docker) |
 | vanventuremia.com | VAN-Venture-MIA | claude/vanventure-mia-website-b0rsqw | Vercel |
 | zanoah.shop | ZANOAH | main (la principal es otra) | Vercel |
+| sr-de-los-tacos-doral.vercel.app | SR-de-los-tacos-doral (antes MR-Naples-Hauling-LLC) | claude/SrdelostacosDoral | Vercel (estático) |
 | maybayker.vercel.app | May-Baykery- | claude/may-bakery-website (la principal es main) | Vercel |
 | milcoloresapp.vercel.app | milcoloresapp | claude/milcoloreslife-app-i5zzhk | Vercel |
 | JudiCRM, SPX-Trading, MentalMarketing | — | principal | sin despliegue público |
 | GeraldMarket | GeraldMarket | gerald-market-site | GitHub Pages (no admite cabeceras) |
 | Plantilla de clientes | JudiWEB | main | Vercel (judito-starter) |
 
-Hay más sitios en Vercel: art-foundation, hr-gutters, mr-naples-hauling-llc,
+Hay más sitios en Vercel: art-foundation, hr-gutters, sr-de-los-tacos-doral (antes mr-naples-hauling-llc),
 sofla-contractors, the-equipment-source y athena-beauty, que está en pausa.
-La lista para la revisión externa vive en `scripts/seguridad/sitios.txt`.
+La lista para la revisión externa vive en `scripts/seguridad/sitios.txt`;
+las señas y pausas de la revisión diaria, en `scripts/seguridad/vigilancia.txt`.
 
 ## Cuando sale una vulnerabilidad grande (el procedimiento)
 
@@ -170,9 +214,9 @@ La lista para la revisión externa vive en `scripts/seguridad/sitios.txt`.
   leer la configuración, sin datos de afuera. Está permitido en su
   `seguridad.yml` y se quita al pasar a Prisma 7.
 - **JudiMental** (Expo / React Native): las alertas son de herramientas de
-  compilación (metro, expo-cli, node-forge). No llegan al sitio web, que es
-  estático. Se resuelve al actualizar Expo; por eso no lleva todavía el flujo
-  de seguridad, que fallaría de entrada.
+  compilación (metro, expo-cli, node-forge y otras). No llegan al sitio web,
+  que es estático. Desde el 20 de noviembre lleva el flujo con esos 15 avisos
+  en `PERMITIDOS`; se quitan al actualizar Expo.
 - **GeraldMarket** está en GitHub Pages, que no deja poner cabeceras.
 - **Previews con datos reales:** en Zanoah y RBT Corner, el preview usa la
   misma base de datos, Stripe en vivo y correo real. Una compra de prueba en

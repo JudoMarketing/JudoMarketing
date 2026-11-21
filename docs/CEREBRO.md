@@ -483,7 +483,10 @@ código y sus trampas), `VERIFICACION.md` (los scripts de comprobación),
   - `.github/workflows/seguridad.yml` en el repo y en verde;
   - cabeceras de seguridad en todas las rutas (`curl -I`);
   - cero archivos PHP, cero rutas de prueba abiertas, cero claves en el repo;
-  - el dominio agregado a `scripts/seguridad/sitios.txt`.
+  - el dominio agregado a `scripts/seguridad/sitios.txt`, y
+    `python3 scripts/seguridad/vigilar-sitios.py <dominio>` en verde (si
+    el sitio arma la página en el navegador y el servidor no manda la
+    firma, su seña va en `scripts/seguridad/vigilancia.txt`).
 
 ---
 

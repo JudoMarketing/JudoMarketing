@@ -1,0 +1,18 @@
+# Señas y pausas para la revisión diaria de sitios (vigilar-sitios.py).
+# Formato: sitio (igual que en sitios.txt) | seña: texto | pausa: motivo
+#
+# seña: texto que tiene que estar en el HTML que manda el servidor. Si un
+#   sitio no tiene línea aquí, la seña es la firma «Judo Marketing» del pie.
+#   Hace falta solo en los sitios que arman la página en el navegador, donde
+#   el servidor manda casi nada (o que no llevan la firma).
+# pausa: el sitio está apagado a propósito. Si no contesta, se avisa en el
+#   resumen sin mandar correo; si vuelve a contestar, se avisa para quitarla.
+#   Cada pausa lleva su motivo y se revisa con Junior.
+
+www.johanmorenotailor.com | seña: Tailor
+www.paradiseranch22.com | seña: Paradise Ranch
+nvlabs.vercel.app | seña: NV Labs
+milcoloresapp.vercel.app | seña: Mil Colores
+sr-de-los-tacos-doral.vercel.app | seña: Sr de los Tacos
+accustomsmiami.com | pausa: el dominio no está conectado en Vercel (SEGURIDAD.md, inventario)
+athena-beauty.vercel.app | pausa: el proyecto está en pausa en Vercel

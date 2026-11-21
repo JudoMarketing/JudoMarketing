@@ -1,0 +1,29 @@
+# Revisión diaria de los sitios de Judo Marketing y sus clientes (Junior,
+# 20 nov 2026): que estén vivos, andando y todo bien, y un chequeo rápido de
+# que no hayan sido atacados ni haya algo extraño. Si algo sale mal, GitHub
+# manda un correo; el resumen de cada corrida dice qué sitio y qué pasó.
+# Lista: scripts/seguridad/sitios.txt. Señas y pausas: vigilancia.txt.
+name: Seguridad · sitios
+
+on:
+  schedule:
+    - cron: "17 13 * * *"
+  push:
+    paths:
+      - "scripts/seguridad/sitios.txt"
+      - "scripts/seguridad/vigilancia.txt"
+      - "scripts/seguridad/vigilar-sitios.py"
+      - ".github/workflows/sitios.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Sitios vivos, el sitio de siempre y sin señales de ataque
+        run: python3 scripts/seguridad/vigilar-sitios.py
