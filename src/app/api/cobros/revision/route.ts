@@ -47,12 +47,14 @@ export async function GET(req: NextRequest) {
   const websites = await websitesPorCorreo().catch(() => new Map<string, string>());
 
   // ── 1. Un día después de cada vencimiento ──────────────────────────
-  // Se renovó hace entre 1 y 3 días (el cron corre una vez al día; el margen
-  // cubre un día en que no haya corrido). Cada factura se avisa una sola vez.
+  // El pago venció hace entre 1 y 3 días (el cron corre una vez al día; el
+  // margen cubre un día en que no haya corrido). Con tarjeta, vence el día de
+  // la renovación; por factura, en su fecha límite (src/lib/cobros.ts,
+  // vencimiento). Cada factura se avisa una sola vez.
   const revisadas: { f: Fila; resultado: string; pagada: boolean }[] = [];
   for (const s of subs) {
     const f = await fila(st, s, websites);
-    if (f.renovado > ahora - DIA || f.renovado < ahora - 3 * DIA) continue;
+    if (f.vence > ahora - DIA || f.vence < ahora - 3 * DIA) continue;
     const inv = typeof s.latest_invoice === "string" || !s.latest_invoice ? null : (s.latest_invoice as Stripe.Invoice);
     if (!inv) {
       revisadas.push({ f, resultado: "sin factura en Stripe: revisar a mano", pagada: false });
@@ -86,7 +88,7 @@ export async function GET(req: NextRequest) {
             : "Todo pagado.",
           tabla(
             revisadas.map((r) => ({ ...r.f, estado: r.resultado })),
-            [(f) => `<b>${f.cliente}</b><br>${f.correo}`, (f) => f.website || "<i>¿de quién es?</i>", "producto", "monto", (f) => fecha(f.renovado), "estado"],
+            [(f) => `<b>${f.cliente}</b><br>${f.correo}`, (f) => f.website || "<i>¿de quién es?</i>", "producto", "monto", (f) => fecha(f.vence), "estado"],
             ["Cliente", "Website", "Producto", "Monto", "Venció", "Resultado"]
           ),
         ],
@@ -113,7 +115,7 @@ export async function GET(req: NextRequest) {
             : "Todas emparejadas con su website.",
           tabla(
             filas,
-            [(f) => `<b>${f.cliente}</b><br>${f.correo}`, (f) => f.website || "<b style='color:#ffd27a'>¿de quién es?</b>", "producto", (f) => `${f.monto}/${f.cada}`, (f) => fecha(f.proximo), (f) => `${f.estado} · última factura ${f.factura}`],
+            [(f) => `<b>${f.cliente}</b><br>${f.correo}`, (f) => f.website || "<b style='color:#ffd27a'>¿de quién es?</b>", "producto", (f) => `${f.monto}/${f.cada}<br><small>${f.cobro}</small>`, (f) => fecha(f.proximo), (f) => (f.factura === "open" ? `factura abierta, vence el ${fecha(f.vence)}` : `última factura: ${f.factura}`)],
             ["Cliente", "Website", "Producto", "Monto", "Próximo cobro", "Estado"]
           ),
         ],

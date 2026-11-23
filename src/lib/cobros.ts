@@ -70,6 +70,16 @@ export function renovacion(sub: Stripe.Subscription): number {
   return inicios.length ? Math.min(...inicios) : sub.billing_cycle_anchor;
 }
 
+/**
+ * Cuándo venció el pago de una factura: si se cobra con tarjeta, el día de la
+ * renovación; si se cobra por factura (send_invoice, con días para pagar), su
+ * fecha límite. La revisión se hace un día después de esta fecha.
+ */
+export function vencimiento(inv: Stripe.Invoice | null, sub: Stripe.Subscription | null | undefined): number {
+  if (inv?.collection_method === "send_invoice" && inv.due_date) return inv.due_date;
+  return sub ? renovacion(sub) : inv?.created ?? 0;
+}
+
 /** El próximo cobro: el fin del período actual. */
 export function proximoCobro(sub: Stripe.Subscription): number {
   const fines = sub.items.data.map((i) => i.current_period_end).filter(Boolean);
@@ -113,7 +123,7 @@ function textos(aviso: Aviso, idioma: "es" | "en", d: { nombre: string; producto
           titulo: "Your payment is still pending",
           saludo: d.nombre ? `Hi ${d.nombre}` : "Hi there",
           parrafos: [
-            `Your <b>${d.producto}</b> subscription renewed on ${d.dia}, and we still don't see the payment of <b>${d.monto}</b>.`,
+            `The <b>${d.monto}</b> payment for your <b>${d.producto}</b> subscription was due on ${d.dia}, and we still don't see it.`,
             "To keep your service running without interruptions, complete the payment on the secure Stripe page below. You can use a different card.",
             "Already paid, or have a question? Reply to this email or message us on WhatsApp at +1&nbsp;305&nbsp;934&nbsp;9981.",
           ],
@@ -137,7 +147,7 @@ function textos(aviso: Aviso, idioma: "es" | "en", d: { nombre: string; producto
         titulo: "Tu pago sigue pendiente",
         saludo: d.nombre ? `Hola ${d.nombre}` : "Hola",
         parrafos: [
-          `Tu suscripción de <b>${d.producto}</b> se renovó el ${d.dia} y todavía no vemos el pago de <b>${d.monto}</b>.`,
+          `El pago de <b>${d.monto}</b> de tu suscripción de <b>${d.producto}</b> vencía el ${d.dia} y todavía no lo vemos.`,
           "Para que tu servicio siga sin interrupciones, completa el pago en la página segura de Stripe. Puedes usar otra tarjeta.",
           "¿Ya lo pagaste o tienes una duda? Responde este correo o escríbenos por WhatsApp al +1&nbsp;305&nbsp;934&nbsp;9981.",
         ],
@@ -197,7 +207,7 @@ export async function avisarCliente(st: Stripe, inv: Stripe.Invoice, aviso: Avis
   const { asunto, html } = correoCliente(
     aviso,
     idiomaDe(cliente),
-    { nombre, producto, monto: dinero(inv.amount_remaining || inv.amount_due, inv.currency), renovado: suscripcion ? renovacion(suscripcion) : inv.created },
+    { nombre, producto, monto: dinero(inv.amount_remaining || inv.amount_due, inv.currency), renovado: vencimiento(inv, suscripcion) },
     enlace
   );
 
@@ -232,6 +242,10 @@ export type Fila = {
   factura: string;
   website: string;
   enlace: string;
+  /** Cómo paga: con tarjeta automática o por factura con días para pagar. */
+  cobro: string;
+  /** Cuándo venció (o vence) el pago de la última factura. */
+  vence: number;
 };
 
 /** Los websites del portal por correo del cliente, para decir de quién es cada suscripción. */
@@ -267,7 +281,10 @@ export async function fila(st: Stripe, s: Stripe.Subscription, websites: Map<str
     renovado: renovacion(s),
     proximo: proximoCobro(s),
     factura: inv?.status ?? "sin factura",
-    website: websites.get(correo.trim().toLowerCase()) ?? "",
+    // Primero el website anotado en el cliente de Stripe (metadata «website»); si no, el del portal por correo
+    website: viva?.metadata?.website ?? websites.get(correo.trim().toLowerCase()) ?? "",
+    cobro: s.collection_method === "send_invoice" ? `factura (${s.days_until_due ?? 30} días para pagar)` : "tarjeta automática",
+    vence: vencimiento(inv, s),
     enlace: `https://dashboard.stripe.com/subscriptions/${s.id}`,
   };
 }

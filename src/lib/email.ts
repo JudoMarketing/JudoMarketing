@@ -67,6 +67,35 @@ export function brandedEmail({
 </body></html>`;
 }
 
+/**
+ * La versión en texto plano de un correo HTML. Un correo que llega solo en
+ * HTML suma puntos de spam en Gmail y Outlook (23 nov 2026): cada correo sale
+ * con las dos versiones, y si quien llama no da una, se arma sola de aquí.
+ */
+export function textoDeHtml(html: string): string {
+  return html
+    .replace(/<(style|script|head)[\s\S]*?<\/\1>/gi, "")
+    .replace(/<a [^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, enlace: string, txt: string) => {
+      const t = txt.replace(/<[^>]+>/g, "").trim();
+      return t && !enlace.includes(t) ? `${t}: ${enlace}` : enlace;
+    })
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|h1|h2|h3|h4|li|tr|table|div)>/gi, "\n\n")
+    .replace(/<\/(td|th)>/gi, "  ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .split("\n")
+    .map((l) => l.trim())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 export async function sendBrandedEmail(
   to: string | string[],
   subject: string,
@@ -99,7 +128,7 @@ export async function sendBrandedEmail(
     to: Array.isArray(to) ? to.join(", ") : to,
     subject,
     html,
-    text: extras?.texto,
+    text: extras?.texto ?? textoDeHtml(html),
     bcc: extras?.bcc,
     headers: extras?.headers,
     replyTo: extras?.replyTo,

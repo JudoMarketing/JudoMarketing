@@ -10,15 +10,16 @@ pago. The Notes tiene su propia cuenta de Stripe y no entra aquí.
 | Cuándo | Qué pasa | Dónde |
 | --- | --- | --- |
 | Un cobro falla (primer intento) | Al cliente: «Tu pago no pasó», con el botón **Completar mi pago** (la factura de Stripe, donde paga con la misma tarjeta o con otra). A admin: el aviso de siempre. | `src/app/api/stripe/webhook/route.ts` |
-| Un día después de cada vencimiento | Revisa la última factura de cada suscripción que se renovó hace 1 a 3 días. Si no está pagada: al cliente, «Tu pago sigue pendiente», con el mismo botón. A admin: el resumen (pagadas y sin pagar). | `src/app/api/cobros/revision/route.ts`, cron diario 14:07 UTC (9:07 a. m. en Miami) |
+| Un día después de cada vencimiento | Revisa la última factura de cada suscripción cuyo pago venció hace 1 a 3 días: con tarjeta, vence el día de la renovación; por factura (send_invoice, como Johan), en la fecha límite de la factura. Si no está pagada: al cliente, «Tu pago sigue pendiente», con el mismo botón. A admin: el resumen (pagadas y sin pagar). | `src/app/api/cobros/revision/route.ts`, cron diario 14:07 UTC (9:07 a. m. en Miami) |
 | Cada lunes | A admin: todas las suscripciones con su cliente, su website, el monto y el próximo cobro. Las que no se emparejan con un website salen con «¿de quién es?». | la misma ruta |
 
 - **Cada aviso sale una sola vez por factura:** queda anotado en la metadata
   de la factura (`judo_aviso_fallo`, `judo_aviso_revision`).
 - **El idioma** es el que el cliente tiene en Stripe (Customer → Language).
   Si no tiene, el correo va en español y en inglés.
-- **El website de cada suscripción** sale del portal: el correo del cliente
-  en Stripe tiene que ser el mismo que el del cliente en el portal.
+- **El website de cada suscripción:** primero el que esté anotado en el
+  cliente de Stripe (metadata `website`); si no hay, el del portal por el
+  correo del cliente.
 - **Los textos** están en `src/lib/cobros.ts` (función `textos`).
 
 ## Modo prueba (así empieza)
@@ -37,6 +38,15 @@ curl -H "Authorization: Bearer $LEADS_SECRET" "https://www.judomarketing.net/api
 ```
 
 La respuesta trae solo conteos; los datos de los clientes van por correo.
+
+## Correos que no lleguen a spam
+
+- **Cada correo sale con versión en texto plano** además del HTML
+  (`textoDeHtml` en `src/lib/email.ts`): un correo solo en HTML suma puntos de
+  spam en Gmail y Outlook.
+- **El dominio está bien configurado** (revisado el 23 de noviembre de 2026):
+  SPF de Google (`include:_spf.google.com`), DKIM `google._domainkey` y DMARC
+  `p=quarantine`.
 
 ## En Stripe
 
