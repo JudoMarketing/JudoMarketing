@@ -146,6 +146,7 @@ clientes. Detalle en `LEADS.md`, "Entregabilidad".
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 2026-10-05 | | | | | | | | |
 | 2026-11-16 | | | 0 (pausada desde el 26 oct) | 1 | 0 | | | |
+| 2026-11-23 | | | 0 (pausada desde el 26 oct) | 0 | 0 | | | |
 
 La auditoría de los lunes llena lo que puede medir sola (correos, clics,
 bajas, visitas) y deja en blanco lo que solo Junior sabe (ingreso, llamadas,

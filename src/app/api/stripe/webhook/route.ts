@@ -1,8 +1,8 @@
 // Avisos de Stripe: cuando a un cliente le falla el cobro de su suscripción.
 //
-// Stripe le escribe al CLIENTE cuando su tarjeta falla (si está activado en
-// Billing), pero a la empresa no le avisa por suscripción. Este endpoint es
-// el que le avisa a Administración: Stripe lo llama en cada intento fallido
+// Desde el 23 de noviembre de 2026 también le escribe al CLIENTE en el primer
+// intento fallido, con el enlace para completar el pago (src/lib/cobros.ts).
+// Y le avisa a Administración: Stripe lo llama en cada intento fallido
 // y en cada suscripción que se cancela por falta de pago, y de aquí sale un
 // correo a admin@judomarketing.net con quién, cuánto, qué falló y el enlace a
 // la factura en Stripe.
@@ -19,6 +19,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { brandedEmail, isEmailConfigured, sendBrandedEmail } from "@/lib/email";
+import { avisarCliente } from "@/lib/cobros";
 
 const ADMIN = "admin@judomarketing.net";
 
@@ -101,7 +102,14 @@ export async function POST(req: NextRequest) {
       ],
       enlace
     );
-    return NextResponse.json({ ok: true, avisado: !fallo, motivo: fallo ?? undefined });
+    // Al cliente, en el primer intento fallido: el enlace de su factura para
+    // pagar con la misma tarjeta o con otra (src/lib/cobros.ts). Los reintentos
+    // de Stripe no le mandan otro; la revisión del día siguiente sí, si sigue
+    // sin pagar.
+    const cliente = intento === 1
+      ? await avisarCliente(stripe, inv, "fallo").catch((e) => `no se pudo: ${(e as Error).message}`)
+      : "solo el primer intento";
+    return NextResponse.json({ ok: true, avisado: !fallo, motivo: fallo ?? undefined, cliente });
   }
 
   // ── Una suscripción se canceló (por impago o a mano) ──────────────

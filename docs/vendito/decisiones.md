@@ -8,6 +8,12 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **23 nov · Cobros en Stripe (cuenta de Judo Marketing; The Notes ya está
+  cubierta):** correo automático al cliente cuando su pago no pasa; un día
+  después del vencimiento de cada suscripción, revisar en Stripe si pagó y,
+  si no, avisarle con el enlace para completar el pago. Vendito tiene las
+  fechas de cobro de cada cliente y le pregunta a Junior qué suscripción es
+  de quién cuando no esté claro (`docs/COBROS.md`).
 - **20 nov · La revisión de seguridad («Seguridad» en GitHub) se queda:** es
   para ver que los sitios estén vivos, andando y todo bien, y un chequeo
   rápido de que no hayan sido atacados ni haya algo extraño. No se quita;
