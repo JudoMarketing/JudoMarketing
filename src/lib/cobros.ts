@@ -84,13 +84,97 @@ export function renovacion(sub: Stripe.Subscription): number {
 }
 
 /**
- * Cuándo venció el pago de una factura: si se cobra con tarjeta, el día de la
- * renovación; si se cobra por factura (send_invoice, con días para pagar), su
- * fecha límite. La revisión se hace un día después de esta fecha.
+ * Cuándo venció el pago de una factura: el día en que empieza el mes que cobra
+ * (Junior, 23 nov 2026: «es un servicio mensual»; también en quien paga por
+ * factura, aunque Stripe le dé días para pagar). Si la factura trae un mes
+ * pendiente sumado, cuenta el mes más nuevo. La revisión es un día después.
  */
 export function vencimiento(inv: Stripe.Invoice | null, sub: Stripe.Subscription | null | undefined): number {
-  if (inv?.collection_method === "send_invoice" && inv.due_date) return inv.due_date;
+  const inicios = (inv?.lines?.data ?? []).map((l) => l.period?.start).filter((x): x is number => Boolean(x));
+  if (inicios.length) return Math.max(...inicios);
   return sub ? renovacion(sub) : inv?.created ?? 0;
+}
+
+/** Las facturas sin pagar de una suscripción (abiertas o marcadas incobrables), de la más vieja a la más nueva. */
+export async function pendientesDe(st: Stripe, subId: string): Promise<Stripe.Invoice[]> {
+  const out: Stripe.Invoice[] = [];
+  for (const status of ["open", "uncollectible"] as const) {
+    for await (const inv of st.invoices.list({ subscription: subId, status, limit: 100 })) {
+      if ((inv.amount_remaining ?? 0) > 0) out.push(inv);
+    }
+  }
+  return out.sort((a, b) => a.created - b.created);
+}
+
+/** El mes que cobra una factura, para decirlo en palabras («16 de noviembre al 16 de diciembre»). */
+function mesDe(inv: Stripe.Invoice, idioma: "es" | "en" = "es"): string {
+  const l = inv.lines?.data?.find((x) => !x.metadata?.judo_mes_pendiente) ?? inv.lines?.data?.[0];
+  if (!l?.period) return fecha(inv.created, idioma);
+  return idioma === "en" ? `${fecha(l.period.start, "en")} to ${fecha(l.period.end, "en")}` : `${fecha(l.period.start)} al ${fecha(l.period.end)}`;
+}
+
+/**
+ * Lo que no se pagó se suma al mes siguiente (Junior, 23 nov 2026: «si un mes
+ * no pagan, ese mes se acumula para el otro»). Corre en la revisión diaria
+ * cuando la próxima renovación está a menos de 30 horas: cada factura sin
+ * pagar de esa suscripción pasa como una línea «Mes pendiente» a la próxima
+ * factura, y la vieja se anula. Así el cliente paga los dos meses juntos.
+ * Primero se crea la línea y después se anula la vieja; si anular falla (por
+ * ejemplo, el cliente pagó en ese momento), la línea se borra. Devuelve una
+ * nota por factura para el resumen de admin.
+ */
+export async function acumular(st: Stripe, sub: Stripe.Subscription, ahora: number): Promise<{ nota: string; problema: boolean }[]> {
+  const prox = proximoCobro(sub);
+  if (!prox || prox < ahora || prox - ahora > 30 * 3600) return [];
+  const notas: { nota: string; problema: boolean }[] = [];
+  const clienteId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+  const yaPasadas = new Set<string>();
+  for await (const ii of st.invoiceItems.list({ customer: clienteId, pending: true, limit: 100 })) {
+    if (ii.metadata?.judo_mes_pendiente) yaPasadas.add(ii.metadata.judo_mes_pendiente);
+  }
+  for (const inv of await pendientesDe(st, sub.id)) {
+    if (yaPasadas.has(inv.id)) continue;
+    const monto = inv.amount_remaining;
+    const linea = inv.lines?.data?.find((l) => !l.metadata?.judo_mes_pendiente) ?? inv.lines?.data?.[0];
+    const precio = sub.items.data[0]?.price;
+    const productoLinea = linea?.pricing?.price_details?.product;
+    const producto = productoLinea ?? (precio ? (typeof precio.product === "string" ? precio.product : precio.product.id) : null);
+    if (!producto) {
+      notas.push({ nota: `${inv.number ?? inv.id}: no se pudo pasar al mes siguiente (sin producto). Revisar a mano.`, problema: true });
+      continue;
+    }
+    const mes = mesDe(inv);
+    let item: Stripe.InvoiceItem;
+    try {
+      item = await st.invoiceItems.create({
+        customer: clienteId,
+        subscription: sub.id,
+        currency: inv.currency,
+        price_data: {
+          currency: inv.currency,
+          product: producto,
+          unit_amount: monto,
+          ...(precio?.tax_behavior && precio.tax_behavior !== "unspecified" ? { tax_behavior: precio.tax_behavior } : {}),
+        },
+        description: `Mes pendiente: ${mes} (factura ${inv.number ?? inv.id})`,
+        ...(linea?.period ? { period: { start: linea.period.start, end: linea.period.end } } : {}),
+        discountable: false,
+        metadata: { judo_mes_pendiente: inv.id },
+      });
+    } catch (e) {
+      notas.push({ nota: `${inv.number ?? inv.id}: no se pudo pasar al mes siguiente (${(e as Error).message}). Revisar a mano.`, problema: true });
+      continue;
+    }
+    try {
+      await st.invoices.voidInvoice(inv.id);
+    } catch (e) {
+      await st.invoiceItems.del(item.id).catch(() => null);
+      notas.push({ nota: `${inv.number ?? inv.id}: no se anuló (${(e as Error).message}); quedó como estaba. Revisar si se pagó.`, problema: true });
+      continue;
+    }
+    notas.push({ nota: `No pagó ${mes}: ${dinero(monto, inv.currency)} pasa a la factura del ${fecha(prox)}.`, problema: true });
+  }
+  return notas;
 }
 
 /** El próximo cobro: el fin del período actual. */
@@ -117,7 +201,13 @@ export async function nombreProducto(st: Stripe, sub: Stripe.Subscription): Prom
 
 type Texto = { titulo: string; saludo: string; parrafos: string[]; boton: string; asunto: string };
 
-function textos(aviso: Aviso, idioma: "es" | "en", d: { nombre: string; producto: string; monto: string; dia: string }): Texto {
+function textos(aviso: Aviso, idioma: "es" | "en", d: { nombre: string; producto: string; monto: string; dia: string; pendiente?: string }): Texto {
+  const t = textosBase(aviso, idioma, d);
+  if (d.pendiente) t.parrafos.splice(1, 0, idioma === "en" ? `It includes the month that was left unpaid (${d.pendiente}).` : `Incluye el mes que quedó pendiente (${d.pendiente}).`);
+  return t;
+}
+
+function textosBase(aviso: Aviso, idioma: "es" | "en", d: { nombre: string; producto: string; monto: string; dia: string }): Texto {
   if (idioma === "en") {
     return aviso === "fallo"
       ? {
@@ -172,11 +262,11 @@ function textos(aviso: Aviso, idioma: "es" | "en", d: { nombre: string; producto
 export function correoCliente(
   aviso: Aviso,
   idioma: Idioma,
-  d: { nombre: string; producto: string; monto: string; renovado: number },
+  d: { nombre: string; producto: string; monto: string; renovado: number; pendiente?: { es: string; en: string } },
   enlace: string
 ): { asunto: string; html: string } {
-  const es = textos(aviso, "es", { ...d, dia: fecha(d.renovado, "es") });
-  const en = textos(aviso, "en", { ...d, dia: fecha(d.renovado, "en") });
+  const es = textos(aviso, "es", { ...d, dia: fecha(d.renovado, "es"), pendiente: d.pendiente?.es });
+  const en = textos(aviso, "en", { ...d, dia: fecha(d.renovado, "en"), pendiente: d.pendiente?.en });
   if (idioma === "es") return { asunto: es.asunto, html: brandedEmail({ title: es.titulo, greeting: es.saludo, paragraphs: es.parrafos, ctaLabel: es.boton, ctaUrl: enlace }) };
   if (idioma === "en") return { asunto: en.asunto, html: brandedEmail({ title: en.titulo, greeting: en.saludo, paragraphs: en.parrafos, ctaLabel: en.boton, ctaUrl: enlace }) };
   // Sin idioma en Stripe: primero en español, después en inglés, con un solo botón.
@@ -196,6 +286,13 @@ export function correoCliente(
       ctaUrl: enlace,
     }),
   };
+}
+
+/** Si la factura trae un mes pendiente sumado, cuál (en los dos idiomas). */
+function mesPendienteDe(inv: Stripe.Invoice): { es: string; en: string } | undefined {
+  const l = inv.lines?.data?.find((x) => x.metadata?.judo_mes_pendiente);
+  if (!l?.period) return undefined;
+  return { es: `${fecha(l.period.start)} al ${fecha(l.period.end)}`, en: `${fecha(l.period.start, "en")} to ${fecha(l.period.end, "en")}` };
 }
 
 /**
@@ -220,7 +317,7 @@ export async function avisarCliente(st: Stripe, inv: Stripe.Invoice, aviso: Avis
   const { asunto, html } = correoCliente(
     aviso,
     idiomaDe(cliente),
-    { nombre, producto, monto: dinero(inv.amount_remaining || inv.amount_due, inv.currency), renovado: vencimiento(inv, suscripcion) },
+    { nombre, producto, monto: dinero(inv.amount_remaining || inv.amount_due, inv.currency), renovado: vencimiento(inv, suscripcion), pendiente: mesPendienteDe(inv) },
     enlace
   );
 
@@ -259,7 +356,45 @@ export type Fila = {
   cobro: string;
   /** Cuándo venció (o vence) el pago de la última factura. */
   vence: number;
+  /** Lo que debe (en centavos) y desde cuándo; 0 si está al día. */
+  debe: number;
+  meses: number;
+  /** Lo que hay que mirar, en palabras; vacío si está al día. Sale en amarillo. */
+  problema: string;
 };
+
+/** Lo que hay que mirar de una suscripción: deuda, meses sin pagar, tarjeta y días para pagar. */
+async function problemasDe(
+  st: Stripe,
+  s: Stripe.Subscription,
+  cliente: Stripe.Customer | null,
+  ultima: Stripe.Invoice | null
+): Promise<{ debe: number; meses: number; problema: string }> {
+  const pend = await pendientesDe(st, s.id).catch(() => [] as Stripe.Invoice[]);
+  const debe = pend.reduce((t, i) => t + i.amount_remaining, 0);
+  const meses = pend.reduce((t, i) => t + Math.max(1, (i.lines?.data ?? []).filter((l) => l.period).length), 0);
+  const cosas: string[] = [];
+  if (debe > 0) {
+    cosas.push(`Debe <b>${dinero(debe, s.currency)}</b>${meses > 1 ? ` (${meses} meses)` : ""}, sin pagar desde el ${fecha(vencimiento(pend[0], s))}`);
+  }
+  if (ultima && ultima.status === "open" && (ultima.attempt_count ?? 0) > 0 && s.collection_method === "charge_automatically") {
+    cosas.push(`la tarjeta no pasó (intento ${ultima.attempt_count})`);
+  }
+  if (["past_due", "unpaid", "incomplete"].includes(s.status)) cosas.push(`en Stripe dice «${s.status}»`);
+  if (s.collection_method === "send_invoice" && (s.days_until_due ?? 30) > 1) {
+    cosas.push(`paga por factura con ${s.days_until_due ?? 30} días para pagar: en Stripe hay que bajarlo a 1 día`);
+  }
+  if (
+    s.collection_method === "charge_automatically" &&
+    !s.default_payment_method &&
+    !cliente?.invoice_settings?.default_payment_method &&
+    !cliente?.default_source
+  ) {
+    cosas.push("no tiene tarjeta guardada para el cobro automático");
+  }
+  if (s.cancel_at_period_end) cosas.push(`se cancela el ${fecha(proximoCobro(s))}`);
+  return { debe, meses, problema: cosas.join("; ") };
+}
 
 /** Los websites del portal por correo del cliente, para decir de quién es cada suscripción. */
 export async function websitesPorCorreo(): Promise<Map<string, string>> {
@@ -298,16 +433,22 @@ export async function fila(st: Stripe, s: Stripe.Subscription, websites: Map<str
     website: viva?.metadata?.website ?? (viva ? websitesDeVercel()[viva.id] : undefined) ?? websites.get(correo.trim().toLowerCase()) ?? "",
     cobro: s.collection_method === "send_invoice" ? `factura (${s.days_until_due ?? 30} días para pagar)` : "tarjeta automática",
     vence: vencimiento(inv, s),
+    ...(await problemasDe(st, s, viva, inv)),
     enlace: `https://dashboard.stripe.com/subscriptions/${s.id}`,
   };
 }
 
 /** Tabla HTML sencilla para los correos a admin. */
-export function tabla(filas: Fila[], columnas: (keyof Fila | ((f: Fila) => string))[], titulos: string[]): string {
-  const celda = (v: string) => `<td style="padding:6px 8px;border-top:1px solid #26263a;color:#e4e0ee;font-size:12px;vertical-align:top">${v}</td>`;
+export function tabla(filas: Fila[], columnas: (keyof Fila | ((f: Fila) => string))[], titulos: string[], amarilla?: (f: Fila) => boolean): string {
+  const AMARILLO = "background:#fff3b0;color:#3a2a00;";
+  const celda = (v: string, a = false) =>
+    `<td style="padding:6px 8px;border-top:1px solid #26263a;${a ? AMARILLO : "color:#e4e0ee;"}font-size:12px;vertical-align:top">${v}</td>`;
   const cab = titulos.map((t) => `<th style="padding:6px 8px;text-align:left;color:#a855f7;font-size:11px">${t}</th>`).join("");
   const cuerpo = filas
-    .map((f) => `<tr>${columnas.map((c) => celda(typeof c === "function" ? c(f) : String(f[c] ?? ""))).join("")}</tr>`)
+    .map((f) => {
+      const a = Boolean(amarilla?.(f));
+      return `<tr>${columnas.map((c) => celda(typeof c === "function" ? c(f) : String(f[c] ?? ""), a)).join("")}</tr>`;
+    })
     .join("");
   return `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin:8px 0 16px">${`<tr>${cab}</tr>`}${cuerpo}</table>`;
 }
