@@ -28,6 +28,7 @@ sale de lo que hace distinta a la pieza, no del número:
 | Su versión para anuncio pagado (30 oct 2026) | Cada sí tiene arreglo |
 | Su versión en inglés (30 oct 2026) | Turn off your phone |
 | Video de las 6 preguntas, en inglés (13 nov 2026) | Count your yeses |
+| Carrusel de GTA 6, en inglés (23 nov 2026) | Mission complete |
 | Kit de ventas para vendedores en Latinoamérica (12 nov 2026) | Desde Miami |
 | Folleto de planes y precios para el cliente (12 nov 2026) | Desde $50 al mes |
 | Propuesta del servicio para talleres mecánicos (13 nov 2026) | Judito Taller |
