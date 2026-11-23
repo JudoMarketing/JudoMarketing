@@ -1,0 +1,18 @@
+{
+  "nombre": "Judo Marketing",
+  "fondo": "#12111d",
+  "superficie": "#1b1928",
+  "texto": "#f5f5f7",
+  "acento": "#a855f7",
+  "acento-texto": "#12111d",
+  "primario": "#7b2dff",
+  "fuente-display": "Poppins",
+  "fuente-cuerpo": "Inter",
+  "logo": "marca/logo.png",
+  "contacto": {
+    "whatsapp": "+1 305 934 9981",
+    "instagram": "@judo.marketing",
+    "web": "judomarketing.net",
+    "direccion": "66 W Flagler St, Miami, FL"
+  }
+}
