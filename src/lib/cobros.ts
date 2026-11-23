@@ -20,12 +20,25 @@ import { brandedEmail, isEmailConfigured, sendBrandedEmail } from "@/lib/email";
 export const ADMIN = "admin@judomarketing.net";
 
 /**
- * Mientras esté en false, los correos que le tocan al cliente le llegan a
- * admin@judomarketing.net con un aviso arriba («Este correo le llegaría a…»).
- * Se pasa a true cuando Junior apruebe los textos y confirme qué suscripción
- * es de qué cliente (docs/COBROS.md).
+ * Los correos le llegan al cliente, con copia oculta a admin. Junior lo
+ * activó el 23 de noviembre de 2026 («quiero que lleguen dos»: el de Stripe y
+ * el nuestro). En false, le llegan solo a admin con un aviso arriba («Este
+ * correo le llegaría a…»), para probar textos nuevos.
  */
-export const ENVIAR_A_CLIENTES = false;
+export const ENVIAR_A_CLIENTES = true;
+
+/**
+ * El website de cada cliente de Stripe, guardado en Vercel (COBROS_WEBSITES,
+ * un JSON {"cus_…": "dominio"}) y no en el repositorio, que es público.
+ */
+function websitesDeVercel(): Record<string, string> {
+  try {
+    const m = JSON.parse(process.env.COBROS_WEBSITES || "{}");
+    return m && typeof m === "object" ? (m as Record<string, string>) : {};
+  } catch {
+    return {};
+  }
+}
 
 export type Idioma = "es" | "en" | "ambos";
 export type Aviso = "fallo" | "revision";
@@ -281,8 +294,8 @@ export async function fila(st: Stripe, s: Stripe.Subscription, websites: Map<str
     renovado: renovacion(s),
     proximo: proximoCobro(s),
     factura: inv?.status ?? "sin factura",
-    // Primero el website anotado en el cliente de Stripe (metadata «website»); si no, el del portal por correo
-    website: viva?.metadata?.website ?? websites.get(correo.trim().toLowerCase()) ?? "",
+    // El website: el anotado en el cliente de Stripe (metadata «website»), el de COBROS_WEBSITES en Vercel o el del portal por correo
+    website: viva?.metadata?.website ?? (viva ? websitesDeVercel()[viva.id] : undefined) ?? websites.get(correo.trim().toLowerCase()) ?? "",
     cobro: s.collection_method === "send_invoice" ? `factura (${s.days_until_due ?? 30} días para pagar)` : "tarjeta automática",
     vence: vencimiento(inv, s),
     enlace: `https://dashboard.stripe.com/subscriptions/${s.id}`,

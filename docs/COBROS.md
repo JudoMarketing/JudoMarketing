@@ -17,18 +17,31 @@ pago. The Notes tiene su propia cuenta de Stripe y no entra aquí.
   de la factura (`judo_aviso_fallo`, `judo_aviso_revision`).
 - **El idioma** es el que el cliente tiene en Stripe (Customer → Language).
   Si no tiene, el correo va en español y en inglés.
-- **El website de cada suscripción:** primero el que esté anotado en el
-  cliente de Stripe (metadata `website`); si no hay, el del portal por el
-  correo del cliente.
+- **El website de cada suscripción:** el anotado en el cliente de Stripe
+  (metadata `website`), el de `COBROS_WEBSITES` en Vercel o el del portal por
+  el correo del cliente, en ese orden.
 - **Los textos** están en `src/lib/cobros.ts` (función `textos`).
 
-## Modo prueba (así empieza)
+## Quién recibe los correos
 
-`ENVIAR_A_CLIENTES = false` en `src/lib/cobros.ts`: el correo que le tocaría
-al cliente le llega a admin@judomarketing.net, con un aviso arriba que dice a
-quién le llegaría. Se pasa a `true` cuando Junior:
-1. aprueba los textos;
-2. confirma qué suscripción es de qué cliente (el inventario de los lunes).
+Desde el 23 de noviembre de 2026, **el cliente** (con copia oculta a admin).
+`ENVIAR_A_CLIENTES` en `src/lib/cobros.ts`; en `false`, le llegan solo a
+admin con un aviso arriba de a quién le llegarían: sirve para probar textos
+nuevos.
+
+## Qué clientes pagan por Stripe
+
+Al 23 de noviembre de 2026, según Junior:
+- **Por Stripe:** HR Gutters, RBT Corner, Johan Moreno Tailor (por factura,
+  con días para pagar) y Paradise Ranch 22.
+- **Pachy Pinchos:** su suscripción todavía no empieza. Junior avisa cuando
+  pague para sumarlo.
+- **El resto de los clientes no paga mensualidad.**
+
+El website de cada cliente de Stripe está en la variable `COBROS_WEBSITES`
+de Vercel (proyecto judo-marketing, producción): un JSON
+`{"cus_…": "dominio"}`. No va en el repositorio, que es público. Un cliente
+nuevo se agrega ahí y se vuelve a publicar el sitio para que lo tome.
 
 ## A mano
 
@@ -50,11 +63,12 @@ La respuesta trae solo conteos; los datos de los clientes van por correo.
 
 ## En Stripe
 
+- **Acceso de Vendito:** el conector de Stripe en claude.ai, cuenta Judo
+  Marketing, solo lectura.
 - **Webhook:** `https://www.judomarketing.net/api/stripe/webhook` con los
   eventos `invoice.payment_failed` y `customer.subscription.deleted`.
 - **Correos de Stripe al cliente** (Settings → Billing → Subscriptions and
-  emails → «Send emails when card payments fail»): si están prendidos, el
-  cliente recibe dos correos por el mismo fallo. Se apagan cuando los
-  nuestros salgan a clientes.
+  emails → «Send emails when card payments fail»): **se quedan prendidos.**
+  Junior quiere que lleguen los dos, el de Stripe y el nuestro.
 - **Reintentos:** Stripe reintenta el cobro solo (Smart Retries). Nuestros
   correos no cambian eso.
