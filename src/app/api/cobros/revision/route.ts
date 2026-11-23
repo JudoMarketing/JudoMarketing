@@ -1,12 +1,13 @@
-// La revisión diaria de cobros (Junior, 23 de noviembre de 2026): un día
-// después de la fecha en que vence cada suscripción, revisar en Stripe si el
-// pago pasó. Si no pasó, avisarle al cliente con el enlace para completar el
-// pago, y a admin@judomarketing.net con el resumen.
+// La revisión diaria de cobros (Junior, 23 de noviembre de 2026).
 //
-// Los lunes manda además a admin el inventario: cada suscripción con su
-// cliente, su website (por el correo del cliente en el portal), el monto y la
-// fecha del próximo cobro. Las que no se emparejan con un website salen
-// marcadas para que Junior diga de quién son.
+// 1. Lo que no se pagó se suma al mes siguiente: si una suscripción renueva en
+//    las próximas 30 horas y tiene facturas sin pagar, pasan como «Mes
+//    pendiente» a la próxima factura y las viejas se anulan (src/lib/cobros.ts,
+//    acumular). «Si un mes no pagan, ese mes se acumula para el otro.»
+// 2. Un día después de cada vencimiento (el día de la renovación), si el pago
+//    no pasó: correo al cliente con el enlace para pagar, y resumen a admin.
+// 3. Los lunes (o con ?inventario=1): a admin, cada suscripción con su próxima
+//    fecha de pago; las que tienen deuda o algún detalle, en amarillo.
 //
 // La llama el cron de Vercel (vercel.json) con `Authorization: Bearer
 // CRON_SECRET`. A mano, con LEADS_SECRET (el mismo de la prospección):
@@ -18,7 +19,7 @@ import { timingSafeEqual } from "node:crypto";
 import type Stripe from "stripe";
 import { brandedEmail, isEmailConfigured, sendBrandedEmail } from "@/lib/email";
 import { autorizado } from "@/lib/leads";
-import { ADMIN, avisarCliente, ENVIAR_A_CLIENTES, fecha, fila, stripe, suscripcionesVivas, tabla, websitesPorCorreo, type Fila } from "@/lib/cobros";
+import { acumular, ADMIN, avisarCliente, ENVIAR_A_CLIENTES, fecha, fila, stripe, suscripcionesVivas, tabla, websitesPorCorreo, type Fila } from "@/lib/cobros";
 
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
@@ -33,6 +34,8 @@ function esCron(cabecera: string | null): boolean {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
+const quien = (f: Fila) => `<b>${f.cliente}</b>${f.website ? `<br>${f.website}` : "<br><i>¿de quién es?</i>"}`;
+
 export async function GET(req: NextRequest) {
   const auth = req.headers.get("authorization");
   if (!esCron(auth) && !autorizado(auth)) {
@@ -43,14 +46,24 @@ export async function GET(req: NextRequest) {
   if (!isEmailConfigured()) return NextResponse.json({ error: "SMTP no configurado" }, { status: 501 });
 
   const ahora = Math.floor(Date.now() / 1000);
-  const subs = await suscripcionesVivas(st);
+  let subs = await suscripcionesVivas(st);
   const websites = await websitesPorCorreo().catch(() => new Map<string, string>());
 
-  // ── 1. Un día después de cada vencimiento ──────────────────────────
-  // El pago venció hace entre 1 y 3 días (el cron corre una vez al día; el
-  // margen cubre un día en que no haya corrido). Con tarjeta, vence el día de
-  // la renovación; por factura, en su fecha límite (src/lib/cobros.ts,
-  // vencimiento). Cada factura se avisa una sola vez.
+  // ── 1. Lo que no se pagó pasa al mes siguiente ─────────────────────
+  const acumuladas: { f: Fila; nota: string }[] = [];
+  for (const s of subs) {
+    const notas = await acumular(st, s, ahora).catch((e) => [{ nota: `no se pudo revisar la deuda: ${(e as Error).message}`, problema: true }]);
+    if (notas.length) {
+      const f = await fila(st, s, websites);
+      for (const n of notas) acumuladas.push({ f, nota: n.nota });
+    }
+  }
+  if (acumuladas.length) subs = await suscripcionesVivas(st);
+
+  // ── 2. Un día después de cada vencimiento ──────────────────────────
+  // El pago vence el día de la renovación; se revisa cuando pasaron entre 1 y
+  // 3 días (el cron corre una vez al día; el margen cubre un día en que no
+  // haya corrido). Cada factura se avisa una sola vez.
   const revisadas: { f: Fila; resultado: string; pagada: boolean }[] = [];
   for (const s of subs) {
     const f = await fila(st, s, websites);
@@ -61,64 +74,80 @@ export async function GET(req: NextRequest) {
       continue;
     }
     if (inv.status === "paid" || inv.amount_due === 0) {
-      revisadas.push({ f, resultado: "pagada", pagada: true });
+      revisadas.push({ f, resultado: "pagado", pagada: true });
       continue;
     }
     if (inv.status === "open" || inv.status === "uncollectible") {
       const r = await avisarCliente(st, inv, "revision", s).catch((e) => `no se pudo avisar: ${(e as Error).message}`);
-      revisadas.push({ f, resultado: `sin pagar · ${r}`, pagada: false });
+      revisadas.push({ f, resultado: `no pagó · ${r}`, pagada: false });
       continue;
     }
     revisadas.push({ f, resultado: `factura en estado «${inv.status}»: revisar a mano`, pagada: false });
   }
 
-  const pendientes = revisadas.filter((r) => !r.pagada);
-  if (revisadas.length) {
+  const sinPagar = revisadas.filter((r) => !r.pagada);
+  if (revisadas.length || acumuladas.length) {
+    const partes: string[] = [];
+    if (acumuladas.length) {
+      partes.push("<b>Pasan al mes siguiente</b> (el cliente paga los dos meses juntos):");
+      partes.push(
+        tabla(
+          acumuladas.map((a) => ({ ...a.f, problema: a.nota })),
+          [quien, (f) => f.problema],
+          ["Cliente", "Qué pasó"],
+          () => true
+        )
+      );
+    }
+    if (revisadas.length) {
+      partes.push(
+        sinPagar.length
+          ? `<b>${sinPagar.length}</b> no pagó el día después del vencimiento. ${ENVIAR_A_CLIENTES ? "Cada uno recibió el enlace para completar el pago (y el correo de Stripe)." : "Modo prueba: el correo de cada cliente te llegó a ti."}`
+          : "Los pagos que vencieron ayer pasaron."
+      );
+      partes.push(
+        tabla(
+          revisadas.map((r) => ({ ...r.f, problema: r.pagada ? "" : r.resultado })),
+          [quien, (f) => fecha(f.vence), (f) => (f.problema || `pagado · próximo pago el ${fecha(f.proximo)}`)],
+          ["Cliente", "Venció", "Resultado"],
+          (f) => Boolean(f.problema)
+        )
+      );
+    }
+    const problemas = sinPagar.length + acumuladas.length;
     await sendBrandedEmail(
       ADMIN,
-      pendientes.length
-        ? `Cobros: ${pendientes.length} sin pagar de ${revisadas.length} renovaciones`
-        : `Cobros: las ${revisadas.length} renovaciones están pagadas`,
-      brandedEmail({
-        title: "Revisión de cobros",
-        greeting: "Un día después de cada vencimiento",
-        paragraphs: [
-          pendientes.length
-            ? `<b>${pendientes.length}</b> sin pagar. ${ENVIAR_A_CLIENTES ? "Cada cliente recibió el enlace para completar el pago." : "Modo prueba: el correo de cada cliente te llegó a ti, no a ellos."}`
-            : "Todo pagado.",
-          tabla(
-            revisadas.map((r) => ({ ...r.f, estado: r.resultado })),
-            [(f) => `<b>${f.cliente}</b><br>${f.correo}`, (f) => f.website || "<i>¿de quién es?</i>", "producto", "monto", (f) => fecha(f.vence), "estado"],
-            ["Cliente", "Website", "Producto", "Monto", "Venció", "Resultado"]
-          ),
-        ],
-      })
+      problemas ? `Cobros: ${problemas} con problema hoy` : `Cobros: ${revisadas.length} pagos al día`,
+      brandedEmail({ title: "Revisión de cobros", greeting: "Lo que venció y lo que se acumula", paragraphs: partes })
     );
   }
 
-  // ── 2. Los lunes (o con ?inventario=1): todas las suscripciones ────
+  // ── 3. Los lunes (o con ?inventario=1): todas las suscripciones ────
   const lunes = new Date().toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "long" }) === "Monday";
   const inventario = lunes || req.nextUrl.searchParams.get("inventario") === "1";
+  let conProblema = 0;
   let sinWebsite = 0;
   if (inventario) {
-    const filas = (await Promise.all(subs.map((s) => fila(st, s, websites)))).sort((a, b) => a.proximo - b.proximo);
+    const filas = (await Promise.all(subs.map((s) => fila(st, s, websites)))).sort(
+      (a, b) => Number(Boolean(b.problema)) - Number(Boolean(a.problema)) || a.proximo - b.proximo
+    );
+    conProblema = filas.filter((f) => f.problema).length;
     sinWebsite = filas.filter((f) => !f.website).length;
     await sendBrandedEmail(
       ADMIN,
-      `Cobros: ${filas.length} suscripciones${sinWebsite ? ` · ${sinWebsite} sin website asignado` : ""}`,
+      conProblema ? `Cobros: ${conProblema} con problema de ${filas.length} clientes` : `Cobros: los ${filas.length} clientes al día`,
       brandedEmail({
-        title: "Suscripciones en Stripe",
-        greeting: "Próximos cobros, del más cercano al más lejano",
+        title: "Próximos pagos",
+        greeting: conProblema ? "En amarillo, lo que hay que mirar" : "Todos al día",
         paragraphs: [
-          sinWebsite
-            ? `<b>${sinWebsite}</b> no se pudieron emparejar con un website del portal por el correo del cliente. Responde este correo diciendo de quién es cada una.`
-            : "Todas emparejadas con su website.",
           tabla(
             filas,
-            [(f) => `<b>${f.cliente}</b><br>${f.correo}`, (f) => f.website || "<b style='color:#ffd27a'>¿de quién es?</b>", "producto", (f) => `${f.monto}/${f.cada}<br><small>${f.cobro}</small>`, (f) => fecha(f.proximo), (f) => (f.factura === "open" ? `factura abierta, vence el ${fecha(f.vence)}` : `última factura: ${f.factura}`)],
-            ["Cliente", "Website", "Producto", "Monto", "Próximo cobro", "Estado"]
+            [quien, (f) => fecha(f.proximo), (f) => f.problema || "Al día"],
+            ["Cliente", "Próximo pago", "Detalle"],
+            (f) => Boolean(f.problema)
           ),
-        ],
+          sinWebsite ? `<b>${sinWebsite}</b> sin website asignado: responde este correo diciendo de quién es.` : "",
+        ].filter(Boolean),
         ctaLabel: "Abrir Stripe",
         ctaUrl: "https://dashboard.stripe.com/subscriptions",
       })
@@ -128,9 +157,11 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     modo: ENVIAR_A_CLIENTES ? "clientes" : "prueba",
     suscripciones: subs.length,
+    acumuladas: acumuladas.length,
     revisadas: revisadas.length,
-    sinPagar: pendientes.length,
+    sinPagar: sinPagar.length,
     inventario,
+    conProblema,
     sinWebsite,
   });
 }

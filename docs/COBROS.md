@@ -10,8 +10,9 @@ pago. The Notes tiene su propia cuenta de Stripe y no entra aquí.
 | Cuándo | Qué pasa | Dónde |
 | --- | --- | --- |
 | Un cobro falla (primer intento) | Al cliente: «Tu pago no pasó», con el botón **Completar mi pago** (la factura de Stripe, donde paga con la misma tarjeta o con otra). A admin: el aviso de siempre. | `src/app/api/stripe/webhook/route.ts` |
-| Un día después de cada vencimiento | Revisa la última factura de cada suscripción cuyo pago venció hace 1 a 3 días: con tarjeta, vence el día de la renovación; por factura (send_invoice, como Johan), en la fecha límite de la factura. Si no está pagada: al cliente, «Tu pago sigue pendiente», con el mismo botón. A admin: el resumen (pagadas y sin pagar). | `src/app/api/cobros/revision/route.ts`, cron diario 14:07 UTC (9:07 a. m. en Miami) |
-| Cada lunes | A admin: todas las suscripciones con su cliente, su website, el monto y el próximo cobro. Las que no se emparejan con un website salen con «¿de quién es?». | la misma ruta |
+| Un día antes de cada renovación | **Lo que no se pagó se suma al mes siguiente:** cada factura sin pagar de esa suscripción pasa como una línea «Mes pendiente» a la próxima factura y la vieja se anula. El cliente paga los dos meses juntos. A admin, en amarillo. | `acumular` en `src/lib/cobros.ts`, desde la revisión diaria |
+| Un día después de cada vencimiento | Revisa la última factura de cada suscripción cuyo pago venció hace 1 a 3 días. **El pago vence el día de la renovación**, también en quien paga por factura (aunque Stripe le dé días para pagar). Si no está pagada: al cliente, «Tu pago sigue pendiente», con el mismo botón. A admin: el resumen (pagadas y sin pagar). | `src/app/api/cobros/revision/route.ts`, cron diario 14:07 UTC (9:07 a. m. en Miami) |
+| Cada lunes | A admin: cada cliente con su próxima fecha de pago. **En amarillo** los que tienen algo: lo que deben y desde cuándo, cuántos meses, tarjeta rechazada, sin tarjeta guardada, días para pagar de más o una cancelación programada. | la misma ruta |
 
 - **Cada aviso sale una sola vez por factura:** queda anotado en la metadata
   de la factura (`judo_aviso_fallo`, `judo_aviso_revision`).
@@ -21,6 +22,21 @@ pago. The Notes tiene su propia cuenta de Stripe y no entra aquí.
   (metadata `website`), el de `COBROS_WEBSITES` en Vercel o el del portal por
   el correo del cliente, en ese orden.
 - **Los textos** están en `src/lib/cobros.ts` (función `textos`).
+
+## La regla de Junior (23 de noviembre de 2026)
+
+«Es un servicio mensual: si un mes no pagan, ese mes se acumula para el otro;
+el siguiente mes deben pagar doble.» El pago vence el día de la renovación y
+no se espera al mes siguiente. Ejemplo: si el mes que empieza el 16 de
+noviembre no se paga, el 16 de diciembre la factura trae noviembre y
+diciembre juntos.
+
+Para que funcione, en Stripe:
+- **Settings → Billing → Subscriptions and emails → Manage failed
+  payments:** cuando se acaban los reintentos, la suscripción queda
+  **past due** (no cancelada). Si se cancela, no hay mes siguiente donde
+  sumar la deuda.
+- **Quien paga por factura** (send_invoice) tiene 1 día para pagar, no 30.
 
 ## Quién recibe los correos
 

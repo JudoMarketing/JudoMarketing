@@ -8,6 +8,12 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **23 nov · Cobros, la regla del mes:** es un servicio mensual. El pago
+  vence el día de la renovación (no se espera al mes siguiente). Si un mes no
+  se paga, se acumula: la factura del mes siguiente trae los dos meses. En el
+  resumen, si está pagado solo se muestra la próxima fecha de pago; lo que
+  tiene problemas o detalles va en amarillo. Junior quiere saber cuándo dejan
+  de pagar y cuándo un pago tiene problemas.
 - **23 nov · Cobros, segunda parte:** los correos de cobro salen al cliente,
   y los de Stripe se quedan prendidos («quiero que lleguen dos»). RBT Corner
   paga por Stripe. Pachy Pinchos todavía no empieza su mensualidad: Junior
