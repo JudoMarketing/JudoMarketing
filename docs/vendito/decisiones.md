@@ -8,6 +8,11 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **23 nov · Cobros, segunda parte:** los correos de cobro salen al cliente,
+  y los de Stripe se quedan prendidos («quiero que lleguen dos»). RBT Corner
+  paga por Stripe. Pachy Pinchos todavía no empieza su mensualidad: Junior
+  avisa cuando pague para sumarlo. El resto de los clientes no paga
+  mensualidad.
 - **23 nov · Cobros en Stripe (cuenta de Judo Marketing; The Notes ya está
   cubierta):** correo automático al cliente cuando su pago no pasa; un día
   después del vencimiento de cada suscripción, revisar en Stripe si pagó y,
