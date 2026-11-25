@@ -20,11 +20,11 @@
   "hero": {
     "title": "Construye confianza,",
     "titleAccent": "Crea valor",
-    "subtitle": "Websites, publicidad y un asistente que atiende. Todo bajo tu control.",
+    "subtitle": "Hacemos tu website, manejamos tus redes y tus anuncios, y automatizamos cómo atiendes a tus clientes, para que tu negocio compita con los grandes.",
     "ctaPrimary": "Hablemos de tu proyecto",
-    "ctaSecondary": "Ver servicios",
+    "ctaSecondary": "Ver nuestro trabajo",
     "ctaShowcase": "Ver nuestro portafolio",
-    "ctaJudito": "Lanza tu publicidad"
+    "ctaDiagnostic": "Empieza con un diagnóstico de $99"
   },
   "onboarding": {
     "title": "Así trabajamos contigo",
@@ -300,7 +300,7 @@
     "back": "Volver al inicio"
   },
   "mascot": {
-    "greeting": "¿Quieres traer más clientes? Lanza tu publicidad con JuditoADS. Pruébalo gratis.",
+    "greeting": "¿Quieres más clientes? Empieza con un diagnóstico de $99: comparamos tu negocio con tu competencia.",
     "chatSoon": "Muy pronto vas a poder chatear conmigo aquí mismo 💜",
     "chatTitle": "Chatea conmigo",
     "chatIntro": "¡Hola! Soy la mascota de Judo Marketing. Pregúntame lo que quieras sobre nuestros servicios, precios o cómo trabajamos 💜",
@@ -309,7 +309,7 @@
     "chatThinking": "Pensando…",
     "chatError": "Ups, algo falló. Intenta de nuevo.",
     "chatSlow": "Vas muy rápido, dame unos segundos.",
-    "juditoYes": "Ver JuditoADS",
+    "juditoYes": "Ver el diagnóstico",
     "juditoNo": "Ahora no"
   },
   "footer": {
@@ -728,5 +728,48 @@
     "doneTitle": "¡Recibimos tu pago, gracias!",
     "doneText": "Tu Full Diagnostic llega a tu correo en {days} días hábiles. Si quieres sumar algo (un competidor, otra dirección web), escríbenos por WhatsApp.",
     "back": "Ver todos los servicios"
+  },
+  "home": {
+    "whatTitle": "Lo que hacemos",
+    "whatSubtitle": "Construye confianza: te encuentran y te creen. Crea valor: te compran y vuelven.",
+    "trust": "Construye confianza",
+    "value": "Crea valor",
+    "more": "Ver detalles",
+    "websites": {
+      "name": "Websites y apps",
+      "description": "Tu tienda, tus citas o tus pedidos en línea, con tu propio panel para cambiar precios y productos. Hechos para que te encuentren en Google, Bing y la IA."
+    },
+    "social": {
+      "name": "Redes sociales y anuncios",
+      "price": "Se cotiza según tu negocio",
+      "description": "Manejamos tus redes y hacemos tus anuncios en Facebook e Instagram para traerte clientes. El presupuesto diario lo eliges tú, desde $5 al día, y se le paga directo a Meta.",
+      "more": "Pedir cotización"
+    },
+    "automation": {
+      "name": "Automatización con IA",
+      "description": "Tus clientes reciben respuesta 24/7 por WhatsApp, Instagram y tu website, y las citas y los pedidos se hacen solos mientras trabajas."
+    },
+    "diagnostic": {
+      "kicker": "¿No sabes por dónde empezar?",
+      "name": "Diagnóstico completo",
+      "description": "Comparamos tu website y tu presencia en internet con tu competencia y te mandamos un plan con prioridades, fechas límite y lo que cuesta cada paso. PDF en {days} días hábiles.",
+      "cta": "Quiero mi diagnóstico"
+    },
+    "whyTitle": "Por qué trabajan con nosotros",
+    "whySubtitle": "La estrategia judo: no siempre gana el más grande. Ayudamos a negocios pequeños y medianos a competir con tecnología, IA y estrategia.",
+    "why": [
+      {
+        "title": "Te contesta una persona",
+        "text": "Escríbenos por WhatsApp y te contesta una persona de verdad, en español o en inglés."
+      },
+      {
+        "title": "Revisados todos los días",
+        "text": "Revisamos cada website de nuestros clientes todos los días: que esté en línea, seguro y sin señales de ataque."
+      },
+      {
+        "title": "Hechos para durar",
+        "text": "Sin PHP, con parches de seguridad y respaldos diarios. El código es tuyo al completar tus 12 meses pagados."
+      }
+    ]
   }
 }

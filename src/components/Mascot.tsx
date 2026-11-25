@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { usePathname } from "@/i18n/navigation";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import MascotChat from "./MascotChat";
 import { safeGet, safeSet } from "@/lib/safe";
 
@@ -30,6 +30,7 @@ const PORTALES = ["/admin"];
 export default function Mascot() {
   const t = useTranslations("mascot");
   const pathname = usePathname();
+  const router = useRouter();
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const headRef = useRef<SVGGElement>(null);
@@ -41,9 +42,11 @@ export default function Mascot() {
   const [chatOpen, setChatOpen] = useState(false);
   const [blink, setBlink] = useState(false);
 
-  // Oferta de JuditoADS en la primera visita, a los 8 segundos: que el
-  // visitante lea el hero primero, y que el globo no sea lo último que se
-  // pinta en la carga (Google lo tomaba como el elemento principal).
+  // La oferta de la primera visita, a los 8 segundos: que el visitante lea el
+  // hero primero, y que el globo no sea lo último que se pinta en la carga
+  // (Google lo tomaba como el elemento principal). Desde el 25 nov 2026 ofrece
+  // el diagnóstico de $99, el primer paso con Judo; JuditoADS quedó solo en el
+  // header (Junior).
   useEffect(() => {
     if (safeGet(VISTO_KEY)) return;
     const id = setTimeout(() => setBubble("judito"), 8000);
@@ -134,13 +137,15 @@ export default function Mascot() {
    * Se cierra la burbuja y se anota que ya se ofreció, para no repetirle la
    * oferta a la misma persona cada vez que abra el sitio.
    */
-  const cerrarOferta = useCallback((irA?: string) => {
-    safeSet(VISTO_KEY, "1");
-    setBubble(null);
-    // JuditoADS es otra app servida bajo /juditoads: navegación normal, fuera
-    // del enrutado de idiomas de next-intl.
-    if (irA) window.location.href = irA;
-  }, []);
+  const cerrarOferta = useCallback(
+    (irA?: "/diagnostic") => {
+      safeSet(VISTO_KEY, "1");
+      setBubble(null);
+      // /diagnostic es una página del sitio: va con el enrutado de idiomas.
+      if (irA) router.push(irA);
+    },
+    [router]
+  );
 
   const onRobotClick = () => {
     if (bubble === "judito") return;
@@ -166,7 +171,7 @@ export default function Mascot() {
           <p className="text-sm">{t("greeting")}</p>
           <div className="mt-2 flex flex-col items-stretch gap-1.5">
             <button
-              onClick={() => cerrarOferta("/juditoads")}
+              onClick={() => cerrarOferta("/diagnostic")}
               className="min-h-9 rounded-full bg-judo-purple px-3 py-2 text-xs font-semibold text-white transition hover:bg-judo-lilac"
             >
               {t("juditoYes")}
