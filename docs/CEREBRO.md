@@ -803,6 +803,26 @@ Los errores de diseño de los sitios están en la sección 2 y en
     una sola serie de espacios. Y en el sitio de Judo, los negocios que Judo
     administra (JuditoADS, Juditos) no se presentan como Judo.
 
+### El portal decía «✓» sin guardar
+
+- **El interruptor de Portafolio de Pachy Pinchos no se guardó y el portal
+  dijo que sí** (2026-11-25).
+  - Qué pasó: varias escrituras del portal (Portafolio, imagen, nombre y
+    dominio, estado, fechas, expediente, contrato del website) no pedían
+    `.select()`. Supabase no da error cuando la base filtra la fila (sesión
+    caída, permisos): devuelve cero filas, y el botón mostraba «✓». Además
+    las cajas de cada website guardaban su propio estado y no se volvían a
+    montar al recargar: la pantalla seguía mostrando lo que se tocó, no lo
+    que la base tenía.
+  - Qué costó: Junior prendió y apagó websites, el showcase no cambió y el
+    portal «se desincronizaba».
+  - Regla: toda escritura del portal lleva `.select()` y pasa por `fallo()`;
+    toda caja que copia datos del website a su estado lleva una `key` con el
+    dato guardado; una lectura que falla se avisa, no se pinta como lista
+    vacía; si la sesión se cae, el portal pide entrar. Para ver lo que la
+    base tiene de verdad: `curl -H "Authorization: Bearer $LEADS_SECRET"
+    https://www.judomarketing.net/api/admin/diagnostico`.
+
 ### Publicar (git y Vercel)
 
 - **La rama principal no siempre es la de producción.**

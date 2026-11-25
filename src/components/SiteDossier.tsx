@@ -246,6 +246,20 @@ function Seccion({
   );
 }
 
+/**
+ * Si una escritura cambió de verdad una fila. Supabase no da error cuando la
+ * base filtra la fila (sesión caída, permisos): devuelve cero filas. Por eso
+ * cada escritura lleva .select() y se revisa aquí; el mismo criterio que
+ * fallo() en AdminPortal.tsx.
+ */
+function fallo(res: { data: unknown[] | null; error: { message: string } | null }): string | null {
+  if (res.error) return res.error.message;
+  if (!res.data || res.data.length === 0) {
+    return "la base de datos no dejó hacer el cambio. Vuelve a iniciar sesión e inténtalo otra vez.";
+  }
+  return null;
+}
+
 export default function SiteDossier({
   site,
   flash,
@@ -313,11 +327,14 @@ export default function SiteDossier({
   }, [cargar]);
 
   const guardarCampo = async (campo: string, valor: string | number | null) => {
-    const { error } = await supabase
-      .from("sites")
-      .update({ [campo]: valor === "" ? null : valor })
-      .eq("id", site.id);
-    if (error) return flash(`Error: ${error.message}`);
+    const motivo = fallo(
+      await supabase
+        .from("sites")
+        .update({ [campo]: valor === "" ? null : valor })
+        .eq("id", site.id)
+        .select("id")
+    );
+    if (motivo) return flash(`No se guardó: ${motivo}`);
     onSaved();
   };
 
@@ -479,15 +496,19 @@ export default function SiteDossier({
                 value={acceso.status}
                 onChange={async (e) => {
                   const status = e.target.value;
-                  await supabase
-                    .from("site_accesses")
-                    .update({
-                      status,
-                      granted_at: status === "otorgado" ? new Date().toISOString() : null,
-                      requested_at:
-                        status === "solicitado" ? new Date().toISOString() : undefined,
-                    })
-                    .eq("id", acceso.id);
+                  const motivo = fallo(
+                    await supabase
+                      .from("site_accesses")
+                      .update({
+                        status,
+                        granted_at: status === "otorgado" ? new Date().toISOString() : null,
+                        requested_at:
+                          status === "solicitado" ? new Date().toISOString() : undefined,
+                      })
+                      .eq("id", acceso.id)
+                      .select("id")
+                  );
+                  if (motivo) flash(`No se guardó: ${motivo}`);
                   void cargar();
                 }}
                 className={`${input} w-32`}
@@ -501,10 +522,14 @@ export default function SiteDossier({
               <input
                 defaultValue={acceso.account ?? ""}
                 onBlur={async (e) => {
-                  await supabase
-                    .from("site_accesses")
-                    .update({ account: e.target.value.trim() || null })
-                    .eq("id", acceso.id);
+                  const motivo = fallo(
+                    await supabase
+                      .from("site_accesses")
+                      .update({ account: e.target.value.trim() || null })
+                      .eq("id", acceso.id)
+                      .select("id")
+                  );
+                  if (motivo) flash(`No se guardó la cuenta: ${motivo}`);
                 }}
                 placeholder="cuenta o correo con el que entra"
                 className={`${input} min-w-[12rem] flex-1`}
@@ -536,7 +561,8 @@ export default function SiteDossier({
               </span>
               <button
                 onClick={async () => {
-                  await supabase.from("site_costs").delete().eq("id", costo.id);
+                  const motivo = fallo(await supabase.from("site_costs").delete().eq("id", costo.id).select("id"));
+                  if (motivo) flash(`No se quitó: ${motivo}`);
                   void cargar();
                 }}
                 className={btnDanger}
@@ -600,7 +626,8 @@ export default function SiteDossier({
               {c.pays && <span className="text-amber-300">paga</span>}
               <button
                 onClick={async () => {
-                  await supabase.from("client_contacts").delete().eq("id", c.id);
+                  const motivo = fallo(await supabase.from("client_contacts").delete().eq("id", c.id).select("id"));
+                  if (motivo) flash(`No se quitó: ${motivo}`);
                   void cargar();
                 }}
                 className={btnDanger}
