@@ -783,6 +783,26 @@ Los errores de diseño de los sitios están en la sección 2 y en
     componente: tampoco se generaron. Para un cambio de diseño, CSS normal
     en el archivo del componente.
 
+### Diseñar sin leer el método
+
+- **El home de judomarketing.net salió «nada profesional»** (2026-11-25).
+  - Qué pasó: para que el home hablara de lo que hace Judo, se rehízo sin
+    leer la sección 1 ni `kit/cerebro/METODO.md`. Salió con emojis 3D como
+    iconos, H2 que etiquetaban («What we do», «Why businesses work with
+    us»), cuatro tarjetas que rompían la regla de tres, tres acciones en el
+    hero, sin kicker ni ancla de confianza, y sin mostrar ni un trabajo real.
+    Junior lo rechazó el mismo día y hubo que rehacerlo.
+  - Qué costó: una versión entera publicada en producción y la confianza de
+    Junior en el diseño.
+  - Regla: antes de tocar el diseño de cualquier página, se leen la sección
+    1 y 4 de este archivo y `METODO.md` (se trae con
+    `git checkout origin/archivo/kit-cerebro -- kit/cerebro`), y se revisa la
+    página contra esa lista antes de enseñarla: kicker, H1 promesa, una
+    acción fuerte y una discreta, ancla de confianza, la prueba real arriba,
+    regla de tres, H2 que venden, iconos propios (`src/components/Icono.tsx`),
+    una sola serie de espacios. Y en el sitio de Judo, los negocios que Judo
+    administra (JuditoADS, Juditos) no se presentan como Judo.
+
 ### Publicar (git y Vercel)
 
 - **La rama principal no siempre es la de producción.**
@@ -814,6 +834,12 @@ Los errores de diseño de los sitios están en la sección 2 y en
     compiló en 3 segundos y sacó el mismo archivo CSS. La herramienta de Vercel
     no deja publicar sin caché. Lo que sirve es cambiar la línea «Versión del
     caché de build» de `next.config.ts`, que invalida todo el caché de webpack.
+  - Volvió a pasar el 2026-11-25, dos veces en la misma tarde: cada tanda de
+    clases nuevas pide su propio cambio de versión, aunque la anterior ya se
+    haya cambiado ese día. Regla: después del último cambio de clases, se
+    cambia la versión, `rm -rf .next/cache`, build, y se busca una clase
+    nueva en el CSS (`grep -c "text-balance" .next/static/css/*.css`) antes
+    de mirar capturas o publicar.
 - **Un build falló por una descarga de Google Fonts.**
   - Regla: un fallo de red en el build se reintenta una vez antes de tocar
     código. Si falla dos veces, el problema es nuestro.

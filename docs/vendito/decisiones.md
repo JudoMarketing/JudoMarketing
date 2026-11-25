@@ -8,11 +8,22 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
-- **25 nov · El home de judomarketing.net habla de lo que hace Judo:**
-  websites y apps, redes sociales y anuncios, automatización con IA y el
-  diagnóstico de $99 como primer paso. **Juditos y JuditoADS quedan solo en
-  el header.** Se queda «Build Trust, Create Value», con lo que hacemos
-  explicado debajo. La mascota ya no ofrece JuditoADS: ofrece el diagnóstico.
+- **25 nov · Judo Marketing se centra en websites y en escalar negocios en
+  internet con estrategias rápidas y asesoría de negocio** (el diagnóstico de
+  $99 es la puerta). **JuditoADS y Juditos son negocios aparte que Judo
+  administra, no son Judo Marketing** («cuidado con confundir negocios»):
+  se quitan por ahora de todo el sitio y quedan solo en el header. Precios
+  nuevos: **JuditoADS $40 al mes y los asistentes $60 al mes.** Ni el home,
+  ni /services, ni el chat de la mascota, ni los correos de prospección los
+  ofrecen.
+- **25 nov · El home se rehízo con el método de CEREBRO** («eso no se ve
+  nada profesional»): kicker de lugar, prueba y velocidad; «Build Trust,
+  Create Value» con lo que hacemos en una línea debajo; una acción fuerte
+  (hablar del proyecto) y una discreta (el diagnóstico); la prueba arriba y
+  grande (websites de clientes en línea, presentados como hechos para
+  nuestros clientes); cómo funciona; tres servicios con iconos propios
+  (websites, estrategias para crecer, asesoría); reseñas; cierre con
+  dirección y teléfono. Sin emojis. La mascota ofrece el diagnóstico.
 - **23 nov · Cobros, la regla del mes:** es un servicio mensual. El pago
   vence el día de la renovación (no se espera al mes siguiente). Si un mes no
   se paga, se acumula: la factura del mes siguiente trae los dos meses. En el

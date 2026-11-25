@@ -62,7 +62,11 @@ export default function MentalHealthPage({ params }: { params: Promise<{ locale:
   const decide = t.raw("decide") as Pregunta[];
   const familias = t.raw("build") as Familia[];
   const trabajos = t.raw("work") as Trabajo[];
-  const precios = (t.raw("prices") as Precio[]).map((p) => ({ ...p, price: llenar(p.price), note: llenar(p.note) }));
+  // El asistente de IA es de Juditos, un negocio aparte que Judo administra:
+  // por ahora no se ofrece aquí (Junior, 25 de noviembre de 2026).
+  const precios = (t.raw("prices") as Precio[])
+    .filter((p) => !p.price.includes("{assistant}"))
+    .map((p) => ({ ...p, price: llenar(p.price), note: llenar(p.note) }));
   const faq = t.raw("faq") as Pregunta[];
 
   const ruta = locale === "es" ? "/es/salud-mental" : "/mental-health";
@@ -225,7 +229,7 @@ export default function MentalHealthPage({ params }: { params: Promise<{ locale:
         <Reveal className="text-center">
           <h2 className="text-3xl font-bold sm:text-4xl">{t("priceTitle")}</h2>
         </Reveal>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 mx-auto max-w-4xl md:grid-cols-2">
           {precios.map((p, i) => (
             <Reveal key={p.name} paso={i}>
               <div className="svc svc-websites svc-card h-full p-7 text-center">

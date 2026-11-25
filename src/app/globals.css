@@ -102,6 +102,20 @@ h1,
   font-variant-numeric: tabular-nums;
 }
 
+/* El antetítulo (kicker): en mayúsculas pequeñas, encima del titular. En el
+   hero dice lugar + prueba + velocidad (docs/CEREBRO.md, sección 1); en las
+   secciones, de qué trata, para que el H2 pueda vender en vez de etiquetar.
+   Letra del cuerpo, no la display: es una etiqueta, no un titular. */
+.kicker {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-judo-fog) 62%, transparent);
+}
+
 /* ── Fondo con glow morado ─────────────────────────────────────────── */
 .judo-glow {
   background:

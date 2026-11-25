@@ -25,7 +25,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { sendBrandedEmail } from "@/lib/email";
-import { cuotaInicio, descuento, DIAS_DIAGNOSTICO, mesesGratisPagoUnico, pagoUnico, precio, precioAntes, PRECIO_ASISTENTE, PRECIO_DIAGNOSTICO, PRECIO_JUDITOADS, usd } from "@/lib/pricing";
+import { cuotaInicio, descuento, DIAS_DIAGNOSTICO, mesesGratisPagoUnico, pagoUnico, precio, precioAntes, PRECIO_DIAGNOSTICO, usd } from "@/lib/pricing";
 import {
   enlacesProspecto,
   htmlProspecto,
@@ -787,6 +787,8 @@ export function preciosCorreo(idioma: "es" | "en" | "de"): string[] {
   // Desde el 14 de noviembre de 2026: Esencial $250 y Apps $450 al mes, más
   // $500 de inicio; el año completo de una vez cuesta 10 meses y no lleva
   // cuota ($2,500 y $4,500). Y el Full Diagnostic de $99 como primer paso.
+  // JuditoADS y Juditos ya no van en estos correos (Junior, 25 nov 2026): son
+  // negocios aparte que Judo administra y por ahora viven solo en el header.
   const antes = precioAntes("essential");
   const rebaja = descuento("essential");
   const unico = pagoUnico("essential");
@@ -799,20 +801,17 @@ export function preciosCorreo(idioma: "es" | "en" | "de"): string[] {
       `Website con tu panel de control: desde $${esencial} al mes${antesEs}${cuota ? `, más $${cuota} de inicio, una sola vez` : ", sin cuota de inicio"}${unico ? `; o el año completo de una vez por ${usd(unico.total)}${gratis ? ` (${gratis} meses gratis${cuota ? " y sin cuota de inicio" : ""})` : ""}` : ""}.`,
       `Apps de teléfono desde $${app} al mes${cuotaApp ? `, más $${cuotaApp} de inicio` : ""}. Proyectos a la medida: se cotizan.`,
       `¿No sabes por dónde empezar? Diagnóstico completo de tu website y tu presencia en internet: $${PRECIO_DIAGNOSTICO}, en PDF en ${DIAS_DIAGNOSTICO} días hábiles.`,
-      `Asistente de IA que contesta por WhatsApp e Instagram: desde $${PRECIO_ASISTENTE} al mes. Anuncios con JuditoADS: $${PRECIO_JUDITOADS} al mes.`,
     ];
   if (idioma === "de")
     return [
       `Website mit eigenem Verwaltungsbereich: ab $${esencial} pro Monat${antesDe}${cuota ? `, plus einmalig $${cuota} Einrichtung` : ", ohne Einrichtungsgebühr"}${unico ? `; oder das ganze Jahr auf einmal für ${usd(unico.total)}${gratis ? ` (${gratis} Monate gratis${cuota ? ", ohne Einrichtungsgebühr" : ""})` : ""}` : ""}.`,
       `Apps ab $${app} pro Monat${cuotaApp ? `, plus einmalig $${cuotaApp} Einrichtung` : ""}. Individuelle Projekte: nach Angebot.`,
       `Kompletter Check Ihrer Website und Online-Präsenz: $${PRECIO_DIAGNOSTICO}, als PDF in ${DIAS_DIAGNOSTICO} Werktagen.`,
-      `KI-Assistent für WhatsApp und Instagram: ab $${PRECIO_ASISTENTE} pro Monat.`,
     ];
   return [
     `Website with your own admin panel: from $${esencial} a month${antesEn}${cuota ? `, plus a one-time $${cuota} setup` : ", no setup fee"}${unico ? `; or the full year at once for ${usd(unico.total)}${gratis ? ` (${gratis} months free${cuota ? ", no setup fee" : ""})` : ""}` : ""}.`,
     `Mobile apps from $${app} a month${cuotaApp ? `, plus a one-time $${cuotaApp} setup` : ""}. Custom projects are quoted.`,
     `Not sure where to start? A full diagnostic of your website and online presence: $${PRECIO_DIAGNOSTICO}, as a PDF in ${DIAS_DIAGNOSTICO} business days.`,
-    `AI assistant that answers on WhatsApp and Instagram: from $${PRECIO_ASISTENTE} a month. Ads with JuditoADS: $${PRECIO_JUDITOADS} a month.`,
   ];
 }
 
@@ -831,7 +830,9 @@ export function nichoDe(rubroLead: unknown, rubroBorrador?: string | null): Nich
 
 /** Las cifras en dólares que un borrador puede citar: las de la tabla de precios. */
 function cifrasPermitidas(): Set<number> {
-  const s = new Set<number>([PRECIO_ASISTENTE, PRECIO_JUDITOADS, PRECIO_DIAGNOSTICO]);
+  // Sin JuditoADS ni Juditos desde el 25 nov 2026: son negocios aparte que
+  // Judo administra y un borrador de Judo no los vende.
+  const s = new Set<number>([PRECIO_DIAGNOSTICO]);
   // Los Complejos no llevan cifra: se cotizan (decisión de Junior).
   for (const plan of ["essential", "apps"] as const) {
     s.add(precio(plan));

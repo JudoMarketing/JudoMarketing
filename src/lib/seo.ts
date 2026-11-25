@@ -1,4 +1,4 @@
-import { DIAS_DIAGNOSTICO, precioDesde, PRECIO_DIAGNOSTICO } from "./pricing";
+import { DIAS_DIAGNOSTICO, precioDesde, PRECIO_DIAGNOSTICO, usd } from "./pricing";
 import type { Metadata } from "next";
 
 /**
@@ -36,14 +36,14 @@ const COPY: Record<PageKey, Record<"en" | "es", { title: string; description: st
   },
   services: {
     es: {
-      title: `Páginas Web desde ${precioDesde()}/mes y Publicidad en Facebook e Instagram | Judo Marketing`,
+      title: `Páginas Web desde ${precioDesde()}/mes y Asesoría de Negocio en Miami | Judo Marketing`,
       description:
-        `Páginas web para negocios desde ${precioDesde()} al mes, publicidad en Facebook e Instagram con JuditoADS ($20/mes, pruébalo gratis) y asistentes con IA que atienden a tus clientes. Miami y toda Latinoamérica.`,
+        `Páginas web y apps para negocios desde ${precioDesde()} al mes, con tu propio panel de control, y un diagnóstico completo de ${usd(PRECIO_DIAGNOSTICO)} para saber qué arreglar primero. Miami, en español y en inglés.`,
     },
     en: {
-      title: `Websites from ${precioDesde()}/month & Facebook and Instagram Ads | Judo Marketing`,
+      title: `Websites from ${precioDesde()}/month & Business Advice in Miami | Judo Marketing`,
       description:
-        `Business websites from ${precioDesde()} a month, Facebook and Instagram advertising with JuditoADS ($20/mo, try it free), and AI assistants that answer your customers. Miami and beyond.`,
+        `Business websites and apps from ${precioDesde()} a month, with your own admin panel, and a ${usd(PRECIO_DIAGNOSTICO)} full diagnostic to know what to fix first. Miami, in English and Spanish.`,
     },
   },
   diagnostic: {

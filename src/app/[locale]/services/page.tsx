@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import Reveal from "@/components/Reveal";
 import EleccionContacto from "@/components/EleccionContacto";
 import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
+import Icono, { type IconName } from "@/components/Icono";
 import { pageMetadata } from "@/lib/seo";
 import { cuotaInicio, cuotaInicioTexto, descuento, DIAS_DIAGNOSTICO, mesesGratisPagoUnico, pagoUnico, pagoUnicoTexto, precioAntes, precioTexto, usd, PRECIO_DIAGNOSTICO, PRECIO_JUDITOADS, PRECIO_ASISTENTE, PRECIO_ASISTENTE_PRO } from "@/lib/pricing";
 
@@ -31,12 +32,19 @@ export async function generateMetadata({
 type DiffItem = { title: string; description: string };
 type FaqItem = { q: string; a: string };
 
-/** Las tres familias, en el orden en que el cliente las necesita. */
-const FAMILIAS = [
-  { id: "websites", ancla: "websites", clase: "svc-websites", icono: "🌐" },
-  { id: "social", ancla: "juditoads", clase: "svc-ads", icono: "📣" },
-  { id: "ai", ancla: "ai-assistants", clase: "svc-ai", icono: "🤖" },
-] as const;
+/**
+ * JuditoADS y Juditos son negocios aparte que Judo Marketing administra
+ * (Junior, 25 de noviembre de 2026): por ahora viven solo en el header, que
+ * enlaza a sus apps. Sus secciones se quedan escritas aquí, apagadas; para
+ * volver a mostrarlas, esto en true.
+ */
+const NEGOCIOS_HERMANOS = false;
+
+/** La entrada: lo que hace Judo, de un vistazo y con su color. */
+const FAMILIAS: readonly { id: string; ancla: string; clase: string; icono: IconName; kicker: string; titulo: string; sub: string }[] = [
+  { id: "websites", ancla: "websites", clase: "svc-websites", icono: "navegador", kicker: "kicker.websites", titulo: "sections.websitesTitle", sub: "sections.websitesSub" },
+  { id: "diagnostic", ancla: "diagnostic", clase: "svc-ai", icono: "brujula", kicker: "diagnostic.kicker", titulo: "diagnostic.title", sub: "sections.diagnosticSub" },
+];
 
 export default function ServicesPage({
   params,
@@ -73,7 +81,7 @@ export default function ServicesPage({
         </p>
 
         <div
-          className="hero-in mt-10 grid gap-4 sm:grid-cols-3"
+          className="hero-in mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-2"
           style={{ animationDelay: "calc(var(--tiempo) * 2)" }}
         >
           {FAMILIAS.map((f) => (
@@ -82,18 +90,18 @@ export default function ServicesPage({
               href={`#${f.ancla}`}
               className={`svc ${f.clase} svc-card block p-6 text-left`}
             >
-              <span className="text-2xl" aria-hidden>
-                {f.icono}
+              <span style={{ color: "var(--svc-luz)" }}>
+                <Icono nombre={f.icono} tamano={26} />
               </span>
               <p
                 className="mt-3 text-xs font-bold tracking-wide uppercase"
                 style={{ color: "var(--svc-luz)" }}
               >
-                {t(`kicker.${f.id}`)}
+                {t(f.kicker)}
               </p>
-              <p className="mt-1 text-xl font-bold">{t(`sections.${f.id}Title`)}</p>
+              <p className="mt-1 text-xl font-bold">{t(f.titulo)}</p>
               <p className="mt-1.5 text-sm text-judo-fog/60">
-                {t(`sections.${f.id}Sub`)}
+                {t(f.sub)}
               </p>
             </a>
           ))}
@@ -108,7 +116,7 @@ export default function ServicesPage({
         <Reveal>
           <div className="grid items-center gap-6 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
-              <span className="svc-tag">🌐 {t("kicker.websites")}</span>
+              <span className="svc-tag"><Icono nombre="navegador" tamano={14} /> {t("kicker.websites")}</span>
               <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
                 {t("sections.websitesTitle")}
               </h2>
@@ -206,10 +214,10 @@ export default function ServicesPage({
         {/* El primer paso para quien no sabe qué plan necesita: el Full
             Diagnostic. Tiene su propia página con lo que incluye y el pago. */}
         <Reveal>
-          <div id="diagnostic" className="svc-card mt-10 scroll-mt-24 p-7 sm:p-9">
+          <div id="diagnostic" className="svc svc-ai svc-card mt-10 scroll-mt-24 p-7 sm:p-9">
             <div className="grid gap-6 md:grid-cols-[1.4fr_1fr] md:items-center">
               <div>
-                <span className="svc-tag">🔎 {t("diagnostic.kicker")}</span>
+                <span className="svc-tag"><Icono nombre="brujula" tamano={14} /> {t("diagnostic.kicker")}</span>
                 <h3 className="mt-4 text-2xl font-bold sm:text-3xl">{t("diagnostic.title")}</h3>
                 <p className="mt-3 text-judo-fog/70">{t("diagnostic.body")}</p>
               </div>
@@ -225,6 +233,8 @@ export default function ServicesPage({
         </Reveal>
       </section>
 
+      {NEGOCIOS_HERMANOS && (
+        <>
       {/* ── JUDITOADS ────────────────────────────────────────────────────
           Vive como app aparte bajo /juditoads (rewrite en next.config.ts),
           por eso el enlace es un <a> normal y no pasa por el enrutado de
@@ -341,6 +351,8 @@ export default function ServicesPage({
           </div>
         </Reveal>
       </section>
+        </>
+      )}
 
       {/* ── POR QUÉ CON NOSOTROS ─────────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-6 pb-20">

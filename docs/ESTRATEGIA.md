@@ -107,7 +107,7 @@ un enlace propio por cliente en el portal y el registro automático.
 
 ### 6. Anuncios manejados por nosotros ❓
 
-JuditoADS ($20) es para quien hace sus anuncios solo. Un plan donde
+JuditoADS ($40 desde el 25 nov 2026; es un negocio aparte que Judo administra) es para quien hace sus anuncios solo. Un plan donde
 nosotros manejamos la campaña cubre a los que no tienen tiempo.
 **Decisión de Junior:** el precio mensual (propuesta: $300 a $500, aparte del
 presupuesto que se le paga a Meta) y cuántas campañas incluye.

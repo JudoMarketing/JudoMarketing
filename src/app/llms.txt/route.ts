@@ -13,14 +13,16 @@ export const dynamic = "force-static";
 
 const TEXTO = `# Judo Marketing
 
-> Bilingual (English and Spanish) web design, apps and AI marketing agency in Miami, Florida. We build websites on a monthly plan, complex web platforms, mobile apps, AI assistants that answer customers, and JuditoADS, a platform to run your own Facebook and Instagram ads.
+> Bilingual (English and Spanish) web design and business growth agency in Miami, Florida. We build websites on a monthly plan, complex web platforms and mobile apps, and help small businesses grow online with fast strategies and business advice.
 
 ## Services
 - **Essential Websites**: online stores, booking pages and service sales with modern design and your own panel. Monthly plan or one payment for the year.
 - **Complex Websites**: delivery, logistics, virtual classes and custom integrations. Quoted per project.
 - **Mobile Apps**: native iOS and Android apps with push notifications.
-- **AI Assistants (Juditos)**: answer your customers on Instagram, Facebook, WhatsApp and your website, around the clock.
-- **JuditoADS**: run your own Facebook and Instagram ads with guided strategy, live metrics and PDF reports. Free trial.
+- **Growth strategies**: a plan with priorities and deadlines to bring in more customers online, including social media and Facebook and Instagram ads. Quoted per business.
+- **Business advice (Full Diagnostic)**: we compare your business with your competitors and send a PDF plan with deadlines.
+
+Judo Marketing also manages two separate businesses: JuditoADS (${SITE_URL}/juditoads), a platform to run your own Facebook and Instagram ads, and Juditos (${SITE_URL}/juditos), AI assistants that answer customers.
 
 Current prices: ${SITE_URL}/services (Spanish: ${SITE_URL}/es/servicios)
 
@@ -37,8 +39,6 @@ Current prices: ${SITE_URL}/services (Spanish: ${SITE_URL}/es/servicios)
 - [Portfolio of client websites](${SITE_URL}/showcase)
 - [About](${SITE_URL}/about)
 - [Contact](${SITE_URL}/contact)
-- [JuditoADS](${SITE_URL}/juditoads)
-- [AI Assistants](${SITE_URL}/juditos)
 `;
 
 export function GET() {

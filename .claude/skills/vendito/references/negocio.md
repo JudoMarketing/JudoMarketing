@@ -17,7 +17,7 @@ Lo que Vendito tiene que saber sin buscarlo. Si algo de aquí choca con
 - **Contacto:** WhatsApp +1 305 934 9981 · admin@judomarketing.net ·
   www.judomarketing.net · Instagram @judo.marketing.
 
-## Lo que vendemos (precios de Estados Unidos, 14 nov 2026)
+## Lo que vendemos (precios de Estados Unidos, 14 y 25 nov 2026)
 
 Las cifras salen de `src/content/pricing.json`. Si cambian ahí, cambian aquí.
 
@@ -28,8 +28,13 @@ Las cifras salen de `src/content/pricing.json`. Si cambian ahí, cambian aquí.
 | **Apps para teléfonos** | $450/mes + $500 de inicio; o el año $4,500 | App iPhone y Android con notificaciones. |
 | **Websites Complejos** | Se cotizan (nunca se dice una cifra) | Delivery, logística, clases, integraciones. |
 | **Redes sociales y anuncios** | Manejo a cotizar; el presupuesto de anuncios lo elige el cliente **desde $5 al día** y se le paga directo a Meta | Manejamos sus redes, hacemos los anuncios en Facebook e Instagram y traemos más tráfico al negocio. |
-| **Juditos (asistentes con IA)** | Desde $25/mes; Pro $60/mes | Contestan por WhatsApp, Instagram, Messenger y el website, 24/7. |
-| **JuditoADS** | $20/mes | La app para que el cliente lance sus anuncios solo. Es otro producto: no se mezcla con «Judo maneja tus anuncios». |
+
+**Desde el 25 de noviembre de 2026, Judo se centra en websites, estrategias
+para crecer rápido y asesoría de negocio** (el diagnóstico es la puerta).
+**JuditoADS y Juditos son negocios aparte que Judo Marketing administra, no
+son Judo Marketing:** no se venden en piezas de Judo y en judomarketing.net
+viven solo en el header. Sus precios, por si alguien pregunta: **JuditoADS
+$40/mes y Juditos (asistentes con IA) $60/mes.**
 
 **Latinoamérica tiene sus propios precios** (website $150, evaluación $50):
 están en los PDF «Desde Miami» y «Desde $50 al mes» de la Biblioteca. No se
