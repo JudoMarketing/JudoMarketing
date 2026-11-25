@@ -116,6 +116,49 @@ h1,
   color: color-mix(in srgb, var(--color-judo-fog) 62%, transparent);
 }
 
+/* ── El show de websites del home ──────────────────────────────────────
+   La fila va dos veces seguida y se corre una copia entera (la mitad menos
+   medio hueco): el giro no tiene costura. --vuelta la pone el componente
+   (dos pulsos por sitio). Las orillas se desvanecen para que no corte seco. */
+.show-websites {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.show-pista {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  animation: show-desliza var(--vuelta, 76.8s) linear infinite;
+}
+.show-websites:hover .show-pista,
+.show-websites:focus-within .show-pista {
+  animation-play-state: paused;
+}
+.show-ficha {
+  display: block;
+  flex: none;
+  width: 200px;
+}
+@media (min-width: 640px) {
+  .show-ficha {
+    width: 240px;
+  }
+}
+@keyframes show-desliza {
+  to {
+    transform: translateX(calc(-50% - 0.5rem));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .show-pista {
+    animation: none;
+  }
+  .show-websites {
+    overflow-x: auto;
+  }
+}
+
 /* ── Fondo con glow morado ─────────────────────────────────────────── */
 .judo-glow {
   background:

@@ -4,6 +4,7 @@ import Reveal from "@/components/Reveal";
 import BotonDiagnostico from "@/components/BotonDiagnostico";
 import { pageMetadata, SITE_URL } from "@/lib/seo";
 import { DIAS_DIAGNOSTICO, PRECIO_DIAGNOSTICO, usd } from "@/lib/pricing";
+import Icono, { type IconName } from "@/components/Icono";
 
 /**
  * Full Diagnostic (Junior, 14 de noviembre de 2026): el diagnóstico completo
@@ -22,7 +23,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return pageMetadata("diagnostic", locale);
 }
 
-type Item = { title: string; text: string };
+/** Google, Maps, IA, website, redes, competencia, seguridad y reputación. */
+const ICONOS_REVISION: IconName[] = ["buscar", "pin", "chispa", "navegador", "mensaje", "barras", "escudo", "estrella"];
 
 const WHATSAPP = "https://wa.me/13059349981";
 
@@ -39,11 +41,16 @@ export default async function DiagnosticPage({
   const t = await getTranslations("diagnostic");
 
   const precio = usd(PRECIO_DIAGNOSTICO);
-  const items = t.raw("items") as Item[];
-  const pasos = (t.raw("steps") as Item[]).map((p) => ({
-    title: p.title.replace("{price}", precio),
-    text: p.text.replace("{days}", String(DIAS_DIAGNOSTICO)),
+  // Solo los títulos, cada uno con su icono (Junior, 25 nov 2026: «deja solo
+  // los títulos… entre más directo y simple mejor»). Los iconos van en el
+  // mismo orden que los títulos de messages/*.json, diagnostic.items.
+  const items = (t.raw("items") as { title: string }[]).map((item, i) => ({
+    ...item,
+    icono: ICONOS_REVISION[i] ?? ("check" as IconName),
   }));
+  const pasos = (t.raw("steps") as { title: string }[]).map((p) =>
+    p.title.replace("{price}", precio).replace("{days}", String(DIAS_DIAGNOSTICO))
+  );
   const ruta = locale === "es" ? "/es/diagnostico" : "/diagnostic";
 
   return (
@@ -52,9 +59,7 @@ export default async function DiagnosticPage({
       <section className="mx-auto max-w-6xl px-6 pt-16 pb-10 sm:pt-20">
         {pagado === "1" && (
           <div role="status" className="svc-card mb-10 p-6 text-center sm:p-8">
-            <p className="text-3xl" aria-hidden>
-              ✅
-            </p>
+            <Icono nombre="check" tamano={40} className="mx-auto text-judo-lilac" />
             <h2 className="mt-2 text-2xl font-bold">{t("doneTitle")}</h2>
             <p className="mx-auto mt-2 max-w-xl text-judo-fog/75">{t("doneText", { days: DIAS_DIAGNOSTICO })}</p>
             <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block font-semibold text-judo-lilac hover:underline">
@@ -65,7 +70,7 @@ export default async function DiagnosticPage({
 
         <div className="grid items-center gap-10 lg:grid-cols-[1.25fr_1fr]">
           <div>
-            <span className="svc-tag hero-in">🔎 {t("kicker")}</span>
+            <span className="svc-tag hero-in"><Icono nombre="brujula" tamano={14} /> {t("kicker")}</span>
             <h1 className="hero-in mt-4 text-4xl font-bold sm:text-5xl" style={{ animationDelay: "calc(var(--tiempo) * 1)" }}>
               {t("title")}
             </h1>
@@ -88,14 +93,17 @@ export default async function DiagnosticPage({
         <Reveal>
           <h2 className="text-3xl font-bold">{t("reviewTitle")}</h2>
         </Reveal>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div role="list" className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {items.map((item, i) => (
-            <Reveal key={item.title} paso={i % 4}>
-              <div className="svc-card h-full p-5">
-                <h3 className="font-bold" style={{ color: "var(--svc-luz)" }}>
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-judo-fog/70">{item.text}</p>
+            <Reveal key={item.title} paso={i % 4} className="h-full">
+              <div role="listitem" className="flex h-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
+                <span
+                  className="flex h-10 w-10 flex-none items-center justify-center rounded-xl"
+                  style={{ color: "var(--svc-luz)", background: "color-mix(in srgb, var(--svc) 16%, transparent)" }}
+                >
+                  <Icono nombre={item.icono} tamano={22} />
+                </span>
+                <span className="font-semibold leading-snug">{item.title}</span>
               </div>
             </Reveal>
           ))}
@@ -116,14 +124,11 @@ export default async function DiagnosticPage({
               <h2 className="text-2xl font-bold">{t("stepsTitle")}</h2>
               <ol className="mt-4 space-y-4">
                 {pasos.map((paso, i) => (
-                  <li key={paso.title} className="flex gap-4">
+                  <li key={paso} className="flex items-center gap-4">
                     <span className="display-num flex h-9 w-9 flex-none items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: "var(--svc)" }}>
                       {i + 1}
                     </span>
-                    <span>
-                      <span className="block font-semibold">{paso.title}</span>
-                      <span className="mt-0.5 block text-sm text-judo-fog/70">{paso.text}</span>
-                    </span>
+                    <span className="font-semibold">{paso}</span>
                   </li>
                 ))}
               </ol>

@@ -1,10 +1,10 @@
 import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { Suspense, use } from "react";
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import Reveal from "@/components/Reveal";
 import Icono, { type IconName } from "@/components/Icono";
+import ShowDeWebsites from "@/components/ShowDeWebsites";
 import ResenasComunidad from "@/components/ResenasComunidad";
 import { PERFIL_GOOGLE } from "@/components/SocialLinks";
 import ListoOverlay from "@/components/ListoOverlay";
@@ -39,13 +39,6 @@ export async function generateMetadata({
  * (components/Icono.tsx), nunca emoji. Espacios de una sola serie (4, 8, 12,
  * 16, 24, 32, 48, 64, 96).
  */
-
-/** Websites que hicimos para clientes, con la captura de su portada. */
-const OBRAS = [
-  { id: "pachy", nombre: "Pachy Pinchos", dominio: "pachypinchos.com", url: "https://pachypinchos.com" },
-  { id: "denali", nombre: "Denali CRT", dominio: "denalibehaviorcrt.com", url: "https://denalibehaviorcrt.com" },
-  { id: "paradise", nombre: "Paradise Ranch 22", dominio: "paradiseranch22.com", url: "https://paradiseranch22.com" },
-] as const;
 
 /** Lo que hace Judo: tres, en el orden en que el cliente lo necesita. */
 const SERVICIOS: readonly { id: string; clase: string; icono: IconName; href: "/services" | "/contact" | "/diagnostic"; hash?: string }[] = [
@@ -82,7 +75,7 @@ export default function HomePage({
       </Suspense>
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
-      <section className="relative mx-auto max-w-6xl px-6 pt-16 pb-12 sm:pt-24 sm:pb-16">
+      <section className="relative mx-auto max-w-6xl px-6 pt-16 pb-12 sm:pt-24">
         {/* Trazo de fondo, solo en pantallas grandes */}
         <svg
           aria-hidden
@@ -148,56 +141,25 @@ export default function HomePage({
             </Link>
           </div>
         </div>
+      </section>
 
-        {/* La prueba: websites de clientes, en línea hoy. Ancla de confianza
-            real y comprobable: cada uno abre el sitio de verdad, y la
-            revisión diaria (scripts/seguridad/vigilar-sitios.py) los mira
-            todos los días. */}
-        <div className="hero-in relative mt-16" style={{ animationDelay: "calc(var(--tiempo) * 4)" }}>
-          <p className="text-balance text-center text-sm text-judo-fog/65">
-            <Icono nombre="escudo" tamano={18} className="mr-1.5 inline-block align-[-4px] text-judo-lilac" />
-            {t("home.ancla")}
-          </p>
-          {/* En el teléfono se deslizan de a una, grandes; desde tableta, las tres en fila */}
-          <div className="-mx-6 mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-2 md:mx-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 md:pb-0">
-            {OBRAS.map((obra) => (
-              <a
-                key={obra.id}
-                href={obra.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group block w-[84%] flex-none snap-center md:w-auto"
-              >
-                <div className="overflow-hidden rounded-xl border border-white/10 bg-judo-surface shadow-[0_24px_60px_-28px_rgba(0,0,0,0.9)] transition duration-300 group-hover:-translate-y-1 group-hover:border-judo-lilac/40">
-                  <div className="flex items-center gap-1.5 border-b border-white/10 px-3 py-2">
-                    <span className="h-2 w-2 rounded-full bg-white/20" />
-                    <span className="h-2 w-2 rounded-full bg-white/20" />
-                    <span className="h-2 w-2 rounded-full bg-white/20" />
-                    <span className="ml-2 truncate text-xs text-judo-fog/45">{obra.dominio}</span>
-                  </div>
-                  <Image
-                    src={`/home/obras/${obra.id}.webp`}
-                    alt={t(`home.obras.${obra.id}.alt`)}
-                    width={960}
-                    height={600}
-                    sizes="(min-width: 1152px) 352px, (min-width: 768px) 31vw, 84vw"
-                    className="block h-auto w-full"
-                  />
-                </div>
-                <p className="mt-3 flex items-center gap-1 text-sm font-semibold">
-                  {obra.nombre}
-                  <Icono nombre="externo" tamano={14} className="text-judo-fog/45 transition group-hover:text-judo-lilac" />
-                </p>
-                <p className="mt-1 text-xs text-judo-fog/55">{t(`home.obras.${obra.id}.rubro`)}</p>
-              </a>
-            ))}
-          </div>
-          <div className="mt-8 text-center">
-            <Link href="/showcase" className={DISCRETO}>
-              {t("home.verTodo")}
-              <Icono nombre="flecha" tamano={16} />
-            </Link>
-          </div>
+      {/* ── EL SHOW: los websites del showcase, deslizándose ──────────
+          La prueba de lo que hacemos, arriba y a todo el ancho: sitios de
+          nuestros clientes, en línea hoy, cada uno abre el sitio de verdad
+          (components/ShowDeWebsites.tsx). */}
+      <section className="hero-in pb-12 sm:pb-16" style={{ animationDelay: "calc(var(--tiempo) * 4)" }}>
+        <p className="mx-auto max-w-6xl px-6 text-balance text-center text-sm text-judo-fog/65">
+          <Icono nombre="navegador" tamano={18} className="mr-1.5 inline-block align-[-4px] text-judo-lilac" />
+          {t("home.ancla")}
+        </p>
+        <div className="mt-6">
+          <ShowDeWebsites locale={locale} />
+        </div>
+        <div className="mt-6 text-center">
+          <Link href="/showcase" className={DISCRETO}>
+            {t("home.verTodo")}
+            <Icono nombre="flecha" tamano={16} />
+          </Link>
         </div>
       </section>
 
@@ -263,7 +225,6 @@ export default function HomePage({
                   </p>
                   <h3 className="mt-2 text-2xl font-bold">{t(`home.${s.id}.name`)}</h3>
                   <p className="display-num mt-2 text-lg font-bold text-judo-fog/90">{precio}</p>
-                  <p className="mt-4 text-sm leading-relaxed text-judo-fog/65">{t(`home.${s.id}.text`)}</p>
                   <ul className="mt-6 flex-1 space-y-3">
                     {puntos.map((p) => (
                       <li key={p} className="flex gap-3 text-sm text-judo-fog/80">

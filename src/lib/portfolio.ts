@@ -109,7 +109,7 @@ async function fijosYPortal(): Promise<Trabajo[]> {
     ...p,
     imagen: portadaFija(p.dominio) ?? capturaDelHome(p.url.replace(/^https?:\/\//, "")),
     video: videoDePortada(p.dominio),
-    enDesarrollo: false,
+    enDesarrollo: p.enDesarrollo ?? false,
   }));
   return [...fijos, ...delPortal];
 }
@@ -126,7 +126,12 @@ async function trabajosDelPortal(): Promise<Trabajo[]> {
       .select(
         "name,status,domain,portfolio_category,portfolio_desc_es,portfolio_desc_en,portfolio_image,portfolio_shot_at"
       )
-      .in("status", ["activo", "en_desarrollo"])
+      // La misma regla que el portal (SitePortfolio en AdminPortal.tsx): sale
+      // todo lo visible que no esté deshabilitado. Antes solo salían los
+      // activos y en desarrollo, y un sitio cancelado que el portal marcaba
+      // «publicado» no aparecía (Junior, 25 nov 2026: «necesito que estén
+      // todos»). Uno deshabilitado no sale: su website muestra la pausa.
+      .neq("status", "deshabilitado")
       .eq("portfolio_visible", true)
       .not("domain", "is", null)
       .order("created_at", { ascending: false });

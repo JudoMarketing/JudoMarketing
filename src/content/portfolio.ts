@@ -91,7 +91,21 @@ export const PROYECTOS_FIJOS: {
   url: string;
   categoria: Categoria;
   descripcion: { es: string; en: string };
+  /** Si todavía está en desarrollo: sale marcado como vista previa. */
+  enDesarrollo?: boolean;
 }[] = [
+  // Junior, 25 de noviembre de 2026: «ponlo en progreso, de primero»
+  {
+    nombre: "SoFla Contractors",
+    dominio: "sofla-contractors.vercel.app",
+    url: "https://sofla-contractors.vercel.app",
+    categoria: "construccion",
+    enDesarrollo: true,
+    descripcion: {
+      es: "Remodelación de lujo y construcción en el sur de Florida: penthouses, residencias, hoteles y restauración histórica. Contratista general con licencia en Florida.",
+      en: "Luxury remodeling and construction in South Florida: penthouses, estates, resorts and historic restoration. A licensed Florida general contractor.",
+    },
+  },
   // Junior, 12 de octubre de 2026
   {
     nombre: "God's Home",
@@ -163,6 +177,8 @@ export const DOMINIO_PUBLICO: Record<string, string> = {
  * después lo más nuevo del portal). Va el dominio sin www.
  */
 export const ORDEN_SHOWCASE: string[] = [
+  // Junior, 25 de noviembre de 2026: de primero, en progreso
+  "sofla-contractors.vercel.app",
   "godshome.app",
   "the-equipment-source.vercel.app",
   "deliveryrushflorida.com",
@@ -172,15 +188,16 @@ export const ORDEN_SHOWCASE: string[] = [
 ];
 
 /**
- * Sitios que no salen en el showcase aunque el portal los tenga visibles
- * (Junior, 28 de octubre de 2026): solo existen en español y el showcase se
- * enseña en inglés. Melanie también es solo en español, pero se queda.
- * Va el dominio sin www; tapa también cualquier ruta debajo de él.
+ * Sitios que no salen en el showcase aunque el portal los tenga visibles. Va
+ * el dominio sin www; tapa también cualquier ruta debajo de él.
+ *
+ * Vacía desde el 25 de noviembre de 2026 (Junior: «necesito que estén
+ * todos»): lo que el portal dice que está publicado, sale. Para esconder un
+ * sitio se apaga su interruptor de Portafolio en el portal, no aquí. (Del 28
+ * de octubre al 25 de noviembre estuvieron ocultos GeraldMarket y Mil
+ * Colores, por ser solo en español.)
  */
-export const OCULTOS_SHOWCASE: string[] = [
-  "judomarketing.github.io/GeraldMarket",
-  "milcoloresapp.vercel.app",
-];
+export const OCULTOS_SHOWCASE: string[] = [];
 
 // Misma lista que el selector del portal y que el candado de la base
 // (migración 0023). Si se agrega una categoría, va en las cuatro.
