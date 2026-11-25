@@ -96,6 +96,17 @@ async function sinPausa(dominio: string): Promise<boolean> {
   }
 }
 
+/**
+ * Si el sitio todavía no tiene dominio propio: vive en la dirección gratis de
+ * Vercel, GitHub o Netlify. Esos salen marcados «en progreso» (Junior, 25 nov
+ * 2026: «coloca el in progress a los que aún no tienen dominio asignado»).
+ * Uno con su dominio en DOMINIO_PUBLICO (Pachy Pinchos) ya lo tiene.
+ */
+function sinDominioPropio(dominio: string): boolean {
+  const host = dominio.replace(/^https?:\/\//, "").split("/")[0].toLowerCase();
+  return /\.(vercel\.app|github\.io|netlify\.app)$/.test(host);
+}
+
 const sinWww = (dominio: string) => dominio.replace(/^www\./, "").toLowerCase();
 
 /**
@@ -126,7 +137,7 @@ async function fijosYPortal(): Promise<Trabajo[]> {
     ...p,
     imagen: portadaFija(p.dominio) ?? capturaDelHome(p.url.replace(/^https?:\/\//, "")),
     video: videoDePortada(p.dominio),
-    enDesarrollo: p.enDesarrollo ?? false,
+    enDesarrollo: (p.enDesarrollo ?? false) || sinDominioPropio(p.dominio),
   }));
   return [...fijos, ...delPortal];
 }
@@ -190,7 +201,7 @@ async function trabajosDelPortal(): Promise<Trabajo[]> {
         // Rush tenía una portada fija): estar en VIDEOS_PORTADA ya es decisión.
         video: videoDePortada(dominio),
         categoria,
-        enDesarrollo: fila.status === "en_desarrollo",
+        enDesarrollo: fila.status === "en_desarrollo" || sinDominioPropio(publico ?? dominio),
         // Lo que escribe Administración manda; si viene vacío, va el texto de
         // DESCRIPCIONES_SHOWCASE.
         descripcion: {
