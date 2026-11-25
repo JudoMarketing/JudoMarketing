@@ -65,7 +65,7 @@ vienen de otro, eso está en `QUIEN-HACE-QUE.md`.
 ## 0. Dónde está Judo Marketing (dato fijo)
 
 **Judo Marketing es una empresa de Florida, Estados Unidos.** Sede en Miami:
-66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130. No es un detalle de
+66 W Flagler St Suite 900, Miami, FL 33130 (el PMB 11674 va solo en contratos y en el pie legal de los correos de prospección; en el sitio, no: Junior, 25 nov 2026). No es un detalle de
 contacto: cambia decisiones en todos los proyectos.
 
 | Qué | Cómo cae en el trabajo |

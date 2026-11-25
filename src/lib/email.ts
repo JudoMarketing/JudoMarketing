@@ -57,7 +57,7 @@ export function brandedEmail({
         <tr><td align="center">${cta}</td></tr>
         <tr><td align="center" style="padding-top:26px;border-top:1px solid #26263a;">
           <p style="margin:14px 0 0;color:#6b6b7a;font-size:11px;line-height:1.6;">
-            Judo Marketing · 66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130<br/>
+            Judo Marketing · 66 W Flagler St Suite 900, Miami, FL 33130<br/>
             <a href="https://www.judomarketing.net" style="color:#a855f7;text-decoration:none;">www.judomarketing.net</a> · +1 305 934 9981
           </p>
         </td></tr>

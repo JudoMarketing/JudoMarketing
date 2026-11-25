@@ -34,7 +34,7 @@ para crecer rápido y asesoría de negocio** (el diagnóstico es la puerta).
 **JuditoADS y Juditos son negocios aparte que Judo Marketing administra, no
 son Judo Marketing:** no se venden en piezas de Judo y en judomarketing.net
 viven solo en el header. Sus precios, por si alguien pregunta: **JuditoADS
-$40/mes y Juditos (asistentes con IA) $60/mes.**
+$40/mes, Juditos (asistentes con IA) $60/mes y Juditos Pro $100/mes.**
 
 **Latinoamérica tiene sus propios precios** (website $150, evaluación $50):
 están en los PDF «Desde Miami» y «Desde $50 al mes» de la Biblioteca. No se

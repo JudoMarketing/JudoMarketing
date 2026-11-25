@@ -165,7 +165,7 @@ export default function Mascot() {
     {chatOpen && <MascotChat onClose={() => setChatOpen(false)} />}
     <div
       ref={wrapRef}
-      className="fixed right-1 bottom-1 z-40 origin-bottom-right scale-[0.5] select-none sm:right-6 sm:bottom-6 sm:scale-100"
+      className="fixed right-2 bottom-2 z-40 select-none sm:right-6 sm:bottom-6"
     >
       {bubble === "judito" && (
         <div className="thought-bubble">
@@ -194,12 +194,15 @@ export default function Mascot() {
         aria-label="Judo Marketing mascot"
         className="mascot-float block cursor-pointer bg-transparent"
       >
+        {/* En el teléfono a tres cuartos del tamaño de escritorio (antes a la
+            mitad, y Junior la veía muy pequeña, 25 nov 2026). Se achica solo
+            el robot: el globo de la oferta queda a tamaño de lectura. */}
         <svg
           width="118"
           height="132"
           viewBox="0 0 140 158"
           fill="none"
-          className="drop-shadow-[0_10px_30px_rgba(123,45,255,0.35)]"
+          className="h-[99px] w-[88px] drop-shadow-[0_10px_30px_rgba(123,45,255,0.35)] sm:h-[132px] sm:w-[118px]"
         >
           <defs>
             <linearGradient id="mBody" x1="0" y1="0" x2="0" y2="1">

@@ -114,7 +114,7 @@
   },
   "visit": {
     "title": "Visit us",
-    "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
+    "address": "66 W Flagler St Suite 900, Miami, FL 33130",
     "maps": "View on Google Maps"
   },
   "services": {
@@ -298,18 +298,26 @@
     "greeting": "Want more customers? Start with a $99 diagnostic: we compare your business with your competitors.",
     "chatSoon": "Very soon you'll be able to chat with me right here 💜",
     "chatTitle": "Chat with me",
-    "chatIntro": "Hi! I'm the Judo Marketing mascot. Ask me anything about our services, pricing, or how we work 💜",
-    "chatPlaceholder": "Type your question…",
+    "chatIntro": "Hi! I'm the Judo Marketing mascot. Tell me about your business: what do you do, and what's costing you the most right now? I can also book you a video call right here.",
+    "chatPlaceholder": "Write your message…",
     "chatSend": "Send",
     "chatThinking": "Thinking…",
     "chatError": "Oops, something went wrong. Try again.",
     "chatSlow": "You're going fast, give me a few seconds.",
     "juditoYes": "See the diagnostic",
-    "juditoNo": "Not now"
+    "juditoNo": "Not now",
+    "chatChips": [
+      "I want more customers",
+      "How much is a website?",
+      "Book a video call"
+    ],
+    "chatClose": "Close chat",
+    "chatBooked": "Video call booked",
+    "chatMiamiTime": "Miami time"
   },
   "footer": {
     "tagline": "Your business deserves a platform that matches its ambition.",
-    "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
+    "address": "66 W Flagler St Suite 900, Miami, FL 33130",
     "rights": "All rights reserved.",
     "navTitle": "Navigation",
     "contactTitle": "Contact",
@@ -671,53 +679,42 @@
     "reviewTitle": "What we review",
     "items": [
       {
-        "title": "Google",
-        "text": "Whether you show up when people search for your name and for what you sell, and in what position."
+        "title": "Google"
       },
       {
-        "title": "Google Maps",
-        "text": "Your Google Business Profile: details, hours, photos and reviews."
+        "title": "Google Maps"
       },
       {
-        "title": "AI",
-        "text": "Whether ChatGPT, Gemini, Claude and Perplexity find you, and what they say about you."
+        "title": "AI"
       },
       {
-        "title": "Your website",
-        "text": "Speed on a phone, errors, and whether search engines can read it."
+        "title": "Your website"
       },
       {
-        "title": "Social media and WhatsApp",
-        "text": "How a customer gets from there to buying from you."
+        "title": "Social media and WhatsApp"
       },
       {
-        "title": "Your competitors",
-        "text": "Who shows up before you, and why."
+        "title": "Your competitors"
       },
       {
-        "title": "Security",
-        "text": "Your domain, your certificate and what's exposed."
+        "title": "Security"
       },
       {
-        "title": "Reputation",
-        "text": "What a customer finds when they look for reviews of your business."
+        "title": "Reputation"
       }
     ],
     "getTitle": "What you get",
-    "getText": "A PDF report with screenshots, numbers and a score for today against the one you could have. Written for the owner, with no jargon: every problem with its fix, and a plan for what to fix first and what it costs.",
+    "getText": "A PDF with what we found, what to fix first, and what it costs.",
     "stepsTitle": "How it works",
     "steps": [
       {
-        "title": "You pay {price}",
-        "text": "By card. In the same step you tell us your website or business name, and your social media."
+        "title": "You pay {price}"
       },
       {
-        "title": "We review",
-        "text": "Google, Maps, AI, your website, your social media and your competitors."
+        "title": "We review your business"
       },
       {
-        "title": "You get your PDF",
-        "text": "In your email, within {days} business days."
+        "title": "Your PDF arrives in {days} business days"
       }
     ],
     "doneTitle": "Payment received. Thank you!",
@@ -727,21 +724,7 @@
   "home": {
     "kicker": "Miami, Florida · English & Spanish · A real person answers",
     "ctaDiagnostic": "Or start with a {price} diagnostic",
-    "ancla": "Websites we built for our clients, live today and checked every day.",
-    "obras": {
-      "pachy": {
-        "rubro": "Restaurant · St. Cloud, Florida",
-        "alt": "Home page of pachypinchos.com, a Puerto Rican skewer restaurant where customers order for pickup or delivery"
-      },
-      "denali": {
-        "rubro": "Therapy and mental health · Doral, Florida",
-        "alt": "Home page of denalibehaviorcrt.com, an ABA therapy and mental health practice, with a button to book an appointment"
-      },
-      "paradise": {
-        "rubro": "Land clearing and demolition · SW Florida",
-        "alt": "Home page of paradiseranch22.com, a land clearing and demolition company, with an excavator and the headline We clear land"
-      }
-    },
+    "ancla": "Websites and apps we've built. Tap one to see it live.",
     "verTodo": "See all our work",
     "pasosKicker": "How it works",
     "ofertaKicker": "What we do",
@@ -750,7 +733,6 @@
     "websites": {
       "kicker": "Build trust",
       "name": "Websites and apps",
-      "text": "Your online store, bookings or orders, built for your business and run from your own admin panel.",
       "puntos": [
         "Change prices and products yourself, from your panel",
         "Built to be found on Google, Bing and AI",
@@ -762,7 +744,6 @@
       "kicker": "Create value",
       "name": "Fast growth strategies",
       "price": "Quoted for your business",
-      "text": "Quick moves to bring you more customers online: we start small, measure, and keep what works.",
       "puntos": [
         "A plan with priorities and deadlines",
         "Your social media and Facebook and Instagram ads, with a budget you choose from $5 a day",
@@ -774,7 +755,6 @@
       "kicker": "Start here",
       "name": "Business advice",
       "price": "{price} · Full Diagnostic",
-      "text": "Not sure what to fix first? We look at your business from the outside and tell you, with dates.",
       "puntos": [
         "We compare your business with your competition",
         "A clear strategy for each problem, with deadlines",
@@ -785,6 +765,7 @@
     "resenasKicker": "Reviews",
     "cincoEstrellas": "5 out of 5 stars",
     "cierreTitle": "Tell us what's holding your business back.",
-    "cierreSub": "A real person answers, in English or Spanish. If we can't help, we'll tell you."
+    "cierreSub": "A real person answers, in English or Spanish. If we can't help, we'll tell you.",
+    "showAlt": "{nombre} home page"
   }
 }

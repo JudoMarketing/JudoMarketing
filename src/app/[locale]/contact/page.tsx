@@ -48,7 +48,7 @@ export default function ContactPage({
     {
       icon: "📍",
       title: t("addressTitle"),
-      desc: "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
+      desc: "66 W Flagler St Suite 900, Miami, FL 33130",
       href: PERFIL_GOOGLE,
       linkLabel: t("maps"),
     },

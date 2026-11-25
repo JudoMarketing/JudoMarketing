@@ -8,6 +8,24 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **25 nov · Entre más directo y simple, mejor:** «no necesitas poner
+  descripciones que nadie nunca lee». En el diagnóstico, «Lo que revisamos»
+  va solo con títulos (con su icono); en el home, las tarjetas de servicio sin
+  párrafo, solo los tres puntos.
+- **25 nov · Showcase: tienen que estar todos** los que el portal marca como
+  publicados (visibles y no deshabilitados), también GeraldMarket y Mil
+  Colores. Para esconder uno se apaga su interruptor en el portal.
+  **SoFla Contractors** (sofla-contractors.vercel.app) va de primero,
+  marcado «en progreso».
+- **25 nov · Home:** los websites del showcase pasan como un show, más
+  pequeños y deslizándose de lado.
+- **25 nov · La mascota:** más grande en el teléfono. Ya casi no habla de
+  JuditoADS: pregunta por el negocio y sus problemas, resuelve dudas con la
+  información de los servicios y **agenda la videollamada desde el chat**.
+- **25 nov · Dirección:** en el sitio va «66 W Flagler St Suite 900, Miami,
+  FL 33130», sin el PMB.
+- **25 nov · Juditos Pro a $100 al mes.**
+
 - **25 nov · Judo Marketing se centra en websites y en escalar negocios en
   internet con estrategias rápidas y asesoría de negocio** (el diagnóstico de
   $99 es la puerta). **JuditoADS y Juditos son negocios aparte que Judo

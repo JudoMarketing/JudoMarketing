@@ -114,7 +114,7 @@
   },
   "visit": {
     "title": "Visítanos",
-    "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
+    "address": "66 W Flagler St Suite 900, Miami, FL 33130",
     "maps": "Ver en Google Maps"
   },
   "services": {
@@ -298,18 +298,26 @@
     "greeting": "¿Quieres más clientes? Empieza con un diagnóstico de $99: comparamos tu negocio con tu competencia.",
     "chatSoon": "Muy pronto vas a poder chatear conmigo aquí mismo 💜",
     "chatTitle": "Chatea conmigo",
-    "chatIntro": "¡Hola! Soy la mascota de Judo Marketing. Pregúntame lo que quieras sobre nuestros servicios, precios o cómo trabajamos 💜",
-    "chatPlaceholder": "Escribe tu pregunta…",
+    "chatIntro": "¡Hola! Soy la mascota de Judo Marketing. Cuéntame de tu negocio: ¿a qué te dedicas y qué es lo que más te está costando hoy? También puedo agendarte una videollamada aquí mismo.",
+    "chatPlaceholder": "Escribe tu mensaje…",
     "chatSend": "Enviar",
     "chatThinking": "Pensando…",
     "chatError": "Ups, algo falló. Intenta de nuevo.",
     "chatSlow": "Vas muy rápido, dame unos segundos.",
     "juditoYes": "Ver el diagnóstico",
-    "juditoNo": "Ahora no"
+    "juditoNo": "Ahora no",
+    "chatChips": [
+      "Quiero más clientes",
+      "¿Cuánto cuesta un website?",
+      "Agendar una videollamada"
+    ],
+    "chatClose": "Cerrar el chat",
+    "chatBooked": "Videollamada agendada",
+    "chatMiamiTime": "hora de Miami"
   },
   "footer": {
     "tagline": "Tu negocio merece una plataforma a tu altura.",
-    "address": "66 W Flagler St Suite 900 PMB 11674, Miami, FL 33130",
+    "address": "66 W Flagler St Suite 900, Miami, FL 33130",
     "rights": "Todos los derechos reservados.",
     "navTitle": "Navegación",
     "contactTitle": "Contacto",
@@ -671,53 +679,42 @@
     "reviewTitle": "Lo que revisamos",
     "items": [
       {
-        "title": "Google",
-        "text": "Si apareces cuando te buscan por tu nombre y por lo que vendes, y en qué lugar."
+        "title": "Google"
       },
       {
-        "title": "Google Maps",
-        "text": "Tu ficha de Google: datos, horarios, fotos y reseñas."
+        "title": "Google Maps"
       },
       {
-        "title": "Inteligencia artificial",
-        "text": "Si ChatGPT, Gemini, Claude y Perplexity te encuentran, y qué dicen de ti."
+        "title": "Inteligencia artificial"
       },
       {
-        "title": "Tu website",
-        "text": "La velocidad en el teléfono, los errores y si los buscadores lo pueden leer."
+        "title": "Tu website"
       },
       {
-        "title": "Redes y WhatsApp",
-        "text": "Cómo llega un cliente desde ahí hasta comprarte."
+        "title": "Redes y WhatsApp"
       },
       {
-        "title": "Tu competencia",
-        "text": "Quiénes salen antes que tú, y por qué."
+        "title": "Tu competencia"
       },
       {
-        "title": "Seguridad",
-        "text": "Tu dominio, tu certificado y lo que se ve expuesto."
+        "title": "Seguridad"
       },
       {
-        "title": "Reputación",
-        "text": "Lo que encuentra un cliente que busca opiniones de tu negocio."
+        "title": "Reputación"
       }
     ],
     "getTitle": "Lo que recibes",
-    "getText": "Un informe en PDF con capturas, números y una puntuación de hoy contra la que podrías tener. Escrito para el dueño, sin palabras técnicas: cada problema con su solución y un plan de qué arreglar primero y cuánto cuesta.",
+    "getText": "Un PDF con lo que encontramos, qué arreglar primero y cuánto cuesta.",
     "stepsTitle": "Cómo funciona",
     "steps": [
       {
-        "title": "Pagas {price}",
-        "text": "Con tarjeta. En el mismo pago nos dices tu website o el nombre de tu negocio, y tus redes."
+        "title": "Pagas {price}"
       },
       {
-        "title": "Revisamos",
-        "text": "Google, Maps, la IA, tu website, tus redes y tu competencia."
+        "title": "Revisamos tu negocio"
       },
       {
-        "title": "Recibes tu PDF",
-        "text": "En tu correo, en {days} días hábiles."
+        "title": "Recibes tu PDF en {days} días hábiles"
       }
     ],
     "doneTitle": "¡Recibimos tu pago, gracias!",
@@ -727,21 +724,7 @@
   "home": {
     "kicker": "Miami, Florida · En español y en inglés · Te contesta una persona",
     "ctaDiagnostic": "O empieza con un diagnóstico de {price}",
-    "ancla": "Websites que hicimos para nuestros clientes, en línea hoy y revisados todos los días.",
-    "obras": {
-      "pachy": {
-        "rubro": "Restaurante · St. Cloud, Florida",
-        "alt": "Portada de pachypinchos.com, un restaurante de pinchos puertorriqueños donde se pide para recoger o a domicilio"
-      },
-      "denali": {
-        "rubro": "Terapia y salud mental · Doral, Florida",
-        "alt": "Portada de denalibehaviorcrt.com, un centro de terapia ABA y salud mental, con el botón para pedir una cita"
-      },
-      "paradise": {
-        "rubro": "Limpieza de terrenos y demolición · Suroeste de Florida",
-        "alt": "Portada de paradiseranch22.com, una empresa de limpieza de terrenos y demolición, con una excavadora y el titular We clear land"
-      }
-    },
+    "ancla": "Websites y apps que hemos hecho. Toca uno para verlo en vivo.",
     "verTodo": "Ver todo nuestro trabajo",
     "pasosKicker": "Cómo funciona",
     "ofertaKicker": "Lo que hacemos",
@@ -750,7 +733,6 @@
     "websites": {
       "kicker": "Construye confianza",
       "name": "Websites y apps",
-      "text": "Tu tienda, tus citas o tus pedidos en línea, hechos para tu negocio y manejados desde tu propio panel.",
       "puntos": [
         "Cambias precios y productos tú mismo, desde tu panel",
         "Hechos para que te encuentren en Google, Bing y la IA",
@@ -762,7 +744,6 @@
       "kicker": "Crea valor",
       "name": "Estrategias para crecer rápido",
       "price": "Se cotiza según tu negocio",
-      "text": "Movidas rápidas para traerte más clientes por internet: empezamos en pequeño, medimos y nos quedamos con lo que funciona.",
       "puntos": [
         "Un plan con prioridades y fechas límite",
         "Tus redes sociales y tus anuncios en Facebook e Instagram, con el presupuesto que tú eliges desde $5 al día",
@@ -774,7 +755,6 @@
       "kicker": "Empieza aquí",
       "name": "Asesoría de negocio",
       "price": "{price} · Diagnóstico completo",
-      "text": "¿No sabes qué arreglar primero? Miramos tu negocio desde afuera y te lo decimos, con fechas.",
       "puntos": [
         "Comparamos tu negocio con tu competencia",
         "Una estrategia clara para cada problema, con fechas límite",
@@ -785,6 +765,7 @@
     "resenasKicker": "Reseñas",
     "cincoEstrellas": "5 de 5 estrellas",
     "cierreTitle": "Cuéntanos qué está frenando tu negocio.",
-    "cierreSub": "Te contesta una persona de verdad, en español o en inglés. Si no podemos ayudarte, te lo decimos."
+    "cierreSub": "Te contesta una persona de verdad, en español o en inglés. Si no podemos ayudarte, te lo decimos.",
+    "showAlt": "Portada de {nombre}"
   }
 }

@@ -3,7 +3,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin();
 
-// Versión del caché de build: 2026-11-25c. Cambiar esta línea invalida todo el
+// Versión del caché de build: 2026-11-25e. Cambiar esta línea invalida todo el
 // caché de webpack que Vercel restaura entre builds (next.config.ts es una
 // dependencia del build). Hace falta cuando una página nueva trae clases de
 // Tailwind y producción sale con el CSS viejo: cambiar globals.css no bastó.

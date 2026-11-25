@@ -29,7 +29,7 @@ export default function JsonLd({ locale }: { locale: string }) {
         : `Website design, mobile app, and AI-powered marketing agency in Miami. Subscription websites from ${precioDesde()} a month for small and medium businesses.`,
       address: {
         "@type": "PostalAddress",
-        streetAddress: "66 W Flagler St Suite 900 PMB 11674",
+        streetAddress: "66 W Flagler St Suite 900",
         addressLocality: "Miami",
         addressRegion: "FL",
         postalCode: "33130",

@@ -19,7 +19,13 @@ export type IconName =
   | "telefono"
   | "mensaje"
   | "flecha"
-  | "externo";
+  | "externo"
+  | "buscar"
+  | "chispa"
+  | "barras"
+  | "estrella"
+  | "cerrar"
+  | "calendario";
 
 const TRAZOS: Record<IconName, React.ReactNode> = {
   // Una ventana de navegador con su contenido: el website
@@ -73,6 +79,39 @@ const TRAZOS: Record<IconName, React.ReactNode> = {
       <path d="M8 16 16 8" />
       <path d="M9.5 8H16v6.5" />
     </>
+  ),
+  // La lupa: buscar en Google
+  buscar: (
+    <>
+      <circle cx="10.5" cy="10.5" r="6" />
+      <path d="m15 15 5 5" />
+    </>
+  ),
+  // El destello: la inteligencia artificial
+  chispa: (
+    <>
+      <path d="M11 3.5c.7 3.9 2.6 5.8 6.5 6.5-3.9.7-5.8 2.6-6.5 6.5-.7-3.9-2.6-5.8-6.5-6.5 3.9-.7 5.8-2.6 6.5-6.5z" />
+      <path d="M18 15.5c.3 1.6 1 2.3 2.5 2.5-1.5.3-2.2 1-2.5 2.5-.3-1.5-1-2.2-2.5-2.5 1.5-.2 2.2-.9 2.5-2.5z" />
+    </>
+  ),
+  // Las barras: cómo te comparas con la competencia
+  barras: (
+    <>
+      <path d="M4 20h16" />
+      <path d="M7 20v-6M12 20V8M17 20v-9" />
+    </>
+  ),
+  cerrar: <path d="M6.5 6.5 17.5 17.5M17.5 6.5 6.5 17.5" />,
+  calendario: (
+    <>
+      <rect x="3.5" y="5" width="17" height="15" rx="2.5" />
+      <path d="M3.5 10h17M8 3v4M16 3v4" />
+      <path d="m9 15 2 2 4-4" />
+    </>
+  ),
+  // La estrella: la reputación, las reseñas
+  estrella: (
+    <path d="m12 3.8 2.5 5.2 5.6.7-4.1 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4.1-3.9 5.6-.7z" />
   ),
 };
 
