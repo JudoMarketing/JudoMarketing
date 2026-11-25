@@ -434,7 +434,7 @@ cuatro partes, en este orden:
    (website desde $250 al mes más $500 de inicio, o el año completo de
    una vez por $2,500, con 2 meses gratis y sin cuota de inicio; apps desde
    $450 más $500 de inicio; proyectos a la medida; el diagnóstico completo
-   de $99 en 3 días hábiles; asistente desde $25, JuditoADS $20), así que
+   de $99 en 3 días hábiles), así que
    el párrafo no los repite todos. Los precios cambiaron el 12 y el 13 de
    octubre y el 14 de noviembre de 2026; una cifra vieja ya no pasa el
    filtro (un borrador pendiente que dice $150, $300, $1,500, $199, $329,
@@ -476,10 +476,11 @@ listarla en el correo; en el correo va una sola):
 | Mudanzas, limpieza, jardinería, transporte | Cotizar toma horas; rutas y cuadrillas en papel | Cotizador en línea, agenda de cuadrillas, seguimiento del servicio, cobro al terminar |
 | Cualquiera sin website o con Facebook como website | No aparece en Google; no controla nada | Website propio, con su Perfil de Empresa de Google conectado y panel de administración |
 
-Además, para cualquiera: JuditoADS (sus anuncios en Facebook e Instagram,
-lanzados por ellos mismos, 14 días gratis) y los Juditos (asistente de IA
-que atiende por WhatsApp, Messenger e Instagram). Se mencionan solo cuando
-encajan con el problema que vimos, nunca como lista.
+JuditoADS y los Juditos **no van en los correos de Judo** desde el 25 de
+noviembre de 2026: son negocios aparte que Judo Marketing administra y por
+ahora solo se enlazan desde el header del sitio. Judo vende websites,
+estrategias para crecer rápido y asesoría (el diagnóstico de $99).
+`guardar.mjs` rechaza un borrador que cite sus precios.
 
 **Lo que nunca va en un correo:**
 

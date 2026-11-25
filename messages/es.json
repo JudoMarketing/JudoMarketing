@@ -20,14 +20,13 @@
   "hero": {
     "title": "Construye confianza,",
     "titleAccent": "Crea valor",
-    "subtitle": "Hacemos tu website, manejamos tus redes y tus anuncios, y automatizamos cómo atiendes a tus clientes, para que tu negocio compita con los grandes.",
+    "subtitle": "Hacemos websites que hacen que tus clientes confíen en ti, y te ayudamos a crecer en internet con estrategias rápidas y asesoría de negocio clara.",
     "ctaPrimary": "Hablemos de tu proyecto",
     "ctaSecondary": "Ver nuestro trabajo",
-    "ctaShowcase": "Ver nuestro portafolio",
-    "ctaDiagnostic": "Empieza con un diagnóstico de $99"
+    "ctaShowcase": "Ver nuestro portafolio"
   },
   "onboarding": {
-    "title": "Así trabajamos contigo",
+    "title": "De la primera llamada a tu website en línea, en cuatro pasos.",
     "subtitle": "Cuatro pasos, sin sorpresas.",
     "steps": [
       {
@@ -62,14 +61,14 @@
     "juditoads": {
       "name": "JuditoADS",
       "kicker": "Te ven",
-      "price": "$20/mes",
+      "price": "$40/mes",
       "description": "Lanza tu publicidad en Facebook e Instagram tú mismo.",
       "free": "14 días gratis."
     },
     "ai": {
       "name": "AI Assistants",
       "kicker": "Te contestan",
-      "price": "desde $25/mes",
+      "price": "desde $60/mes",
       "description": "Un asistente que responde a tus clientes a toda hora."
     },
     "essential": {
@@ -85,13 +84,8 @@
     "off": "-{pct}%"
   },
   "reviews": {
-    "title": "Lo que dicen nuestros clientes",
+    "title": "Nuestros clientes lo dicen mejor.",
     "items": [
-      {
-        "text": "Mi bot responde los mensajes y vende mientras yo duermo. Me levanto y ya hay pedidos listos.",
-        "name": "María G.",
-        "place": "Miami, FL"
-      },
       {
         "text": "La página de citas se la pasa full. Los clientes agendan solos por lo fácil que es, y a mí me queda todo organizado.",
         "name": "Luis R.",
@@ -103,7 +97,7 @@
         "place": "Valencia, Venezuela"
       },
       {
-        "text": "We just renewed our website and it looks so much better. Clients keep telling me it feels intuitive and easy to navigate, even though we have a ton of information to offer.",
+        "text": "Acabamos de renovar nuestro website y se ve mucho mejor. Los clientes me dicen que es intuitivo y fácil de navegar, aunque tenemos muchísima información.",
         "name": "Sarah K.",
         "place": "Orlando, FL"
       }
@@ -125,7 +119,7 @@
   },
   "services": {
     "title": "Servicios",
-    "subtitle": "Tres cosas hacemos. Elige la que necesitas.",
+    "subtitle": "Tu website, y la asesoría para saber qué hacer primero.",
     "note": "Website Esencial y Apps: cuota de inicio de {setup}, una sola vez, que no se cobra si pagas el año completo de una vez (12 meses por el precio de 10). Contrato de 12 meses.",
     "cta": "Hablemos de tu proyecto",
     "perMonth": "/mes",
@@ -137,7 +131,8 @@
       "socialTitle": "JuditoADS",
       "socialSub": "Tu publicidad en Facebook e Instagram, lanzada por ti.",
       "aiTitle": "AI Assistants",
-      "aiSub": "Un asistente que atiende a tus clientes a toda hora."
+      "aiSub": "Un asistente que atiende a tus clientes a toda hora.",
+      "diagnosticSub": "Te decimos qué arreglar primero, con fechas."
     },
     "nav": {
       "websites": "Websites",
@@ -730,46 +725,66 @@
     "back": "Ver todos los servicios"
   },
   "home": {
-    "whatTitle": "Lo que hacemos",
-    "whatSubtitle": "Construye confianza: te encuentran y te creen. Crea valor: te compran y vuelven.",
-    "trust": "Construye confianza",
-    "value": "Crea valor",
-    "more": "Ver detalles",
+    "kicker": "Miami, Florida · En español y en inglés · Te contesta una persona",
+    "ctaDiagnostic": "O empieza con un diagnóstico de {price}",
+    "ancla": "Websites que hicimos para nuestros clientes, en línea hoy y revisados todos los días.",
+    "obras": {
+      "pachy": {
+        "rubro": "Restaurante · St. Cloud, Florida",
+        "alt": "Portada de pachypinchos.com, un restaurante de pinchos puertorriqueños donde se pide para recoger o a domicilio"
+      },
+      "denali": {
+        "rubro": "Terapia y salud mental · Doral, Florida",
+        "alt": "Portada de denalibehaviorcrt.com, un centro de terapia ABA y salud mental, con el botón para pedir una cita"
+      },
+      "paradise": {
+        "rubro": "Limpieza de terrenos y demolición · Suroeste de Florida",
+        "alt": "Portada de paradiseranch22.com, una empresa de limpieza de terrenos y demolición, con una excavadora y el titular We clear land"
+      }
+    },
+    "verTodo": "Ver todo nuestro trabajo",
+    "pasosKicker": "Cómo funciona",
+    "ofertaKicker": "Lo que hacemos",
+    "ofertaTitle": "Lo construimos, lo hacemos crecer y te decimos qué arreglar.",
+    "ofertaSub": "Construye confianza: un website que hace que tus clientes te crean. Crea valor: estrategias y asesoría que te los traen y los hacen volver.",
     "websites": {
+      "kicker": "Construye confianza",
       "name": "Websites y apps",
-      "description": "Tu tienda, tus citas o tus pedidos en línea, con tu propio panel para cambiar precios y productos. Hechos para que te encuentren en Google, Bing y la IA."
+      "text": "Tu tienda, tus citas o tus pedidos en línea, hechos para tu negocio y manejados desde tu propio panel.",
+      "puntos": [
+        "Cambias precios y productos tú mismo, desde tu panel",
+        "Hechos para que te encuentren en Google, Bing y la IA",
+        "Revisados todos los días: en línea, seguros y sin señales de ataque"
+      ],
+      "cta": "Ver planes y precios"
     },
-    "social": {
-      "name": "Redes sociales y anuncios",
+    "growth": {
+      "kicker": "Crea valor",
+      "name": "Estrategias para crecer rápido",
       "price": "Se cotiza según tu negocio",
-      "description": "Manejamos tus redes y hacemos tus anuncios en Facebook e Instagram para traerte clientes. El presupuesto diario lo eliges tú, desde $5 al día, y se le paga directo a Meta.",
-      "more": "Pedir cotización"
+      "text": "Movidas rápidas para traerte más clientes por internet: empezamos en pequeño, medimos y nos quedamos con lo que funciona.",
+      "puntos": [
+        "Un plan con prioridades y fechas límite",
+        "Tus redes sociales y tus anuncios en Facebook e Instagram, con el presupuesto que tú eliges desde $5 al día",
+        "Revisamos los números contigo cada mes y ajustamos"
+      ],
+      "cta": "Pedir cotización"
     },
-    "automation": {
-      "name": "Automatización con IA",
-      "description": "Tus clientes reciben respuesta 24/7 por WhatsApp, Instagram y tu website, y las citas y los pedidos se hacen solos mientras trabajas."
-    },
-    "diagnostic": {
-      "kicker": "¿No sabes por dónde empezar?",
-      "name": "Diagnóstico completo",
-      "description": "Comparamos tu website y tu presencia en internet con tu competencia y te mandamos un plan con prioridades, fechas límite y lo que cuesta cada paso. PDF en {days} días hábiles.",
+    "advice": {
+      "kicker": "Empieza aquí",
+      "name": "Asesoría de negocio",
+      "price": "{price} · Diagnóstico completo",
+      "text": "¿No sabes qué arreglar primero? Miramos tu negocio desde afuera y te lo decimos, con fechas.",
+      "puntos": [
+        "Comparamos tu negocio con tu competencia",
+        "Una estrategia clara para cada problema, con fechas límite",
+        "Tu plan en PDF en {days} días hábiles"
+      ],
       "cta": "Quiero mi diagnóstico"
     },
-    "whyTitle": "Por qué trabajan con nosotros",
-    "whySubtitle": "La estrategia judo: no siempre gana el más grande. Ayudamos a negocios pequeños y medianos a competir con tecnología, IA y estrategia.",
-    "why": [
-      {
-        "title": "Te contesta una persona",
-        "text": "Escríbenos por WhatsApp y te contesta una persona de verdad, en español o en inglés."
-      },
-      {
-        "title": "Revisados todos los días",
-        "text": "Revisamos cada website de nuestros clientes todos los días: que esté en línea, seguro y sin señales de ataque."
-      },
-      {
-        "title": "Hechos para durar",
-        "text": "Sin PHP, con parches de seguridad y respaldos diarios. El código es tuyo al completar tus 12 meses pagados."
-      }
-    ]
+    "resenasKicker": "Reseñas",
+    "cincoEstrellas": "5 de 5 estrellas",
+    "cierreTitle": "Cuéntanos qué está frenando tu negocio.",
+    "cierreSub": "Te contesta una persona de verdad, en español o en inglés. Si no podemos ayudarte, te lo decimos."
   }
 }

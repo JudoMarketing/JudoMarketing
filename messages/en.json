@@ -20,14 +20,13 @@
   "hero": {
     "title": "Build Trust,",
     "titleAccent": "Create Value",
-    "subtitle": "We build your website, run your social media and ads, and automate how you answer customers, so your business can compete with the big ones.",
+    "subtitle": "We build websites that make customers trust you, then help you grow online with fast strategies and clear business advice.",
     "ctaPrimary": "Let's talk about your project",
     "ctaSecondary": "See our work",
-    "ctaShowcase": "See our work",
-    "ctaDiagnostic": "Start with a $99 diagnostic"
+    "ctaShowcase": "See our work"
   },
   "onboarding": {
-    "title": "How we work with you",
+    "title": "From first call to live website, in four steps.",
     "subtitle": "Four steps, no surprises.",
     "steps": [
       {
@@ -62,14 +61,14 @@
     "juditoads": {
       "name": "JuditoADS",
       "kicker": "They see you",
-      "price": "$20/mo",
+      "price": "$40/mo",
       "description": "Launch your own Facebook and Instagram ads.",
       "free": "14 days free."
     },
     "ai": {
       "name": "AI Assistants",
       "kicker": "They get answers",
-      "price": "from $25/mo",
+      "price": "from $60/mo",
       "description": "An assistant that answers your customers around the clock."
     },
     "essential": {
@@ -85,13 +84,8 @@
     "off": "{pct}% off"
   },
   "reviews": {
-    "title": "What our clients say",
+    "title": "Our clients say it better.",
     "items": [
-      {
-        "text": "My bot answers messages and sells while I sleep. I wake up and orders are already waiting.",
-        "name": "María G.",
-        "place": "Miami, FL"
-      },
       {
         "text": "The booking site stays fully packed. Clients schedule on their own because it's so easy, and everything stays organized for me.",
         "name": "Luis R.",
@@ -125,7 +119,7 @@
   },
   "services": {
     "title": "Services",
-    "subtitle": "We do three things. Pick the one you need.",
+    "subtitle": "Your website, and the advice to know what to do first.",
     "note": "Essential Website and Apps: a one-time {setup} setup fee, waived when you pay the full year at once (12 months for the price of 10). 12-month agreement.",
     "cta": "Let's talk about your project",
     "perMonth": "/mo",
@@ -137,7 +131,8 @@
       "socialTitle": "JuditoADS",
       "socialSub": "Your Facebook and Instagram ads, launched by you.",
       "aiTitle": "AI Assistants",
-      "aiSub": "An assistant that answers your customers around the clock."
+      "aiSub": "An assistant that answers your customers around the clock.",
+      "diagnosticSub": "We tell you what to fix first, with dates."
     },
     "nav": {
       "websites": "Websites",
@@ -730,46 +725,66 @@
     "back": "See all services"
   },
   "home": {
-    "whatTitle": "What we do",
-    "whatSubtitle": "Build trust: customers find you and believe you. Create value: they buy from you and come back.",
-    "trust": "Build trust",
-    "value": "Create value",
-    "more": "See details",
+    "kicker": "Miami, Florida · English & Spanish · A real person answers",
+    "ctaDiagnostic": "Or start with a {price} diagnostic",
+    "ancla": "Websites we built for our clients, live today and checked every day.",
+    "obras": {
+      "pachy": {
+        "rubro": "Restaurant · St. Cloud, Florida",
+        "alt": "Home page of pachypinchos.com, a Puerto Rican skewer restaurant where customers order for pickup or delivery"
+      },
+      "denali": {
+        "rubro": "Therapy and mental health · Doral, Florida",
+        "alt": "Home page of denalibehaviorcrt.com, an ABA therapy and mental health practice, with a button to book an appointment"
+      },
+      "paradise": {
+        "rubro": "Land clearing and demolition · SW Florida",
+        "alt": "Home page of paradiseranch22.com, a land clearing and demolition company, with an excavator and the headline We clear land"
+      }
+    },
+    "verTodo": "See all our work",
+    "pasosKicker": "How it works",
+    "ofertaKicker": "What we do",
+    "ofertaTitle": "We build it, we grow it, and we tell you what to fix.",
+    "ofertaSub": "Build trust: a website that makes customers believe you. Create value: strategies and advice that bring them in and keep them coming back.",
     "websites": {
+      "kicker": "Build trust",
       "name": "Websites and apps",
-      "description": "Your online store, bookings or orders, with your own admin panel to change prices and products. Built to be found on Google, Bing and AI."
+      "text": "Your online store, bookings or orders, built for your business and run from your own admin panel.",
+      "puntos": [
+        "Change prices and products yourself, from your panel",
+        "Built to be found on Google, Bing and AI",
+        "Checked every day: online, secure and with no signs of attack"
+      ],
+      "cta": "See plans and prices"
     },
-    "social": {
-      "name": "Social media and ads",
+    "growth": {
+      "kicker": "Create value",
+      "name": "Fast growth strategies",
       "price": "Quoted for your business",
-      "description": "We manage your social media and run your Facebook and Instagram ads to bring you customers. You choose the daily budget, from $5 a day, paid directly to Meta.",
-      "more": "Ask for a quote"
+      "text": "Quick moves to bring you more customers online: we start small, measure, and keep what works.",
+      "puntos": [
+        "A plan with priorities and deadlines",
+        "Your social media and Facebook and Instagram ads, with a budget you choose from $5 a day",
+        "We review the numbers with you every month and adjust"
+      ],
+      "cta": "Ask for a quote"
     },
-    "automation": {
-      "name": "Automation with AI",
-      "description": "Your customers get answers 24/7 on WhatsApp, Instagram and your website, and bookings and orders happen on their own while you work."
-    },
-    "diagnostic": {
-      "kicker": "Not sure where to start?",
-      "name": "Full Diagnostic",
-      "description": "We compare your website and your online presence with your competitors and send you a plan with priorities, deadlines and what each step costs. PDF in {days} business days.",
+    "advice": {
+      "kicker": "Start here",
+      "name": "Business advice",
+      "price": "{price} · Full Diagnostic",
+      "text": "Not sure what to fix first? We look at your business from the outside and tell you, with dates.",
+      "puntos": [
+        "We compare your business with your competition",
+        "A clear strategy for each problem, with deadlines",
+        "Your plan as a PDF in {days} business days"
+      ],
       "cta": "Get my diagnostic"
     },
-    "whyTitle": "Why businesses work with us",
-    "whySubtitle": "The judo strategy: the biggest doesn't always win. We help small and medium businesses compete with technology, AI and strategy.",
-    "why": [
-      {
-        "title": "A real person answers",
-        "text": "Message us on WhatsApp and a person answers you, in English or Spanish."
-      },
-      {
-        "title": "Checked every day",
-        "text": "We check every client website every day: online, secure and with no signs of attack."
-      },
-      {
-        "title": "Built to last",
-        "text": "No PHP, with security patches and daily backups. Your code is yours once your 12 months are paid."
-      }
-    ]
+    "resenasKicker": "Reviews",
+    "cincoEstrellas": "5 out of 5 stars",
+    "cierreTitle": "Tell us what's holding your business back.",
+    "cierreSub": "A real person answers, in English or Spanish. If we can't help, we'll tell you."
   }
 }

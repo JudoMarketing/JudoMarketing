@@ -20,11 +20,12 @@
   },
   "_pagoUnico": "El año completo de una vez: los 12 meses del contrato por el precio de 10 (ahorra 2 meses) y sin cuota de inicio. Esencial $2,500 y Apps $4,500 (Junior, 14 de noviembre de 2026). La alternativa es pagarlo en 12 cuotas mensuales más la cuota de inicio.",
   "extras": {
-    "juditoads": 20,
-    "asistente": 25,
+    "juditoads": 40,
+    "asistente": 60,
     "asistentePro": 60,
     "hosting": 30
   },
+  "_extras": "Junior, 25 de noviembre de 2026: JuditoADS $40 al mes y los asistentes (Juditos) $60 al mes (antes $20 y $25). Son negocios aparte que Judo Marketing administra: el cobro vive en sus apps y aquí se copia para el sitio, los documentos y el chat. Por ahora solo se enlazan desde el header de judomarketing.net.",
   "cuotaInicio": {
     "essential": 500,
     "complex": 0,

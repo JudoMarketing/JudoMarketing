@@ -2277,7 +2277,7 @@ export default function AdminPortal() {
             <div>
               <h2 className="text-lg font-semibold">Cuentas de JuditoADS</h2>
               <p className="text-sm text-judo-fog/60">
-                Clientes con portal de publicidad ($20/mes). Vive en otra base de
+                Clientes con portal de publicidad ($40/mes desde el 25 nov 2026). Vive en otra base de
                 datos, por eso se consulta aparte.
               </p>
             </div>

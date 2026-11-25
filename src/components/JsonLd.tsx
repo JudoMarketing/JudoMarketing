@@ -1,6 +1,6 @@
 import { SITE_URL } from "@/lib/seo";
 import { PERFIL_GOOGLE } from "./SocialLinks";
-import { DIAS_DIAGNOSTICO, precio, precioDesde, precioTexto, PRECIO_DIAGNOSTICO, PRECIO_JUDITOADS, PRECIO_ASISTENTE } from "@/lib/pricing";
+import { DIAS_DIAGNOSTICO, precio, precioDesde, precioTexto, PRECIO_DIAGNOSTICO, PRECIO_JUDITOADS } from "@/lib/pricing";
 
 /**
  * Datos estructurados (schema.org) para Google.
@@ -84,24 +84,9 @@ export default function JsonLd({ locale }: { locale: string }) {
           priceCurrency: "USD",
           url: es ? "https://www.judomarketing.net/es/diagnostico" : "https://www.judomarketing.net/diagnostic",
         },
-        {
-          "@type": "Offer",
-          name: "JuditoADS",
-          description: es
-            ? "Plataforma para lanzar tu propia publicidad en Facebook e Instagram con estrategia guiada, métricas en vivo y reportes PDF. Pruébala gratis."
-            : "Platform to run your own Facebook and Instagram ads with guided strategy, live metrics, and PDF reports. Try it free.",
-          price: String(PRECIO_JUDITOADS),
-          priceCurrency: "USD",
-        },
-        {
-          "@type": "Offer",
-          name: "AI Assistants",
-          description: es
-            ? "Asistentes con inteligencia artificial que atienden a tus clientes en Instagram, Facebook y tu website, a toda hora."
-            : "AI assistants that answer your customers on Instagram, Facebook, and your website, around the clock.",
-          price: String(PRECIO_ASISTENTE),
-          priceCurrency: "USD",
-        },
+        // JuditoADS y Juditos no van en el catálogo de Judo: son negocios
+        // aparte que Judo administra (Junior, 25 nov 2026). JuditoADS sigue
+        // abajo como su propia aplicación, publicada por Judo.
       ],
     },
     // JuditoADS como producto de software con nombre propio: es lo que puede
