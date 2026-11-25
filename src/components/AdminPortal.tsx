@@ -3821,11 +3821,10 @@ function SitePortfolio({
     onSaved();
   };
 
-  // Sale publicado si está visible, sea cual sea su estado (Junior, 25 nov
-  // 2026: «necesito que estén todos»). Los que están en desarrollo salen
-  // marcados como vista previa. Uno deshabilitado sale solo si su website no
-  // muestra la pausa del kit (src/lib/portfolio.ts, sinPausa).
-  const publicado = visible;
+  // Sale publicado si está visible y no está deshabilitado (la misma regla
+  // que src/lib/portfolio.ts). Los que están en desarrollo salen marcados
+  // como vista previa.
+  const publicado = visible && site.status !== "deshabilitado";
 
   return (
     <div className="mt-1.5 text-xs text-judo-fog/50">
@@ -3846,10 +3845,10 @@ function SitePortfolio({
           {publicado
             ? site.status === "en_desarrollo"
               ? "publicado (vista previa)"
-              : site.status === "deshabilitado"
-                ? "publicado (si no está en pausa)"
-                : "publicado"
-            : "oculto"}
+              : "publicado"
+            : visible
+              ? "listo (sitio deshabilitado)"
+              : "oculto"}
         </button>
         <button
           onClick={() => setAbierto(!abierto)}

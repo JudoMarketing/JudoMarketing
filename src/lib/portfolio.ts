@@ -19,10 +19,10 @@ import {
  * pueden ser públicas: la tabla sites guarda además la clave del Judo Site
  * Kit, que nunca debe salir de aquí.
  *
- * Aparece todo website con el interruptor de Portafolio prendido en el portal,
- * y desaparece en cuanto Administración lo apaga (Junior, 25 nov 2026). Los
- * que todavía están en desarrollo salen marcados como vista previa; uno
- * deshabilitado sale solo si su website no está mostrando la pausa del kit.
+ * Aparece todo website con el interruptor de Portafolio prendido que no esté
+ * deshabilitado, y desaparece en cuanto Administración lo apaga o lo
+ * deshabilita (Junior, 25 nov 2026). Los que están en desarrollo o no tienen
+ * dominio propio salen marcados «en progreso».
  */
 
 type Fila = {
@@ -76,23 +76,6 @@ async function dominioQueContesta(dominio: string): Promise<string> {
     return destino || dominio;
   } catch {
     return dominio;
-  }
-}
-
-/**
- * Si el website de un sitio deshabilitado se ve normal. Cuando el kit lo
- * apaga, el sitio muestra «Temporalmente deshabilitado» (kit/app/
- * judo-suspendido): esa portada no se enseña en el showcase. Si no contesta,
- * tampoco sale.
- */
-async function sinPausa(dominio: string): Promise<boolean> {
-  try {
-    const res = await fetch(`https://${dominio}`, { redirect: "follow", signal: AbortSignal.timeout(4000) });
-    if (!res.ok) return false;
-    const html = await res.text();
-    return !html.includes("Temporalmente deshabilitado");
-  } catch {
-    return false;
   }
 }
 
@@ -154,26 +137,17 @@ async function trabajosDelPortal(): Promise<Trabajo[]> {
       .select(
         "name,status,domain,portfolio_category,portfolio_desc_es,portfolio_desc_en,portfolio_image,portfolio_shot_at"
       )
-      // Sale todo lo que tiene el interruptor de Portafolio prendido, sea cual
-      // sea su estado (Junior, 25 nov 2026: «necesito que estén todos»). Antes
-      // solo salían los activos y en desarrollo, y faltaban websites que están
-      // en línea. Un deshabilitado sale solo si su website no muestra la
-      // pausa del kit (abajo, sinPausa).
+      // Sale todo lo que tiene el interruptor de Portafolio prendido y no está
+      // deshabilitado, sea activo, en desarrollo o cancelado. Deshabilitar es
+      // como Junior saca del showcase los que «ya no van» (25 nov 2026).
+      .neq("status", "deshabilitado")
       .eq("portfolio_visible", true)
       .not("domain", "is", null)
       .order("created_at", { ascending: false });
 
     if (error || !data) return [];
 
-    const conDominio = (data as Fila[]).filter((fila) => Boolean(fila.domain));
-    const enLinea = await Promise.all(
-      conDominio.map((fila) =>
-        fila.status === "deshabilitado"
-          ? sinPausa(fila.domain!.replace(/^https?:\/\//, "").replace(/\/+$/, ""))
-          : Promise.resolve(true)
-      )
-    );
-    const filas = conDominio.filter((_, i) => enLinea[i]);
+    const filas = (data as Fila[]).filter((fila) => Boolean(fila.domain));
 
     // Se resuelven todos a la vez: la página es ISR, así que esto corre una vez
     // por revalidación, no en cada visita.

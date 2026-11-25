@@ -13,8 +13,9 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
   va solo con títulos (con su icono); en el home, las tarjetas de servicio sin
   párrafo, solo los tres puntos.
 - **25 nov · Showcase: tienen que estar todos** los que tienen prendido el
-  interruptor de Portafolio en el portal (también GeraldMarket y Mil
-  Colores). Para esconder uno se apaga su interruptor en el portal.
+  interruptor de Portafolio en el portal y no están deshabilitados.
+  Deshabilitar es como Junior saca los que «ya no van pal baile» (Mil
+  Colores y Gerald Trading, 25 nov).
   **JudiMental fuera del showcase y del home.** Los que todavía no tienen
   dominio propio (viven en .vercel.app o .github.io) salen «in progress».
   **SoFla Contractors** (sofla-contractors.vercel.app) va de primero,
