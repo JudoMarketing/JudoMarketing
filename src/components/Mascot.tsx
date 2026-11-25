@@ -11,7 +11,8 @@ import { safeGet, safeSet } from "@/lib/safe";
  * Observa el cursor/dedo con movimientos suaves, parpadea y piensa con una
  * burbujita estilo anime.
  *
- * En la primera visita ofrece JuditoADS. Antes preguntaba el idioma, pero eso
+ * En la primera visita ofrece el diagnóstico de $99 (antes, JuditoADS; Junior,
+ * 25 nov 2026: JuditoADS queda solo en el header). Antes preguntaba el idioma, pero eso
  * era gastarle al visitante su único momento de atención en algo que ya
  * resuelven las banderas del encabezado; ahora lo usa para ofrecer algo.
  */
