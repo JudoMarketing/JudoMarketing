@@ -7,8 +7,8 @@ import Reveal from "@/components/Reveal";
 import ResenasComunidad from "@/components/ResenasComunidad";
 import { PERFIL_GOOGLE } from "@/components/SocialLinks";
 import ListoOverlay from "@/components/ListoOverlay";
-import { ArteWebsites, ArteAds, ArteAi } from "@/components/ServiceArt";
-import { descuento, precioAntes, precioDesde, usd } from "@/lib/pricing";
+import Image from "next/image";
+import { DIAS_DIAGNOSTICO, PRECIO_ASISTENTE, PRECIO_DIAGNOSTICO, precioAntes, precioDesde, usd } from "@/lib/pricing";
 import { homeAlternates } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -25,15 +25,19 @@ export async function generateMetadata({
 }
 
 
-/** Los tres servicios, en el orden en que el cliente los necesita. */
+/**
+ * Lo que hace Judo, en el orden en que el cliente lo necesita (Junior, 25 nov
+ * 2026: sin Juditos ni JuditoADS en el home; esos dos quedan en el header).
+ */
 const SERVICIOS = [
-  { id: "websites", clase: "svc-websites", arte: ArteWebsites, href: "/services", externo: false },
-  { id: "juditoads", clase: "svc-ads", arte: ArteAds, href: "/juditoads", externo: true },
-  { id: "ai", clase: "svc-ai", arte: ArteAi, href: "/services", hash: "ai-assistants", externo: false },
+  { id: "websites", clase: "svc-websites", icono: "/home/websites.webp", lema: "confianza", href: "/services", hash: "websites" },
+  { id: "social", clase: "svc-ads", icono: "/home/redes.webp", lema: "valor", href: "/contact" },
+  { id: "automation", clase: "svc-ai", icono: "/home/automatizacion.webp", lema: "valor", href: "/services", hash: "ai-assistants" },
 ] as const;
 
 type Step = { title: string; description: string };
 type Review = { text: string; name: string; place: string };
+type Razon = { title: string; text: string };
 
 export default function HomePage({
   params,
@@ -46,6 +50,7 @@ export default function HomePage({
 
   const steps = t.raw("onboarding.steps") as Step[];
   const reviews = t.raw("reviews.items") as Review[];
+  const razones = t.raw("home.why") as Razon[];
 
   return (
     <div className="judo-glow overflow-hidden">
@@ -128,38 +133,110 @@ export default function HomePage({
           <Link href="/contact" className="btn-primary">
             {t("hero.ctaPrimary")} →
           </Link>
-          <Link href="/services" className="btn-secondary">
+          <Link href="/showcase" className="btn-secondary">
             {t("hero.ctaSecondary")}
           </Link>
         </div>
 
-        {/* Dos caminos más discretos: ver el trabajo ya hecho, o entrar a
-            JuditoADS. JuditoADS va con <a> normal porque es otra app servida
-            bajo /juditoads, fuera del enrutado de idiomas de next-intl. */}
+        {/* El primer paso para quien todavía no sabe qué necesita: el
+            diagnóstico de $99 (docs/vendito/decisiones.md, 14 nov 2026). */}
         <div className="hero-in mt-5 flex flex-wrap justify-center gap-3" style={{ animationDelay: "calc(var(--tiempo) * 4)" }}>
           <Link
-            href="/showcase"
+            href="/diagnostic"
             className="inline-flex items-center gap-2 rounded-full border border-judo-lilac/20 bg-white/5 px-6 py-2.5 text-sm text-judo-fog/70 backdrop-blur-sm transition hover:border-judo-lilac/45 hover:bg-white/10 hover:text-judo-fog"
           >
-            {t("hero.ctaShowcase")}
+            {t("hero.ctaDiagnostic")}
             <span aria-hidden>→</span>
           </Link>
-          {/* JuditoADS se prueba sin pagar: lo dice el propio botón, porque
-              es lo que quita el miedo a hacer clic. */}
-          <a
-            href="/juditoads"
-            className="svc svc-ads inline-flex items-center gap-2 rounded-full border px-6 py-2.5 text-sm backdrop-blur-sm transition"
-            style={{
-              borderColor: "color-mix(in srgb, var(--svc) 45%, transparent)",
-              backgroundColor: "color-mix(in srgb, var(--svc) 14%, transparent)",
-              color: "var(--svc-luz)",
-            }}
-          >
-            {t("hero.ctaJudito")}
-            <span className="text-judo-fog/55">·</span>
-            <span className="font-semibold">{t("plans.juditoads.free")}</span>
-            <span aria-hidden>→</span>
-          </a>
+        </div>
+      </section>
+
+      {/* ── LO QUE HACEMOS ──────────────────────────────────────────
+          Junior, 25 nov 2026: el home dice lo que hace Judo; Juditos y
+          JuditoADS quedan solo en el header. Cada servicio dice a qué mitad
+          del lema responde (construye confianza o crea valor), con su color
+          de /services (globals.css, .svc-*) y un objeto 3D (Fluent, MIT). */}
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <Reveal className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl">{t("home.whatTitle")}</h2>
+          <p className="mx-auto mt-2 max-w-2xl text-judo-fog/60">{t("home.whatSubtitle")}</p>
+        </Reveal>
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {SERVICIOS.map((servicio, i) => (
+            <Reveal key={servicio.id} paso={i}>
+              <Link href={"hash" in servicio ? { pathname: servicio.href, hash: servicio.hash } : servicio.href} className="block h-full">
+                <div className={`svc ${servicio.clase} svc-card flex h-full flex-col p-7`}>
+                  <div className="relative flex h-32 items-center justify-center">
+                    <div
+                      aria-hidden
+                      className={`svc-halo late ${["", "late-tarde", "late-medio"][i]} pointer-events-none absolute inset-0 blur-xl`}
+                    />
+                    <Image src={servicio.icono} alt="" width={128} height={128} className="relative h-28 w-28 object-contain drop-shadow-[0_14px_22px_rgba(0,0,0,0.45)]" />
+                  </div>
+                  <p className="mt-5 text-xs font-bold tracking-wide uppercase" style={{ color: "var(--svc-luz)" }}>
+                    {t(servicio.lema === "confianza" ? "home.trust" : "home.value")}
+                  </p>
+                  <h3 className="mt-1 text-2xl font-bold">{t(`home.${servicio.id}.name`)}</h3>
+                  <p className="display-num mt-1 text-lg font-bold" style={{ color: "var(--svc-luz)" }}>
+                    {servicio.id === "websites" ? (
+                      <>
+                        {precioAntes("essential") !== null && (
+                          <>
+                            <span className="sr-only">{t("plans.was")} </span>
+                            <s className="mr-2 text-base font-medium text-judo-fog/45">{usd(precioAntes("essential")!)}</s>
+                          </>
+                        )}
+                        {`${t("plans.from")} ${precioDesde()}${t("plans.perMonth")}`}
+                      </>
+                    ) : servicio.id === "automation" ? (
+                      `${t("plans.from")} ${usd(PRECIO_ASISTENTE)}${t("plans.perMonth")}`
+                    ) : (
+                      t("home.social.price")
+                    )}
+                  </p>
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-judo-fog/65">{t(`home.${servicio.id}.description`)}</p>
+                  <p className="mt-6 text-sm font-semibold" style={{ color: "var(--svc-luz)" }}>
+                    {servicio.id === "social" ? t("home.social.more") : t("home.more")} →
+                  </p>
+                </div>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+
+        {/* El diagnóstico: el primer paso, a lo ancho */}
+        <Reveal paso={3}>
+          <Link href="/diagnostic" className="mt-6 block">
+            <div className="svc svc-websites svc-card flex flex-col items-center gap-6 p-7 text-center sm:flex-row sm:text-left">
+              <Image src="/home/diagnostico.webp" alt="" width={112} height={112} className="h-24 w-24 flex-none object-contain drop-shadow-[0_14px_22px_rgba(0,0,0,0.45)]" />
+              <div className="flex-1">
+                <p className="text-xs font-bold tracking-wide uppercase" style={{ color: "var(--svc-luz)" }}>{t("home.diagnostic.kicker")}</p>
+                <h3 className="mt-1 text-2xl font-bold">
+                  {t("home.diagnostic.name")} <span className="display-num" style={{ color: "var(--svc-luz)" }}>· {usd(PRECIO_DIAGNOSTICO)}</span>
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-judo-fog/65">{t("home.diagnostic.description", { days: DIAS_DIAGNOSTICO })}</p>
+              </div>
+              <span className="btn-primary flex-none">{t("home.diagnostic.cta")} →</span>
+            </div>
+          </Link>
+        </Reveal>
+      </section>
+
+      {/* ── POR QUÉ NOSOTROS: lo que se puede comprobar ───────────────── */}
+      <section className="mx-auto max-w-6xl px-6 pb-4">
+        <Reveal className="text-center">
+          <h2 className="text-3xl font-bold sm:text-4xl">{t("home.whyTitle")}</h2>
+          <p className="mx-auto mt-2 max-w-2xl text-judo-fog/60">{t("home.whySubtitle")}</p>
+        </Reveal>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {razones.map((r, i) => (
+            <Reveal key={r.title} paso={i}>
+              <TiltCard className="h-full p-6">
+                <h3 className="text-lg font-semibold">{r.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-judo-fog/65">{r.text}</p>
+              </TiltCard>
+            </Reveal>
+          ))}
         </div>
       </section>
 
@@ -183,110 +260,6 @@ export default function HomePage({
               </TiltCard>
             </Reveal>
           ))}
-        </div>
-      </section>
-
-      {/* ── LOS TRES SERVICIOS ───────────────────────────────────────
-          Es la sección que tiene que dejar claro qué vendemos. Cada familia
-          con su color, su dibujo y una frase de dos palabras: el visitante
-          entiende la oferta completa sin leer un párrafo. Los colores y las
-          clases .svc-* salen de globals.css, los mismos de /services. */}
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <Reveal className="text-center">
-          <h2 className="text-3xl font-bold sm:text-4xl">{t("plans.title")}</h2>
-          <p className="mt-2 text-judo-fog/60">{t("plans.subtitle")}</p>
-        </Reveal>
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {SERVICIOS.map((servicio, i) => {
-            const Arte = servicio.arte;
-            const ficha = (
-              <div className={`svc ${servicio.clase} svc-card flex h-full flex-col p-7`}>
-                <div className="relative">
-                  {/* Late en el pulso base, cada tarjeta en su fase: las tres
-                      a la vez se leerían como un bloque respirando. */}
-                  <div
-                    aria-hidden
-                    className={`svc-halo late ${
-                      ["", "late-tarde", "late-medio"][i]
-                    } pointer-events-none absolute inset-0 blur-xl`}
-                  />
-                  {/* Las ilustraciones son más logo que escena: necesitan alto
-                      para leerse, sobre todo la de JuditoADS, que es cuadrada. */}
-                  <Arte className="relative mx-auto h-44 w-full" />
-                </div>
-                <p
-                  className="mt-5 text-xs font-bold tracking-wide uppercase"
-                  style={{ color: "var(--svc-luz)" }}
-                >
-                  {t(`plans.${servicio.id}.kicker`)}
-                </p>
-                <h3 className="mt-1 text-2xl font-bold">
-                  {t(`plans.${servicio.id}.name`)}
-                </h3>
-                <p className="display-num mt-1 text-lg font-bold" style={{ color: "var(--svc-luz)" }}>
-                  {servicio.id === "websites" ? (
-                    <>
-                      {/* El precio de antes, tachado (pricing.json, precioAntes) */}
-                      {precioAntes("essential") !== null && (
-                        <>
-                          <span className="sr-only">{t("plans.was")} </span>
-                          <s className="mr-2 text-base font-medium text-judo-fog/45">
-                            {usd(precioAntes("essential")!)}
-                          </s>
-                        </>
-                      )}
-                      {`${t("plans.from")} ${precioDesde()}${t("plans.perMonth")}`}
-                      {descuento("essential") ? (
-                        <span className="ml-2 inline-block rounded-full bg-judo-purple px-2 py-0.5 align-middle text-[11px] font-bold tracking-wide text-white uppercase">
-                          {t("plans.off", { pct: descuento("essential")! })}
-                        </span>
-                      ) : null}
-                    </>
-                  ) : (
-                    t(`plans.${servicio.id}.price`)
-                  )}
-                </p>
-                {servicio.id === "juditoads" && (
-                  <p
-                    className="mt-1 text-sm font-bold"
-                    style={{ color: "var(--svc-luz)" }}
-                  >
-                    {t("plans.juditoads.free")}
-                  </p>
-                )}
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-judo-fog/65">
-                  {t(`plans.${servicio.id}.description`)}
-                </p>
-                <p
-                  className="mt-6 text-sm font-semibold"
-                  style={{ color: "var(--svc-luz)" }}
-                >
-                  {t("plans.more")} →
-                </p>
-              </div>
-            );
-            return (
-              <Reveal key={servicio.id} paso={i}>
-                {servicio.externo ? (
-                  /* JuditoADS es otra app (/juditoads via rewrite): <a> normal */
-                  <a href={servicio.href} className="block h-full">
-                    {ficha}
-                  </a>
-                ) : (
-                  <Link
-                    href={
-                      "hash" in servicio
-                        ? { pathname: servicio.href, hash: servicio.hash }
-                        : servicio.href
-                    }
-                    className="block h-full"
-                  >
-                    {ficha}
-                  </Link>
-                )}
-              </Reveal>
-            );
-          })}
         </div>
       </section>
 

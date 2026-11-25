@@ -20,11 +20,11 @@
   "hero": {
     "title": "Build Trust,",
     "titleAccent": "Create Value",
-    "subtitle": "Websites, ads, and an assistant that answers. All under your control.",
+    "subtitle": "We build your website, run your social media and ads, and automate how you answer customers, so your business can compete with the big ones.",
     "ctaPrimary": "Let's talk about your project",
-    "ctaSecondary": "View services",
+    "ctaSecondary": "See our work",
     "ctaShowcase": "See our work",
-    "ctaJudito": "Launch your ads"
+    "ctaDiagnostic": "Start with a $99 diagnostic"
   },
   "onboarding": {
     "title": "How we work with you",
@@ -300,7 +300,7 @@
     "back": "Back to home"
   },
   "mascot": {
-    "greeting": "Want more customers? Run your own ads with JuditoADS. Try for free.",
+    "greeting": "Want more customers? Start with a $99 diagnostic: we compare your business with your competitors.",
     "chatSoon": "Very soon you'll be able to chat with me right here 💜",
     "chatTitle": "Chat with me",
     "chatIntro": "Hi! I'm the Judo Marketing mascot. Ask me anything about our services, pricing, or how we work 💜",
@@ -309,7 +309,7 @@
     "chatThinking": "Thinking…",
     "chatError": "Oops, something went wrong. Try again.",
     "chatSlow": "You're going fast, give me a few seconds.",
-    "juditoYes": "See JuditoADS",
+    "juditoYes": "See the diagnostic",
     "juditoNo": "Not now"
   },
   "footer": {
@@ -728,5 +728,48 @@
     "doneTitle": "Payment received. Thank you!",
     "doneText": "Your Full Diagnostic arrives in your email within {days} business days. If you want to add something (a competitor, another web address), message us on WhatsApp.",
     "back": "See all services"
+  },
+  "home": {
+    "whatTitle": "What we do",
+    "whatSubtitle": "Build trust: customers find you and believe you. Create value: they buy from you and come back.",
+    "trust": "Build trust",
+    "value": "Create value",
+    "more": "See details",
+    "websites": {
+      "name": "Websites and apps",
+      "description": "Your online store, bookings or orders, with your own admin panel to change prices and products. Built to be found on Google, Bing and AI."
+    },
+    "social": {
+      "name": "Social media and ads",
+      "price": "Quoted for your business",
+      "description": "We manage your social media and run your Facebook and Instagram ads to bring you customers. You choose the daily budget, from $5 a day, paid directly to Meta.",
+      "more": "Ask for a quote"
+    },
+    "automation": {
+      "name": "Automation with AI",
+      "description": "Your customers get answers 24/7 on WhatsApp, Instagram and your website, and bookings and orders happen on their own while you work."
+    },
+    "diagnostic": {
+      "kicker": "Not sure where to start?",
+      "name": "Full Diagnostic",
+      "description": "We compare your website and your online presence with your competitors and send you a plan with priorities, deadlines and what each step costs. PDF in {days} business days.",
+      "cta": "Get my diagnostic"
+    },
+    "whyTitle": "Why businesses work with us",
+    "whySubtitle": "The judo strategy: the biggest doesn't always win. We help small and medium businesses compete with technology, AI and strategy.",
+    "why": [
+      {
+        "title": "A real person answers",
+        "text": "Message us on WhatsApp and a person answers you, in English or Spanish."
+      },
+      {
+        "title": "Checked every day",
+        "text": "We check every client website every day: online, secure and with no signs of attack."
+      },
+      {
+        "title": "Built to last",
+        "text": "No PHP, with security patches and daily backups. Your code is yours once your 12 months are paid."
+      }
+    ]
   }
 }

@@ -8,6 +8,11 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **25 nov · El home de judomarketing.net habla de lo que hace Judo:**
+  websites y apps, redes sociales y anuncios, automatización con IA y el
+  diagnóstico de $99 como primer paso. **Juditos y JuditoADS quedan solo en
+  el header.** Se queda «Build Trust, Create Value», con lo que hacemos
+  explicado debajo. La mascota ya no ofrece JuditoADS: ofrece el diagnóstico.
 - **23 nov · Cobros, la regla del mes:** es un servicio mensual. El pago
   vence el día de la renovación (no se espera al mes siguiente). Si un mes no
   se paga, se acumula: la factura del mes siguiente trae los dos meses. En el
