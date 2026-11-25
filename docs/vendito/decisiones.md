@@ -12,11 +12,13 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
   descripciones que nadie nunca lee». En el diagnóstico, «Lo que revisamos»
   va solo con títulos (con su icono); en el home, las tarjetas de servicio sin
   párrafo, solo los tres puntos.
-- **25 nov · Showcase: tienen que estar todos** los que el portal marca como
-  publicados (visibles y no deshabilitados), también GeraldMarket y Mil
-  Colores. Para esconder uno se apaga su interruptor en el portal.
+- **25 nov · Showcase: tienen que estar todos** los que tienen prendido el
+  interruptor de Portafolio en el portal (también GeraldMarket y Mil
+  Colores). Para esconder uno se apaga su interruptor en el portal.
+  **JudiMental fuera del showcase y del home.** Los que todavía no tienen
+  dominio propio (viven en .vercel.app o .github.io) salen «in progress».
   **SoFla Contractors** (sofla-contractors.vercel.app) va de primero,
-  marcado «en progreso».
+  en progreso.
 - **25 nov · Home:** los websites del showcase pasan como un show, más
   pequeños y deslizándose de lado.
 - **25 nov · La mascota:** más grande en el teléfono. Ya casi no habla de

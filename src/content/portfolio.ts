@@ -197,7 +197,10 @@ export const ORDEN_SHOWCASE: string[] = [
  * de octubre al 25 de noviembre estuvieron ocultos GeraldMarket y Mil
  * Colores, por ser solo en español.)
  */
-export const OCULTOS_SHOWCASE: string[] = [];
+export const OCULTOS_SHOWCASE: string[] = [
+  // Junior, 25 de noviembre de 2026: «quita judimental del showcase y del home»
+  "judimental.com",
+];
 
 // Misma lista que el selector del portal y que el candado de la base
 // (migración 0023). Si se agrega una categoría, va en las cuatro.
