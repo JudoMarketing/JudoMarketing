@@ -36,5 +36,7 @@ export async function POST(req: NextRequest) {
   }
   // Las dos versiones (/es y /en) salen de la misma ruta
   revalidatePath("/[locale]/showcase", "page");
+  // El home también enseña el showcase (el show de websites)
+  revalidatePath("/[locale]", "page");
   return NextResponse.json({ ok: true });
 }

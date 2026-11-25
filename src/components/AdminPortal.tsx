@@ -511,6 +511,12 @@ export default function AdminPortal() {
         .order("created_at", { ascending: false })
         .limit(200),
     ]);
+    // Una lectura que falla no se disfraza de lista vacía: se avisa, y la
+    // pantalla se queda con lo último que sí leyó.
+    if (siteRes.error) {
+      flash(`No se pudieron leer los websites: ${siteRes.error.message}. Recarga o vuelve a iniciar sesión.`);
+      return;
+    }
     setProofs((proofRes.data as ProofRow[]) ?? []);
     setSites((siteRes.data as unknown as SiteRow[]) ?? []);
     {
@@ -524,7 +530,11 @@ export default function AdminPortal() {
         void supabase.auth.getSession().then(({ data }) => {
           const token = data.session?.access_token;
           if (token) {
-            void fetch("/api/admin/showcase", { method: "POST", headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
+            void fetch("/api/admin/showcase", { method: "POST", headers: { Authorization: `Bearer ${token}` } })
+              .then((r) => {
+                if (!r.ok) flash("El showcase no se pudo renovar al momento: se pone al día solo en unos minutos.");
+              })
+              .catch(() => flash("El showcase no se pudo renovar al momento: se pone al día solo en unos minutos."));
           }
         });
       }
@@ -571,6 +581,16 @@ export default function AdminPortal() {
       byId[row.site_id].salesTotal += row.sales_count ?? 0;
     }
     setMetrics(byId);
+  }, [supabase]);
+
+  // Si la sesión se cae (se venció y no se pudo renovar, o se cerró en otra
+  // pestaña), el portal pide entrar de nuevo. Antes seguía en pantalla y cada
+  // botón «guardaba» sin sesión: la base no cambiaba y nadie se enteraba.
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((evento, sesion) => {
+      if (evento === "SIGNED_OUT" || (evento === "TOKEN_REFRESHED" && !sesion)) setNeedsLogin(true);
+    });
+    return () => data.subscription.unsubscribe();
   }, [supabase]);
 
   useEffect(() => {
@@ -959,10 +979,14 @@ export default function AdminPortal() {
       .select("id")
       .single();
     if (sErr || !site) return flash(`Error: ${sErr?.message}`);
-    await supabase
-      .from("signed_contracts")
-      .update({ site_id: site.id })
-      .eq("id", c.id);
+    const motivoContrato = fallo(
+      await supabase.from("signed_contracts").update({ site_id: site.id }).eq("id", c.id).select("id")
+    );
+    if (motivoContrato) {
+      flash(`Website creado, pero el contrato no quedó asignado: ${motivoContrato}`);
+      await loadAll();
+      return irASitio(site.id);
+    }
     await supabase.from("site_events").insert({
       site_id: site.id,
       kind: "contrato_firmado",
@@ -3694,7 +3718,14 @@ export default function AdminPortal() {
                         ocupado={googleBusy}
                         onRefrescar={() => void refrescarGoogle(site.id)}
                       />
-                      <SiteIdentidad site={site} onSaved={loadAll} flash={flash} />
+                      {/* La clave lleva lo guardado: al recargar, la caja se vuelve a montar
+                          con el dato de la base y no se queda con uno viejo. */}
+                      <SiteIdentidad
+                        key={`i-${site.name}-${site.domain}-${site.clients?.full_name ?? ""}-${site.clients?.business_name ?? ""}`}
+                        site={site}
+                        onSaved={loadAll}
+                        flash={flash}
+                      />
                       {/* La clave lleva el valor guardado: al registrar un pago o
                           cambiar el precio, el campo se vuelve a montar con el dato
                           nuevo en vez de quedarse enseñando el viejo. */}
@@ -3705,7 +3736,12 @@ export default function AdminPortal() {
                         onSaved={loadAll}
                         flash={flash}
                       />
-                      <SitePortfolio site={site} onSaved={loadAll} flash={flash} />
+                      <SitePortfolio
+                        key={`pf-${site.portfolio_visible}-${site.portfolio_category}-${site.portfolio_desc_es}-${site.portfolio_desc_en}-${site.portfolio_image}`}
+                        site={site}
+                        onSaved={loadAll}
+                        flash={flash}
+                      />
                       <SiteDossier site={site} onSaved={loadAll} flash={flash} />
 
                       <div className="mt-3 flex flex-wrap gap-2">
@@ -3787,17 +3823,19 @@ function SitePortfolio({
    */
   const volverATomarPortada = async () => {
     setPidiendoFoto(true);
-    const { error } = await supabase
-      .from("sites")
-      .update({ portfolio_shot_at: new Date().toISOString() })
-      .select("id")
-      .eq("id", site.id);
+    const motivo = fallo(
+      await supabase
+        .from("sites")
+        .update({ portfolio_shot_at: new Date().toISOString() })
+        .eq("id", site.id)
+        .select("id")
+    );
     setPidiendoFoto(false);
-    if (error) {
+    if (motivo) {
       return flash(
-        error.message.includes("portfolio_shot_at")
+        motivo.includes("portfolio_shot_at")
           ? "Falta la migración 0024 en la base. Córrela y vuelve a intentarlo."
-          : `No se pudo: ${error.message}`
+          : `No se pudo: ${motivo}`
       );
     }
     flash("Portada pedida ✓ Tarda un par de minutos en aparecer");
@@ -3805,16 +3843,18 @@ function SitePortfolio({
   };
 
   const guardar = async (cambios: Record<string, unknown>) => {
-    const { error } = await supabase.from("sites").update(cambios).eq("id", site.id);
-    if (error) {
+    // Con .select() la base dice qué filas cambió: un «✓» sin fila cambiada
+    // era lo que dejaba el portal diciendo una cosa y la base guardando otra.
+    const motivo = fallo(await supabase.from("sites").update(cambios).eq("id", site.id).select("id"));
+    if (motivo) {
       // Si la base rechaza el cambio, la pantalla vuelve a lo que hay guardado:
       // que no diga una cosa mientras la base guarda otra.
       setVisible(site.portfolio_visible ?? true);
       setCategoria(site.portfolio_category ?? "");
       return flash(
-        error.message.includes("portfolio_category")
+        motivo.includes("portfolio_category")
           ? "Esa categoría todavía no está permitida en la base. Corre la migración 0023 y vuelve a intentarlo."
-          : `No se guardó: ${error.message}`
+          : `No se guardó: ${motivo}`
       );
     }
     flash("Portafolio actualizado ✓");
@@ -3897,11 +3937,10 @@ function SitePortfolio({
             defaultValue={site.portfolio_image ?? ""}
             onBlur={async (e) => {
               const valor = e.target.value.trim() || null;
-              const { error } = await supabase
-                .from("sites")
-                .update({ portfolio_image: valor })
-                .eq("id", site.id);
-              if (error) return flash(`Error: ${error.message}`);
+              const motivo = fallo(
+                await supabase.from("sites").update({ portfolio_image: valor }).eq("id", site.id).select("id")
+              );
+              if (motivo) return flash(`No se guardó: ${motivo}`);
               flash("Imagen del portafolio actualizada ✓");
               onSaved();
             }}
@@ -4112,22 +4151,27 @@ function SiteIdentidad({
       // El dominio se guarda limpio: sin https:// ni barra final, que es como
       // lo espera el showcase para armar la captura.
       const limpio = dominio.trim().replace(/^https?:\/\//, "").replace(/\/+$/, "");
-      const { error } = await supabase
-        .from("sites")
-        .update({ name: nombre.trim(), domain: limpio || null })
-        .select("id")
-        .eq("id", site.id);
-      if (error) return flash(`Error: ${error.message}`);
+      const motivo = fallo(
+        await supabase
+          .from("sites")
+          .update({ name: nombre.trim(), domain: limpio || null })
+          .eq("id", site.id)
+          .select("id")
+      );
+      if (motivo) return flash(`No se guardó: ${motivo}`);
 
       if (site.client_id && (cliente.trim() || empresa.trim())) {
-        const { error: cErr } = await supabase
-          .from("clients")
-          .update({
-            full_name: cliente.trim() || site.clients?.full_name || "",
-            business_name: empresa.trim() || null,
-          })
-          .eq("id", site.client_id);
-        if (cErr) return flash(`Website guardado, pero el cliente no: ${cErr.message}`);
+        const motivoCliente = fallo(
+          await supabase
+            .from("clients")
+            .update({
+              full_name: cliente.trim() || site.clients?.full_name || "",
+              business_name: empresa.trim() || null,
+            })
+            .eq("id", site.client_id)
+            .select("id")
+        );
+        if (motivoCliente) return flash(`Website guardado, pero el cliente no: ${motivoCliente}`);
       }
       setDominio(limpio);
       flash("Datos del website actualizados ✓");
@@ -4143,11 +4187,8 @@ function SiteIdentidad({
       !window.confirm(`¿Apagar ${site.name}? Sus visitantes verán la página de suspensión.`)
     )
       return;
-    const { error } = await supabase
-      .from("sites")
-      .update({ status: estado })
-      .eq("id", site.id);
-    if (error) return flash(`Error: ${error.message}`);
+    const motivo = fallo(await supabase.from("sites").update({ status: estado }).eq("id", site.id).select("id"));
+    if (motivo) return flash(`No se guardó: ${motivo}`);
     // Apagar o encender un website queda en la auditoría, venga del botón o de aquí
     if (estado === "deshabilitado" || site.status === "deshabilitado") {
       await supabase.from("audit_log").insert({
@@ -4293,14 +4334,17 @@ function SiteDates({
   const dirty = due !== (site.next_payment_due ?? "") || domainExp !== (site.domain_expires_at ?? "");
 
   const save = async () => {
-    const { error } = await supabase
-      .from("sites")
-      .update({
-        next_payment_due: due || null,
-        domain_expires_at: domainExp || null,
-      })
-      .eq("id", site.id);
-    if (error) return flash(`Error: ${error.message}`);
+    const motivo = fallo(
+      await supabase
+        .from("sites")
+        .update({
+          next_payment_due: due || null,
+          domain_expires_at: domainExp || null,
+        })
+        .eq("id", site.id)
+        .select("id")
+    );
+    if (motivo) return flash(`No se guardó: ${motivo}`);
     flash("Fechas actualizadas ✓");
     onSaved();
   };
