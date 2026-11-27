@@ -8,6 +8,18 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **27 nov · The ABA Corner (Grether, BCBA):** su propio website en
+  theabacorner.com, con citas con cobro (supervisiones, asesorías,
+  entrenamientos 1 a 1 y a agencias en recolección de datos, consultas y
+  mentorías para padres), Google Calendar y Google Meet (también para quien
+  no tiene Google), avisos por texto y email, SEO para Google, Bing, Yahoo y
+  la IA, y Google Ads. Los cursos y los lives de PDU viven en RBT Corner,
+  que enlaza a The ABA Corner. Mensualidad por 12 meses, o el año completo
+  ahorrando 2 meses; la cuota de inicio se regala. El monto va solo en el
+  PDF del cliente. **Ojo, PDU:** desde 2026 el RBT renueva cada 2 años con
+  12 horas de PDU (RBT Handbook 10/2026), y solo cuentan si las da un
+  proveedor ACE autorizado.
+
 - **27 nov · Propuesta «Escuela en línea» (con RBT Corner de ejemplo):**
   plantilla general para quien quiera una plataforma de cursos como RBT
   Corner. **$300 al mes por 12 meses, sin cuota de inicio**, con los gastos
