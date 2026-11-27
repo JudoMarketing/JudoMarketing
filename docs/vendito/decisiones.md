@@ -8,6 +8,15 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **27 nov · Behavior for Happiness (abaforhappiness.com, agencia ABA de
+  Grether):** propuesta enfocada en SEO local, Google Ads, directorios,
+  buscadores e IA. El borrador está aprobado; le faltan datos reales
+  (teléfono, dirección, seguros, testimonios), verificación automática del
+  seguro, citas, aplicaciones de RBT y enlaces a RBT Corner y The ABA
+  Corner. Mensualidad por 12 meses o el año completo ahorrando 2 meses, sin
+  cuota de inicio; el monto va solo en el PDF. Visuales distintos a The ABA
+  Corner (claro, naranja y azul marino) para no confundirlas.
+
 - **27 nov · The ABA Corner (Grether, BCBA):** su propio website en
   theabacorner.com, con citas con cobro (supervisiones, asesorías,
   entrenamientos 1 a 1 y a agencias en recolección de datos, consultas y
