@@ -8,6 +8,15 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **27 nov · Propuesta «Escuela en línea» (con RBT Corner de ejemplo):**
+  plantilla general para quien quiera una plataforma de cursos como RBT
+  Corner. **$300 al mes por 12 meses, sin cuota de inicio**, con los gastos
+  de la plataforma (unos $150 al mes: hosting, base de datos, videos,
+  correo, IA) incluidos. Desde el mes 13 el código es del cliente y solo
+  paga base de datos y hosting. RBT Corner se muestra con nombre y
+  capturas, sin sus números internos. Su fecha de inicio: el dominio
+  apunta a Vercel desde el 19 de septiembre de 2026 (abrió el 27).
+
 - **25 nov · Entre más directo y simple, mejor:** «no necesitas poner
   descripciones que nadie nunca lee». En el diagnóstico, «Lo que revisamos»
   va solo con títulos (con su icono); en el home, las tarjetas de servicio sin
