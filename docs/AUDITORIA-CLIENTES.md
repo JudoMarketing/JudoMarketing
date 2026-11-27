@@ -257,6 +257,21 @@ revisa **cada página** a ojo:
   falla.** Se dice, y se propone medir de nuevo en 60 a 90 días.
 - **Un servicio humano que compite con IA más barata tiene que explicar la
   diferencia** (The Notes). La auditoría mira el mensaje, no solo la técnica.
+- **Un área puede no aplicar.** The Notes trabaja en remoto y Google no le da
+  Perfil de Negocio: esa área va con hoy y meta en `null`, sale «No aplica»
+  y no entra en el promedio. Sus reseñas se buscan en Trustpilot, Capterra o
+  Facebook.
+- **El «no» de un script se comprueba a mano antes de ir al PDF.** La
+  primera versión de `medir.mjs` dijo que Delivery Rush no tenía GA4 (venía
+  dentro de la etiqueta de Google Ads), ni privacidad ni términos (eran
+  botones del pie), ni consentimiento de SMS (estaba en /register y /apply).
+  Ya busca el id G- en el código, lee los botones y visita las páginas de
+  datos del sitemap, pero un «no» sigue siendo una pregunta, no un hallazgo.
+- **Lo interno de Judo no va en el PDF del cliente.** La medición de Delivery
+  Rush encontró el correo personal de Junior en el código público del sitio.
+  Eso se le dice a Junior y se arregla; no se publica en el informe.
+- **Las revisiones de fuera van 4 áreas por hoja** y el plan pasa a dos hojas
+  con más de 16 acciones; el armador ya lo hace.
 - **Las tablas de 9 filas con texto largo no caben:** letra de 10.4 px en la
   tabla de áreas y gráfico más bajo. El armador ya viene así.
 

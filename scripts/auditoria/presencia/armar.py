@@ -12,6 +12,10 @@
 #                METODO, RESUMEN.fecha
 #   fuera.json   fuera del website (opcional): FUERA, FUERA_CHECKS,
 #                FUERA_HALLAZGOS, FUERA_PLAN, METODO_FUERA
+#                FUERA: [id, nombre, hoy, meta, "lo que medimos", "cómo sube"]
+#                (hoy y meta en null = no aplica, fuera del promedio)
+#                FUERA_CHECKS: {id: [["revisión", 1|0.5|0, "dato"], ...5]}
+#                FUERA_PLAN: [[1|2|3, "acción"]] se suma a esa fase del PLAN
 #   home-desk.jpg y home-tel.jpg   capturas en el idioma del informe
 # Escribe <carpeta>/informe.html y, si se da la salida, el PDF (revisando que
 # nada se salga de su hoja).
@@ -37,13 +41,19 @@ except Exception: dia = datetime.date.today()
 FECHA = f"{dia.day} de {MESES_ES[dia.month - 1]} de {dia.year}" if ES else f"{MESES_EN[dia.month - 1]} {dia.day}, {dia.year}"
 MES = f"{MESES_ES[dia.month - 1].capitalize()} {dia.year}" if ES else f"{MESES_EN[dia.month - 1]} {dia.year}"
 
-def prom(filas, i): return round(sum(f[i] for f in filas) / len(filas)) if filas else 0
+# Un área de fuera puede no aplicar (hoy y meta en null): The Notes trabaja en
+# remoto y Google no le da Perfil de Negocio. No entra en el promedio.
+def aplica(f): return f[2] is not None
+def prom(filas, i):
+    v = [f[i] for f in filas if aplica(f)]
+    return round(sum(v) / len(v)) if v else 0
 DIM = D["DIMENSIONES"]; FUERA = F.get("FUERA", [])
 HOY_WEB, META_WEB = prom(DIM, 2), prom(DIM, 3)
 HOY_FUERA, META_FUERA = prom(FUERA, 2), prom(FUERA, 3)
 HOY = round((HOY_WEB + HOY_FUERA) / 2) if FUERA else HOY_WEB
 META = round((META_WEB + META_FUERA) / 2) if FUERA else META_WEB
-N_AREAS = len(DIM) + len(FUERA)
+N_AREAS = len(DIM) + sum(1 for f in FUERA if aplica(f))
+NO_APLICA = T("No aplica", "Not applicable")
 BUS = D["BUSQUEDAS"]; SEO = D["SEO_CHECKS"]; IA = D["IA_CHECKS"]
 VEL = D.get("VELOCIDAD_PAGINAS", []); COMP = D.get("COMPETENCIA", [])
 HALL = D.get("HALLAZGOS", []); HALL_F = F.get("FUERA_HALLAZGOS", [])
@@ -72,6 +82,7 @@ def medidor(valor, tam=180, grosor=18, color_=None, fondo="#E9E5F5", texto="#171
 <text x="{cx}" y="{cy + 20}" text-anchor="middle" font-family="Inter" font-size="{max(11, tam * 0.07):.0f}" fill="{texto}" opacity=".72">{e(sub)}</text></svg>'''
 
 def barras(filas, ancho=704):
+    filas = [f for f in filas if aplica(f)]
     fila, ini = 25, 210; alto = fila * len(filas) + 30; largo = ancho - ini - 40
     s = [f'<svg viewBox="0 0 {ancho} {alto}" width="{ancho}" height="{alto}">']
     for i, d in enumerate(filas):
@@ -91,16 +102,18 @@ def icono(v):
     v = pts(v)
     return '<span class="ico si">✓</span>' if v >= 1 else '<span class="ico medio">½</span>' if v > 0 else '<span class="ico no">✕</span>'
 def lista(items): return "<ul class='lista-simple'>" + "".join(f"<li>{e(str(i))}</li>" for i in items) + "</ul>"
+def tono(d): return color(d[2]) if aplica(d) else "#5F5A70"
+def cifra(d): return f"{d[2]} → {d[3]}" if aplica(d) else NO_APLICA
 def tabla_areas(filas):
     return (f'<table class="tabla areas"><thead><tr><th>{T("Área", "Area")}</th><th>{T("Lo que medimos", "What we found")}</th><th>{T("Cómo sube", "How it improves")}</th></tr></thead><tbody>'
-            + "".join(f"<tr><td><b>{e(d[1])}</b><br><span class='num-dim' style='color:{color(d[2])}'>{d[2]} → {d[3]}</span></td><td>{e(d[4])}</td><td>{e(d[5])}</td></tr>" for d in filas)
+            + "".join(f"<tr><td><b>{e(d[1])}</b><br><span class='num-dim' style='color:{tono(d)}'>{cifra(d)}</span></td><td>{e(d[4])}</td><td>{e(d[5])}</td></tr>" for d in filas)
             + "</tbody></table>")
 
 paginas = []
 def pagina(c, clase=""): paginas.append((c, clase))
 
 # Portada
-nota = (T(f"Puntaje de presencia en línea: la mitad es tu website (9 áreas) y la mitad lo que pasa fuera de él ({len(FUERA)} áreas).", f"Online presence score: half is your website (9 areas), half is everything outside it ({len(FUERA)} areas).")
+nota = (T(f"Puntaje de presencia en línea: la mitad es tu website (9 áreas) y la mitad lo que pasa fuera de él ({sum(1 for f in FUERA if aplica(f))} áreas).", f"Online presence score: half is your website (9 areas), half is everything outside it ({sum(1 for f in FUERA if aplica(f))} areas).")
         if FUERA else T("Puntaje de presencia en línea: el promedio de 9 áreas, cada una medida por separado.", "Online presence score: the average of 9 areas, each measured separately."))
 pagina(f'''
 <div class="portada-fondo"></div>
@@ -219,8 +232,10 @@ if FUERA:
     CH = F.get("FUERA_CHECKS", {})
     def tarjeta(d):
         filas = "".join(f"<tr><td>{icono(c[1])}</td><td><b>{e(c[0])}</b></td><td>{e(str(c[2]) if len(c) > 2 else '')}</td></tr>" for c in CH.get(d[0], []))
-        return f"<div class='area-f'><h3>{e(d[1])}<span style='color:{color(d[2])}'>{d[2]}</span></h3><table class='tabla seo chico'><tbody>{filas}</tbody></table></div>"
-    for parte in (FUERA[:5], FUERA[5:]):
+        return f"<div class='area-f'><h3>{e(d[1])}<span style='color:{tono(d)}'>{d[2] if aplica(d) else NO_APLICA}</span></h3><table class='tabla seo chico'><tbody>{filas}</tbody></table></div>"
+    # 4 áreas por hoja: 5 caben solo si los datos son cortos.
+    for k in range(0, len(FUERA), 4):
+        parte = FUERA[k:k + 4]
         if parte:
             pagina(f'''
 <p class="kicker">{T("Fuera del website, revisión por revisión", "Outside your website, check by check")}</p>
@@ -254,11 +269,21 @@ for f in PLAN:
     fases.append([titulo, cuando, items])
 for n, accion in F.get("FUERA_PLAN", []):
     if 1 <= int(n) <= len(fases): fases[int(n) - 1][2].append(accion)
-html_fases = "".join(f"<div class='fase-v'><span class='fase-cuando'>{e(str(c))}</span><div><h3>{e(str(t))}</h3>{lista(i)}</div></div>" for t, c, i in fases)
-pagina(f'''
+def html_fases(lst): return "".join(f"<div class='fase-v'><span class='fase-cuando'>{e(str(c))}</span><div><h3>{e(str(t))}</h3>{lista(i)}</div></div>" for t, c, i in lst)
+# Con muchas acciones el plan pasa a dos hojas: la última fase va con «Cómo lo medimos».
+if sum(len(i) for _, _, i in fases) > 16 and len(fases) > 1:
+    pagina(f'''
 <p class="kicker">{T("El plan", "The plan")}</p>
 <h2>{T(f"De {HOY} a {META} en 12 meses.", f"From {HOY} to {META} in 12 months.")}</h2>
-<div class="fases-v">{html_fases}</div>
+<div class="fases-v">{html_fases(fases[:-1])}</div>
+''', "plan")
+    fases, titulo_plan = fases[-1:], T("El plan, después.", "The plan, next.")
+else:
+    titulo_plan = T(f"De {HOY} a {META} en 12 meses.", f"From {HOY} to {META} in 12 months.")
+pagina(f'''
+<p class="kicker">{T("El plan", "The plan")}</p>
+<h2>{titulo_plan}</h2>
+<div class="fases-v">{html_fases(fases)}</div>
 <div class="caja verde"><h3>{T("Cómo lo medimos", "How we'll measure it")}</h3><p>{T("Search Console, Bing Webmaster, Lighthouse, el Perfil de Google y las mismas búsquedas de este informe, cada mes. La meta es un objetivo, no una garantía.", "Search Console, Bing Webmaster, Lighthouse, the Google Business Profile and the same searches in this report, every month. The goal is a target, not a guarantee.")}</p></div>
 ''', "plan")
 
