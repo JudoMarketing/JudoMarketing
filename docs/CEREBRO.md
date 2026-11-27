@@ -801,6 +801,14 @@ Los errores de diseño de los sitios están en la sección 2 y en
 - **Rayas largas en las celdas vacías** (2026-11-27). Las tablas ponían «—»
   donde no había dato, y la casa no usa rayas largas. Ahora va «s/d» o
   «n/a», y el armador avisa si queda una.
+- **El script de medición dio tres «no» falsos** (Delivery Rush,
+  2026-11-27).
+  - Qué pasó: `medir.mjs` no vio GA4, que venía dentro de la etiqueta de
+    Google Ads; ni la privacidad ni los términos, que eran botones; ni el
+    consentimiento de SMS, que estaba en otras páginas. El agente que midió
+    a mano lo detectó antes de que llegara al PDF.
+  - Regla: un «no» automático se comprueba a mano antes de ser hallazgo. El
+    script ya cubre esos tres casos.
 - **Medir solo el website** (2026-11-27). Las primeras auditorías miraban 9
   áreas del sitio. Junior pidió evaluar todo lo que hace fuerte la presencia,
   y fuera del sitio salieron los problemas más caros: un Perfil de Google

@@ -47,7 +47,9 @@ const rdap = async () => {
 };
 
 const FIRMAS = {
-  ga4: /gtag\/js\?id=G-|google-analytics\.com\/g\/collect/,
+  // GA4 puede venir dentro de la etiqueta de Google Ads o del código del sitio
+  // (Delivery Rush): se busca también el id G- en los scripts y en las visitas.
+  ga4: /gtag\/js\?id=G-|google-analytics\.com\/g\/collect|[?&]tid=G-|["'`]G-[A-Z0-9]{8,}["'`]/,
   tag_manager: /googletagmanager\.com\/gtm\.js/,
   google_ads: /googleadservices\.com|gtag\/js\?id=AW-|googleads\.g\.doubleclick\.net/,
   pixel_meta: /connect\.facebook\.net\/.*fbevents\.js|facebook\.com\/tr\?/,
@@ -64,6 +66,11 @@ const pedidas = [];
 let ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, locale });
 let p = await ctx.newPage();
 p.on("request", (r) => pedidas.push(r.url()));
+const codigo = [];
+p.on("response", async (r) => {
+  if (r.request().resourceType() !== "script") return;
+  try { const t = await r.text(); if (t.length < 3e6) codigo.push(t); } catch {}
+});
 const res = await p.goto(url, { waitUntil: "networkidle", timeout: 60000 }).catch(() => null);
 await p.waitForTimeout(2500);
 await p.screenshot({ path: `${carpeta}/home-desk.jpg`, type: "jpeg", quality: 85 });
@@ -73,7 +80,9 @@ const enPagina = await p.evaluate(() => {
   const ld = [...document.querySelectorAll('script[type="application/ld+json"]')].flatMap((s) => { try { const j = JSON.parse(s.textContent); return Array.isArray(j) ? j : j["@graph"] || [j]; } catch { return []; } });
   const formularios = [...document.querySelectorAll("form")].map((f) => ({ campos: [...f.querySelectorAll("input,select,textarea")].filter((i) => !["hidden", "submit", "button"].includes(i.type)).length, accion: f.getAttribute("action") }));
   const cuerpo = document.body.innerText;
+  const rotulos = [...document.querySelectorAll("a, button")].map((x) => x.innerText.trim().toLowerCase());
   return {
+    rotulos,
     enlaces: a,
     ld_tipos: ld.map((x) => x["@type"]).flat().filter(Boolean),
     ld_legalName: ld.map((x) => x.legalName).filter(Boolean),
@@ -86,6 +95,23 @@ const enPagina = await p.evaluate(() => {
     palabras: cuerpo.split(/\s+/).filter(Boolean).length,
   };
 });
+// Las páginas donde el cliente deja sus datos: ahí van los formularios y el
+// consentimiento de SMS (en Delivery Rush no estaban en el inicio).
+// Los sitios que se arman en el navegador usan botones, no enlaces: se suma el sitemap.
+const delSitemap = (((await (await fetch(url + "sitemap.xml").catch(() => null))?.text().catch(() => "")) || "").match(/<loc>([^<]+)<\/loc>/g) || []).map((x) => x.replace(/<\/?loc>/g, ""));
+const internas = [...new Set([...enPagina.enlaces.map((x) => x.href), ...delSitemap].map((h) => h.split("#")[0]).filter((h) => { try { return new URL(h).hostname.replace(/^www\./, "") === dominio; } catch { return false; } }))]
+  .filter((h) => /(register|sign-?up|apply|contact|contacto|comenzar|start|request|order|book|agendar|cita|quote|cotiza)/i.test(new URL(h).pathname)).slice(0, 5);
+const paginasDatos = [];
+for (const u of internas) {
+  await p.goto(u, { waitUntil: "networkidle", timeout: 45000 }).catch(() => null);
+  await p.waitForTimeout(1500);
+  paginasDatos.push(await p.evaluate((u) => ({
+    url: u,
+    formularios: [...document.querySelectorAll("form")].map((f) => [...f.querySelectorAll("input,select,textarea")].filter((i) => !["hidden", "submit", "button"].includes(i.type)).length),
+    campos_sueltos: [...document.querySelectorAll("input,select,textarea")].filter((i) => !["hidden", "submit", "button"].includes(i.type)).length,
+    sms_consentimiento: /(text messages?|sms|mensajes de texto).{0,300}(consent|agree|acepto|autorizo|stop)/is.test(document.body.innerText),
+  }), u));
+}
 await ctx.close();
 
 // Teléfono: ¿se puede llamar desde la primera pantalla?
@@ -107,7 +133,7 @@ const redes = {};
 for (const [red, re] of Object.entries({ instagram: /instagram\.com\//, facebook: /facebook\.com\//, tiktok: /tiktok\.com\/@/, linkedin: /linkedin\.com\/(company|in)\//, youtube: /youtube\.com\//, x: /(twitter|x)\.com\//, yelp: /yelp\.com\/biz/, google: /(g\.page|maps\.app\.goo\.gl|google\.com\/maps|search\.google\.com\/local)/ })) {
   const h = hrefs.find((x) => re.test(x)); if (h) redes[red] = h;
 }
-const todo = html + "\n" + pedidas.join("\n");
+const todo = html + "\n" + pedidas.join("\n") + "\n" + codigo.join("\n");
 const medicion = Object.fromEntries(Object.entries(FIRMAS).map(([k, re]) => [k, re.test(todo)]));
 const txt = (await dns(dominio, "TXT")) || [];
 const cab = res ? res.headers() : {};
@@ -126,12 +152,14 @@ const salida = {
     sms: [...new Set(hrefs.filter((h) => h.startsWith("sms:")))],
     email: [...new Set(hrefs.filter((h) => h.startsWith("mailto:")).map((h) => h.replace(/\?.*$/, "")))],
     formularios: enPagina.formularios, ...telefono,
+    paginas_de_datos: paginasDatos,
   },
   redes_enlazadas: redes,
   legal: {
-    privacidad: hrefs.find((h) => /privac/i.test(h)) || null,
-    terminos: hrefs.find((h) => /(terms|terminos|términos|condiciones)/i.test(h)) || null,
-    sms_consentimiento: enPagina.sms_consentimiento,
+    // a veces son botones del pie, no enlaces
+    privacidad: hrefs.find((h) => /privac/i.test(h)) || (enPagina.rotulos.some((t) => /privac/.test(t)) ? "botón" : null),
+    terminos: hrefs.find((h) => /(terms|terminos|términos|condiciones)/i.test(h)) || (enPagina.rotulos.some((t) => /(terms|términos|terminos|condiciones)/.test(t)) ? "botón" : null),
+    sms_consentimiento: enPagina.sms_consentimiento || paginasDatos.some((x) => x.sms_consentimiento),
   },
   datos_estructurados: { tipos: enPagina.ld_tipos, legalName: enPagina.ld_legalName, telefono: enPagina.ld_telefono },
   seguridad: Object.fromEntries(["strict-transport-security", "content-security-policy", "x-content-type-options", "x-frame-options", "referrer-policy", "permissions-policy"].map((k) => [k, Boolean(cab[k])])),
