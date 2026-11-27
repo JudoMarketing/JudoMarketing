@@ -41,6 +41,7 @@ hace falta. Si algo se mueve o nace, se actualiza aquí el mismo día.
 | SEO, sitemap, JSON-LD | `src/lib/seo.ts`, `src/app/sitemap.ts`, `src/components/JsonLd.tsx` |
 | La prospección por correo | `docs/LEADS.md`, `src/lib/leads.ts`, `scripts/leads/` |
 | Las auditorías semanales del sitio | `docs/AUDITORIA-RUTINA.md`, `docs/auditorias/` |
+| La auditoría de presencia para un cliente (PDF: website y fuera del website) | skill `judo-auditoria`, método en `docs/AUDITORIA-CLIENTES.md`, scripts en `scripts/auditoria/presencia/` |
 
 ## Pruebas que se corren antes de entregar
 
