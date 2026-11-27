@@ -8,6 +8,12 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
 
 ## Noviembre de 2026
 
+- **27 nov · Auditorías de presencia en línea de The Notes (thenotes.net) y
+  Delivery Rush Florida:** dos PDF con el método de NV Labs, **solo
+  diagnóstico y plan, sin página de precio**. The Notes en español (negocio
+  de Junior), Delivery Rush en inglés (cliente). Los PDF quedan fuera del
+  repositorio.
+
 - **27 nov · Behavior for Happiness (abaforhappiness.com, agencia ABA de
   Grether):** propuesta enfocada en SEO local, Google Ads, directorios,
   buscadores e IA. El borrador está aprobado; le faltan datos reales
