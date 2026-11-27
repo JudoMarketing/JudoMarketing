@@ -17,6 +17,7 @@ y la regla.
 
 - Dónde vive cada cosa del sistema: `.claude/skills/vendito/references/mapa.md`.
 - Videos verticales y carruseles: skills `judo-video-vertical` y `judo-carrusel` (`.claude/skills/`). Lo compartido entre las dos se edita en `scripts/skills/compartido/` y se copia con `python3 scripts/skills/empacar.py`.
+- Auditoría de presencia para un cliente (website y fuera del website, PDF): skill `judo-auditoria` y `docs/AUDITORIA-CLIENTES.md`.
 - Todo video, carrusel o herramienta de marketing terminado se sube a la Biblioteca Judo (artifact) con un nombre propio, y "revisa los pedidos de la biblioteca" se resuelve desde ahí: `docs/BIBLIOTECA.md`.
 - Cada cosa que se hace se optimiza y se prueba también en el teléfono (390 y
   360 px): cada página empieza arriba, ningún campo hace zoom (16 px), nada se

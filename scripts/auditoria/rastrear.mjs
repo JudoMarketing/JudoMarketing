@@ -5,15 +5,22 @@
  * qué enlaces externos responden mal. Es la parte "SEO técnico" de la
  * auditoría semanal (docs/AUDITORIA-RUTINA.md).
  *
- *   node scripts/auditoria/rastrear.mjs [--salida /ruta/rastreo.json]
+ * También sirve para la auditoría de un cliente (docs/AUDITORIA-CLIENTES.md):
+ * con --origen rastrea ese sitio y avisa de títulos y descripciones repetidos.
+ *
+ *   node scripts/auditoria/rastrear.mjs [--origen https://www.cliente.com] [--salida /ruta/rastreo.json]
  */
-const ORIGEN = "https://www.judomarketing.net";
-const SALIDA = (() => { const i = process.argv.indexOf("--salida"); return i >= 0 ? process.argv[i + 1] : "rastreo.json"; })();
+const arg = (n) => { const i = process.argv.indexOf(n); return i >= 0 ? process.argv[i + 1] : null; };
+const ORIGEN = (arg("--origen") || "https://www.judomarketing.net").replace(/\/$/, "");
+const HOST = new URL(ORIGEN).hostname;
+const ES_JUDO = HOST === "www.judomarketing.net";
+const SALIDA = arg("--salida") || "rastreo.json";
 const UA = "Mozilla/5.0 (compatible; JudoAudit/1.0)";
 const vistos = new Map();
 const cola = [];
-const semilla = (await (await fetch(ORIGEN + "/sitemap.xml")).text()).match(/<loc>([^<]+)<\/loc>/g).map((x) => x.replace(/<\/?loc>/g, ""));
-for (const u of [...semilla, ORIGEN + "/juditos", ORIGEN + "/juditoads", ORIGEN + "/pay", ORIGEN + "/es/pagar", ORIGEN + "/intake", ORIGEN + "/es/intake", ORIGEN + "/showcase", ORIGEN + "/judimental"]) cola.push({ url: u, nivel: 0 });
+const semilla = ((await (await fetch(ORIGEN + "/sitemap.xml").catch(() => ({ text: async () => "" }))).text()).match(/<loc>([^<]+)<\/loc>/g) || []).map((x) => x.replace(/<\/?loc>/g, ""));
+const extras = ES_JUDO ? ["/juditos", "/juditoads", "/pay", "/es/pagar", "/intake", "/es/intake", "/showcase", "/judimental"].map((x) => ORIGEN + x) : [];
+for (const u of [ORIGEN, ...semilla, ...extras]) cola.push({ url: u, nivel: 0 });
 const texto = (h) => h.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 const meta = (h, n) => (h.match(new RegExp(`<meta[^>]+(?:name|property)=["']${n}["'][^>]+content=["']([^"']*)["']`, "i")) || h.match(new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+(?:name|property)=["']${n}["']`, "i")) || [])[1] ?? "";
 const externos = new Map();
@@ -51,7 +58,7 @@ while (cola.length) {
     fila.enlacesInternos = 0; fila.enlacesExternos = 0;
     for (const e of enlaces) {
       let u; try { u = new URL(e, limpio); } catch { continue; }
-      if (u.hostname === "www.judomarketing.net") { fila.enlacesInternos++; if (nivel < 2 && !/^\/(api|_next)\//.test(u.pathname) && !/\.(png|jpg|svg|pdf|ico|webp|xml|txt)$/i.test(u.pathname)) cola.push({ url: u.origin + u.pathname, nivel: nivel + 1 }); }
+      if (u.hostname === HOST) { fila.enlacesInternos++; if (nivel < 2 && !/^\/(api|_next)\//.test(u.pathname) && !/\.(png|jpe?g|svg|pdf|ico|webp|xml|txt|css|js|woff2?|ttf|json|mp4)$/i.test(u.pathname)) cola.push({ url: u.origin + u.pathname, nivel: nivel + 1 }); }
       else if (/^https?:$/.test(u.protocol)) { fila.enlacesExternos++; if (!externos.has(u.href)) externos.set(u.href, limpio); }
     }
   }
@@ -69,3 +76,9 @@ console.log(`páginas: ${paginas.length}`);
 for (const p of paginas) console.log(`${p.status} ${p.url.replace(ORIGEN, "") || "/"} | t=${(p.title || "").length} d=${(p.description || "").length} h1=${(p.h1 || []).length} pal=${p.palabras ?? "-"} img=${p.imagenes ?? "-"}/${p.imgSinAlt ?? "-"}sinalt canon=${p.canonical ? (p.canonical === p.url || p.canonical === p.url + "/" ? "ok" : p.canonical) : "NO"} robots=${p.robots || "-"} og=${p.ogImage ? "sí" : "NO"} ld=${(p.jsonld || []).join(",") || "-"}${p.redirect ? " -> " + p.redirect : ""}`);
 console.log("\nexternos rotos:"); for (const e of ext.filter((x) => x.status >= 400 || x.status === 0)) console.log(` ${e.status} ${e.url} (desde ${e.desde.replace(ORIGEN, "")})`);
 console.log(`externos revisados: ${ext.length}`);
+// Páginas distintas que dicen lo mismo a Google (le pasó a Delivery Rush: 4 páginas, 1 título)
+for (const campo of ["title", "description"]) {
+  const grupos = {};
+  for (const p of paginas.filter((x) => x.status === 200 && x[campo])) (grupos[p[campo]] ||= []).push(p.url.replace(ORIGEN, "") || "/");
+  for (const [v, us] of Object.entries(grupos)) if (us.length > 1) console.log(`${campo} repetido en ${us.length} páginas (${us.join(", ")}): ${v.slice(0, 70)}`);
+}

@@ -13,6 +13,11 @@ Formato: **fecha · tema:** la decisión, en sus palabras cuando se puede.
   diagnóstico y plan, sin página de precio**. The Notes en español (negocio
   de Junior), Delivery Rush en inglés (cliente). Los PDF quedan fuera del
   repositorio.
+- **27 nov · La auditoría es una rutina y mide todo lo que hace fuerte la
+  presencia:** el website y lo de fuera (Perfil de Google, reseñas,
+  directorios, redes, qué responde la IA, medición, anuncios, autoridad,
+  contacto y confianza). Lo aprendido va a CEREBRO (sección 12) y a
+  `docs/AUDITORIA-CLIENTES.md`; la skill es `judo-auditoria`.
 
 - **27 nov · Behavior for Happiness (abaforhappiness.com, agencia ABA de
   Grether):** propuesta enfocada en SEO local, Google Ads, directorios,

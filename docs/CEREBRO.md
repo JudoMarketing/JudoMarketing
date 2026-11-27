@@ -27,6 +27,7 @@ archivo directo desde otro proyecto: una sola mano lo mantiene coherente.
 
 | Fecha | Qué cambió |
 | --- | --- |
+| 2026-11-27 | **Auditorías de presencia para clientes (sección 12).** Miden el website (9 áreas) y lo de fuera (10 áreas: Perfil de Google, reseñas, directorios, redes, qué responde la IA, medición, anuncios, autoridad, contacto y confianza), con el mismo peso. Solo diagnóstico y plan. La rutina está en `AUDITORIA-CLIENTES.md` y en la skill `judo-auditoria`; los scripts, en `scripts/auditoria/presencia/` (`medir.mjs`, `armar.py`), y `rastrear.mjs --origen` sirve para cualquier sitio. Salió de The Notes y Delivery Rush. |
 | 2026-11-14 | **Precios nuevos en judomarketing.net y el Full Diagnostic de $99.** Website Esencial $250 al mes y Apps para Teléfonos $450 al mes, cada uno con $500 de inicio una sola vez; el año completo de una vez cuesta 10 meses y no lleva cuota ($2,500 y $4,500). Se quitó el precio tachado. Los Websites Complejos se siguen cotizando, sin cuota. Servicio nuevo: el **Full Diagnostic**, $99 de un solo pago, el informe en PDF del website y la presencia en internet en 3 días hábiles, con su página (`/diagnostic`, `/es/diagnostico`) y su cobro en Stripe (pide el website y las redes en el mismo pago). Todo sale de `src/content/pricing.json`: el sitio, el pago, los contratos, la política (fecha efectiva 11/14/2026), el chatbot, los correos de prospección y el guion de ventas. Los clientes que ya firmaron conservan su precio. Los PDF de Latinoamérica («Desde Miami» y «Desde $50 al mes») no cambian. |
 | 2026-11-12 | **Todo sitio hecho por Judo lleva al fondo «Site built by Judo Marketing»** (regla 17 de la sección 2): discreta, del color del pie, enlazada a judomarketing.net. Ya está en todos los sitios que tenemos en GitHub (Paradise Ranch espera su publicación en Cloudflare); JudiWEB y el prompt de website nuevo la traen de fábrica. Se revisa con `node scripts/auditoria/firma.mjs`. |
 | 2026-11-05 | **Todo website nace encontrable por Google, Bing y la IA** (sección 11). La plantilla JudiWEB ya trae de fábrica: robots.txt que deja entrar a ChatGPT, Claude y Perplexity, sitemap con hreflang, JSON-LD del negocio y WebSite, verificación de Google y Bing, IndexNow propio de cada sitio y `llms.txt`. La prueba es `node scripts/auditoria/buscadores.mjs`, y la auditoría de los lunes la corre en todos los sitios. El inventario de lo hecho y de cada sitio está en `BUSCADORES.md`. Lo más grave que salió: Johan Moreno Tailor, JudiMental y la portada de God's Home llegan vacíos a los robots de IA, que no ejecutan JavaScript. |
@@ -783,6 +784,29 @@ Los errores de diseño de los sitios están en la sección 2 y en
     componente: tampoco se generaron. Para un cambio de diseño, CSS normal
     en el archivo del componente.
 
+### Auditorías de clientes
+
+- **Capturas en inglés en un informe en español** (The Notes, 2026-11-27).
+  - Qué pasó: el navegador de la medición estaba en inglés y el sitio cambia
+    de idioma solo. Hubo que repetirlas antes de armar el PDF.
+  - Regla: las capturas se sacan con el locale del informe
+    (`scripts/auditoria/presencia/medir.mjs` ya lo hace).
+- **Una búsqueda donde no aparecía se contó como aparición** (Delivery Rush,
+  2026-11-27).
+  - Qué pasó: la celda decía «no (búsqueda normal); solo en la extendida» y
+    el armador solo reconocía «no» exacto. La portada decía 2 de 7 en vez de
+    1 de 7.
+  - Regla: el estado de una búsqueda es «no» o un número; el detalle va en
+    la nota. El armador ya cuenta como «no» todo lo que empieza con «no».
+- **Rayas largas en las celdas vacías** (2026-11-27). Las tablas ponían «—»
+  donde no había dato, y la casa no usa rayas largas. Ahora va «s/d» o
+  «n/a», y el armador avisa si queda una.
+- **Medir solo el website** (2026-11-27). Las primeras auditorías miraban 9
+  áreas del sitio. Junior pidió evaluar todo lo que hace fuerte la presencia,
+  y fuera del sitio salieron los problemas más caros: un Perfil de Google
+  vacío, la IA repitiendo precios viejos, el teléfono de Judo en el negocio
+  del cliente. Regla: la auditoría mide los dos bloques (sección 12).
+
 ### Diseñar sin leer el método
 
 - **El home de judomarketing.net salió «nada profesional»** (2026-11-25).
@@ -1270,3 +1294,47 @@ desde afuera, como un buscador, sin ejecutar JavaScript:
 
 Va en el checklist de entrega (sección 7) y en la auditoría de los lunes.
 
+## 12. Auditorías de presencia para clientes
+
+Lo que se le entrega a un cliente o prospecto para mostrarle dónde está y
+qué hacer. El método completo, con sus 19 áreas, los comandos y lo
+aprendido, está en `AUDITORIA-CLIENTES.md`. La skill `judo-auditoria` lo
+sigue paso a paso.
+
+**Las reglas que mandan:**
+
+1. **Dos bloques con el mismo peso.**
+   - El website, en 9 áreas: velocidad, experiencia, SEO técnico,
+     visibilidad, IA, camino a la compra, contenido, reputación en el sitio
+     y seguridad.
+   - Fuera del website, en 10 áreas: Perfil de Google, reseñas, directorios
+     y datos iguales, redes, qué responde la IA, medición, anuncios,
+     autoridad, contacto y confianza.
+
+   Un website perfecto con un Perfil de Google vacío no es una presencia
+   fuerte.
+2. **Fuera del website se puntúa con 5 revisiones por área** (1, ½ o 0). Lo
+   que no se pudo comprobar vale 0 y lo dice. Así dos mediciones del mismo
+   negocio dan el mismo número.
+3. **Solo diagnóstico y plan.** El precio va en la propuesta, que es otro
+   documento.
+4. **Nada del cliente entra al repo:** ni datos ni PDF. La carpeta de
+   trabajo va en el scratchpad.
+5. **Desde afuera y sin tocar nada.** Nunca se llenan formularios, se hacen
+   pedidos ni se contacta al negocio.
+6. **Lo que más se repite en los negocios pequeños** (The Notes y Delivery
+   Rush, nov 2026):
+   - cero reseñas;
+   - el Perfil de Google vacío o mal ubicado;
+   - datos viejos en Facebook que la IA repite;
+   - redes sin publicar;
+   - Bing sin verificar;
+   - ningún aviso de cookies teniendo etiquetas de anuncios;
+   - un teléfono o una razón social prestados que mezclan dos negocios.
+
+   Todo eso se arregla rápido y vale puntos.
+7. **Quién es el dueño se dice igual en todas partes.** Si el teléfono o la
+   razón social de Judo Marketing aparecen en el sitio de otro negocio
+   (Delivery Rush, nov 2026), Google y la IA mezclan los dos. Se le pregunta
+   a Junior si es a propósito, y se anota la respuesta en
+   `vendito/decisiones.md`.
